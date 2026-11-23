@@ -3,13 +3,16 @@ import { Router } from '@angular/router';
 
 import { IconComponent } from '@components/icon/icon.component';
 import { MENU } from '@components/menu/menu.component';
+import { I18nService } from '@shared/i18n/i18n.service';
+import type { TranslationKey } from '@shared/i18n/locales/en';
+import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { LayoutService } from '../layout.service';
 import { MAIN_NAV, SETTINGS_NAV } from '../navigation';
 
 interface SearchEntry {
-  group: string;
-  label: string;
+  group: TranslationKey;
+  label: TranslationKey;
   icon: string;
   run: () => void;
 }
@@ -17,13 +20,14 @@ interface SearchEntry {
 /** Command palette (Ctrl K): jump to pages and run shell actions. Content search comes later. */
 @Component({
   selector: 'pc-search-dialog',
-  imports: [IconComponent, ...MENU],
+  imports: [IconComponent, TranslatePipe, ...MENU],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './search-dialog.component.html',
 })
 export class SearchDialogComponent {
   protected readonly layout = inject(LayoutService);
   private readonly router = inject(Router);
+  private readonly i18n = inject(I18nService);
   private readonly input = viewChild<ElementRef<HTMLInputElement>>('queryInput');
 
   protected readonly query = signal('');
@@ -31,17 +35,18 @@ export class SearchDialogComponent {
 
   private readonly entries: SearchEntry[] = [
     ...[...MAIN_NAV, SETTINGS_NAV].map((item) => ({
-      group: 'Go to',
+      group: 'pal.nav' as const,
       label: item.label,
       icon: item.icon,
       run: () => void this.router.navigateByUrl(item.route),
     })),
-    { group: 'Actions', label: 'Toggle assistant', icon: 'sparkles', run: () => this.layout.toggleAssistant() },
+    { group: 'pal.actions', label: 'pal.toggleassistant', icon: 'sparkles', run: () => this.layout.toggleAssistant() },
+    { group: 'pal.actions', label: 'pal.togglelang', icon: 'languages', run: () => this.i18n.toggle() },
   ];
 
   protected readonly results = computed(() => {
     const q = this.query().trim().toLowerCase();
-    return q ? this.entries.filter((e) => e.label.toLowerCase().includes(q)) : this.entries;
+    return q ? this.entries.filter((e) => this.i18n.t(e.label).toLowerCase().includes(q)) : this.entries;
   });
 
   constructor() {

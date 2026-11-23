@@ -1,11 +1,11 @@
 @if (layout.searchOpen()) {
   <div class="overlay" (mousedown)="onBackdrop($event)">
-    <div class="palette" role="dialog" aria-modal="true" aria-label="Search" data-testid="search-dialog">
+    <div class="palette" role="dialog" aria-modal="true" [attr.aria-label]="'pal.placeholder' | t" data-testid="search-dialog">
       <input
         #queryInput
         type="text"
-        placeholder="Type a command or search…"
-        aria-label="Search"
+        [placeholder]="'pal.placeholder' | t"
+        [attr.aria-label]="'pal.placeholder' | t"
         [value]="query()"
         (input)="onInput($any($event.target).value)"
         (keydown)="onKeydown($event)"
@@ -13,7 +13,7 @@
       <div class="palette-list" role="listbox">
         @for (entry of results(); track entry.label; let i = $index) {
           @if (isGroupStart(i)) {
-            <pc-menu-label>{{ entry.group }}</pc-menu-label>
+            <pc-menu-label>{{ entry.group | t }}</pc-menu-label>
           }
           <button
             type="button"
@@ -25,11 +25,11 @@
             (click)="select(entry)"
           >
             <pc-icon [name]="entry.icon" />
-            {{ entry.label }}
+            {{ entry.label | t }}
             <pc-icon class="hint" name="corner-down-left" [size]="14" />
           </button>
         } @empty {
-          <div class="empty" style="padding: var(--space-8)">No results</div>
+          <div class="empty" style="padding: var(--space-8)">{{ 'pal.empty' | t }}</div>
         }
       </div>
     </div>

@@ -1,36 +1,43 @@
-<nav class="crumbs" aria-label="Breadcrumb">
+<nav class="crumbs" [attr.aria-label]="'shell.breadcrumb' | t">
   <a class="crumb" routerLink="/projects">
     <pc-icon name="layout-grid" [size]="14" />
-    <span>Projects</span>
+    <span>{{ 'shell.home' | t }}</span>
   </a>
   @if (crumb(); as current) {
     <span class="crumb-sep">/</span>
-    <span class="crumb current" aria-current="page">{{ current }}</span>
+    <span class="crumb current" aria-current="page">{{ current | t }}</span>
   }
 </nav>
 
 <button type="button" class="search-btn" data-testid="search-button" (click)="layout.openSearch()">
   <pc-icon name="search" [size]="14" />
-  <span class="truncate">Search projects, artifacts, tasks…</span>
+  <span class="truncate">{{ 'shell.search' | t }}</span>
   <pc-kbd>Ctrl K</pc-kbd>
 </button>
 
 <div class="tb-actions">
-  <button type="button" class="tb-btn" pcTooltip="Language" tooltipPosition="bottom" data-testid="language-button">
+  <button
+    type="button"
+    class="tb-btn"
+    [pcTooltip]="'shell.lang' | t"
+    tooltipPosition="bottom"
+    data-testid="language-button"
+    (click)="i18n.toggle()"
+  >
     <pc-icon name="languages" [size]="14" />
-    <span>EN</span>
+    <span data-testid="language-code">{{ i18n.lang().toUpperCase() }}</span>
   </button>
 
   <pc-dropdown placement="bottom-end">
-    <button type="button" class="tb-btn" pcDropdownTrigger pcTooltip="Theme" tooltipPosition="bottom" data-testid="theme-button">
+    <button type="button" class="tb-btn" pcDropdownTrigger [pcTooltip]="'shell.theme' | t" tooltipPosition="bottom" data-testid="theme-button">
       <pc-icon name="sun-moon" [size]="14" />
     </button>
     <pc-menu style="width: 200px">
-      <pc-menu-label>Theme</pc-menu-label>
+      <pc-menu-label>{{ 'shell.theme' | t }}</pc-menu-label>
       @for (theme of themes; track theme.id) {
         <button type="button" pcMenuItem>
           <pc-icon [name]="theme.icon" />
-          <span>{{ theme.label }}</span>
+          <span>{{ theme.label | t }}</span>
         </button>
       }
     </pc-menu>
@@ -47,6 +54,6 @@
     (click)="layout.toggleAssistant()"
   >
     <pc-icon name="sparkles" [size]="14" />
-    <span>Assistant</span>
+    <span>{{ 'shell.assistant' | t }}</span>
   </button>
 </div>

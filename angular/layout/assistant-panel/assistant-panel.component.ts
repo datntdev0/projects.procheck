@@ -7,6 +7,9 @@ import { DropdownComponent } from '@components/dropdown/dropdown.component';
 import { IconComponent } from '@components/icon/icon.component';
 import { MENU } from '@components/menu/menu.component';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
+import { I18nService } from '@shared/i18n/i18n.service';
+import type { TranslationKey } from '@shared/i18n/locales/en';
+import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { LayoutService } from '../layout.service';
 import { AssistantResizerComponent } from './assistant-resizer.component';
@@ -15,19 +18,23 @@ export type AssistantMode = 'ask' | 'edit' | 'agent';
 
 export interface AssistantMessage {
   role: 'assistant' | 'user';
-  text: string;
+  /** Literal text (user input, CLI output)… */
+  text?: string;
+  /** …or a translation key for built-in messages, so they follow the language. */
+  textKey?: TranslationKey;
   time: string;
 }
 
 interface ContextChip {
   icon: string;
-  label: string;
+  /** Translation key, or a literal such as a CLI name (unknown keys render as-is). */
+  label: TranslationKey | string;
 }
 
-const MODES: { id: AssistantMode; label: string; icon: string }[] = [
-  { id: 'ask', label: 'Ask', icon: 'message-circle' },
-  { id: 'edit', label: 'Edit artifact', icon: 'square-pen' },
-  { id: 'agent', label: 'Agent', icon: 'bot' },
+const MODES: { id: AssistantMode; label: TranslationKey; icon: string }[] = [
+  { id: 'ask', label: 'as.mode.ask', icon: 'message-circle' },
+  { id: 'edit', label: 'as.mode.edit', icon: 'square-pen' },
+  { id: 'agent', label: 'as.mode.agent', icon: 'bot' },
 ];
 
 function now(): string {
@@ -41,29 +48,26 @@ function now(): string {
  */
 @Component({
   selector: 'pc-assistant-panel',
-  imports: [AssistantResizerComponent, AvatarComponent, StatusDotComponent, ButtonComponent, DropdownComponent, IconComponent, TooltipDirective, ...MENU],
+  imports: [AssistantResizerComponent, AvatarComponent, StatusDotComponent, ButtonComponent, DropdownComponent, IconComponent, TooltipDirective, TranslatePipe, ...MENU],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'assistant', 'aria-label': 'Assistant', '[attr.aria-hidden]': '!layout.assistantOpen()' },
+  host: { class: 'assistant', '[attr.aria-label]': "i18n.t('shell.assistant')", '[attr.aria-hidden]': '!layout.assistantOpen()' },
   templateUrl: './assistant-panel.component.html',
 })
 export class AssistantPanelComponent {
   protected readonly layout = inject(LayoutService);
+  protected readonly i18n = inject(I18nService);
   private readonly list = viewChild<ElementRef<HTMLElement>>('messageList');
 
   protected readonly modes = MODES;
   protected readonly mode = signal<AssistantMode>('ask');
   protected readonly draft = signal('');
   protected readonly context = signal<ContextChip[]>([
-    { icon: 'layout-grid', label: 'All projects' },
+    { icon: 'layout-grid', label: 'nav.all_projects' },
     { icon: 'terminal', label: 'Claude Code' },
   ]);
-  protected readonly suggestions = signal(['Summarize latest docs', 'Draft user stories', 'Project risks?']);
+  protected readonly suggestions = signal<TranslationKey[]>(['as.suggest.summarize', 'as.suggest.stories', 'as.suggest.risks']);
   protected readonly messages = signal<AssistantMessage[]>([
-    {
-      role: 'assistant',
-      time: now(),
-      text: 'Hi 👋 I can help you set up projects, review documents and plan work. Connect a CLI in Settings to start chatting.',
-    },
+    { role: 'assistant', time: now(), textKey: 'as.welcome' },
   ]);
 
   constructor() {

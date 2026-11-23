@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject } from '@angular/core';
 
+import { I18nService } from '@shared/i18n/i18n.service';
+
 import { ASSISTANT_MAX_W, ASSISTANT_MIN_W, LayoutService } from '../layout.service';
 
 const KEY_STEP = 16;
@@ -16,7 +18,7 @@ const KEY_STEP = 16;
     role: 'separator',
     tabindex: '0',
     'aria-orientation': 'vertical',
-    'aria-label': 'Resize assistant panel',
+    '[attr.aria-label]': "i18n.t('shell.resize_assistant')",
     '[attr.aria-valuemin]': 'min',
     '[attr.aria-valuemax]': 'max',
     '[attr.aria-valuenow]': 'layout.assistantWidth()',
@@ -33,6 +35,7 @@ const KEY_STEP = 16;
 })
 export class AssistantResizerComponent {
   protected readonly layout = inject(LayoutService);
+  protected readonly i18n = inject(I18nService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly min = ASSISTANT_MIN_W;

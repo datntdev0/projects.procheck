@@ -3,21 +3,21 @@
   <header class="as-header">
     <pc-avatar [ai]="true" />
     <div class="grow">
-      <div class="as-title">Procheck Assistant</div>
-      <div class="as-sub"><pc-status-dot style="width: 6px; height: 6px" /> Claude Code · not connected</div>
+      <div class="as-title">{{ 'as.title' | t }}</div>
+      <div class="as-sub"><pc-status-dot style="width: 6px; height: 6px" /> Claude Code · {{ 'as.status.disconnected' | t }}</div>
     </div>
-    <button pcButton variant="ghost" size="sm" [iconOnly]="true" pcTooltip="History" tooltipPosition="bottom"><pc-icon name="history" /></button>
-    <button pcButton variant="ghost" size="sm" [iconOnly]="true" pcTooltip="New chat" tooltipPosition="bottom" (click)="newChat()">
+    <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.history' | t" tooltipPosition="bottom"><pc-icon name="history" /></button>
+    <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.new' | t" tooltipPosition="bottom" (click)="newChat()">
       <pc-icon name="square-pen" />
     </button>
-    <button pcButton variant="ghost" size="sm" [iconOnly]="true" pcTooltip="Close" tooltipPosition="bottom" (click)="layout.toggleAssistant(false)">
+    <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.close' | t" tooltipPosition="bottom" (click)="layout.toggleAssistant(false)">
       <pc-icon name="panel-right-close" />
     </button>
   </header>
 
-  <div class="as-context" aria-label="Context">
+  <div class="as-context" [attr.aria-label]="'as.context' | t">
     @for (chip of context(); track chip.label) {
-      <span class="ctx-chip"><pc-icon [name]="chip.icon" />{{ chip.label }}</span>
+      <span class="ctx-chip"><pc-icon [name]="chip.icon" />{{ chip.label | t }}</span>
     }
   </div>
 
@@ -27,7 +27,7 @@
         <div class="msg user">
           <pc-avatar initials="Y" size="sm" />
           <div class="msg-body">
-            <div class="msg-meta"><b>You</b>· {{ msg.time }}</div>
+            <div class="msg-meta"><b>{{ 'as.you' | t }}</b>· {{ msg.time }}</div>
             <div class="msg-text">{{ msg.text }}</div>
           </div>
         </div>
@@ -35,12 +35,12 @@
         <div class="msg">
           <pc-avatar [ai]="true" size="sm" />
           <div class="msg-body">
-            <div class="msg-meta"><b>Assistant</b>· {{ msg.time }}</div>
-            <div class="msg-text" style="margin-top: 4px">{{ msg.text }}</div>
+            <div class="msg-meta"><b>{{ 'as.name' | t }}</b>· {{ msg.time }}</div>
+            <div class="msg-text" style="margin-top: 4px">{{ msg.textKey ? (msg.textKey | t) : msg.text }}</div>
             <div class="msg-actions">
-              <button pcButton variant="ghost" size="sm" [iconOnly]="true" pcTooltip="Copy"><pc-icon name="copy" [size]="14" /></button>
-              <button pcButton variant="ghost" size="sm" [iconOnly]="true" pcTooltip="Helpful"><pc-icon name="thumbs-up" [size]="14" /></button>
-              <button pcButton variant="ghost" size="sm" [iconOnly]="true" pcTooltip="Retry"><pc-icon name="rotate-ccw" [size]="14" /></button>
+              <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.copy' | t"><pc-icon name="copy" [size]="14" /></button>
+              <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.helpful' | t"><pc-icon name="thumbs-up" [size]="14" /></button>
+              <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.retry' | t"><pc-icon name="rotate-ccw" [size]="14" /></button>
             </div>
           </div>
         </div>
@@ -48,41 +48,41 @@
     } @empty {
       <div class="empty" style="padding: var(--space-8) var(--space-4)">
         <div class="empty-icon"><pc-icon name="sparkles" [size]="22" /></div>
-        <span class="text-sm">Ask anything about your projects.</span>
+        <span class="text-sm">{{ 'as.empty' | t }}</span>
       </div>
     }
   </div>
 
   <div class="as-suggest">
     @for (s of suggestions(); track s) {
-      <button type="button" (click)="send(s)">{{ s }}</button>
+      <button type="button" (click)="send(i18n.t(s))">{{ s | t }}</button>
     }
   </div>
 
   <form class="composer" (submit)="$event.preventDefault(); send()">
     <textarea
       rows="1"
-      placeholder="Ask, or type / for commands…"
-      aria-label="Message"
+      [placeholder]="'as.placeholder' | t"
+      [attr.aria-label]="'as.message' | t"
       data-testid="assistant-input"
       [value]="draft()"
       (input)="draft.set($any($event.target).value)"
       (keydown)="onComposerKeydown($event)"
     ></textarea>
     <div class="composer-bar">
-      <button pcButton type="button" variant="ghost" size="sm" [iconOnly]="true" pcTooltip="Attach"><pc-icon name="paperclip" /></button>
-      <button pcButton type="button" variant="ghost" size="sm" [iconOnly]="true" pcTooltip="Mention artifact"><pc-icon name="at-sign" /></button>
+      <button pcButton type="button" variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.attach' | t"><pc-icon name="paperclip" /></button>
+      <button pcButton type="button" variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.mention' | t"><pc-icon name="at-sign" /></button>
       <pc-dropdown placement="top-start">
         <button type="button" class="mode" pcDropdownTrigger>
           <pc-icon [name]="modeOf(mode()).icon" [size]="14" />
-          <span>{{ modeOf(mode()).label }}</span>
+          <span>{{ modeOf(mode()).label | t }}</span>
           <pc-icon name="chevron-down" [size]="14" />
         </button>
         <pc-menu style="width: 180px">
           @for (m of modes; track m.id) {
             <button type="button" pcMenuItem [active]="m.id === mode()" (click)="mode.set(m.id)">
               <pc-icon [name]="m.icon" />
-              <span class="grow">{{ m.label }}</span>
+              <span class="grow">{{ m.label | t }}</span>
               @if (m.id === mode()) {
                 <pc-icon name="check" />
               }
@@ -90,8 +90,8 @@
           }
         </pc-menu>
       </pc-dropdown>
-      <button type="submit" class="send" aria-label="Send" [disabled]="!draft().trim()"><pc-icon name="arrow-up" /></button>
+      <button type="submit" class="send" [attr.aria-label]="'as.send' | t" [disabled]="!draft().trim()"><pc-icon name="arrow-up" /></button>
     </div>
   </form>
-  <div class="as-footnote">Runs through your connected CLI in an isolated HOME. Chat history is saved per project.</div>
+  <div class="as-footnote">{{ 'as.footnote' | t }}</div>
 </div>

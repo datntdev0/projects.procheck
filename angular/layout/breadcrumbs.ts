@@ -3,14 +3,16 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 
+import type { TranslationKey } from '@shared/i18n/locales/en';
+
 /** Route `data` read by the main layout. */
 export interface LayoutRouteData {
-  /** Label of the last breadcrumb. Omitted on the "Projects" home page itself. */
-  crumb?: string;
+  /** Translation key of the last breadcrumb. Omitted on the "Projects" home page itself. */
+  crumb?: TranslationKey;
 }
 
-function deepestCrumb(route: ActivatedRouteSnapshot | null): string | null {
-  let crumb: string | null = null;
+function deepestCrumb(route: ActivatedRouteSnapshot | null): TranslationKey | null {
+  let crumb: TranslationKey | null = null;
   for (let r = route; r; r = r.firstChild) {
     const data = r.data as LayoutRouteData;
     if (data.crumb !== undefined) crumb = data.crumb;
@@ -18,7 +20,7 @@ function deepestCrumb(route: ActivatedRouteSnapshot | null): string | null {
   return crumb;
 }
 
-/** Current page crumb as a signal. Must run in an injection context. */
+/** Translation key of the current page crumb, as a signal. Must run in an injection context. */
 export function injectCurrentCrumb() {
   const router = inject(Router);
   return toSignal(
