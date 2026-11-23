@@ -22,3 +22,15 @@ test('settings page shows the in-page navigation and its sections', async ({ ui 
     await expect(settings.section('storage')).toBeInViewport();
   });
 });
+
+test('about shows the version and always reports up to date', async ({ ui, app }) => {
+  const { settings } = ui;
+  await settings.open();
+
+  const about = settings.section('about');
+  await expect(about.getByTestId('about-version')).toHaveText('0.0.0');
+
+  await about.getByTestId('check-update').click();
+  await expect(about.getByTestId('update-status')).toContainText('You are up to date');
+  await expect(app.page.getByRole('status').filter({ hasText: 'You are up to date' }).first()).toBeVisible();
+});

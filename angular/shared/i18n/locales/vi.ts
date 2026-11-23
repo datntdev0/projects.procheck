@@ -88,4 +88,13 @@ export const vi: Translations = {
   'set.general.d': 'Hành vi ứng dụng, giao diện và ngôn ngữ.',
   'set.diag.d': 'Procheck ghi lại những gì và cách thu thập để hỗ trợ.',
   'set.storage.d': 'Procheck lưu hai loại dữ liệu ở hai nơi tách biệt. Dữ liệu ứng dụng thuộc về máy này và dùng chung cho mọi dự án; dữ liệu dự án nằm trong thư mục dự án và đi theo dự án.',
+  'set.about.tag': 'Triển khai phần mềm với AI, từ khảo sát đến pull request.',
+  'set.about.check': 'Kiểm tra cập nhật',
+  'set.about.checking': 'Đang kiểm tra…',
+  'set.about.upto': 'Bạn đang dùng bản mới nhất',
+  'set.about.available': 'Đã có phiên bản {version}',
+  'set.about.checked': 'kiểm tra lúc {time}',
+  'set.about.ver': 'Phiên bản',
+  'set.about.runtime': 'Nền tảng',
+  'set.about.foot': 'Procheck là sản phẩm của KMS Technology.',
 };

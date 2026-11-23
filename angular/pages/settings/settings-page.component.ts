@@ -5,6 +5,7 @@ import { IconComponent } from '@components/icon/icon.component';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { SettingsSectionComponent } from './settings-section.component';
+import { AboutSectionComponent } from './sections/about-section.component';
 import { SETTINGS_NAV, SETTINGS_SECTION_IDS, SettingsSectionId } from './settings-sections';
 
 /** Offset (px) below the top of the canvas at which a section counts as the current one. */
@@ -13,7 +14,7 @@ const SPY_OFFSET = 90;
 /** App settings (ported from _proto/settings.html): in-page navigation + one section per topic. */
 @Component({
   selector: 'pc-settings-page',
-  imports: [IconComponent, TranslatePipe, SettingsSectionComponent, ...CARD],
+  imports: [IconComponent, TranslatePipe, SettingsSectionComponent, ...CARD, AboutSectionComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings-page.component.html',
 })

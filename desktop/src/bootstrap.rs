@@ -2,7 +2,6 @@ use std::sync::Mutex;
 
 use tauri::Manager;
 
-use crate::commands;
 use crate::container::AppDirectories;
 use crate::infra::storage::database::Database;
 use crate::infra::storage::migrator::Migrator;
@@ -15,7 +14,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![commands::app::app_info])
+        .invoke_handler(tauri::generate_handler![])
         .setup(|app| {
             let directories = AppDirectories::resolve(app.handle())?;
             let mut database = Database::open(&directories.database_path())?;

@@ -1,7 +1,7 @@
 <div class="sidebar-inner">
   <a class="sb-brand" routerLink="/projects">
     <span class="brand-mark"><img src="assets/brand/kms-mark.svg" alt="" /></span>
-    <span class="brand-name" data-testid="app-name">{{ appInfo()?.name ?? fallbackName }}</span>
+    <span class="brand-name" data-testid="app-name">{{ appName }}</span>
     <span class="brand-by">{{ 'app.by' | t }}</span>
   </a>
 
@@ -33,7 +33,7 @@
       <span class="truncate">{{ settingsNav.label | t }}</span>
     </a>
     <div class="sb-version">
-      {{ 'app.version' | t }} <span data-testid="app-version">{{ appInfo()?.version ?? '—' }}</span>
+      {{ 'app.version' | t }} <span data-testid="app-version">{{ appVersion }}</span>
     </div>
   </div>
 </div>

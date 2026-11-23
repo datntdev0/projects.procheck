@@ -86,6 +86,15 @@ export const en = {
   'set.general.d': 'App behavior, theme and language.',
   'set.diag.d': 'What Procheck records and how to collect it for support.',
   'set.storage.d': 'Procheck keeps two kinds of data in two separate places. Application data belongs to this PC and is shared by every project; project data lives inside the project directory and travels with it.',
+  'set.about.tag': 'AI-assisted delivery, from discovery to pull request.',
+  'set.about.check': 'Check for updates',
+  'set.about.checking': 'Checking…',
+  'set.about.upto': 'You are up to date',
+  'set.about.available': 'Version {version} is available',
+  'set.about.checked': 'checked at {time}',
+  'set.about.ver': 'Version',
+  'set.about.runtime': 'Runtime',
+  'set.about.foot': 'Procheck is a KMS Technology product.',
 };
 
 export type TranslationKey = keyof typeof en;
