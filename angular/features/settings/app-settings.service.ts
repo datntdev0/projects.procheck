@@ -34,6 +34,7 @@ export class AppSettingsService {
   readonly persistent = signal(false);
 
   private queue: Promise<unknown> = Promise.resolve();
+  private loading: Promise<void> | null = null;
 
   constructor() {
     effect(() => {
@@ -50,8 +51,13 @@ export class AppSettingsService {
     });
   }
 
-  /** Reads settings.json and applies theme and language. Outside the desktop app the defaults stay. */
-  async load(): Promise<void> {
+  /** Reads settings.json once and applies theme and language. Outside the desktop app the defaults stay. */
+  load(): Promise<void> {
+    this.loading ??= this.read();
+    return this.loading;
+  }
+
+  private async read(): Promise<void> {
     try {
       const snapshot = await this.ipc.invoke<SettingsSnapshot>('settings_get');
       this.state.set(snapshot.settings);

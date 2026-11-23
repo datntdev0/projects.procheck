@@ -48,6 +48,14 @@ export interface AgentTestResult {
 /** Error codes of the agent commands (`DesktopIpcError.code`). */
 export type AgentErrorCode = 'notInstalled' | 'signedOut' | 'timeout' | 'failed';
 
+export type ConnectionState = 'checking' | 'missing' | 'signedOut' | 'connected';
+
+export function connectionState(status: AgentStatus | null, checking: boolean): ConnectionState {
+  if (checking || !status) return 'checking';
+  if (!status.installed) return 'missing';
+  return status.auth.signedIn ? 'connected' : 'signedOut';
+}
+
 /** Display names, also used before the first status arrives. */
 export const AGENT_NAMES: Record<AgentId, string> = { claude: 'Claude Code', codex: 'Codex CLI' };
 

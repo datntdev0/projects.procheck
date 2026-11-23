@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
 
+import { provideAgentConnections } from '@features/agents/agent-connections.service';
 import { provideDiagnostics } from '@features/diagnostics/diagnostics.service';
 import { provideAppSettings } from '@features/settings/app-settings.service';
 import { provideAppIcons } from '@shared/icons/app-icons';
@@ -17,5 +18,6 @@ export const rootConfig: ApplicationConfig = {
     provideAppIcons(),
     provideTheme(),
     provideAppSettings(),
+    provideAgentConnections(),
   ],
 };

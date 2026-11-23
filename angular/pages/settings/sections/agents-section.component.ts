@@ -8,7 +8,8 @@ import { InputDirective } from '@components/form/input.directive';
 import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
-import { AGENT_INSTALL, AGENT_NAMES, AgentModel, AgentStatus, AgentsService } from '@features/agents/agents.service';
+import { AgentConnectionsService } from '@features/agents/agent-connections.service';
+import { AGENT_INSTALL, AGENT_NAMES, AgentModel, AgentStatus, AgentsService, ConnectionState, connectionState } from '@features/agents/agents.service';
 import { AGENT_IDS, AgentId } from '@features/settings/app-settings.model';
 import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
 import { I18nService } from '@shared/i18n/i18n.service';
@@ -22,8 +23,6 @@ import { SETTINGS_SECTION } from '../settings-section.component';
 const RECHECK_DELAY_MS = 500;
 
 const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', codex: 'square-terminal' };
-
-type CardState = 'checking' | 'missing' | 'signedOut' | 'connected';
 
 /** One CLI: status, default flag, sign-in, connection test, executable and default model. */
 @Component({
@@ -217,6 +216,7 @@ export class AgentCardComponent {
 
   protected readonly form = inject(SettingsFormService);
   private readonly agents = inject(AgentsService);
+  private readonly connections = inject(AgentConnectionsService);
   private readonly toast = inject(ToastService);
   private readonly i18n = inject(I18nService);
 
@@ -236,12 +236,7 @@ export class AgentCardComponent {
   protected readonly isDefault = computed(() => this.form.value().agents.defaultAgent === this.agent());
   protected readonly invalid = computed(() => this.form.invalidField() === `${this.agent()}BinPath`);
 
-  protected readonly state = computed<CardState>(() => {
-    const status = this.status();
-    if (this.checking() || !status) return 'checking';
-    if (!status.installed) return 'missing';
-    return status.auth.signedIn ? 'connected' : 'signedOut';
-  });
+  protected readonly state = computed<ConnectionState>(() => connectionState(this.status(), this.checking()));
 
   /** CLI models plus the stored value when the list does not offer it. */
   protected readonly models = computed<AgentModel[]>(() => {
@@ -345,6 +340,7 @@ export class AgentCardComponent {
     try {
       const status = await this.agents.status(this.agent(), binPath);
       if (id === this.requestId) this.status.set(status);
+      this.connections.publish(this.agent(), binPath, status);
     } catch (error) {
       if (id !== this.requestId) return;
       // Outside the desktop app (Storybook, browser): show the CLI as not found.
@@ -367,6 +363,7 @@ export class AgentCardComponent {
 
   /** Status returned by sign-in / sign-out, unless the path changed meanwhile. */
   private accept(status: AgentStatus): void {
+    this.connections.publish(this.agent(), this.draft().binPath, status);
     this.requestId++;
     this.status.set(status);
     this.checking.set(false);
