@@ -10,7 +10,7 @@ import { I18nService } from '@shared/i18n/i18n.service';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 import { THEME_PREFERENCES, ThemeService, themeIcon } from '@shared/theme/theme.service';
 
-import { injectCurrentCrumb } from '../breadcrumbs';
+import { injectAssistantHidden, injectCurrentCrumb } from '../breadcrumbs';
 import { LayoutService } from '../layout.service';
 
 @Component({
@@ -26,6 +26,7 @@ export class TopbarComponent {
   protected readonly theme = inject(ThemeService);
   protected readonly themeIcon = themeIcon;
   protected readonly crumb = injectCurrentCrumb();
+  protected readonly assistantHidden = injectAssistantHidden();
 
   protected readonly themes = THEME_PREFERENCES;
 }

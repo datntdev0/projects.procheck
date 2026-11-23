@@ -105,12 +105,16 @@
       'as.close': 'Close', 'as.mode.ask': 'Ask', 'as.mode.edit': 'Edit artifact', 'as.mode.agent': 'Agent',
       'as.attach': 'Attach', 'as.mention': 'Mention artifact', 'as.footnote': 'Runs through your signed-in CLI with this project’s context only. Chat history is saved per project.',
       'as.thinking': 'Thinking…', 'as.you': 'You',
+      'as.newchat': 'New chat', 'as.switch': 'Switch chat', 'as.expand': 'Open in Assistant page', 'as.back': 'Back to chat', 'as.search': 'Search chats…',
+      'as.scope': 'Context scope', 'as.scope.general': 'No project', 'as.g.pinned': 'Pinned', 'as.g.today': 'Today', 'as.g.yesterday': 'Yesterday', 'as.g.earlier': 'Earlier',
+      'as.hist.none': 'No chats match.', 'as.hist.empty': 'No chats in this scope yet.', 'as.hist.all': 'Manage all chats', 'as.resume': 'Continuing <b>{t}</b>. Earlier messages are in the full transcript.',
+      'as.fulltx': 'Full transcript', 'as.fulltx.sub': 'Open in the Assistant page',
       'as.reply.default': 'Got it. I\'ll work on that using the project context. Here is a first pass — review it and tell me what to adjust.',
-      'as.footnote.gen': 'General chat — no project files or artifacts are loaded. History is saved in application data.',
-      'as.reply.gen': 'Sure. This is a general chat, so I am answering without any project files. Here is a first pass — tell me what to adjust.',
-      'as.gen.greet': 'Hi 👋 This is a <b>general chat</b>: no project is loaded. Ask anything — or open a project to chat with its artifacts.',
-      'nav.chats': 'Chats', 'nav.chats.project': 'Project chats', 'nav.chats.general': 'General chats', 'nav.chats.all': 'All chats', 'nav.chats.allproject': 'All project chats', 'nav.chats.new': 'New chat', 'nav.chats.empty': 'No chats yet',
-      'chat.general': 'General', 'chat.general.sub': 'No project context', 'time.yesterday': 'Yesterday',
+      'as.footnote.gen': 'No project — no project files or artifacts are loaded. History is saved in application data.',
+      'as.reply.gen': 'Sure. This chat has no project, so I am answering without any project files. Here is a first pass — tell me what to adjust.',
+      'as.gen.greet': 'Hi 👋 This chat has <b>no project</b>, so nothing is loaded. Ask anything — or switch to a project to chat with its artifacts.',
+      'nav.chats': 'Chats', 'nav.chats.project': 'Project chats', 'nav.chats.general': 'Chats without a project', 'nav.chats.all': 'All chats', 'nav.chats.allproject': 'All project chats', 'nav.chats.new': 'New chat', 'nav.chats.empty': 'No chats yet',
+      'chat.general': 'No project', 'chat.general.sub': 'No project context', 'time.yesterday': 'Yesterday',
       'use.context': 'Context window', 'use.context.tip': '{u} of {w} tokens in the context window (last reply)', 'use.limits': 'Usage limits', 'use.plan': 'Plan',
       'use.w.5h': '5-hour session', 'use.w.7d': 'Weekly · all models', 'use.w.5h.short': '5h', 'use.w.7d.short': 'Week',
       'use.resets': 'Resets {t} · in {d}', 'use.updated': 'Updated {t} · after the last reply', 'use.account': 'Account-wide: shared by every project and chat that uses this CLI sign-in.',
@@ -139,12 +143,16 @@
       'as.close': 'Đóng', 'as.mode.ask': 'Hỏi', 'as.mode.edit': 'Sửa tài liệu', 'as.mode.agent': 'Agent',
       'as.attach': 'Đính kèm', 'as.mention': 'Nhắc tới tài liệu', 'as.footnote': 'Chạy qua CLI đã đăng nhập, chỉ với ngữ cảnh của dự án này. Lịch sử chat được lưu theo dự án.',
       'as.thinking': 'Đang suy nghĩ…', 'as.you': 'Bạn',
+      'as.newchat': 'Chat mới', 'as.switch': 'Đổi chat', 'as.expand': 'Mở trong trang Trợ lý', 'as.back': 'Quay lại chat', 'as.search': 'Tìm chat…',
+      'as.scope': 'Phạm vi ngữ cảnh', 'as.scope.general': 'Không dự án', 'as.g.pinned': 'Đã ghim', 'as.g.today': 'Hôm nay', 'as.g.yesterday': 'Hôm qua', 'as.g.earlier': 'Trước đó',
+      'as.hist.none': 'Không có chat phù hợp.', 'as.hist.empty': 'Chưa có chat nào trong phạm vi này.', 'as.hist.all': 'Quản lý tất cả chat', 'as.resume': 'Đang tiếp tục <b>{t}</b>. Các tin nhắn trước nằm trong bản ghi đầy đủ.',
+      'as.fulltx': 'Bản ghi đầy đủ', 'as.fulltx.sub': 'Mở trong trang Trợ lý',
       'as.reply.default': 'Đã rõ. Tôi sẽ xử lý dựa trên ngữ cảnh dự án. Đây là bản nháp đầu tiên — bạn xem và cho tôi biết cần chỉnh gì.',
-      'as.footnote.gen': 'Chat chung — không nạp file hay tài liệu của dự án nào. Lịch sử lưu trong dữ liệu ứng dụng.',
-      'as.reply.gen': 'Được. Đây là chat chung nên mình trả lời không dựa trên file dự án nào. Đây là bản nháp đầu — bạn cho biết cần chỉnh gì nhé.',
-      'as.gen.greet': 'Chào bạn 👋 Đây là <b>chat chung</b>: không nạp dự án nào. Hỏi gì cũng được — hoặc mở một dự án để chat với tài liệu của nó.',
-      'nav.chats': 'Trò chuyện', 'nav.chats.project': 'Chat của dự án', 'nav.chats.general': 'Chat chung', 'nav.chats.all': 'Tất cả chat', 'nav.chats.allproject': 'Tất cả chat của dự án', 'nav.chats.new': 'Chat mới', 'nav.chats.empty': 'Chưa có chat nào',
-      'chat.general': 'Chung', 'chat.general.sub': 'Không có ngữ cảnh dự án', 'time.yesterday': 'Hôm qua',
+      'as.footnote.gen': 'Không thuộc dự án — không nạp file hay tài liệu của dự án nào. Lịch sử lưu trong dữ liệu ứng dụng.',
+      'as.reply.gen': 'Được. Chat này không thuộc dự án nên mình trả lời không dựa trên file dự án nào. Đây là bản nháp đầu — bạn cho biết cần chỉnh gì nhé.',
+      'as.gen.greet': 'Chào bạn 👋 Chat này <b>không thuộc dự án</b> nên không nạp gì cả. Hỏi gì cũng được — hoặc chuyển sang một dự án để chat với tài liệu của nó.',
+      'nav.chats': 'Trò chuyện', 'nav.chats.project': 'Chat của dự án', 'nav.chats.general': 'Chat không thuộc dự án', 'nav.chats.all': 'Tất cả chat', 'nav.chats.allproject': 'Tất cả chat của dự án', 'nav.chats.new': 'Chat mới', 'nav.chats.empty': 'Chưa có chat nào',
+      'chat.general': 'Không thuộc dự án', 'chat.general.sub': 'Không có ngữ cảnh dự án', 'time.yesterday': 'Hôm qua',
       'use.context': 'Cửa sổ ngữ cảnh', 'use.context.tip': '{u} / {w} token trong cửa sổ ngữ cảnh (lần trả lời gần nhất)', 'use.limits': 'Hạn mức sử dụng', 'use.plan': 'Gói',
       'use.w.5h': 'Phiên 5 giờ', 'use.w.7d': 'Hằng tuần · mọi model', 'use.w.5h.short': '5h', 'use.w.7d.short': 'Tuần',
       'use.resets': 'Đặt lại {t} · còn {d}', 'use.updated': 'Cập nhật {t} · sau lần trả lời gần nhất', 'use.account': 'Theo tài khoản: dùng chung cho mọi dự án và chat dùng phiên đăng nhập CLI này.',
@@ -437,12 +445,33 @@
     key: scope => 'pc.assistant.sessions.v4.' + scope,
     list(scope) {
       let saved = null; try { saved = JSON.parse(localStorage.getItem(PC.chats.key(scope)) || 'null'); } catch (e) { /* ignore */ }
-      const rows = Array.isArray(saved) && saved.length
+      const rows = Array.isArray(saved)
         ? saved.filter(s => s.messages && s.messages.length).map(s => ({ id: s.id, title: s.title, cli: s.cli, at: s.at, pinned: !!s.pinned }))
         : (PC.data.chats[scope] || []).map(r => ({ id: r[0], title: r[1], cli: r[2], at: r[3], pinned: !!r[4] }));
+      PC.chats.inbox(scope).forEach(e => mergeInboxRow(rows, e));
       return rows.sort((a, b) => new Date(b.at) - new Date(a.at));
     },
-    href(scope, id) { return 'assistant.html' + (scope === '__general' ? '?scope=general' : '') + (id ? '#' + id : ''); },
+    stored(scope) { try { const v = JSON.parse(localStorage.getItem(PC.chats.key(scope)) || 'null'); return Array.isArray(v) ? v : null; } catch (e) { return null; } },
+    inboxKey: scope => 'pc.assistant.inbox.v1.' + scope,
+    inbox(scope) { try { const v = JSON.parse(localStorage.getItem(PC.chats.inboxKey(scope)) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } },
+    setInbox(scope, list) { try { if (list.length) localStorage.setItem(PC.chats.inboxKey(scope), JSON.stringify(list)); else localStorage.removeItem(PC.chats.inboxKey(scope)); } catch (e) { /* ignore */ } },
+    messages(scope, id) {
+      const st = PC.chats.stored(scope), s = st && st.find(x => x.id === id);
+      if (s) return { msgs: s.messages || [], full: true };
+      const e = PC.chats.inbox(scope).find(x => x.id === id);
+      return { msgs: e ? e.messages : [], full: !!e && !e.seeded };
+    },
+    append(scope, chat, msgs) {
+      const st = PC.chats.stored(scope);
+      if (st) return appendStored(scope, st, chat, msgs);
+      const inbox = PC.chats.inbox(scope);
+      let e = inbox.find(x => x.id === chat.id);
+      if (!e) { e = Object.assign({}, chat, { seeded: (PC.data.chats[scope] || []).some(r => r[0] === chat.id), messages: [] }); inbox.unshift(e); }
+      e.messages.push(...msgs); e.at = chat.at;
+      PC.chats.setInbox(scope, inbox);
+    },
+    blank: chat => ({ id: chat.id, title: chat.title, phase: chat.phase || null, cli: chat.cli, at: chat.at, pinned: false, attached: [], sid: 'ses_' + Math.random().toString(16).slice(2, 14).toUpperCase(), tok: { i: 0, o: 0, c: 0 }, messages: [] }),
+    href(scope, id) { return 'assistant.html' + (id === 'new' && scope ? '?scope=' + scope : '') + (id ? '#' + id : ''); },
     when(iso) {
       const d = new Date(iso), a = new Date(d), b = new Date(PC.now); a.setHours(0, 0, 0, 0); b.setHours(0, 0, 0, 0);
       const diff = Math.round((b - a) / 864e5);
@@ -451,6 +480,17 @@
       return new Intl.DateTimeFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-GB', { day: '2-digit', month: 'short' }).format(d);
     },
   };
+
+  function mergeInboxRow(rows, e) {
+    const r = rows.find(x => x.id === e.id);
+    if (r) r.at = e.at; else rows.push({ id: e.id, title: e.title, cli: e.cli, at: e.at, pinned: false });
+  }
+  function appendStored(scope, st, chat, msgs) {
+    let s = st.find(x => x.id === chat.id);
+    if (!s) { s = PC.chats.blank(chat); st.unshift(s); }
+    s.messages.push(...msgs); s.at = chat.at;
+    try { localStorage.setItem(PC.chats.key(scope), JSON.stringify(st)); } catch (e) { /* ignore */ }
+  }
 
   /* ----------------------------------------------------------------- USAGE
      Context window = the LAST reply's prompt size, not the chat total:
@@ -484,7 +524,6 @@
     { group: 'nav.project', items: [
       { id: 'overview', icon: 'layout-dashboard', label: 'nav.overview', href: 'overview.html' },
       { id: 'artifacts', icon: 'files', label: 'nav.artifacts', href: 'artifacts.html', count: () => PC.project().state.counts.artifacts },
-      { id: 'assistant', icon: 'sparkles', label: 'nav.assistant', href: 'assistant.html' },
     ] },
     { group: 'nav.workflow', items: [
       { id: 'initial', icon: 'compass', label: 'nav.initial', href: 'initial.html', phase: 'initial' },
@@ -526,34 +565,21 @@
   /* Chats group: recent chats of the current scope + entry points to both scopes.
      project shell → this project's chats + "General chats"; home shell → general chats.
      On the Assistant page the page already lists the chats, so the group only switches scope. */
-  function chatsGroup(shell, page) {
-    const gen = document.body.dataset.scope === 'general';
-    const pid = PC.data.currentProjectId;
-    const genList = PC.chats.list('__general');
-    const projList = shell === 'project' ? PC.chats.list(pid) : [];
-    const scope = shell === 'project' && !gen ? pid : '__general';
-    const scopeLink = (id, icon, label, sc, n, active) => `<a class="nav-item ${active ? 'is-active' : ''}" href="${href(PC.chats.href(sc))}"><i data-lucide="${icon}"></i><span class="truncate" data-i18n="${label}"></span>${n ? `<span class="count">${n}</span>` : ''}</a>`;
-    const item = (sc, c) => `<a class="nav-item chat-item" href="${href(PC.chats.href(sc, c.id))}" title="${PC.esc(c.title)}"><i data-lucide="${c.pinned ? 'pin' : 'message-square'}"></i><span class="truncate">${PC.esc(c.title)}</span><span class="when">${PC.chats.when(c.at)}</span></a>`;
-    let body;
-    if (page === 'assistant') {
-      body = (shell === 'project' ? scopeLink('pc', 'messages-square', 'nav.chats.project', pid, projList.length, !gen) : '')
-        + scopeLink('gc', 'globe', 'nav.chats.general', '__general', genList.length, gen);
-    } else if (shell === 'project') {
-      body = (projList.length ? projList.slice(0, 4).map(c => item(pid, c)).join('') : `<div class="nav-empty" data-i18n="nav.chats.empty"></div>`)
-        + (projList.length > 4 ? scopeLink('pc', 'messages-square', 'nav.chats.allproject', pid, projList.length) : '')
-        + scopeLink('gc', 'globe', 'nav.chats.general', '__general', genList.length);
-    } else {
-      body = (genList.length ? genList.slice(0, 5).map(c => item('__general', c)).join('') : `<div class="nav-empty" data-i18n="nav.chats.empty"></div>`)
-        + scopeLink('gc', 'messages-square', 'nav.chats.all', '__general', genList.length, false);
-    }
-    return `<div class="nav-group nav-chats"><div class="nav-group-title"><span data-i18n="${shell === 'project' || page === 'assistant' ? 'nav.chats' : 'nav.chats.general'}"></span>
-      <a class="btn btn-ghost btn-icon btn-sm" href="${href(PC.chats.href(scope, 'new'))}" data-i18n-tip="nav.chats.new"><i data-lucide="plus"></i></a></div>${body}</div>`;
+  function chatItem(pid, c) {
+    return `<a class="nav-item chat-item" href="${href(PC.chats.href(pid, c.id))}" data-action="as-open" data-scope="${pid}" data-chat="${c.id}" title="${PC.esc(c.title)}"><i data-lucide="${c.pinned ? 'pin' : 'message-square'}"></i><span class="truncate">${PC.esc(c.title)}</span><span class="when">${PC.chats.when(c.at)}</span></a>`;
+  }
+  function chatsGroup() {
+    const pid = PC.data.currentProjectId, list = PC.chats.list(pid);
+    const body = list.length ? list.slice(0, 4).map(c => chatItem(pid, c)).join('') : `<div class="nav-empty" data-i18n="nav.chats.empty"></div>`;
+    return `<div class="nav-group nav-chats"><div class="nav-group-title"><span data-i18n="nav.chats"></span>
+      <button type="button" class="btn btn-ghost btn-icon btn-sm" data-action="as-new-open" data-i18n-tip="nav.chats.new"><i data-lucide="plus"></i></button></div>${body}
+      <a class="nav-item" href="${href('assistant.html')}"><i data-lucide="messages-square"></i><span class="truncate" data-i18n="nav.chats.all"></span><span class="count">${list.length}</span></a></div>`;
   }
 
   function buildProjectSidebar(page) {
     const p = PC.project();
     const nav = NAV.map(g => `<div class="nav-group"><div class="nav-group-title"><span data-i18n="${g.group}"></span></div>
-      ${g.items.map(it => navLink(it, page)).join('')}</div>`).join('') + chatsGroup('project', page);
+      ${g.items.map(it => navLink(it, page)).join('')}</div>`).join('') + chatsGroup();
     return `<aside class="sidebar"><div class="sidebar-inner">
       ${brandHTML()}
       <div class="sb-project">
@@ -579,9 +605,9 @@
           ${navLink({ id: 'home', icon: 'layout-grid', label: 'nav.all_projects', href: 'index.html' }, page)}
           ${navLink({ id: 'new-project', icon: 'folder-plus', label: 'nav.new_project', href: 'new-project.html' }, page)}
           ${navLink({ id: 'open-project', icon: 'folder-open', label: 'nav.open_project', href: 'new-project.html?mode=open' }, page)}
+          ${navLink({ id: 'chats', icon: 'messages-square', label: 'nav.chats.all', href: 'assistant.html' }, page)}
         </div>
         <div class="nav-group"><div class="nav-group-title"><span data-i18n="nav.recent_projects"></span></div>${projects}</div>
-        ${chatsGroup('home', page)}
       </nav>
       ${footerHTML(page)}
     </div></aside>`;
@@ -603,7 +629,7 @@
         <button class="tb-btn" data-action="lang" data-i18n-tip="shell.lang"><i data-lucide="languages" class="icon-sm"></i><span id="pc-lang-label">EN</span></button>
         <button class="tb-btn" data-action="theme" data-i18n-tip="shell.theme"><i data-lucide="sun-moon" class="icon-sm"></i></button>
         <div class="tb-sep"></div>
-        <button class="tb-btn" data-action="assistant" id="pc-as-toggle"><i data-lucide="sparkles" class="icon-sm"></i><span data-i18n="shell.assistant"></span></button>
+        <button class="tb-btn" data-action="assistant" id="pc-as-toggle" ${document.body.dataset.assistant === 'none' ? 'hidden' : ''}><i data-lucide="sparkles" class="icon-sm"></i><span data-i18n="shell.assistant"></span></button>
       </div>
     </header>`;
   }
@@ -624,19 +650,22 @@
 
   /* -------------------------------------------------------------- ASSISTANT */
   const AS = PC.assistant = {
-    context: null, msgs: null, mode: 'ask',
+    context: null, msgs: null, mode: 'ask', scope: null, chat: null, title: null, view: 'chat', q: '',
     open() { app && app.classList.remove('assistant-closed'); LS.set('assistant', 'open'); updateToggles(); },
     close() { app && app.classList.add('assistant-closed'); LS.set('assistant', 'closed'); updateToggles(); },
     toggle() { app && (app.classList.contains('assistant-closed') ? AS.open() : AS.close()); },
     setContext(chips) { AS.context = chips; renderCtx(); },
-    seed(msgs) { AS.msgs = msgs; AS.msgsLocked = true; renderMsgs(); },
+    seed(msgs) { AS.chat = null; AS.title = null; AS.msgs = msgs; AS.msgsLocked = true; renderPanel(); },
     push(m) { (AS.msgs = AS.msgs || defaultMsgs()).push(m); renderMsgs(); },
     reply(text, extra) {
       const list = document.getElementById('pc-as-msgs'); if (!list) return;
       const t = h(`<div class="msg"><div class="avatar avatar-ai"><i data-lucide="sparkles" style="width:13px;height:13px"></i></div><div class="msg-body"><div class="typing"><i></i><i></i><i></i></div></div></div>`);
       list.appendChild(t); icons(); list.scrollTop = list.scrollHeight;
+      const persist = extra && extra.persist; if (extra) delete extra.persist;
       setTimeout(() => {
-        t.remove(); AS.push(Object.assign({ role: 'ai', text: text || PC.t(isGeneral() ? 'as.reply.gen' : 'as.reply.default') }, extra || {}));
+        const answer = text || PC.t(scopeIsGeneral() ? 'as.reply.gen' : 'as.reply.default');
+        t.remove(); AS.push(Object.assign({ role: 'ai', text: answer }, extra || {}));
+        if (persist) persistTurn(persist, answer, extra.time);
         // end of turn → refresh context + usage limits (what the Stop hook / result parser records)
         AS.ctxUsed += 1400 + Math.round(Math.random() * 900); PC.usage.record('claude', '2026-11-23T' + String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0'));
       }, 1100);
@@ -644,8 +673,9 @@
     ctxUsed: 23400,
   };
   const isGeneral = () => document.body && document.body.dataset.shell === 'home';
-  const defaultCtx = () => isGeneral()
-    ? [{ icon: 'globe', label: PC.t('chat.general') + ' · ' + PC.t('chat.general.sub') }, { icon: 'cpu', label: 'claude-opus-5-5' }]
+  const scopeIsGeneral = () => AS.scope === '__general';
+  const defaultCtx = () => scopeIsGeneral()
+    ? [{ icon: 'globe', label: PC.t('chat.general.sub') }, { icon: 'cpu', label: 'claude-opus-5-5' }]
     : [{ icon: 'folder', label: PC.project().name.split(' — ')[0] }, { icon: 'hard-drive', label: PC.project().dir }, { icon: 'cpu', label: 'claude-opus-5-5' }];
   function renderUsage() {
     const el = document.getElementById('pc-as-usage'); if (!el) return;
@@ -668,7 +698,7 @@
     const r = anchor.getBoundingClientRect(); pop.style.left = r.left + 'px'; pop.style.top = Math.max(8, r.top - pop.offsetHeight - 6) + 'px';
   }
   document.addEventListener('pc:usage', renderUsage);
-  const defaultMsgs = () => { if (isGeneral()) return [{ role: 'ai', time: '10:02', text: '<p>' + PC.t('as.gen.greet') + '</p>' }]; const p = PC.project(); if (p.id !== 'lotus-pay' && p.state && p.state.greet) return [{ role: 'ai', time: '09:12', text: '<p>' + PC.esc(PC.L(p.state.greet)) + '</p>' }]; return PC.lang === 'vi' ? [
+  const defaultMsgs = () => { if (scopeIsGeneral()) return [{ role: 'ai', time: '10:02', text: '<p>' + PC.t('as.gen.greet') + '</p>' }]; const p = PC.project(); if (p.id !== 'lotus-pay' && p.state && p.state.greet) return [{ role: 'ai', time: '09:12', text: '<p>' + PC.esc(PC.L(p.state.greet)) + '</p>' }]; return PC.lang === 'vi' ? [
     { role: 'ai', time: '09:12', text: '<p>Chào bạn 👋 Mình đã đọc <b>18 tài liệu</b> của dự án <b>' + PC.esc(PC.project().name.split(' — ')[0]) + '</b>. Giai đoạn SDLC đang ở sprint 4.</p><p>Hôm nay bạn muốn làm gì?</p>' },
     { role: 'user', time: '09:13', text: 'Tóm tắt các task đang chờ review giúp mình.' },
     { role: 'ai', time: '09:13', text: '<p>Có <b>2 task</b> agent đã hoàn thành và chờ bạn review:</p><ul><li><b>LP-142</b> Merchant KYC upload — 14 files, e2e pass 12/12</li><li><b>LP-151</b> Settlement report export — 6 files, e2e pass 5/5</li></ul>', tool: 'board.list --status=review', card: { icon: 'git-pull-request', title: 'LP-142 · Merchant KYC upload', sub: 'Ready for human review', href: 'task.html' } },
@@ -696,19 +726,22 @@
   }
   function renderCtx() {
     const el = document.getElementById('pc-as-ctx'); if (!el) return;
-    el.innerHTML = (AS.context || defaultCtx()).map(c => `<span class="ctx-chip"><i data-lucide="${c.icon}"></i>${PC.esc(c.label)}</span>`).join('');
+    el.innerHTML = ((!scopeIsGeneral() && AS.context) || defaultCtx()).map(c => `<span class="ctx-chip"><i data-lucide="${c.icon}"></i>${PC.esc(c.label)}</span>`).join('');
     icons();
   }
   function buildAssistant() {
     return `<aside class="assistant" aria-label="Assistant"><div class="assistant-inner">
       <div class="as-header">
         <div class="avatar avatar-ai" style="width:30px;height:30px"><i data-lucide="sparkles" style="width:15px;height:15px"></i></div>
-        <div class="grow"><div class="as-title" data-i18n="as.title"></div><div class="as-sub"><span class="dot dot-success" style="width:6px;height:6px"></span>Claude Code · claude-opus-5-5</div></div>
-        <button class="btn btn-ghost btn-icon btn-sm" data-i18n-tip="as.history" data-action="as-history"><i data-lucide="history"></i></button>
+        <button type="button" class="as-switch" data-action="as-history" data-i18n-tip="as.switch"><span class="as-switch-t"><span class="as-title truncate" id="pc-as-title"></span><i data-lucide="chevron-down" class="icon-sm"></i></span><span class="as-sub"><span class="dot dot-success" style="width:6px;height:6px"></span>Claude Code · claude-opus-5-5</span></button>
+        <button class="btn btn-ghost btn-icon btn-sm" data-i18n-tip="as.history" data-action="as-history" id="pc-as-hist-btn"><i data-lucide="history"></i></button>
         <button class="btn btn-ghost btn-icon btn-sm" data-i18n-tip="as.new" data-action="as-new"><i data-lucide="square-pen"></i></button>
+        <button class="btn btn-ghost btn-icon btn-sm" data-i18n-tip="as.expand" data-action="as-expand"><i data-lucide="maximize-2"></i></button>
         <button class="btn btn-ghost btn-icon btn-sm" data-i18n-tip="as.close" data-action="assistant"><i data-lucide="panel-right-close"></i></button>
       </div>
+      <div class="as-scope" id="pc-as-scope"></div>
       <div class="as-context" id="pc-as-ctx"></div>
+      <div class="as-history" id="pc-as-hist" hidden></div>
       <div class="as-messages" id="pc-as-msgs"></div>
       <div class="as-suggest" id="pc-as-suggest"></div>
       <button type="button" class="as-usage" id="pc-as-usage" data-i18n-tip="use.limits"></button>
@@ -721,7 +754,7 @@
           <button type="submit" class="send" aria-label="send"><i data-lucide="arrow-up"></i></button>
         </div>
       </form>
-      <div class="as-footnote" data-i18n="${isGeneral() ? 'as.footnote.gen' : 'as.footnote'}"></div>
+      <div class="as-footnote" id="pc-as-foot"></div>
     </div></aside>`;
   }
   AS.setSuggestions = function (list, custom) {
@@ -736,10 +769,133 @@
     customMsgs = true;
     const now = new Date(); const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
     AS.push({ role: 'user', time, text: PC.esc(text) });
-    AS.reply(null, { time });
+    AS.reply(null, { time, persist: text });
   }
   function defaultSuggest() { AS.setSuggestions(PC.lang === 'vi' ? ['Tóm tắt tài liệu mới nhất', 'Tạo user stories', 'Rủi ro dự án?'] : ['Summarize latest docs', 'Draft user stories', 'Project risks?'], false); }
   const MODES = [{ id: 'ask', icon: 'message-circle' }, { id: 'edit', icon: 'file-pen-line' }, { id: 'agent', icon: 'bot' }];
+
+  /* ------------------------------------------------- ASSISTANT NAVIGATION */
+  const chatKey = () => 'assistant.chat.' + AS.scope;
+  const nowIso = () => '2026-11-23T' + String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0');
+  const plain = html => String(html).replace(/<[^>]+>/g, '');
+  function persistTurn(userText, answer, time) {
+    if (!AS.chat) { AS.chat = 'p' + Date.now().toString(36); AS.title = userText.length > 60 ? userText.slice(0, 57) + '…' : userText; LS.set(chatKey(), AS.chat); }
+    const chat = { id: AS.chat, title: AS.title, cli: 'claude', at: nowIso(), phase: scopeIsGeneral() ? null : PC.project().phase };
+    PC.chats.append(AS.scope, chat, [{ role: 'user', time, text: userText, chips: [] }, { role: 'ai', time, blocks: [{ t: 'tx', md: plain(answer) }] }]);
+    renderHead();
+  }
+  const mdInline = t => PC.esc(t).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  const mdCells = r => r.replace(/^\||\|$/g, '').split('|').map(c => mdInline(c.trim()));
+  function mdTable(lines) {
+    const head = mdCells(lines[0]).map(c => `<th>${c}</th>`).join('');
+    const body = lines.slice(2).map(r => '<tr>' + mdCells(r).map(c => `<td>${c}</td>`).join('') + '</tr>').join('');
+    return `<div class="md-tbl"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  function mdBlock(p) {
+    const lines = p.split('\n');
+    if (lines[0].startsWith('|') && lines[1] && /^\|[\s:|-]+\|?$/.test(lines[1])) return mdTable(lines);
+    if (/^[-*] /.test(p)) return '<ul>' + lines.map(l => '<li>' + mdInline(l.replace(/^[-*] /, '')) + '</li>').join('') + '</ul>';
+    if (/^\d+\. /.test(p)) return '<ol>' + lines.map(l => '<li>' + mdInline(l.replace(/^\d+\. /, '')) + '</li>').join('') + '</ol>';
+    return '<p>' + mdInline(p).replace(/\n/g, '<br>') + '</p>';
+  }
+  function mdLite(src) { return String(src).split(/\n{2,}/).map(mdBlock).join(''); }
+  function blockCard(b) {
+    if (b.t === 'art') return { icon: b.icon || 'file-text', title: b.title, sub: b.sum || '', href: b.id ? 'artifacts.html#' + b.id : '' };
+    if (b.t === 'diff') return { icon: 'file-diff', title: b.file, sub: '' };
+    if (b.t === 'plan') return { icon: 'list-checks', title: b.title, sub: b.items.length + ' steps' };
+    return null;
+  }
+  function panelMsg(m) {
+    if (m.role === 'user') return { role: 'user', time: m.time, text: PC.esc(m.text) };
+    const blocks = m.blocks || [], tool = blocks.find(b => b.t === 'tool'), card = blocks.map(blockCard).find(Boolean);
+    return { role: 'ai', time: m.time, text: blocks.filter(b => b.t === 'tx').map(b => mdLite(b.md)).join(''), tool: tool ? tool.label : '', card };
+  }
+  function resumeMsg(row) {
+    return { role: 'ai', text: '<p>' + PC.t('as.resume', { t: PC.esc(row.title) }) + '</p>', card: { icon: 'maximize-2', title: PC.t('as.fulltx'), sub: PC.t('as.fulltx.sub'), href: PC.chats.href(AS.scope, row.id) } };
+  }
+  function openChat(id) {
+    const row = PC.chats.list(AS.scope).find(r => r.id === id); if (!row) return newPanelChat();
+    const r = PC.chats.messages(AS.scope, id);
+    AS.chat = id; AS.title = row.title; LS.set(chatKey(), id);
+    AS.msgs = (r.full ? [] : [resumeMsg(row)]).concat(r.msgs.map(panelMsg)); AS.msgsLocked = true; customMsgs = true;
+    AS.view = 'chat'; renderPanel();
+  }
+  function newPanelChat() {
+    AS.chat = null; AS.title = null; LS.set(chatKey(), '');
+    AS.msgs = defaultMsgs().slice(0, 1); AS.msgsLocked = true;
+    AS.view = 'chat'; renderPanel();
+    const ta = document.querySelector('#pc-composer textarea'); if (ta) ta.focus();
+  }
+  function setScope(scope) {
+    if (scope === AS.scope) return;
+    AS.scope = scope; AS.q = '';
+    const last = LS.get(chatKey(), '');
+    if (last && PC.chats.list(scope).some(r => r.id === last)) openChat(last); else newPanelChat();
+  }
+  function restorePanelChat() {
+    const last = LS.get(chatKey(), '');
+    if (last && PC.chats.list(AS.scope).some(r => r.id === last)) openChat(last); else renderPanel();
+  }
+  function showHistory(on) {
+    AS.view = on ? 'history' : 'chat'; renderPanel();
+    if (on) { const q = document.getElementById('pc-as-q'); if (q) q.focus(); }
+  }
+  function renderHead() {
+    const t = document.getElementById('pc-as-title'); if (!t) return;
+    t.textContent = AS.title || PC.t('as.newchat'); t.title = AS.title || '';
+  }
+  function renderScope() {
+    const el = document.getElementById('pc-as-scope'); if (!el) return;
+    const p = PC.project(), gen = scopeIsGeneral();
+    el.innerHTML = `<div class="segmented" role="tablist" aria-label="${PC.t('as.scope')}">
+      <button type="button" class="${gen ? '' : 'is-active'}" data-scope="${p.id}" title="${PC.esc(p.dir)}"><span class="project-avatar" style="background:${p.color}">${p.short}</span><span class="truncate">${PC.esc(p.name.split(' — ')[0])}</span><span class="count">${PC.chats.list(p.id).length}</span></button>
+      <button type="button" class="${gen ? 'is-active' : ''}" data-scope="__general"><i data-lucide="globe" class="icon-sm"></i><span>${PC.t('as.scope.general')}</span><span class="count">${PC.chats.list('__general').length}</span></button></div>`;
+    el.querySelectorAll('[data-scope]').forEach(b => { b.onclick = () => setScope(b.dataset.scope); });
+  }
+  function histGroup(r) {
+    if (r.pinned) return 'pinned';
+    const a = new Date(r.at), b = new Date(PC.now); a.setHours(0, 0, 0, 0); b.setHours(0, 0, 0, 0);
+    const d = Math.round((b - a) / 864e5);
+    return d <= 0 ? 'today' : d === 1 ? 'yesterday' : 'earlier';
+  }
+  function histRow(r) {
+    return `<button type="button" class="ah-row ${r.id === AS.chat ? 'is-active' : ''}" data-chat="${r.id}"><i data-lucide="${r.pinned ? 'pin' : 'message-square'}"></i><span class="truncate">${PC.esc(r.title)}</span><span class="when">${PC.chats.when(r.at)}</span></button>`;
+  }
+  function renderHistoryList() {
+    const el = document.getElementById('pc-as-hist-list'); if (!el) return;
+    const all = PC.chats.list(AS.scope), q = AS.q.trim().toLowerCase(), rows = all.filter(r => !q || r.title.toLowerCase().includes(q));
+    el.innerHTML = ['pinned', 'today', 'yesterday', 'earlier'].map(g => {
+      const items = rows.filter(r => histGroup(r) === g);
+      return items.length ? `<div class="ah-g">${PC.t('as.g.' + g)}</div>` + items.map(histRow).join('') : '';
+    }).join('') || `<div class="ah-empty">${PC.t(all.length ? 'as.hist.none' : 'as.hist.empty')}</div>`;
+    el.querySelectorAll('[data-chat]').forEach(b => { b.onclick = () => openChat(b.dataset.chat); });
+    icons();
+  }
+  function renderHistory() {
+    const el = document.getElementById('pc-as-hist'); if (!el) return;
+    el.innerHTML = `<div class="ah-top">
+        <button type="button" class="btn btn-ghost btn-icon btn-sm" data-action="as-back" data-i18n-tip="as.back"><i data-lucide="arrow-left"></i></button>
+        <div class="input-group grow"><i data-lucide="search"></i><input class="input" id="pc-as-q" placeholder="${PC.t('as.search')}" value="${PC.esc(AS.q)}" style="height:30px"></div>
+        <button type="button" class="btn btn-secondary btn-sm" data-action="as-new"><i data-lucide="plus" class="icon-sm"></i>${PC.t('as.newchat')}</button></div>
+      <div class="ah-list" id="pc-as-hist-list"></div>
+      <a class="ah-all" href="${href('assistant.html')}"><i data-lucide="messages-square" class="icon-sm"></i>${PC.t('as.hist.all')}<i data-lucide="arrow-up-right" class="icon-sm" style="margin-left:auto"></i></a>`;
+    document.getElementById('pc-as-q').oninput = e => { AS.q = e.target.value; renderHistoryList(); };
+    renderHistoryList(); PC.refresh(el);
+  }
+  function renderPanel() {
+    const root = document.querySelector('.assistant'); if (!root) return;
+    const hist = AS.view === 'history';
+    root.classList.toggle('is-history', hist);
+    document.getElementById('pc-as-hist').hidden = !hist;
+    document.getElementById('pc-as-hist-btn').classList.toggle('is-on', hist);
+    const foot = document.getElementById('pc-as-foot'); foot.textContent = PC.t(scopeIsGeneral() ? 'as.footnote.gen' : 'as.footnote');
+    renderHead(); renderScope(); renderCtx();
+    if (hist) renderHistory(); else renderMsgs();
+    icons();
+  }
+  function expandChat() { location.href = href(PC.chats.href(AS.scope, AS.chat || 'new')); }
+  AS.openChat = function (scope, id) { AS.open(); AS.scope = scope; AS.q = ''; openChat(id); };
+  AS.newChat = function (scope) { AS.open(); AS.scope = scope || AS.scope; newPanelChat(); };
 
   /* ---------------------------------------------------------- POPOVER MENU */
   function popover(anchor, html, onPick) {
@@ -764,7 +920,7 @@
       { g: 'pal.nav', icon: 'layout-grid', label: 'shell.home', go: 'index.html' },
       { g: 'pal.nav', icon: 'layout-dashboard', label: 'nav.overview', go: 'overview.html' },
       { g: 'pal.nav', icon: 'files', label: 'nav.artifacts', go: 'artifacts.html' },
-      { g: 'pal.nav', icon: 'sparkles', label: 'nav.assistant', go: 'assistant.html' },
+      { g: 'pal.nav', icon: 'messages-square', label: 'nav.chats.all', go: 'assistant.html' },
       { g: 'pal.nav', icon: 'compass', label: 'nav.initial', go: 'initial.html' },
       { g: 'pal.nav', icon: 'blocks', label: 'nav.scaffolding', go: 'scaffolding.html' },
       { g: 'pal.nav', icon: 'kanban', label: 'nav.board', go: 'board.html' },
@@ -817,6 +973,22 @@
   let baseTitle = '';
   function updateTitle() { const c = document.body && document.body.dataset.crumb; if (c) document.title = PC.t(c) + ' · Procheck'; }
 
+  function initPanel() {
+    AS.scope = isGeneral() ? '__general' : PC.data.currentProjectId;
+    restorePanelChat(); renderUsage(); defaultSuggest();
+    document.getElementById('pc-as-usage').addEventListener('click', e => usagePopover(e.currentTarget));
+    const form = document.getElementById('pc-composer'); const ta = form.querySelector('textarea');
+    form.addEventListener('submit', e => { e.preventDefault(); send(ta.value); ta.value = ''; ta.style.height = ''; });
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
+    ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = Math.min(160, ta.scrollHeight) + 'px'; });
+    document.getElementById('pc-as-mode').addEventListener('click', e => {
+      popover(e.currentTarget, MODES.map(m => `<button class="menu-item" data-v="${m.id}"><i data-lucide="${m.icon}"></i><span data-i18n="as.mode.${m.id}"></span>${AS.mode === m.id ? '<i data-lucide="check" style="margin-left:auto"></i>' : ''}</button>`).join(''), v => {
+        AS.mode = v; const m = MODES.find(x => x.id === v);
+        const b = document.getElementById('pc-as-mode'); b.innerHTML = `<i data-lucide="${m.icon}" class="icon-sm"></i><span data-i18n="as.mode.${v}"></span><i data-lucide="chevron-down" class="icon-sm"></i>`; PC.refresh(b);
+      });
+    });
+  }
+
   /* ------------------------------------------------------------------- BOOT */
   let app = null;
   function boot() {
@@ -832,10 +1004,10 @@
       if (asPref === 'closed') app.classList.add('assistant-closed');
       app.innerHTML = (shell === 'project' ? buildProjectSidebar(page) : buildHomeSidebar(page)) + buildTopbar(shell, crumb);
       app.appendChild(canvas);
-      app.insertAdjacentHTML('beforeend', buildAssistant());
+      const withPanel = body.dataset.assistant !== 'none';
+      if (withPanel) app.insertAdjacentHTML('beforeend', buildAssistant()); else app.classList.add('assistant-closed', 'no-assistant');
       body.insertBefore(app, body.firstChild);
-      renderCtx(); renderMsgs(); renderUsage();
-      document.getElementById('pc-as-usage').addEventListener('click', e => usagePopover(e.currentTarget));
+      if (withPanel) initPanel();
       const pcrumb = document.getElementById('pc-project-crumb');
       if (pcrumb) pcrumb.addEventListener('click', () => projectSwitcher(pcrumb));
       // hash-aware sidebar highlight (e.g. overview.html#initial)
@@ -847,20 +1019,8 @@
         else if (file === 'overview.html') { links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href').endsWith('overview.html'))); }
       };
       syncHash(); window.addEventListener('hashchange', syncHash);
-      defaultSuggest();
-
-      // composer
-      const form = document.getElementById('pc-composer'); const ta = form.querySelector('textarea');
-      form.addEventListener('submit', e => { e.preventDefault(); send(ta.value); ta.value = ''; ta.style.height = ''; });
-      ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
-      ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = Math.min(160, ta.scrollHeight) + 'px'; });
-      document.getElementById('pc-as-mode').addEventListener('click', e => {
-        popover(e.currentTarget, MODES.map(m => `<button class="menu-item" data-v="${m.id}"><i data-lucide="${m.icon}"></i><span data-i18n="as.mode.${m.id}"></span>${AS.mode === m.id ? '<i data-lucide="check" style="margin-left:auto"></i>' : ''}</button>`).join(''), v => {
-          AS.mode = v; const m = MODES.find(x => x.id === v);
-          const b = document.getElementById('pc-as-mode'); b.innerHTML = `<i data-lucide="${m.icon}" class="icon-sm"></i><span data-i18n="as.mode.${v}"></span><i data-lucide="chevron-down" class="icon-sm"></i>`; PC.refresh(b);
-        });
-      });
     }
+
 
     document.addEventListener('click', e => {
       const a = e.target.closest('[data-action]'); if (!a) return;
@@ -869,19 +1029,24 @@
       else if (act === 'assistant') { e.preventDefault(); AS.toggle(); }
       else if (act === 'lang') PC.setLang(PC.lang === 'en' ? 'vi' : 'en');
       else if (act === 'theme') popover(a, ['system', 'light', 'dark'].map(t => `<button class="menu-item" data-v="${t}"><i data-lucide="${t === 'system' ? 'monitor' : t === 'dark' ? 'moon' : 'sun'}"></i><span data-i18n="theme.${t}"></span>${PC.theme === t ? '<i data-lucide="check" style="margin-left:auto"></i>' : ''}</button>`).join(''), v => PC.setTheme(v));
-      else if (act === 'as-new') { AS.msgs = []; renderMsgs(); }
-      else if (act === 'as-history') location.href = href(isGeneral() ? 'assistant.html?scope=general' : 'assistant.html');      else if (act === 'switch-project') projectSwitcher(a);
+      else if (act === 'as-new') newPanelChat();
+      else if (act === 'as-history') showHistory(AS.view !== 'history');
+      else if (act === 'as-back') showHistory(false);
+      else if (act === 'as-expand') expandChat();
+      else if (act === 'as-open' && !app.classList.contains('no-assistant')) { e.preventDefault(); AS.openChat(a.dataset.scope, a.dataset.chat); }
+      else if (act === 'as-new-open') { e.preventDefault(); AS.newChat(PC.data.currentProjectId); }      else if (act === 'switch-project') projectSwitcher(a);
     });
     document.addEventListener('keydown', e => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette(); }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'j') { e.preventDefault(); AS.toggle(); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'j' && app && !app.classList.contains('no-assistant')) { e.preventDefault(); AS.toggle(); }
+      if (e.key === 'Escape' && AS.view === 'history' && !document.querySelector('.popover, .overlay')) showHistory(false);
     });
     // generic [data-theme-set] / [data-lang-set] controls on pages
     document.addEventListener('click', e => {
       const t = e.target.closest('[data-theme-set]'); if (t) PC.setTheme(t.dataset.themeSet);
       const l = e.target.closest('[data-lang-set]'); if (l) PC.setLang(l.dataset.langSet);
     });
-    document.addEventListener('pc:lang', () => { if (!customMsgs && !AS.msgsLocked) { AS.msgs = null; renderMsgs(); } renderCtx(); renderUsage(); if (!AS.customSuggest) defaultSuggest(); });
+    document.addEventListener('pc:lang', () => { if (!customMsgs && !AS.msgsLocked) AS.msgs = null; renderPanel(); renderUsage(); if (!AS.customSuggest) defaultSuggest(); });
 
     updateTitle(); applyI18n(); updateToggles();
     isReady = true; readyQ.splice(0).forEach(fn => { try { fn(); } catch (err) { console.error(err); } });

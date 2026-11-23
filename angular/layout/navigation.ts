@@ -6,12 +6,14 @@ export interface NavItem {
   label: TranslationKey;
   icon: string;
   route: string;
+  matchChildren?: boolean;
 }
 
 export const MAIN_NAV: NavItem[] = [
   { id: 'projects', label: 'nav.all_projects', icon: 'layout-grid', route: '/projects' },
   { id: 'new-project', label: 'nav.new_project', icon: 'folder-plus', route: '/projects/new' },
   { id: 'open-project', label: 'nav.open_project', icon: 'folder-open', route: '/projects/open' },
+  { id: 'chats', label: 'nav.chats.all', icon: 'messages-square', route: '/chats', matchChildren: true },
 ];
 
 export const SETTINGS_NAV: NavItem = { id: 'settings', label: 'nav.settings', icon: 'settings', route: '/settings' };

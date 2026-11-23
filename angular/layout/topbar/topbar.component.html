@@ -52,17 +52,19 @@
     </pc-menu>
   </pc-dropdown>
 
-  <div class="tb-sep"></div>
+  @if (!assistantHidden()) {
+    <div class="tb-sep"></div>
 
-  <button
-    type="button"
-    class="tb-btn"
-    data-testid="assistant-toggle"
-    [class.is-on]="layout.assistantOpen()"
-    [attr.aria-pressed]="layout.assistantOpen()"
-    (click)="layout.toggleAssistant()"
-  >
-    <pc-icon name="sparkles" [size]="14" />
-    <span>{{ 'shell.assistant' | t }}</span>
-  </button>
+    <button
+      type="button"
+      class="tb-btn"
+      data-testid="assistant-toggle"
+      [class.is-on]="layout.assistantOpen()"
+      [attr.aria-pressed]="layout.assistantOpen()"
+      (click)="layout.toggleAssistant()"
+    >
+      <pc-icon name="sparkles" [size]="14" />
+      <span>{{ 'shell.assistant' | t }}</span>
+    </button>
+  }
 </div>

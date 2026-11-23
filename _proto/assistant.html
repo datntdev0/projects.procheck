@@ -11,30 +11,11 @@
   <style>
     /* ===== Assistant (full page) — page-only styles, semantic tokens only ===== */
     .ac-wrap { container-type: inline-size; container-name: ac; height: 100%; }
-    .ac { height: 100%; display: grid; grid-template-columns: 268px minmax(0, 1fr); position: relative; overflow: hidden; }
-    .ac.ctx-open { grid-template-columns: 268px minmax(0, 1fr) 300px; }
+    .ac { height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    .ac > .conv { flex: 1; }
 
-    /* ---- sessions ---- */
-    .sess { display: flex; flex-direction: column; min-height: 0; min-width: 0; background: var(--bg-surface-2); border-right: 1px solid var(--border-default); }
-    .sess-top { padding: var(--space-4) var(--space-3) var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); }
-    .sess-top h4 { font-size: var(--text-md); display: flex; align-items: center; justify-content: space-between; }
-    .sess-list { flex: 1; overflow: auto; padding: 0 var(--space-2) var(--space-6); }
-    .sg-h { padding: 14px 10px 6px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-faint); display: flex; align-items: center; gap: 6px; }
-    .si { position: relative; padding: 9px 10px; border-radius: var(--radius-md); cursor: pointer; border: 1px solid transparent; }
-    .si:hover { background: var(--bg-hover); }
-    .si.is-active { background: var(--bg-surface); border-color: var(--border-default); box-shadow: var(--shadow-xs); }
-    .si-t { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); padding-right: 24px; display: flex; align-items: center; gap: 6px; }
-    .si-t svg { width: 12px; height: 12px; color: var(--accent-purple); }
-    .si.is-active .si-t { color: var(--brand-fg); }
-    .si-s { display: flex; align-items: center; gap: 6px; margin-top: 5px; font-size: var(--text-2xs); color: var(--fg-subtle); flex-wrap: nowrap; overflow: hidden; }
-    .si-s .phase-chip { height: 17px; padding: 0 6px; font-size: 8.5px; gap: 4px; } .si-s .phase-chip::before { width: 5px; height: 5px; }
-    .si-s .time { margin-left: auto; white-space: nowrap; }
-    .si-s > * { white-space: nowrap; flex-shrink: 0; } .si-s .phase-chip { flex-shrink: 1; overflow: hidden; }
-    .si-m { position: absolute; right: 6px; top: 6px; opacity: 0; width: 24px; height: 24px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--fg-subtle); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
-    .si:hover .si-m, .si.is-active .si-m { opacity: 1; } .si-m:hover { background: var(--bg-hover); color: var(--fg-default); }
     .cli-b { height: 17px; padding: 0 6px; border-radius: var(--radius-xs); font-size: 9px; font-weight: var(--weight-semibold); display: inline-flex; align-items: center; background: var(--accent-purple-soft); color: var(--accent-purple); white-space: nowrap; }
     .cli-b.codex { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
-    .sess-empty { padding: var(--space-8) var(--space-3); text-align: center; color: var(--fg-subtle); font-size: var(--text-sm); }
 
     /* ---- conversation ---- */
     .conv { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--bg-canvas); position: relative; }
@@ -124,10 +105,7 @@
     .pill:hover { background: var(--bg-surface-3); color: var(--fg-default); }
     .pill.mode-edit { background: var(--accent-purple-soft); color: var(--accent-purple); }
     .pill.mode-agent { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
-    .meter { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 8px; border: 0; background: transparent; border-radius: var(--radius-md); cursor: pointer; font-size: var(--text-xs); color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
-    .meter:hover { background: var(--bg-hover); }
-    .meter svg { width: 18px; height: 18px; transform: rotate(-90deg); } .meter .bg { stroke: var(--border-default); } .meter .fg { stroke: var(--brand); transition: stroke-dasharray var(--dur-slow); }
-    .meter.warn .fg { stroke: var(--warning); }
+    .cmp-wrap .as-usage { width: 100%; margin: 0 0 6px; }
     .sendb { margin-left: 6px; width: 32px; height: 32px; border: 0; border-radius: var(--radius-md); background: var(--brand); color: var(--fg-on-brand); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
     .sendb:hover { background: var(--brand-hover); } .sendb:disabled { background: var(--bg-surface-3); color: var(--fg-faint); cursor: default; }
     .sendb.stop { background: var(--fg-strong); color: var(--bg-surface); }
@@ -140,8 +118,6 @@
     .cmp-menu .mi .d { color: var(--fg-subtle); font-size: var(--text-xs); }
 
     /* ---- context pane ---- */
-    .ctxp { display: none; flex-direction: column; min-height: 0; overflow: auto; border-left: 1px solid var(--border-default); background: var(--bg-surface); }
-    .ac.ctx-open .ctxp { display: flex; }
     .cx { padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); }
     .cx-h { display: flex; align-items: center; justify-content: space-between; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-subtle); margin-bottom: 10px; }
     .kv { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0; font-size: var(--text-sm); }
@@ -157,32 +133,61 @@
     .a-row:hover { background: var(--bg-hover); } .a-row .file-tile { width: 24px; height: 24px; }
     .a-row a { color: inherit; text-decoration: none !important; flex: 1; min-width: 0; } .a-row .x { opacity: 0; } .a-row:hover .x { opacity: 1; }
 
-    /* drawer behaviours (container-driven: canvas is narrower when the side panel is open) */
-    @container ac (max-width: 1240px) {
-      .ac.ctx-open { grid-template-columns: 252px minmax(0, 1fr); }
-      .ac { grid-template-columns: 252px minmax(0, 1fr); }
-      .ctxp { position: absolute; right: 0; top: 0; bottom: 0; width: 310px; z-index: 6; box-shadow: var(--shadow-lg); }
-    }
     @container ac (max-width: 860px) {
-      .ac, .ac.ctx-open { grid-template-columns: minmax(0, 1fr); }
-      .sess { position: absolute; left: 0; top: 0; bottom: 0; width: 290px; z-index: 7; box-shadow: var(--shadow-lg); transform: translateX(-102%); transition: transform var(--dur-base) var(--ease-out); }
-      .ac.sess-open .sess { transform: none; }
-      .sess-toggle { display: inline-flex !important; }
       .t-in, .cmp-wrap { padding-left: var(--space-4); padding-right: var(--space-4); }
       .sg-grid { grid-template-columns: minmax(0, 1fr); }
       .acard { flex-wrap: wrap; }
     }
-    .sess-toggle { display: none; }
-    .sess-scope { display: flex; align-items: center; gap: 8px; min-width: 0; }
-    .sess-scope .project-avatar, .sess-scope .gen-av { width: 26px; height: 26px; border-radius: 7px; font-size: 10px; flex-shrink: 0; }
+    .h-title { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; padding: 2px 6px; margin: -2px -6px; border: 0; border-radius: var(--radius-sm); background: transparent; cursor: pointer; color: inherit; }
+    .h-title:hover { background: var(--bg-hover); }
+    .h-title svg { flex-shrink: 0; color: var(--fg-subtle); }
+    .scope-pick { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 6px 0 3px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--fg-default); font-size: var(--text-2xs); font-weight: var(--weight-medium); cursor: pointer; max-width: 260px; }
+    .scope-pick:hover { border-color: var(--brand); }
+    .scope-pick svg { flex-shrink: 0; color: var(--fg-subtle); }
+    .sc-av { width: 18px; height: 18px; border-radius: 5px; font-size: 7.5px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .sc-av.none { background: var(--bg-surface-3); color: var(--fg-muted); } .sc-av.none svg { width: 11px; height: 11px; }
+    .sc-item .count { margin-left: auto; padding-left: 12px; font-size: var(--text-2xs); color: var(--fg-faint); }
+    .hist { display: flex; flex-direction: column; max-height: min(620px, calc(100vh - 140px)); margin: -6px; }
+    .hist-top { display: flex; gap: 8px; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+    .hist-scopes { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+    .hf { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px 0 4px; border: 1px solid var(--border-default); border-radius: var(--radius-full); background: var(--bg-surface); font-size: var(--text-2xs); font-weight: var(--weight-medium); color: var(--fg-muted); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .hf.all { padding-left: 10px; }
+    .hf:hover { color: var(--fg-default); border-color: var(--fg-faint); }
+    .hf.is-on { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-fg); }
+    .hf .n { color: var(--fg-faint); font-variant-numeric: tabular-nums; }
+    .hist-list { flex: 1; overflow: auto; padding: 2px 6px 8px; }
+    .hg { padding: 12px 8px 4px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-faint); }
+    .hr { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: var(--radius-md); cursor: pointer; min-height: 46px; }
+    .hr:hover { background: var(--bg-hover); }
+    .hr.is-active { background: var(--bg-active); }
+    .hr.is-active .hr-t { color: var(--brand-fg); }
+    .hr > .sc-av { width: 24px; height: 24px; border-radius: 6px; font-size: 9px; }
+    .hr > .sc-av.none svg { width: 13px; height: 13px; }
+    .hr-main { flex: 1; min-width: 0; }
+    .hr-t { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); display: flex; align-items: center; gap: 5px; }
+    .hr-t svg { width: 12px; height: 12px; color: var(--accent-purple); flex-shrink: 0; }
+    .hr-s { font-size: var(--text-2xs); color: var(--fg-subtle); margin-top: 2px; }
+    .hr-time { font-size: var(--text-2xs); color: var(--fg-faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .hr-acts { display: none; gap: 2px; flex-shrink: 0; }
+    .hr:hover .hr-acts, .hr.is-editing .hr-acts, .hr.is-confirm .hr-acts, .hr.is-moving .hr-acts { display: flex; }
+    .hr:hover .hr-time, .hr.is-moving .hr-time { display: none; }
+    .hr-acts .danger:hover { color: var(--danger-fg); }
+    .hr.is-editing, .hr.is-confirm, .hr.is-moving { cursor: default; background: var(--bg-surface-2); flex-wrap: wrap; }
+    .hr .input { height: 30px; }
+    .hr-confirm { flex: 1; font-size: var(--text-xs); color: var(--danger-fg); }
+    .hr-move { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0 2px 34px; }
+    .hist-empty { padding: var(--space-8) var(--space-3); text-align: center; color: var(--fg-subtle); font-size: var(--text-sm); }
+    .ctx-pop { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin: -6px; max-height: calc(100vh - 220px); overflow: auto; }
+    .ctx-pop > div { padding: 14px 16px; min-width: 0; }
+    .ctx-pop > div + div { border-left: 1px solid var(--border-subtle); }
+    .ctx-pop .cx-h { margin: 16px 0 6px; } .ctx-pop .cx-h:first-child { margin-top: 0; }
+    .ctx-pop .kv { font-size: var(--text-xs); padding: 3px 0; }
+    .ctx-pop .cx-warn .btn { white-space: nowrap; }
+    @media (max-width: 900px) { .ctx-pop { grid-template-columns: minmax(0, 1fr); } .ctx-pop > div + div { border-left: 0; border-top: 1px solid var(--border-subtle); } }
     .gen-av { display: inline-flex; align-items: center; justify-content: center; background: var(--bg-surface-3); color: var(--fg-muted); }
     .gen-av svg { width: 14px; height: 14px; }
-    .sess-scope b { display: block; font-size: var(--text-sm); color: var(--fg-strong); line-height: 1.2; }
-    .sess-scope span.d { display: block; font-size: var(--text-2xs); color: var(--fg-subtle); }
     .scope-b { display: inline-flex; align-items: center; gap: 4px; height: 18px; padding: 0 6px; border-radius: var(--radius-sm); background: var(--bg-surface-3); color: var(--fg-muted); font-size: 10px; font-weight: 600; }
     .scope-b svg { width: 11px; height: 11px; }
-    .meter.quota svg { transform: none; } .meter .warn-t { color: var(--warning-fg); } .meter .danger-t { color: var(--danger-fg); }
-    .meter.danger .fg { stroke: var(--danger); }
     .cx-sub { font-size: var(--text-2xs); color: var(--fg-faint); line-height: 1.5; margin-top: 6px; }
     .cx-warn { margin-top: 10px; padding: 8px 10px; border-radius: var(--radius-md); background: var(--warning-soft); color: var(--warning-fg); font-size: var(--text-xs); line-height: 1.45; display: flex; gap: 8px; align-items: flex-start; }
     .cx-warn svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
@@ -191,23 +196,14 @@
     .dotk.cr { background: var(--accent-teal); } .dotk.nw { background: var(--brand); } .dotk.ou { background: var(--accent-purple); }
   </style>
 </head>
-<body data-page="assistant" data-shell="project" data-crumb="nav.assistant" data-assistant="closed">
-  <!-- ?scope=general → chats with no project context: app sidebar (home shell), history in application data -->
-  <script>if (/[?&]scope=general\b/.test(location.search)) { document.body.dataset.scope = 'general'; document.body.dataset.shell = 'home'; document.body.dataset.crumb = 'nav.chats.general'; }</script>
+<body data-page="chats" data-shell="home" data-crumb="nav.chats.all" data-assistant="none">
   <main class="canvas"><div class="canvas-inner flush">
-    <div class="ac-wrap"><div class="ac ctx-open" id="ac">
-      <aside class="sess">
-        <div class="sess-top">
-          <div class="sess-scope" id="s-scope"></div>
-          <button class="btn btn-primary btn-block" id="btn-new"><i data-lucide="square-pen"></i><span data-i18n="as.new"></span></button>
-          <div class="input-group"><i data-lucide="search"></i><input class="input" id="s-q" data-i18n-placeholder="ac.search" style="height:32px"></div>
-        </div>
-        <div class="sess-list" id="s-list"></div>
-      </aside>
+    <div class="ac-wrap"><div class="ac" id="ac">
       <section class="conv">
         <div class="conv-head" id="c-head"></div>
         <div class="thread" id="thread"></div>
         <div class="cmp-wrap" id="cmp-wrap">
+          <button type="button" class="as-usage" id="b-usage"></button>
           <div class="cmp" id="cmp">
             <div class="cmp-chips hidden" id="cmp-chips"></div>
             <textarea id="ta" rows="1"></textarea>
@@ -218,8 +214,6 @@
               <button class="pill" id="b-mode"></button>
               <span style="flex:1"></span>
               <button class="pill" id="b-cli"></button>
-              <button class="meter" id="b-meter"></button>
-              <button class="meter quota" id="b-quota"></button>
               <button class="sendb" id="b-send" aria-label="send"><i data-lucide="arrow-up"></i></button>
             </div>
           </div>
@@ -227,7 +221,6 @@
           <input type="file" id="f-in" multiple hidden>
         </div>
       </section>
-      <aside class="ctxp" id="ctxp"></aside>
     </div></div>
   </div></main>
 
@@ -253,7 +246,6 @@
         'ac.mode.ask.d': 'Answers and analysis, no changes', 'ac.mode.edit.d': 'Propose tracked edits to artifacts', 'ac.mode.agent.d': 'Plan and run work in a worktree',
         'ac.stop': 'Stop generating', 'ac.hint': 'Enter to send · Shift+Enter for a new line · / for commands · @ to mention an artifact',
         'ac.attached': 'File attached', 'ac.cli.switched': 'Next messages run through {cli}', 'ac.cli.pick': 'Run with',
-        'ac.meter': 'Context window', 'ac.meter.tip': '{u} of {w} tokens used',
         'ac.cmd.title': 'Commands', 'ac.mention.title': 'Artifacts',
         'ac.cmd.summarize': 'Summarize documents or a thread', 'ac.cmd.brd': 'Draft or update the BRD', 'ac.cmd.stories': 'Write user stories with acceptance criteria', 'ac.cmd.estimate': 'Estimate effort and capacity',
         'ac.cmd.adr': 'Write an architecture decision record', 'ac.cmd.scaffold': 'Plan repo scaffolding & pipelines', 'ac.cmd.plan': 'Create a solution & implementation plan',
@@ -264,9 +256,10 @@
         'ac.ctx.dir': 'Project directory', 'ac.ctx.pphase': 'Project phase', 'ac.isolated': 'project-scoped', 'ac.created': 'Started {t}', 'ac.messages': 'Messages',
         'ac.ph.gen': 'Ask anything — no project context…', 'ac.hint.gen': 'Enter to send · Shift+Enter for a new line', 'ac.ctx.totals': 'Chat totals', 'ac.ctx.scope': 'Scope', 'ac.quota.tip': 'Usage limits · {cli}',
         'ac.scope.project': '{n} chats in this project', 'ac.scope.gen': '{n} chats · no project context',
-        'ac.gen.saved': 'Saved to app history', 'ac.gen.empty.sub': 'A general chat has no project files or artifacts. Use it for questions that do not belong to one project.',
+        'ac.scope.switch': 'Change context', 'ac.scope.projects': 'Projects', 'ac.scope.none': 'No project context', 'ac.hist': 'Chat history (Ctrl H)', 'ac.hist.q': 'Search all chats…', 'ac.hist.all': 'All', 'ac.hist.move': 'Change context', 'ac.hist.confirm': 'Delete this chat? This cannot be undone.', 'ac.scope.changed': 'Context changed to {p}',
+        'ac.gen.saved': 'Saved to app history', 'ac.gen.empty.sub': 'This chat has no project, so no project files or artifacts are loaded. Pick a project next to the title to add one.',
         'ac.gen.dir': 'Working directory', 'ac.gen.home': 'App CLI profile', 'ac.gen.isolated': 'no project', 'ac.gen.home.note': 'Uses your existing CLI sign-in. No project directory, artifacts or project CLI profile is loaded.',
-        'ac.gen.chat.note': 'General chats are saved in application data, not in any project directory.',
+        'ac.gen.chat.note': 'Chats without a project are saved in application data, not in any project directory.',
         'ac.gen.delete.body': 'The transcript and its CLI session reference will be removed from the app history. This cannot be undone.',
         'ac.move': 'Move to project…', 'ac.move.title': 'Move to a project', 'ac.moved': 'Moved to {p} — the chat now uses that project’s context',
         'ac.gen.sg1': 'Compare two technologies', 'ac.gen.sg1.d': 'Trade-offs in a short table', 'ac.gen.sg1.p': 'Compare Spring Boot and NestJS for a small team building REST APIs.',
@@ -294,7 +287,6 @@
         'ac.mode.ask.d': 'Trả lời và phân tích, không sửa gì', 'ac.mode.edit.d': 'Đề xuất chỉnh sửa có theo dõi', 'ac.mode.agent.d': 'Lập kế hoạch và thực thi trong worktree',
         'ac.stop': 'Dừng tạo', 'ac.hint': 'Enter để gửi · Shift+Enter xuống dòng · / để dùng lệnh · @ để nhắc tài liệu',
         'ac.attached': 'Đã đính kèm file', 'ac.cli.switched': 'Các tin nhắn tiếp theo sẽ chạy qua {cli}', 'ac.cli.pick': 'Chạy bằng',
-        'ac.meter': 'Cửa sổ ngữ cảnh', 'ac.meter.tip': 'Đã dùng {u} / {w} token',
         'ac.cmd.title': 'Lệnh', 'ac.mention.title': 'Tài liệu',
         'ac.cmd.summarize': 'Tóm tắt tài liệu hoặc một cuộc trao đổi', 'ac.cmd.brd': 'Soạn hoặc cập nhật BRD', 'ac.cmd.stories': 'Viết user story kèm tiêu chí chấp nhận', 'ac.cmd.estimate': 'Ước lượng effort và năng lực đội',
         'ac.cmd.adr': 'Viết bản ghi quyết định kiến trúc', 'ac.cmd.scaffold': 'Lập kế hoạch scaffolding repo & pipeline', 'ac.cmd.plan': 'Tạo giải pháp & kế hoạch triển khai',
@@ -305,9 +297,10 @@
         'ac.ctx.dir': 'Thư mục dự án', 'ac.ctx.pphase': 'Giai đoạn dự án', 'ac.isolated': 'theo dự án', 'ac.created': 'Bắt đầu {t}', 'ac.messages': 'Tin nhắn',
         'ac.ph.gen': 'Hỏi bất cứ điều gì — không có ngữ cảnh dự án…', 'ac.hint.gen': 'Enter để gửi · Shift+Enter xuống dòng', 'ac.ctx.totals': 'Tổng của chat', 'ac.ctx.scope': 'Phạm vi', 'ac.quota.tip': 'Hạn mức sử dụng · {cli}',
         'ac.scope.project': '{n} chat trong dự án này', 'ac.scope.gen': '{n} chat · không có ngữ cảnh dự án',
-        'ac.gen.saved': 'Đã lưu vào lịch sử ứng dụng', 'ac.gen.empty.sub': 'Chat chung không có file hay tài liệu dự án. Dùng cho những câu hỏi không thuộc riêng dự án nào.',
+        'ac.scope.switch': 'Đổi ngữ cảnh', 'ac.scope.projects': 'Dự án', 'ac.scope.none': 'Không có ngữ cảnh dự án', 'ac.hist': 'Lịch sử chat (Ctrl H)', 'ac.hist.q': 'Tìm trong mọi chat…', 'ac.hist.all': 'Tất cả', 'ac.hist.move': 'Đổi ngữ cảnh', 'ac.hist.confirm': 'Xoá chat này? Không thể hoàn tác.', 'ac.scope.changed': 'Đã đổi ngữ cảnh sang {p}',
+        'ac.gen.saved': 'Đã lưu vào lịch sử ứng dụng', 'ac.gen.empty.sub': 'Chat này không thuộc dự án nên không nạp file hay tài liệu nào. Chọn dự án cạnh tiêu đề để thêm ngữ cảnh.',
         'ac.gen.dir': 'Thư mục làm việc', 'ac.gen.home': 'CLI profile của ứng dụng', 'ac.gen.isolated': 'không dự án', 'ac.gen.home.note': 'Dùng phiên đăng nhập CLI sẵn có. Không nạp thư mục dự án, tài liệu hay CLI profile của dự án nào.',
-        'ac.gen.chat.note': 'Chat chung được lưu trong dữ liệu ứng dụng, không nằm trong thư mục dự án nào.',
+        'ac.gen.chat.note': 'Chat không thuộc dự án được lưu trong dữ liệu ứng dụng, không nằm trong thư mục dự án nào.',
         'ac.gen.delete.body': 'Bản ghi và tham chiếu phiên CLI sẽ bị xoá khỏi lịch sử ứng dụng. Không thể hoàn tác.',
         'ac.move': 'Chuyển vào dự án…', 'ac.move.title': 'Chuyển vào một dự án', 'ac.moved': 'Đã chuyển vào {p} — chat sẽ dùng ngữ cảnh của dự án đó',
         'ac.gen.sg1': 'So sánh hai công nghệ', 'ac.gen.sg1.d': 'Đánh đổi trong một bảng ngắn', 'ac.gen.sg1.p': 'So sánh Spring Boot và NestJS cho một team nhỏ làm REST API.',
@@ -324,12 +317,11 @@
       const L = (en, vi) => ({ en, vi });
       const T = o => (o && typeof o === 'object') ? (o[PC.lang] || o.en) : o;
       const NOW = new Date('2026-11-23T11:40:00');
-      // Scope: a project (default) or general chats (?scope=general) that have no project context at all.
-      const GEN = document.body.dataset.scope === 'general';
-      const p = GEN ? Object.assign({ name: PC.t('nav.chats.general'), phase: null, artifacts: 0 }, PC.general) : PC.project();
+      const scopeProject = scope => scope === '__general' ? Object.assign({ name: PC.t('chat.general'), phase: null, artifacts: 0 }, PC.general) : PC.project(scope);
+      let GEN = false, p = PC.project();
       const cliW = id => PC.data.cli.find(c => c.id === id).ctxWindow;   // at runtime: reported by the CLI after each reply
       const CLI = { claude: { name: 'Claude Code', model: 'claude-opus-5-5', win: cliW('claude'), ver: '2.4.1' }, codex: { name: 'Codex CLI', model: 'gpt-6-luna', win: cliW('codex'), ver: '0.48.0' } };
-      const PROJ_DIR = p.dir;   // CLI working directory = the project directory (general: an empty scratch dir)
+      let PROJ_DIR = p.dir;
       const homeOf = c => PC.projectCli(c, p);   // context profile — project: <project dir>\\.procheck\\cli\\<cli> · general: the CLI home %LOCALAPPDATA%\\Procheck\\cli\\<cli> (sign-in: PC.cliHome)
       const chatOf = s => (GEN ? PC.general.chats : PROJ_DIR + '\\.procheck\\chats') + '\\' + s.sid + '.jsonl';
       const phaseChip = ph => ph ? `<span class="phase-chip phase-${ph}">${PC.t('phase.' + ph)}</span>` : `<span class="scope-b"><i data-lucide="globe"></i>${PC.t('chat.general')}</span>`;
@@ -541,28 +533,44 @@
         'atlas-hr': [['brd', 'Business Requirements Doc', 'file-text'], ['spec-payroll', 'Feature spec – Payroll bank export', 'file-text'], ['spec-leave', 'Feature spec – Leave management', 'file-text'], ['test-strategy', 'Test strategy', 'flask-conical'], ['release-notes', 'Release notes v2.0', 'megaphone']],
       };
       const SEEDS = { '__general': SEED_GENERAL, 'lotus-pay': SEED_LOTUS, 'saigon-tms': SEED_SAIGON, 'viethealth': SEED_VIETHEALTH, 'mekong': SEED_MEKONG, 'atlas-hr': SEED_ATLAS };
-      const SEED = SEEDS[p.id] || SEED_LOTUS;
+      const SEED_DIR = PROJ_DIR;
       const SGS = {
         'saigon-tms': [['calendar-check', L('Prepare the kick-off', 'Chuẩn bị kick-off'), L('Questions and agenda from the RFP', 'Câu hỏi và agenda từ RFP'), L('Prepare the kick-off: list the questions I should ask from the RFP and the dispatch process.', 'Chuẩn bị kick-off: liệt kê các câu hỏi tôi nên hỏi dựa trên RFP và quy trình điều xe.')], ['file-search', L('Summarize the RFP', 'Tóm tắt RFP'), L('Goals, scope, constraints, timeline', 'Mục tiêu, phạm vi, ràng buộc, tiến độ'), L('/summarize the RFP in one page.', '/summarize RFP trong một trang.')], ['mic', L('Extract insights from the intro call', 'Trích ý chính cuộc gọi intro'), L('Decisions, risks, open questions', 'Quyết định, rủi ro, câu hỏi mở'), L('Extract insights from the intro call transcript.', 'Trích ý chính từ transcript cuộc gọi intro.')], ['files', L('Summarize latest documents', 'Tóm tắt tài liệu mới nhất'), L('What changed in the last 7 days', 'Thay đổi trong 7 ngày qua'), L('/summarize the documents changed in the last 7 days', '/summarize các tài liệu thay đổi trong 7 ngày qua')]],
         'viethealth': [['file-search', L('Review the BRD for gaps', 'Rà soát BRD tìm thiếu sót'), L('Cross-check against sources', 'Đối chiếu với tài liệu nguồn'), L('Review BRD v1 for gaps and contradictions.', 'Rà soát BRD v1 tìm điểm thiếu và mâu thuẫn.')], ['target', L('Compare scope options', 'So sánh các phương án scope'), L('Effort and risk per option', 'Effort và rủi ro mỗi phương án'), L('Compare scope options for release 1 with effort and risk.', 'So sánh các phương án scope cho release 1 kèm effort và rủi ro.')], ['circle-help', L('Prepare blocking questions', 'Soạn câu hỏi blocking'), L('For the next client call', 'Cho buổi gọi khách hàng tiếp theo'), L('Prepare the 2 blocking questions for the next client call.', 'Soạn 2 câu hỏi blocking cho buổi gọi khách hàng tiếp theo.')], ['calculator', L('Draft an estimate', 'Soạn bản ước lượng'), L('From the BRD requirements', 'Từ các yêu cầu trong BRD'), L('/estimate release 1 scope option A', '/estimate release 1 phương án scope A')]],
         'mekong': [['git-pull-request-arrow', L('Review ADR-004', 'Rà soát ADR-004'), L('Service Bus vs Kafka trade-offs', 'Đánh đổi Service Bus và Kafka'), L('Walk me through ADR-004: Azure Service Bus vs Kafka.', 'Giải thích ADR-004: Azure Service Bus và Kafka.')], ['workflow', L('Plan the next scaffolding step', 'Lập kế hoạch bước scaffolding tiếp theo'), L('Dev container and lint setup', 'Dev container và thiết lập lint'), L('/scaffold Plan the dev container step.', '/scaffold Lập kế hoạch cho bước dev container.')], ['folder-search', L('Explain the repo analysis', 'Giải thích phân tích repo'), L('Risks in the existing code', 'Rủi ro trong code hiện có'), L('Summarize the risks in the existing repository.', 'Tóm tắt các rủi ro trong repository hiện có.')], ['files', L('Summarize latest documents', 'Tóm tắt tài liệu mới nhất'), L('What changed in the last 7 days', 'Thay đổi trong 7 ngày qua'), L('/summarize the documents changed in the last 7 days', '/summarize các tài liệu thay đổi trong 7 ngày qua')]],
         'atlas-hr': [['circle-x', L('Analyse the failed run', 'Phân tích lượt chạy lỗi'), L('Why AH-311 stopped at Verify', 'Vì sao AH-311 dừng ở Kiểm chứng'), L('Why did AH-311 fail? Analyse the failing e2e tests.', 'Vì sao AH-311 lỗi? Phân tích các test e2e không qua.')], ['megaphone', L('Draft the release notes', 'Soạn release notes'), L('From merged pull requests', 'Từ các pull request đã merge'), L('/summarize Draft release notes v2.0 from merged PRs.', '/summarize Soạn release notes v2.0 từ các PR đã merge.')], ['kanban', L('Plan the next sprint', 'Lập kế hoạch sprint tiếp theo'), L('Capacity and commitments', 'Năng lực và cam kết'), L('/plan Sprint 10 capacity and commitments', '/plan Năng lực và cam kết sprint 10')], ['files', L('Summarize latest documents', 'Tóm tắt tài liệu mới nhất'), L('What changed in the last 7 days', 'Thay đổi trong 7 ngày qua'), L('/summarize the documents changed in the last 7 days', '/summarize các tài liệu thay đổi trong 7 ngày qua')]],
       };
-      const ARTL = ARTLS[p.id] || ARTL_LOTUS;
+      let ARTL = ARTL_LOTUS;
+      function useScope(scope) { GEN = scope === '__general'; p = scopeProject(scope); PROJ_DIR = p.dir; ARTL = ARTLS[p.id] || ARTL_LOTUS; }
 
       /* ===================== state & persistence ===================== */
-      const KEY = 'pc.assistant.sessions.v4.' + p.id;   // per project: sessions never leak between projects
-      const lsGet = () => { try { const v = JSON.parse(localStorage.getItem(KEY) || 'null'); return Array.isArray(v) && v.length ? v : null; } catch (e) { return null; } };
-      const lsSet = v => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* ignore */ } };
-      const state = { sessions: lsGet() || JSON.parse(JSON.stringify(SEED)), cur: null, q: '', ctx: true, sessOpen: false, mode: 'ask', menu: null, chips: [], stream: null, seq: 0 };
-      const save = () => lsSet(state.sessions);
+      const SCOPES = PC.data.projects.map(x => x.id).concat('__general');
+      const lsGet = scope => { try { const v = JSON.parse(localStorage.getItem(PC.chats.key(scope)) || 'null'); return Array.isArray(v) ? v : null; } catch (e) { return null; } };
+      const lsSet = (scope, v) => { try { localStorage.setItem(PC.chats.key(scope), JSON.stringify(v)); } catch (e) { /* ignore */ } };
+      const jsonDir = d => JSON.stringify(d).slice(1, -1);
+      const seedFor = scope => JSON.parse(JSON.stringify(SEEDS[scope] || []).split(jsonDir(SEED_DIR)).join(jsonDir(scopeProject(scope).dir)));
+      const loadScope = scope => (lsGet(scope) || seedFor(scope)).map(x => Object.assign(x, { scope }));
+      const state = { sessions: [].concat(...SCOPES.map(loadScope)), cur: null, filter: 'all', q: '', mode: 'ask', menu: null, chips: [], stream: null, seq: 0, edit: null, confirm: null, moving: null };
+      const save = () => SCOPES.forEach(sc => lsSet(sc, state.sessions.filter(x => x.scope === sc)));
       const S = () => state.sessions.find(s => s.id === state.cur);
+      SCOPES.forEach(absorbInbox);
       // s.ctx = context-window snapshot of the LAST reply (recorded at end of turn), not the running chat total.
       //   cr = cache read, nw = new input (+ cache write), o = output.  s.tok = cumulative totals for the chat.
       const CTX_FILL = { ah1: 0.86 };   // AH-311 debugging chat: almost full → shows the compact warning
       const ctxSeed = s => { const w = CLI[s.cli].win, t = CTX_FILL[s.id] ? CTX_FILL[s.id] * w : Math.min(w * .7, (s.tok.i + s.tok.o + s.tok.c) * .55); return { cr: Math.round(t * .78), nw: Math.round(t * .18), o: Math.round(t * .04), at: s.at }; };
       state.sessions.forEach(s => { if (!s.ctx) s.ctx = s.messages.length ? ctxSeed(s) : { cr: 0, nw: 0, o: 0, at: null }; });
       const ctxUsed = s => s.ctx.cr + s.ctx.nw + s.ctx.o;
+
+      function absorbInbox(scope) {
+        const inbox = PC.chats.inbox(scope); if (!inbox.length) return;
+        inbox.slice().reverse().forEach(e => absorbEntry(scope, e));
+        PC.chats.setInbox(scope, []); save();
+      }
+      function absorbEntry(scope, e) {
+        let s = state.sessions.find(x => x.id === e.id);
+        if (!s) { s = Object.assign(PC.chats.blank(e), { scope }); state.sessions.unshift(s); }
+        s.messages.push(...e.messages); s.at = e.at;
+      }
 
       /* ===================== helpers ===================== */
       const nowIso = () => '2026-11-23T' + hhmm(new Date());
@@ -628,35 +636,128 @@
           <div class="m-acts"><button class="btn btn-ghost btn-sm btn-icon" data-act="copy" data-i18n-tip="ac.copy"><i data-lucide="copy" class="icon-sm"></i></button><button class="btn btn-ghost btn-sm btn-icon" data-act="up" data-i18n-tip="ac.good"><i data-lucide="thumbs-up" class="icon-sm"></i></button><button class="btn btn-ghost btn-sm btn-icon" data-act="regen" data-i18n-tip="ac.regen"><i data-lucide="rotate-ccw" class="icon-sm"></i></button></div></div></div>`;
       }
 
-      /* ===================== left list ===================== */
+      /* ===================== history popover ===================== */
+      const scopeName = scope => scope === '__general' ? PC.t('chat.general') : PC.project(scope).name.split(' — ')[0];
+      function scopeAv(scope) {
+        if (scope === '__general') return '<span class="sc-av none"><i data-lucide="globe"></i></span>';
+        const pr = PC.project(scope);
+        return `<span class="sc-av project-avatar" style="background:${pr.color}">${pr.short}</span>`;
+      }
+      function histCount(sc) { return state.sessions.filter(x => x.messages.length && (sc === 'all' || x.scope === sc)).length; }
+      function histChip(sc, inner) { return `<button type="button" class="hf ${sc === 'all' ? 'all' : ''} ${state.filter === sc ? 'is-on' : ''}" data-f="${sc}">${inner}<span class="n">${histCount(sc)}</span></button>`; }
+      function histFilters() { return histChip('all', PC.t('ac.hist.all')) + SCOPES.map(sc => histChip(sc, scopeAv(sc) + esc(scopeName(sc)))).join(''); }
+      function histActBtn(a) { return `<button class="btn btn-ghost btn-icon btn-sm ${a[0] === 'del' ? 'danger' : ''}" data-h="${a[0]}" data-tip="${PC.t(a[2])}"><i data-lucide="${a[1]}" class="icon-sm"></i></button>`; }
+      function histRowMain(s) {
+        if (state.edit === s.id) return `<input class="input grow" id="hr-edit" value="${esc(s.title)}"><div class="hr-acts"><button class="btn btn-ghost btn-sm" data-h="cancel">${PC.t('common.cancel')}</button><button class="btn btn-primary btn-sm" data-h="save">${PC.t('common.save')}</button></div>`;
+        if (state.confirm === s.id) return `<span class="hr-confirm">${PC.t('ac.hist.confirm')}</span><div class="hr-acts"><button class="btn btn-ghost btn-sm" data-h="cancel">${PC.t('common.cancel')}</button><button class="btn btn-danger btn-sm" data-h="del-ok"><i data-lucide="trash-2" class="icon-sm"></i>${PC.t('ac.delete')}</button></div>`;
+        const acts = [['pin', s.pinned ? 'pin-off' : 'pin', s.pinned ? 'ac.unpin' : 'ac.pin'], ['rename', 'pencil', 'ac.rename'], ['move', 'folder-input', 'ac.hist.move'], ['del', 'trash-2', 'ac.delete']];
+        return `<div class="hr-main"><div class="hr-t">${s.pinned ? '<i data-lucide="pin"></i>' : ''}<span class="truncate">${esc(s.title)}</span></div><div class="hr-s truncate">${esc(scopeName(s.scope))} · ${CLI[s.cli].name} · ${PC.t('ac.msgs', { n: s.messages.length })}</div></div>
+          <span class="hr-time">${timeLabel(s)}</span><div class="hr-acts">${acts.map(histActBtn).join('')}</div>`;
+      }
+      function histMoveRow(s) {
+        if (state.moving !== s.id) return '';
+        return `<div class="hr-move">${SCOPES.map(sc => `<button type="button" class="hf ${s.scope === sc ? 'is-on' : ''}" data-h="move-to" data-sc="${sc}">${scopeAv(sc)}${esc(scopeName(sc))}</button>`).join('')}</div>`;
+      }
+      function histRow(s) {
+        const mode = state.edit === s.id ? 'is-editing' : state.confirm === s.id ? 'is-confirm' : state.moving === s.id ? 'is-moving' : '';
+        return `<div class="hr ${s.id === state.cur ? 'is-active' : ''} ${mode}" data-open="${s.id}">${scopeAv(s.scope)}${histRowMain(s)}${histMoveRow(s)}</div>`;
+      }
+      function histVisible(s, q) { return (s.messages.length || s.id === state.cur) && (state.filter === 'all' || s.scope === state.filter) && (!q || s.title.toLowerCase().includes(q)); }
       function renderList() {
-        const el = $('#s-list'), q = state.q.trim().toLowerCase();
-        const list = state.sessions.filter(s => !q || s.title.toLowerCase().includes(q)).sort((a, b) => new Date(b.at) - new Date(a.at));
-        let html = '';
-        ['pinned', 'today', 'yesterday', 'week', 'older'].forEach(g => {
-          const items = list.filter(s => groupOf(s) === g); if (!items.length) return;
-          html += `<div class="sg-h">${g === 'pinned' ? '<i data-lucide="pin" class="icon-sm"></i>' : ''}${PC.t('ac.' + g)}</div>` + items.map(s => `<div class="si ${s.id === state.cur ? 'is-active' : ''}" data-sid="${s.id}">
-            <div class="si-t"><span class="truncate">${esc(s.title)}</span></div>
-            <div class="si-s">${s.phase ? phaseChip(s.phase) : ''}<span class="cli-b ${s.cli}">${CLI[s.cli].name.split(' ')[0]}</span><span>${PC.t('ac.msgs', { n: s.messages.length })}</span><span class="time">${timeLabel(s)}</span></div>
-            <button class="si-m" data-menu="${s.id}"><i data-lucide="ellipsis" class="icon-sm"></i></button></div>`).join('');
-        });
-        el.innerHTML = html || `<div class="sess-empty">${PC.t('ac.nomatch')}</div>`; PC.refresh(el);
-        const nChats = state.sessions.filter(s => s.messages.length).length;
-        $('#s-scope').innerHTML = GEN ? `<span class="gen-av"><i data-lucide="globe"></i></span><div style="min-width:0"><b class="truncate">${PC.t('nav.chats.general')}</b><span class="d truncate">${PC.t('ac.scope.gen', { n: nChats })}</span></div>`
-          : `<span class="project-avatar" style="background:${p.color}">${p.short}</span><div style="min-width:0"><b class="truncate">${esc(p.name.split(' — ')[0])}</b><span class="d truncate">${PC.t('ac.scope.project', { n: nChats })}</span></div>`;
-        PC.refresh($('#s-scope'));
+        const el = $('#hist-list'); if (!el) return;
+        const q = state.q.trim().toLowerCase();
+        const list = state.sessions.filter(s => histVisible(s, q)).sort((a, b) => new Date(b.at) - new Date(a.at));
+        el.innerHTML = ['pinned', 'today', 'yesterday', 'week', 'older'].map(g => {
+          const items = list.filter(s => groupOf(s) === g);
+          return items.length ? `<div class="hg">${PC.t('ac.' + g)}</div>` + items.map(histRow).join('') : '';
+        }).join('') || `<div class="hist-empty">${PC.t('ac.nomatch')}</div>`;
+        $('#hist-scopes').innerHTML = histFilters();
+        PC.refresh(el.closest('.hist'));
+        const ed = $('#hr-edit');
+        if (ed) { ed.focus(); ed.select(); ed.onkeydown = onRenameKey; }
+      }
+      function onRenameKey(e) {
+        if (e.key === 'Enter') renameFrom(e.target);
+        if (e.key === 'Escape') { e.stopPropagation(); state.edit = null; renderList(); }
+      }
+      function openHistory(anchor) {
+        state.edit = state.confirm = state.moving = null;
+        const conv = $('.conv').getBoundingClientRect();
+        const pop = PC.popover(anchor, `<div class="hist"><div class="hist-top"><div class="input-group grow"><i data-lucide="search"></i><input class="input" id="hist-q" placeholder="${PC.t('ac.hist.q')}" value="${esc(state.q)}" style="height:32px"></div>
+          <button type="button" class="btn btn-primary btn-sm" data-h="new"><i data-lucide="square-pen" class="icon-sm"></i>${PC.t('as.new')}</button></div>
+          <div class="hist-scopes" id="hist-scopes"></div><div class="hist-list" id="hist-list"></div></div>`, () => {});
+        const w = Math.min(680, conv.width - 32);
+        pop.style.width = w + 'px';
+        pop.style.left = Math.max(conv.left + 16, Math.min(window.innerWidth - w - 8, anchor.getBoundingClientRect().left - 8)) + 'px';
+        renderList();
+        const q = $('#hist-q', pop); q.focus();
+        q.oninput = () => { state.q = q.value; renderList(); };
+        pop.addEventListener('click', e => histClick(e, pop));
+        pop.addEventListener('keydown', e => { if (e.key === 'Escape' && !state.edit) pop.remove(); });
+      }
+      function histClick(e, pop) {
+        const f = e.target.closest('[data-f]');
+        if (f) { state.filter = f.dataset.f; renderList(); return; }
+        const b = e.target.closest('[data-h]'), row = e.target.closest('[data-open]');
+        if (!b) { if (row && !row.matches('.is-editing, .is-confirm, .is-moving')) { pop.remove(); openSession(row.dataset.open); } return; }
+        if (b.dataset.h === 'new') { pop.remove(); newChat(); return; }
+        histAction(b.dataset.h, row && state.sessions.find(x => x.id === row.dataset.open), b);
+      }
+      function histAction(act, s, b) {
+        if (act === 'save') return renameFrom($('#hr-edit'));
+        if (act === 'del-ok') return deleteChat(s);
+        if (act === 'pin') { s.pinned = !s.pinned; save(); }
+        else if (act === 'rename') { state.edit = s.id; state.confirm = state.moving = null; }
+        else if (act === 'del') { state.confirm = s.id; state.edit = state.moving = null; }
+        else if (act === 'move') { state.moving = state.moving === s.id ? null : s.id; state.edit = state.confirm = null; }
+        else if (act === 'move-to') { state.moving = null; setScope(s, b.dataset.sc); }
+        else state.edit = state.confirm = state.moving = null;
+        renderList();
+      }
+      function renameFrom(input) {
+        const s = state.sessions.find(x => x.id === state.edit), v = input.value.trim();
+        state.edit = null;
+        if (s && v && v !== s.title) { s.title = v; save(); if (s.id === state.cur) renderHead(); PC.toast(PC.t('ac.renamed')); }
+        renderList();
+      }
+      function deleteChat(s) {
+        state.sessions = state.sessions.filter(x => x.id !== s.id); state.confirm = null; save();
+        PC.toast(PC.t('ac.deleted'), { icon: 'trash-2' });
+        if (state.cur !== s.id) return renderList();
+        const next = state.sessions.filter(x => x.messages.length).sort((a, c) => new Date(c.at) - new Date(a.at))[0];
+        if (next) openSession(next.id); else newChat(s.scope);
+      }
+      function setScope(s, scope) {
+        if (s.scope === scope) return;
+        s.scope = scope; s.phase = scope === '__general' ? null : PC.project(scope).phase;
+        if (scope === '__general') s.attached = [];
+        save();
+        if (s.id === state.cur) { useScope(scope); renderAll(); }
+        PC.toast(PC.t(s.messages.length ? 'ac.moved' : 'ac.scope.changed', { p: esc(scopeName(scope)) }), { icon: 'folder-input', tone: 'success' });
+      }
+      function scopeItem(sc) {
+        const s = S(), n = state.sessions.filter(x => x.messages.length && x.scope === sc).length;
+        const sub = sc === '__general' ? `<span class="text-subtle" style="display:block;font-size:11px">${PC.t('ac.scope.none')}</span>` : '';
+        return `<button class="menu-item sc-item" data-v="${sc}">${scopeAv(sc)}<span class="grow truncate">${esc(scopeName(sc))}${sub}</span><span class="count">${n}</span>${s.scope === sc ? '<i data-lucide="check"></i>' : '<span style="width:16px"></span>'}</button>`;
+      }
+      function scopePicker(anchor) {
+        const projects = SCOPES.filter(sc => sc !== '__general').map(scopeItem).join('');
+        const pop = PC.popover(anchor, `<div class="menu-label">${PC.t('ac.scope.projects')}</div>${projects}<div class="menu-sep"></div>${scopeItem('__general')}`, v => setScope(S(), v));
+        pop.style.width = '300px';
+        pop.style.left = Math.max(8, anchor.getBoundingClientRect().left) + 'px';
       }
 
       /* ===================== header, thread, composer ===================== */
       function renderHead() {
         const s = S();
-        $('#c-head').innerHTML = `<button class="btn btn-ghost btn-icon sess-toggle" id="h-sess"><i data-lucide="panel-left"></i></button>
-          <div class="grow" style="min-width:0"><h3 class="truncate">${esc(s.title)}</h3><div class="sub">${phaseChip(s.phase)}<span class="cli-b ${s.cli}">${CLI[s.cli].name}</span><span class="mono" style="font-size:11px">${CLI[s.cli].model}</span><span class="text-faint">·</span><span class="row gap-1" style="color:var(--success-fg)"><i data-lucide="circle-check" class="icon-sm"></i>${PC.t(GEN ? 'ac.gen.saved' : 'ac.saved')}</span></div></div>
-          <button class="btn btn-secondary btn-sm" id="h-export"><i data-lucide="download" class="icon-sm"></i><span>${PC.t('ac.export')}</span></button>
-          <button class="btn btn-ghost btn-icon" id="h-ctx" data-i18n-tip="ac.context"><i data-lucide="panel-right"></i></button>`;
+        $('#c-head').innerHTML = `<div class="grow" style="min-width:0"><button type="button" class="h-title" id="h-title" data-i18n-tip="ac.hist"><h3 class="truncate">${esc(s.title)}</h3><i data-lucide="chevron-down" class="icon-sm"></i></button>
+            <div class="sub"><button type="button" class="scope-pick" id="h-scope" data-i18n-tip="ac.scope.switch">${scopeAv(s.scope)}<span class="truncate">${esc(scopeName(s.scope))}</span><i data-lucide="chevron-down" class="icon-sm"></i></button>${s.phase ? phaseChip(s.phase) : ''}<span class="cli-b ${s.cli}">${CLI[s.cli].name}</span><span class="mono" style="font-size:11px">${CLI[s.cli].model}</span><span class="text-faint">·</span><span class="row gap-1" style="color:var(--success-fg)"><i data-lucide="circle-check" class="icon-sm"></i>${PC.t(GEN ? 'ac.gen.saved' : 'ac.saved')}</span></div></div>
+          <button class="btn btn-ghost btn-icon" id="h-export" data-i18n-tip="ac.export"><i data-lucide="download"></i></button>
+          <button class="btn btn-secondary btn-sm" id="h-new"><i data-lucide="square-pen" class="icon-sm"></i><span>${PC.t('as.new')}</span></button>`;
         PC.refresh($('#c-head'));
-        $('#h-sess').onclick = () => { state.sessOpen = !state.sessOpen; $('#ac').classList.toggle('sess-open', state.sessOpen); };
-        $('#h-ctx').onclick = () => { state.ctx = !state.ctx; $('#ac').classList.toggle('ctx-open', state.ctx); };
+        $('#h-title').onclick = e => openHistory(e.currentTarget);
+        $('#h-scope').onclick = e => scopePicker(e.currentTarget);
+        $('#h-new').onclick = () => newChat();
         $('#h-export').onclick = e => PC.popover(e.currentTarget, `<button class="menu-item" data-v="md"><i data-lucide="file-code-2"></i>${PC.t('ac.export.md')}</button><button class="menu-item" data-v="json"><i data-lucide="braces"></i>${PC.t('ac.export.json')}</button>`, exportTranscript);
       }
       function renderThread(keepScroll) {
@@ -686,73 +787,102 @@
         const busy = !!state.stream; const sb = $('#b-send');
         sb.className = 'sendb' + (busy ? ' stop' : ''); sb.innerHTML = `<i data-lucide="${busy ? 'square' : 'arrow-up'}"></i>`; sb.title = busy ? PC.t('ac.stop') : ''; PC.refresh(sb);
       }
+      /* ===================== usage strip ===================== */
       function renderMeter() {
-        const s = S(), w = CLI[s.cli].win, u = ctxUsed(s), pct = Math.min(100, u / w * 100), C = 2 * Math.PI * 7;
-        const b = $('#b-meter'); b.className = 'meter' + (PC.usage.tone(pct) ? ' ' + PC.usage.tone(pct) : '');
-        b.innerHTML = `<svg viewBox="0 0 18 18"><circle class="bg" cx="9" cy="9" r="7" fill="none" stroke-width="2.5"/><circle class="fg" cx="9" cy="9" r="7" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${(C * pct / 100).toFixed(1)} ${C.toFixed(1)}"/></svg>${Math.round(pct)}%`;
-        b.setAttribute('data-tip', PC.t('use.context.tip', { u: fmtK(u), w: fmtK(w) }));
-        // account limit: show the tightest window (5h or weekly) of the CLI this chat runs on
-        const q = $('#b-quota'), wst = PC.usage.worst(s.cli), qp = Math.round(wst.used), tone = PC.usage.tone(qp);
-        q.innerHTML = `<i data-lucide="gauge" class="icon-sm"></i><span class="${tone ? tone + '-t' : ''}">${PC.t('use.w.' + wst.k + '.short')} ${qp}%</span>`;
-        q.setAttribute('data-tip', PC.t('ac.quota.tip', { cli: CLI[s.cli].name }) + ' — ' + PC.usage.get(s.cli).windows.map(x => PC.t('use.w.' + x.k + '.short') + ' ' + Math.round(x.used) + '%').join(' · '));
-        PC.refresh(q);
+        const s = S(), pct = Math.min(100, ctxUsed(s) / CLI[s.cli].win * 100), el = $('#b-usage');
+        el.innerHTML = `${PC.usage.ring(pct, 14)}<span>${PC.t('use.context')} <b>${Math.round(pct)}%</b></span>`
+          + PC.usage.get(s.cli).windows.map(usageWindowLabel).join('')
+          + '<i data-lucide="chevron-up" class="icon-sm" style="margin-left:auto"></i>';
+        el.setAttribute('data-tip', PC.t('ac.quota.tip', { cli: CLI[s.cli].name }));
+        PC.refresh(el);
       }
-
-      /* ===================== context pane ===================== */
-      function renderCtx() {
-        const s = S(), w = CLI[s.cli].win, u = ctxUsed(s), pct = u / w * 100, n = x => x.toLocaleString('en-US');
-        const cost = (s.tok.i * 15 + s.tok.o * 75 + s.tok.c * 1.5) / 1e6;
-        const lim = PC.usage.get(s.cli);
-        const pathRow = v => `<div class="path"><span>${v}</span><button class="btn btn-ghost btn-icon btn-sm" data-copy="${v}" style="--_h:22px"><i data-lucide="copy" class="icon-sm"></i></button></div>`;
-        $('#ctxp').innerHTML = `<div class="cx"><div class="cx-h">${PC.t('ac.context')}</div>
-            ${GEN ? `<div class="kv"><span class="k">${PC.t('ac.ctx.scope')}</span><span class="v">${phaseChip(null)}</span></div>`
-              : `<div class="kv"><span class="k">${PC.t('ac.ctx.project')}</span><span class="v truncate">${esc(p.name.split(' — ')[0])}</span></div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.phase')}</span><span class="v">${phaseChip(s.phase)}</span></div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.pphase')}</span><span class="v">${phaseChip(p.phase)}</span></div>`}
-            <div class="kv"><span class="k">${PC.t('ac.messages')}</span><span class="v">${s.messages.length}</span></div></div>
-          <div class="cx" id="cx-usage"><div class="cx-h">${PC.t('use.context')}<span class="text-faint" style="text-transform:none;letter-spacing:0;font-weight:500">${fmtK(u)} / ${fmtK(w)} · ${Math.round(pct)}%</span></div>
+      function usageWindowLabel(x) {
+        const v = Math.round(x.used), tone = PC.usage.tone(v);
+        return `<span class="u-sep"></span><span class="${tone ? 'text-' + (v >= 95 ? 'danger' : 'warning') : ''}">${PC.t('use.w.' + x.k + '.short')} <b>${v}%</b></span>`;
+      }
+      function usageHtml(s) {
+        const w = CLI[s.cli].win, u = ctxUsed(s), pct = u / w * 100, lim = PC.usage.get(s.cli), n = x => x.toLocaleString('en-US');
+        const warn = pct >= 80 ? `<div class="cx-warn"><i data-lucide="triangle-alert"></i><div>${PC.t('use.compact.warn')}<div class="row gap-2" style="margin-top:8px"><button class="btn btn-secondary btn-sm" id="x-compact"><i data-lucide="fold-vertical" class="icon-sm"></i>${PC.t('use.compact')}</button><button class="btn btn-ghost btn-sm" id="x-newchat"><i data-lucide="square-pen" class="icon-sm"></i>${PC.t('as.new')}</button></div></div></div>` : '';
+        return `<div class="cx-h"><span>${PC.t('use.context')}</span><span class="text-subtle" style="text-transform:none;letter-spacing:0;font-weight:500">${fmtK(u)} / ${fmtK(w)} · ${Math.round(pct)}%</span></div>
             <div class="tokbar"><i class="cr" style="width:${s.ctx.cr / w * 100}%"></i><i class="nw" style="width:${s.ctx.nw / w * 100}%"></i><i class="ou" style="width:${s.ctx.o / w * 100}%"></i></div>
             <div class="kv"><span class="k"><i class="dotk cr"></i>${PC.t('use.cached')}</span><span class="v">${n(s.ctx.cr)}</span></div>
             <div class="kv"><span class="k"><i class="dotk nw"></i>${PC.t('use.new')}</span><span class="v">${n(s.ctx.nw)}</span></div>
             <div class="kv"><span class="k"><i class="dotk ou"></i>${PC.t('use.out')}</span><span class="v">${n(s.ctx.o)}</span></div>
-            <div class="cx-sub">${s.ctx.at ? PC.t('use.last', { t: PC.usage.clock(s.ctx.at) }) + ' · ' : ''}${PC.t('use.compact.hint')}</div>
-            ${pct >= 80 ? `<div class="cx-warn"><i data-lucide="triangle-alert"></i><div>${PC.t('use.compact.warn')}<div class="row gap-2" style="margin-top:8px"><button class="btn btn-secondary btn-sm" id="x-compact"><i data-lucide="fold-vertical" class="icon-sm"></i>${PC.t('use.compact')}</button><button class="btn btn-ghost btn-sm" id="x-newchat"><i data-lucide="square-pen" class="icon-sm"></i>${PC.t('as.new')}</button></div></div></div>` : ''}</div>
-          <div class="cx"><div class="cx-h"><span>${PC.t('use.limits')} · ${CLI[s.cli].name}</span><span class="row gap-1"><span class="badge">${esc(lim.plan)}</span><button class="btn btn-ghost btn-icon btn-sm" id="x-refresh" data-i18n-tip="use.refresh" style="margin:-6px -8px -6px 0"><i data-lucide="refresh-cw" class="icon-sm"></i></button></span></div>
+            <div class="u-sub">${s.ctx.at ? PC.t('use.last', { t: PC.usage.clock(s.ctx.at) }) + ' · ' : ''}${PC.t('use.compact.hint')}</div>${warn}
+          <div class="cx-h"><span>${PC.t('use.limits')} · ${CLI[s.cli].name}</span><span class="row gap-1"><span class="badge">${esc(lim.plan)}</span><button class="btn btn-ghost btn-icon btn-sm" id="x-refresh" data-i18n-tip="use.refresh" style="margin:-6px -6px -6px 0"><i data-lucide="refresh-cw" class="icon-sm"></i></button></span></div>
             ${PC.usage.rows(s.cli)}
-            <div class="cx-sub">${PC.t('use.updated', { t: PC.usage.clock(lim.at) })}</div>
-            <div class="note"><i data-lucide="user-round"></i><span>${PC.t('use.account')}</span></div>
-            <div class="src">${PC.t('use.src')}: ${esc(lim.src)}</div></div>
-          ${GEN ? '' : `<div class="cx"><div class="cx-h">${PC.t('ac.ctx.attached')}<button class="btn btn-ghost btn-sm" id="x-add" style="margin:-6px -8px -6px 0"><i data-lucide="plus" class="icon-sm"></i>${PC.t('ac.ctx.add')}</button></div>
-            ${s.attached.length ? s.attached.map(id => { const a = artOf(id); return a ? `<div class="a-row"><span class="file-tile"><i data-lucide="${a[2]}" class="icon-sm"></i></span><a href="artifacts.html#${a[0]}" class="truncate">${esc(a[1])}</a><button class="btn btn-ghost btn-icon btn-sm x" data-detach="${id}"><i data-lucide="x" class="icon-sm"></i></button></div>` : ''; }).join('') : `<div class="text-xs text-faint">${PC.t('ac.ctx.none')}</div>`}</div>`}
-          <div class="cx"><div class="cx-h">${PC.t('ac.ctx.runtime')}</div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.cli')}</span><span class="v">${CLI[s.cli].name} <span class="text-faint" style="font-weight:400">${CLI[s.cli].ver}</span></span></div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.model')}</span><span class="v mono" style="font-size:12px">${CLI[s.cli].model}</span></div>
-            <div class="cx-h" style="margin:12px 0 6px">${PC.t(GEN ? 'ac.gen.dir' : 'ac.ctx.dir')}</div>
-            ${pathRow(PROJ_DIR)}
-            <div class="cx-h" style="margin:14px 0 6px"><span>${PC.t(GEN ? 'ac.gen.home' : 'ac.ctx.home')}</span><span class="badge badge-success"><i data-lucide="shield-check"></i>${PC.t(GEN ? 'ac.gen.isolated' : 'ac.isolated')}</span></div>
-            ${pathRow(homeOf(s.cli))}
-            <div class="note"><i data-lucide="lock-keyhole"></i><span>${PC.t(GEN ? 'ac.gen.home.note' : 'ac.ctx.home.note')}</span></div>
-            <div class="cx-h" style="margin:14px 0 6px">${PC.t('ac.ctx.sid')}</div>
-            ${pathRow(s.sid)}
-            <div class="cx-h" style="margin:14px 0 6px">${PC.t('ac.ctx.chat')}</div>
-            ${pathRow(chatOf(s))}
-            <div class="note"><i data-lucide="folder-open"></i><span>${PC.t(GEN ? 'ac.gen.chat.note' : 'ac.ctx.chat.note')}</span></div></div>
-          <div class="cx"><div class="cx-h">${PC.t('ac.ctx.totals')}</div>
+            <div class="u-sub" style="margin-top:8px">${PC.t('use.updated', { t: PC.usage.clock(lim.at) })}</div>
+            <div class="u-sub">${PC.t('use.account')}</div>
+            <div class="src">${PC.t('use.src')}: ${esc(lim.src)}</div>
+          <div class="cx-h">${PC.t('ac.ctx.totals')}</div>
             <div class="kv"><span class="k">${PC.t('ac.ctx.in')}</span><span class="v">${n(s.tok.i)}</span></div>
             <div class="kv"><span class="k">${PC.t('ac.ctx.out')}</span><span class="v">${n(s.tok.o)}</span></div>
             <div class="kv"><span class="k">${PC.t('ac.ctx.cache')}</span><span class="v">${n(s.tok.c)}</span></div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.cost')}</span><span class="v">$${cost.toFixed(2)}</span></div></div>
-          <div class="cx" style="border-bottom:0"><div class="cx-h">${PC.t('ac.ctx.transcript')}</div><p class="text-xs text-subtle" style="margin:0 0 10px">${PC.t('ac.ctx.transcript.sub')}</p>
-            <div class="row gap-2"><button class="btn btn-secondary btn-sm grow" data-exp="md"><i data-lucide="file-code-2" class="icon-sm"></i>Markdown</button><button class="btn btn-secondary btn-sm grow" data-exp="json"><i data-lucide="braces" class="icon-sm"></i>JSON</button></div></div>`;
-        PC.refresh($('#ctxp'));
-        const xc = $('#x-compact'); if (xc) xc.onclick = () => { s.ctx = { cr: Math.round(w * .05), nw: Math.round(w * .02), o: 0, at: nowIso() }; save(); renderCtx(); renderMeter(); PC.toast(PC.t('use.compacted'), { icon: 'fold-vertical' }); };
-        const xn = $('#x-newchat'); if (xn) xn.onclick = newChat;
-        $('#x-refresh').onclick = () => { const l = PC.usage.get(s.cli); l.at = nowIso(); PC.usage.set(s.cli, l); PC.toast(PC.t('use.refreshed'), { icon: 'refresh-cw' }); };
-        if ($('#x-add')) $('#x-add').onclick = e => mentionPopover(e.currentTarget, id => { if (!s.attached.includes(id)) { s.attached.push(id); save(); renderCtx(); } });
-        $$('[data-detach]', $('#ctxp')).forEach(b => b.onclick = () => { s.attached = s.attached.filter(x => x !== b.dataset.detach); save(); renderCtx(); });
-        $$('[data-copy]', $('#ctxp')).forEach(b => b.onclick = () => { try { navigator.clipboard && navigator.clipboard.writeText(b.dataset.copy); } catch (e) { /* ignore */ } PC.toast(PC.t('ac.copied')); });
-        $$('[data-exp]', $('#ctxp')).forEach(b => b.onclick = () => exportTranscript(b.dataset.exp));
+            <div class="kv"><span class="k">${PC.t('ac.ctx.cost')}</span><span class="v">$${((s.tok.i * 15 + s.tok.o * 75 + s.tok.c * 1.5) / 1e6).toFixed(2)}</span></div>`;
       }
+      function pathRow(v) { return `<div class="path"><span>${esc(v)}</span><button class="btn btn-ghost btn-icon btn-sm" data-copy="${esc(v)}" style="--_h:22px"><i data-lucide="copy" class="icon-sm"></i></button></div>`; }
+      function attachedRow(id) {
+        const a = artOf(id); if (!a) return '';
+        return `<div class="a-row"><span class="file-tile"><i data-lucide="${a[2]}" class="icon-sm"></i></span><a href="artifacts.html#${a[0]}" class="truncate">${esc(a[1])}</a><button class="btn btn-ghost btn-icon btn-sm x" data-detach="${id}"><i data-lucide="x" class="icon-sm"></i></button></div>`;
+      }
+      function attachedHtml(s) {
+        if (GEN) return '';
+        return `<div class="cx-h">${PC.t('ac.ctx.attached')}<button class="btn btn-ghost btn-sm" id="x-add" style="margin:-6px -8px -6px 0"><i data-lucide="plus" class="icon-sm"></i>${PC.t('ac.ctx.add')}</button></div>${s.attached.map(attachedRow).join('') || `<div class="text-xs text-faint">${PC.t('ac.ctx.none')}</div>`}`;
+      }
+      function chatContextHtml(s) {
+        const phases = GEN ? '' : `<div class="kv"><span class="k">${PC.t('ac.ctx.phase')}</span><span class="v">${phaseChip(s.phase)}</span></div><div class="kv"><span class="k">${PC.t('ac.ctx.pphase')}</span><span class="v">${phaseChip(p.phase)}</span></div>`;
+        return `<div class="cx-h">${PC.t('ac.context')}</div>
+            <div class="kv"><span class="k">${PC.t(GEN ? 'ac.ctx.scope' : 'ac.ctx.project')}</span><span class="v row gap-1">${scopeAv(s.scope)}<span class="truncate">${esc(scopeName(s.scope))}</span></span></div>${phases}
+            <div class="kv"><span class="k">${PC.t('ac.messages')}</span><span class="v">${s.messages.length}</span></div>
+          ${attachedHtml(s)}
+          <div class="cx-h">${PC.t('ac.ctx.runtime')}</div>
+            <div class="kv"><span class="k">${PC.t('ac.ctx.cli')}</span><span class="v">${CLI[s.cli].name} <span class="text-faint" style="font-weight:400">${CLI[s.cli].ver}</span></span></div>
+            <div class="kv"><span class="k">${PC.t('ac.ctx.model')}</span><span class="v mono" style="font-size:12px">${CLI[s.cli].model}</span></div>
+          <div class="cx-h">${PC.t(GEN ? 'ac.gen.dir' : 'ac.ctx.dir')}</div>${pathRow(PROJ_DIR)}
+          <div class="cx-h"><span>${PC.t(GEN ? 'ac.gen.home' : 'ac.ctx.home')}</span><span class="badge badge-success"><i data-lucide="shield-check"></i>${PC.t(GEN ? 'ac.gen.isolated' : 'ac.isolated')}</span></div>${pathRow(homeOf(s.cli))}
+            <div class="note"><i data-lucide="lock-keyhole"></i><span>${PC.t(GEN ? 'ac.gen.home.note' : 'ac.ctx.home.note')}</span></div>
+          <div class="cx-h">${PC.t('ac.ctx.sid')}</div>${pathRow(s.sid)}
+          <div class="cx-h">${PC.t('ac.ctx.chat')}</div>${pathRow(chatOf(s))}
+            <div class="note"><i data-lucide="folder-open"></i><span>${PC.t(GEN ? 'ac.gen.chat.note' : 'ac.ctx.chat.note')}</span></div>
+          <div class="row gap-2" style="margin-top:12px"><button class="btn btn-secondary btn-sm grow" data-exp="md"><i data-lucide="file-code-2" class="icon-sm"></i>Markdown</button><button class="btn btn-secondary btn-sm grow" data-exp="json"><i data-lucide="braces" class="icon-sm"></i>JSON</button></div>`;
+      }
+      function openUsage() {
+        const strip = $('#b-usage'), s = S();
+        const pop = PC.popover(strip, `<div class="ctx-pop"><div>${usageHtml(s)}</div><div>${chatContextHtml(s)}</div></div>`, () => {});
+        const r = $('#cmp').getBoundingClientRect();
+        pop.style.width = r.width + 'px'; pop.style.left = r.left + 'px';
+        pop.style.top = Math.max(8, strip.getBoundingClientRect().top - pop.offsetHeight - 6) + 'px';
+        bindUsage(pop, s);
+      }
+      function copyText(v) {
+        try { if (navigator.clipboard) navigator.clipboard.writeText(v); } catch (e) { /* ignore */ }
+        PC.toast(PC.t('ac.copied'));
+      }
+      function attachTo(s, id) {
+        if (!s.attached.includes(id)) { s.attached.push(id); save(); }
+        openUsage();
+      }
+      function detachFrom(s, id) { s.attached = s.attached.filter(x => x !== id); save(); openUsage(); }
+      function bindUsage(pop, s) {
+        const xc = $('#x-compact', pop), xn = $('#x-newchat', pop), xa = $('#x-add', pop);
+        if (xc) xc.onclick = () => compactChat(pop, s);
+        if (xn) xn.onclick = () => { pop.remove(); newChat(); };
+        if (xa) xa.onclick = e => mentionPopover(e.currentTarget, id => attachTo(s, id));
+        $('#x-refresh', pop).onclick = () => refreshUsage(pop, s);
+        $$('[data-detach]', pop).forEach(b => { b.onclick = () => detachFrom(s, b.dataset.detach); });
+        $$('[data-copy]', pop).forEach(b => { b.onclick = () => copyText(b.dataset.copy); });
+        $$('[data-exp]', pop).forEach(b => { b.onclick = () => exportTranscript(b.dataset.exp); });
+      }
+      function compactChat(pop, s) {
+        const w = CLI[s.cli].win;
+        s.ctx = { cr: Math.round(w * .05), nw: Math.round(w * .02), o: 0, at: nowIso() };
+        pop.remove(); save(); renderMeter(); PC.toast(PC.t('use.compacted'), { icon: 'fold-vertical' });
+      }
+      function refreshUsage(pop, s) {
+        const l = PC.usage.get(s.cli); l.at = nowIso();
+        pop.remove(); PC.usage.set(s.cli, l); PC.toast(PC.t('use.refreshed'), { icon: 'refresh-cw' });
+      }
+      function renderCtx() { if (document.querySelector('.popover .ctx-pop')) openUsage(); }
       function mentionPopover(anchor, pick) {
         PC.popover(anchor, `<div class="menu-label">${PC.t('ac.mention.title')}</div>` + ARTL.map(a => `<button class="menu-item" data-v="${a[0]}"><i data-lucide="${a[2]}"></i><span class="truncate" style="max-width:240px">${esc(a[1])}</span></button>`).join(''), pick);
       }
@@ -815,7 +945,7 @@
         const short = text.length > 60 ? text.slice(0, 60) + '…' : text;
         const bin = s.cli === 'codex' ? 'codex exec' : 'claude -p';
         return { tool: tool(X('Answer (no project context)', 'Trả lời (không ngữ cảnh dự án)'), `${bin} "${short.replace(/"/g, "'")}"`, out(['info', 'cwd   ' + PROJ_DIR + ' (empty)'], ['ok', 'done']), '4.1s'),
-          md: X('Here is a short answer to **' + short + '**. Because this is a general chat, I did not read any project files — if this belongs to a project, use **Move to project…** in the chat menu so the next answers can use its artifacts.', 'Đây là câu trả lời ngắn cho **' + short + '**. Vì đây là chat chung nên mình không đọc file dự án nào — nếu nội dung thuộc một dự án, dùng **Chuyển vào dự án…** trong menu của chat để các câu trả lời sau dùng được tài liệu của dự án đó.'), extra: [] };
+          md: X('Here is a short answer to **' + short + '**. This chat has no project, so I did not read any project files — if it belongs to a project, pick it next to the chat title so the next answers can use its artifacts.', 'Đây là câu trả lời ngắn cho **' + short + '**. Vì chat này không thuộc dự án nên mình không đọc file dự án nào — nếu nội dung thuộc một dự án, chọn dự án cạnh tiêu đề chat để các câu trả lời sau dùng được tài liệu của dự án đó.'), extra: [] };
       }
       function makeReply(text, cmd, mode, s) {
         if (GEN) return generalReply(text, s);
@@ -849,7 +979,7 @@
         if (s.messages.length === 1 && /^New chat|^Chat mới$/.test(s.title)) s.title = (text || chips[0][1]).replace(/^\/\w+\s*/, '').slice(0, 52) || s.title;
         s.at = nowIso(); state.chips = [];
         $('#ta').value = ''; $('#ta').style.height = ''; closeMenu();
-        renderThread(); renderHead(); renderList(); save();
+        renderThread(); renderHead(); save();
         reply(text, cmd, s);
       }
       let timers = [];
@@ -882,7 +1012,7 @@
         // end of turn (Stop hook / result event): the whole previous prompt is now cache read, plus the new input and output
         const at = nowIso(); s.ctx = { cr: ctxUsed(s), nw: di, o: dout, at };
         PC.usage.record(s.cli, at);   // also fires pc:usage → meter + limits re-render
-        state.stream = null; timers = []; save(); renderThread(); renderComposer(); renderList(); renderCtx();
+        state.stream = null; timers = []; save(); renderThread(); renderComposer(); renderCtx();
       }
       function stopStream() { const st = state.stream; if (!st) return; clearInterval(st.iv); timers.forEach(clearTimeout); timers = []; if (!st.partial) st.partial = rep0(st); finish(); }
       const rep0 = st => st.rep.md.slice(0, 40) + '…';
@@ -914,51 +1044,39 @@
       }
 
       /* ===================== session actions ===================== */
-      function openSession(id) { if (state.stream) return; state.cur = id; state.chips = []; state.sessOpen = false; $('#ac').classList.remove('sess-open'); try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ } renderAll(); }
-      function newChat() {
+      function openSession(id) {
         if (state.stream) return;
-        const ex = state.sessions.find(s => !s.messages.length); if (ex) return openSession(ex.id);
+        state.cur = id; state.chips = []; useScope(S().scope);
+        try { history.replaceState(null, '', '#' + id); localStorage.setItem('pc.assistant.page.cur', id); } catch (e) { /* file:// */ }
+        renderAll();
+      }
+      function newChat(scope) {
+        if (state.stream) return;
+        scope = scope || (S() ? S().scope : PC.data.currentProjectId);
+        const ex = state.sessions.find(s => !s.messages.length && s.scope === scope);
+        if (ex) { openSession(ex.id); $('#ta').focus(); return; }
         const id = 'n' + Date.now().toString(36), cli = S() ? S().cli : 'claude';
-        state.sessions.unshift({ id, title: PC.t('ac.newchat'), phase: p.phase, cli, at: nowIso(), pinned: false, attached: [], sid: (cli === 'codex' ? 'cdx_' : 'ses_') + Math.random().toString(16).slice(2, 14).toUpperCase(), tok: { i: 0, o: 0, c: 0 }, ctx: { cr: 0, nw: 0, o: 0, at: null }, messages: [] });
+        state.sessions.unshift({ id, scope, title: PC.t('ac.newchat'), phase: scopeProject(scope).phase, cli, at: nowIso(), pinned: false, attached: [], sid: (cli === 'codex' ? 'cdx_' : 'ses_') + Math.random().toString(16).slice(2, 14).toUpperCase(), tok: { i: 0, o: 0, c: 0 }, ctx: { cr: 0, nw: 0, o: 0, at: null }, messages: [] });
         save(); openSession(id); $('#ta').focus();
       }
-      function sessionMenu(anchor, id) {
-        const s = state.sessions.find(x => x.id === id);
-        PC.popover(anchor, `<button class="menu-item" data-v="pin"><i data-lucide="${s.pinned ? 'pin-off' : 'pin'}"></i>${PC.t(s.pinned ? 'ac.unpin' : 'ac.pin')}</button><button class="menu-item" data-v="rename"><i data-lucide="pencil"></i>${PC.t('ac.rename')}</button>${GEN ? `<button class="menu-item" data-v="move"><i data-lucide="folder-input"></i>${PC.t('ac.move')}</button>` : ''}<div class="menu-sep"></div><button class="menu-item" data-v="del" style="color:var(--danger-fg)"><i data-lucide="trash-2"></i>${PC.t('ac.delete')}</button>`, v => {
-          if (v === 'pin') { s.pinned = !s.pinned; save(); renderList(); }
-          else if (v === 'rename') PC.modal({ title: PC.t('ac.rename.title'), width: 440, body: `<input class="input" id="rn" value="${esc(s.title)}">`, actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('common.save'), kind: 'primary', onClick: ov => { const v2 = $('#rn', ov).value.trim(); if (v2) { s.title = v2; save(); renderList(); renderHead(); PC.toast(PC.t('ac.renamed')); } } }] });
-          else if (v === 'move') moveToProject(s);
-          else if (v === 'del') PC.modal({ title: PC.t('ac.delete.title'), width: 440, body: `<p class="text-muted">${PC.t(GEN ? 'ac.gen.delete.body' : 'ac.delete.body')}</p>`, actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('ac.delete'), kind: 'danger', icon: 'trash-2', onClick: () => { state.sessions = state.sessions.filter(x => x.id !== id); save(); if (!state.sessions.length) { newChat(); } else if (state.cur === id) openSession(state.sessions.slice().sort((a, b) => new Date(b.at) - new Date(a.at))[0].id); else renderList(); PC.toast(PC.t('ac.deleted'), { icon: 'trash-2' }); } }] });
-        });
+      function queryScope() {
+        const m = location.search.match(/[?&]scope=([\w-]+)/); if (!m) return null;
+        return m[1] === 'general' ? '__general' : SCOPES.includes(m[1]) ? m[1] : null;
+      }
+      function initialChat() {
+        const h = location.hash.slice(1); let last = null;
+        try { last = localStorage.getItem('pc.assistant.page.cur'); } catch (e) { /* ignore */ }
+        const pick = [h, last].find(id => id && state.sessions.some(s => s.id === id));
+        return pick || state.sessions.slice().sort((a, b) => new Date(b.at) - new Date(a.at))[0].id;
       }
 
-      // General chat → project: the transcript moves into <project dir>\.procheck\chats and picks up that project's context.
-      function moveToProject(s) {
-        const ov = PC.modal({ title: PC.t('ac.move.title'), width: 460, body: PC.data.projects.map(pr => `<button class="menu-item" data-move="${pr.id}" style="width:100%"><span class="project-avatar" style="background:${pr.color};width:24px;height:24px;border-radius:6px;font-size:9px">${pr.short}</span><span class="grow truncate">${esc(pr.name)}</span><span class="phase-chip phase-${pr.phase}">${PC.t('phase.' + pr.phase)}</span></button>`).join(''), actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }] });
-        ov.el.addEventListener('click', e => {
-          const b = e.target.closest('[data-move]'); if (!b) return;
-          const pr = PC.project(b.dataset.move), key = PC.chats.key(pr.id);
-          let list = null; try { list = JSON.parse(localStorage.getItem(key) || 'null'); } catch (err) { /* ignore */ }
-          if (!Array.isArray(list) || !list.length) list = JSON.parse(JSON.stringify(SEEDS[pr.id] || []));
-          list.unshift(Object.assign({}, s, { phase: pr.phase, pinned: false }));
-          try { localStorage.setItem(key, JSON.stringify(list)); } catch (err) { /* ignore */ }
-          state.sessions = state.sessions.filter(x => x.id !== s.id); save(); ov.close();
-          if (!state.sessions.length) newChat(); else if (state.cur === s.id) openSession(state.sessions.slice().sort((a, c) => new Date(c.at) - new Date(a.at))[0].id); else renderList();
-          PC.toast(PC.t('ac.moved', { p: esc(pr.name.split(' — ')[0]) }), { icon: 'folder-input', tone: 'success' });
-        });
-      }
-
-      function renderAll() { renderList(); renderHead(); renderThread(); renderComposer(); renderCtx(); }
+      function renderAll() { renderHead(); renderThread(); renderComposer(); renderList(); }
 
       /* ===================== boot ===================== */
       PC.onReady(() => {
-        const h = location.hash.slice(1);
-        state.cur = state.sessions.find(s => s.id === h) ? h : ((state.sessions.find(s => s.def) || state.sessions.slice().sort((a, b) => new Date(b.at) - new Date(a.at))[0]).id);
-        if (h === 'new') { state.cur = state.sessions[0].id; setTimeout(newChat, 0); }
+        state.cur = initialChat(); useScope(S().scope);
+        if (location.hash === '#new') setTimeout(() => newChat(queryScope() || S().scope), 0);
         const ta = $('#ta');
-        $('#btn-new').onclick = newChat;
-        $('#s-q').oninput = e => { state.q = e.target.value; renderList(); };
-        $('#s-list').onclick = e => { const m = e.target.closest('[data-menu]'); if (m) { e.stopPropagation(); return sessionMenu(m, m.dataset.menu); } const it = e.target.closest('[data-sid]'); if (it) openSession(it.dataset.sid); };
         $('#thread').onclick = e => {
           const tg = e.target.closest('[data-tool]'); if (tg) { tg.parentElement.classList.toggle('is-open'); return; }
           const f = e.target.closest('[data-fill]'); if (f) { ta.value = f.dataset.fill; ta.focus(); ta.dispatchEvent(new Event('input')); return; }
@@ -979,17 +1097,11 @@
         $('#f-in').onchange = e => { Array.from(e.target.files).forEach(f => state.chips.push({ icon: 'paperclip', label: f.name })); e.target.value = ''; renderComposer(); PC.toast(PC.t('ac.attached'), { icon: 'paperclip' }); };
         $('#b-mode').onclick = e => PC.popover(e.currentTarget, [['ask', 'message-circle'], ['edit', 'file-pen-line'], ['agent', 'bot']].map(m => `<button class="menu-item" data-v="${m[0]}" style="min-width:250px"><i data-lucide="${m[1]}"></i><span class="grow"><b style="font-weight:500">${PC.t('as.mode.' + m[0])}</b><span class="text-subtle" style="display:block;font-size:11px">${PC.t('ac.mode.' + m[0] + '.d')}</span></span>${state.mode === m[0] ? '<i data-lucide="check"></i>' : ''}</button>`).join(''), v => { state.mode = v; renderComposer(); });
         $('#b-cli').onclick = e => PC.popover(e.currentTarget, `<div class="menu-label">${PC.t('ac.cli.pick')}</div>` + PC.data.cli.map(c => `<button class="menu-item" data-v="${c.id}" style="min-width:260px"><span class="dot dot-success"></span><span class="grow"><b style="font-weight:500">${c.name}</b><span class="text-subtle mono" style="display:block;font-size:11px">${c.model}</span></span>${S().cli === c.id ? '<i data-lucide="check"></i>' : ''}</button>`).join(''), v => { const s = S(); if (s.cli !== v) { s.cli = v; save(); renderAll(); PC.toast(PC.t('ac.cli.switched', { cli: CLI[v].name }), { icon: 'terminal' }); } });
-        $('#b-meter').onclick = () => { state.ctx = true; $('#ac').classList.add('ctx-open'); };
-        // wide canvas shows the context pane by default; on narrower ones it is a drawer that starts closed
-        const wrap = $('.ac-wrap'); let narrow = null;
-        const fit = () => { const n = wrap.clientWidth <= 1240; if (n !== narrow) { narrow = n; state.ctx = !n; $('#ac').classList.toggle('ctx-open', state.ctx); } };
-        fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(wrap);
+        $('#b-usage').onclick = openUsage;
         document.addEventListener('mousedown', e => { if (state.menu && !e.target.closest('#cmp-menu, #ta')) closeMenu(); });
-        PC.assistant.setContext(GEN ? [{ icon: 'globe', label: PC.t('nav.chats.general') }] : [{ icon: 'folder', label: p.name.split(' — ')[0] }, { icon: 'sparkles', label: PC.t('nav.assistant') }]);
-        $('#b-quota').onclick = () => { state.ctx = true; $('#ac').classList.add('ctx-open'); const u = $('#cx-usage'); u && u.nextElementSibling && u.nextElementSibling.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
-        // sidebar "+" / chat links on this page only change the hash
         window.addEventListener('hashchange', () => { const hh = location.hash.slice(1); if (hh === 'new') newChat(); else if (hh && hh !== state.cur && state.sessions.some(s => s.id === hh)) openSession(hh); });
         document.addEventListener('pc:usage', () => { if (state.cur) { renderMeter(); renderCtx(); } });
+        document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') { e.preventDefault(); openHistory($('#h-title')); } });
         renderAll();
       });
       document.addEventListener('pc:lang', () => { if (state.cur) { closeMenu(); renderAll(); } });

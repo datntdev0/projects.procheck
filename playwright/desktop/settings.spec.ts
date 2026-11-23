@@ -62,7 +62,7 @@ test('storage lists the application data directory', async ({ ui, sandbox }) => 
 
   const storage = settings.section('storage');
   await expect(storage.getByTestId('storage-root')).toHaveText(sandbox.dataDir);
-  for (const entry of ['settings', 'projects', 'logs', 'cli', 'cache']) {
+  for (const entry of ['settings', 'projects', 'logs', 'cli', 'chats', 'cache']) {
     await expect(storage.getByTestId(`storage-item-${entry}`)).toBeVisible();
   }
   await expect(storage.getByTestId('storage-item-logs')).toContainText('logs\\');

@@ -12,7 +12,7 @@
           class="nav-item"
           [routerLink]="item.route"
           routerLinkActive="is-active"
-          [routerLinkActiveOptions]="{ exact: true }"
+          [routerLinkActiveOptions]="{ exact: !item.matchChildren }"
           [attr.data-testid]="'nav-' + item.id"
         >
           <pc-icon [name]="item.icon" />

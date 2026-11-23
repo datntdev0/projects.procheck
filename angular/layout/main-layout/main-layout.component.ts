@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { ToastStackComponent } from '@components/toast/toast-stack.component';
 
 import { AssistantPanelComponent } from '../assistant-panel/assistant-panel.component';
+import { injectAssistantHidden } from '../breadcrumbs';
 import { ASSISTANT_MIN_W, LayoutService } from '../layout.service';
 import { SearchDialogComponent } from '../search-dialog/search-dialog.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -20,7 +21,7 @@ import { TopbarComponent } from '../topbar/topbar.component';
   template: `
     <div
       class="app"
-      [class.assistant-closed]="!layout.assistantOpen()"
+      [class.assistant-closed]="!layout.assistantOpen() || assistantHidden()"
       [class.is-resizing]="layout.assistantResizing()"
       [style.--assistant-w]="assistantWidth()"
       data-testid="app-shell"
@@ -30,7 +31,9 @@ import { TopbarComponent } from '../topbar/topbar.component';
       <main class="canvas" data-testid="canvas">
         <router-outlet />
       </main>
-      <pc-assistant-panel />
+      @if (!assistantHidden()) {
+        <pc-assistant-panel />
+      }
     </div>
     <pc-search-dialog />
     <pc-toast-stack />
@@ -38,6 +41,7 @@ import { TopbarComponent } from '../topbar/topbar.component';
 })
 export class MainLayoutComponent {
   protected readonly layout = inject(LayoutService);
+  protected readonly assistantHidden = injectAssistantHidden();
 
   /** User-chosen width, capped so the canvas keeps room on narrow windows; `null` keeps the CSS default. */
   protected readonly assistantWidth = computed(() => {
@@ -51,7 +55,7 @@ export class MainLayoutComponent {
     if (key === 'k') {
       event.preventDefault();
       this.layout.openSearch();
-    } else if (key === 'j') {
+    } else if (key === 'j' && !this.assistantHidden()) {
       event.preventDefault();
       this.layout.toggleAssistant();
     }
