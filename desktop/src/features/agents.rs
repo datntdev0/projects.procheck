@@ -394,8 +394,8 @@ pub fn sign_out(agent: AgentId, custom: Option<&str>, home: &Path) -> Result<Age
 }
 
 /// Models offered for the CLI.
-/// Claude: the aliases Claude Code resolves to the latest model of each family, then the
-/// current model ids (all verified with `claude -p --model …`).
+/// Claude: the aliases Claude Code resolves to the latest model of each family
+/// (verified with `claude -p --model …`).
 /// Codex: the catalog the CLI reports for the signed-in account (`codex debug models`).
 fn models(agent: AgentId, bin: &Path, env: &Launch<'_>) -> Vec<ModelOption> {
     match agent {
@@ -414,16 +414,12 @@ fn models(agent: AgentId, bin: &Path, env: &Launch<'_>) -> Vec<ModelOption> {
     }
 }
 
-/// `--model` values for Claude Code: aliases first, then the full model ids.
+/// `--model` values for Claude Code: the aliases that always resolve to the latest model of each family.
 const CLAUDE_MODELS: &[(&str, &str)] = &[
     ("fable", "Fable · latest (fable)"),
     ("opus", "Opus · latest (opus)"),
     ("sonnet", "Sonnet · latest (sonnet)"),
     ("haiku", "Haiku · latest (haiku)"),
-    ("claude-fable-5-2", "Claude Fable 5.2 (claude-fable-5-2)"),
-    ("claude-opus-5-5", "Claude Opus 5.5 (claude-opus-5-5)"),
-    ("claude-sonnet-5-5", "Claude Sonnet 5.5 (claude-sonnet-5-5)"),
-    ("claude-haiku-5-5", "Claude Haiku 5.5 (claude-haiku-5-5)"),
 ];
 
 // ---------- Output parsing ----------
