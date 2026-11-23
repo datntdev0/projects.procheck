@@ -6,6 +6,7 @@ import { MENU } from '@components/menu/menu.component';
 import { I18nService } from '@shared/i18n/i18n.service';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
+import { ThemeService } from '@shared/theme/theme.service';
 
 import { LayoutService } from '../layout.service';
 import { MAIN_NAV, SETTINGS_NAV } from '../navigation';
@@ -28,6 +29,7 @@ export class SearchDialogComponent {
   protected readonly layout = inject(LayoutService);
   private readonly router = inject(Router);
   private readonly i18n = inject(I18nService);
+  private readonly theme = inject(ThemeService);
   private readonly input = viewChild<ElementRef<HTMLInputElement>>('queryInput');
 
   protected readonly query = signal('');
@@ -42,6 +44,7 @@ export class SearchDialogComponent {
     })),
     { group: 'pal.actions', label: 'pal.toggleassistant', icon: 'sparkles', run: () => this.layout.toggleAssistant() },
     { group: 'pal.actions', label: 'pal.togglelang', icon: 'languages', run: () => this.i18n.toggle() },
+    { group: 'pal.actions', label: 'pal.toggletheme', icon: 'sun-moon', run: () => this.theme.toggle() },
   ];
 
   protected readonly results = computed(() => {

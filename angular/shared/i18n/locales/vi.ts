@@ -30,6 +30,7 @@ export const vi: Translations = {
   'pal.actions': 'Hành động',
   'pal.toggleassistant': 'Bật/tắt trợ lý',
   'pal.togglelang': 'Đổi ngôn ngữ (EN / VI)',
+  'pal.toggletheme': 'Đổi giao diện sáng/tối',
   'pal.empty': 'Không có kết quả',
 
   'as.title': 'Trợ lý Procheck',

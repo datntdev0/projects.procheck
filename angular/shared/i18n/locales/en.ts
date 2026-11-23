@@ -28,6 +28,7 @@ export const en = {
   'pal.actions': 'Actions',
   'pal.toggleassistant': 'Toggle assistant',
   'pal.togglelang': 'Switch language (EN / VI)',
+  'pal.toggletheme': 'Toggle light / dark theme',
   'pal.empty': 'No results',
 
   'as.title': 'Procheck Assistant',

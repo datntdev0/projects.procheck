@@ -30,14 +30,23 @@
 
   <pc-dropdown placement="bottom-end">
     <button type="button" class="tb-btn" pcDropdownTrigger [pcTooltip]="'shell.theme' | t" tooltipPosition="bottom" data-testid="theme-button">
-      <pc-icon name="sun-moon" [size]="14" />
+      <pc-icon [name]="themeIcon(theme.preference())" [size]="14" />
     </button>
     <pc-menu style="width: 200px">
       <pc-menu-label>{{ 'shell.theme' | t }}</pc-menu-label>
-      @for (theme of themes; track theme.id) {
-        <button type="button" pcMenuItem>
-          <pc-icon [name]="theme.icon" />
-          <span>{{ theme.label | t }}</span>
+      @for (pref of themes; track pref) {
+        <button
+          type="button"
+          pcMenuItem
+          [active]="pref === theme.preference()"
+          [attr.data-testid]="'theme-' + pref"
+          (click)="theme.setPreference(pref)"
+        >
+          <pc-icon [name]="themeIcon(pref)" />
+          <span class="grow">{{ 'theme.' + pref | t }}</span>
+          @if (pref === theme.preference()) {
+            <pc-icon name="check" />
+          }
         </button>
       }
     </pc-menu>
