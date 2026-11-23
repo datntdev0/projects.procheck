@@ -13,7 +13,9 @@ pub fn size_of(path: &Path) -> Option<u64> {
     while let Some(dir) = stack.pop() {
         let Ok(entries) = fs::read_dir(&dir) else { continue };
         for entry in entries.flatten() {
-            let Ok(meta) = entry.metadata() else { continue };
+            // Not `entry.metadata()`: on Windows it returns the directory entry's cached size,
+            // which lags behind for files that are still open (e.g. today's log).
+            let Ok(meta) = fs::symlink_metadata(entry.path()) else { continue };
             if meta.is_dir() {
                 stack.push(entry.path());
             } else {

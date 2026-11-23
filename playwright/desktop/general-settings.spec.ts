@@ -22,6 +22,7 @@ test('general settings are saved to settings.json and survive a restart', async 
     expect(readSettings()).toEqual({
       version: 1,
       general: { theme: 'system', language: 'en', defaultProjectDir: null, onStartup: 'lastProject' },
+      diagnostics: { logLevel: 'info', logRetentionDays: 14 },
     });
     await settings.open();
     await expect(settings.settingsFile).toHaveText(settingsPath);

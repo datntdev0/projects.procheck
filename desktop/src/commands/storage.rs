@@ -35,5 +35,10 @@ pub fn storage_open<R: Runtime>(
             }
         }
     };
-    result.map_err(|e| CommandError::new("opener", e))
+    result
+        .inspect(|()| log::debug!("opened {entry:?} in the file manager"))
+        .map_err(|e| {
+            log::warn!("could not open {entry:?} in the file manager: {e}");
+            CommandError::new("opener", e)
+        })
 }

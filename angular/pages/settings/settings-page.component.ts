@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, inject, signal } from '@angular/core';
 
 import { ButtonComponent } from '@components/button/button.component';
-import { CARD } from '@components/card/card.component';
 import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
 import { AppSettingsService } from '@features/settings/app-settings.service';
@@ -10,10 +9,10 @@ import { I18nService } from '@shared/i18n/i18n.service';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { AboutSectionComponent } from './sections/about-section.component';
+import { DiagnosticsSectionComponent } from './sections/diagnostics-section.component';
 import { GeneralSectionComponent } from './sections/general-section.component';
 import { StorageSectionComponent } from './sections/storage-section.component';
 import { SettingsFormService } from './settings-form.service';
-import { SettingsSectionComponent } from './settings-section.component';
 import { SETTINGS_NAV, SETTINGS_SECTION_IDS, SettingsSectionId } from './settings-sections';
 
 /** Offset (px) below the top of the canvas at which a section counts as the current one. */
@@ -26,10 +25,9 @@ const SPY_OFFSET = 90;
     ButtonComponent,
     IconComponent,
     TranslatePipe,
-    SettingsSectionComponent,
-    ...CARD,
     AboutSectionComponent,
     GeneralSectionComponent,
+    DiagnosticsSectionComponent,
     StorageSectionComponent,
   ],
   providers: [SettingsFormService],

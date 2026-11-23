@@ -4,6 +4,7 @@ use tauri_plugin_dialog::DialogExt;
 
 use super::{CommandError, CommandResult};
 use crate::features::settings::{AppSettings, SettingsStore};
+use crate::infra::logger;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -22,9 +23,12 @@ pub fn settings_get(store: State<'_, SettingsStore>) -> SettingsSnapshot {
 }
 
 /// Replaces the settings and writes `settings.json`; returns the stored (normalized) settings.
+/// The log level applies right away; log retention applies at the next startup.
 #[tauri::command]
 pub fn settings_save(store: State<'_, SettingsStore>, settings: AppSettings) -> CommandResult<AppSettings> {
-    store.save(settings).map_err(|e| CommandError::new(e.code(), e))
+    let saved = store.save(settings).map_err(|e| CommandError::new(e.code(), e))?;
+    logger::set_level(saved.diagnostics.log_level.into());
+    Ok(saved)
 }
 
 /// Native folder picker; `None` when cancelled.

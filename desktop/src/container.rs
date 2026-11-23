@@ -30,7 +30,7 @@ impl AppDirectories {
         Self::at(root).map_err(Into::into)
     }
 
-    fn at(root: PathBuf) -> StorageResult<Self> {
+    pub(crate) fn at(root: PathBuf) -> StorageResult<Self> {
         let directories = Self { root };
         for dir in [&directories.root, &directories.logs_dir(), &directories.cache_dir()] {
             fs::create_dir_all(dir)?;

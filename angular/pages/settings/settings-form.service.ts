@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { AppSettings, StartupView } from '@features/settings/app-settings.model';
+import { AppSettings, DiagnosticsSettings, StartupView } from '@features/settings/app-settings.model';
 import { AppSettingsService } from '@features/settings/app-settings.service';
 import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
 
@@ -14,6 +14,7 @@ export interface SettingsForm {
     defaultProjectDir: string;
     onStartup: StartupView;
   };
+  diagnostics: DiagnosticsSettings;
 }
 
 export type SettingsField = 'defaultProjectDir';
@@ -24,6 +25,7 @@ function toForm(settings: AppSettings): SettingsForm {
       defaultProjectDir: settings.general.defaultProjectDir ?? '',
       onStartup: settings.general.onStartup,
     },
+    diagnostics: { ...settings.diagnostics },
   };
 }
 
@@ -35,6 +37,7 @@ function applyForm(settings: AppSettings, form: SettingsForm): AppSettings {
       defaultProjectDir: form.general.defaultProjectDir.trim() || null,
       onStartup: form.general.onStartup,
     },
+    diagnostics: { ...form.diagnostics },
   };
 }
 
@@ -55,6 +58,10 @@ export class SettingsFormService {
   patchGeneral(patch: Partial<SettingsForm['general']>): void {
     this.value.update((v) => ({ ...v, general: { ...v.general, ...patch } }));
     if ('defaultProjectDir' in patch) this.invalidField.set(null);
+  }
+
+  patchDiagnostics(patch: Partial<DiagnosticsSettings>): void {
+    this.value.update((v) => ({ ...v, diagnostics: { ...v.diagnostics, ...patch } }));
   }
 
   async save(): Promise<SaveResult> {

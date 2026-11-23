@@ -4,6 +4,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
+use log::LevelFilter;
 use serde::{Deserialize, Serialize};
 
 use crate::infra::storage::{StorageError, json_file};
@@ -17,6 +18,7 @@ pub struct AppSettings {
     /// Layout version of the file, for future upgrades.
     pub version: u32,
     pub general: GeneralSettings,
+    pub diagnostics: DiagnosticsSettings,
 }
 
 impl Default for AppSettings {
@@ -24,6 +26,7 @@ impl Default for AppSettings {
         Self {
             version: SETTINGS_VERSION,
             general: GeneralSettings::default(),
+            diagnostics: DiagnosticsSettings::default(),
         }
     }
 }
@@ -62,6 +65,47 @@ pub enum StartupView {
     #[default]
     LastProject,
     AllProjects,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct DiagnosticsSettings {
+    pub log_level: LogLevel,
+    /// Log files older than this are deleted at startup.
+    pub log_retention_days: u32,
+}
+
+/// Allowed range of `logRetentionDays`.
+pub const LOG_RETENTION_DAYS: std::ops::RangeInclusive<u32> = 1..=365;
+
+impl Default for DiagnosticsSettings {
+    fn default() -> Self {
+        Self {
+            log_level: LogLevel::Info,
+            log_retention_days: 14,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum LogLevel {
+    Error,
+    Warn,
+    #[default]
+    Info,
+    Debug,
+}
+
+impl From<LogLevel> for LevelFilter {
+    fn from(level: LogLevel) -> Self {
+        match level {
+            LogLevel::Error => LevelFilter::Error,
+            LogLevel::Warn => LevelFilter::Warn,
+            LogLevel::Info => LevelFilter::Info,
+            LogLevel::Debug => LevelFilter::Debug,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -110,10 +154,17 @@ impl SettingsStore {
     pub fn load(path: PathBuf) -> Result<Self, StorageError> {
         let settings = match json_file::read::<AppSettings>(&path) {
             Ok(Some(settings)) => settings,
-            Ok(None) => Self::create(&path)?,
-            Err(StorageError::Json { .. }) => {
+            Ok(None) => {
+                log::info!("{} not found, writing defaults", path.display());
+                Self::create(&path)?
+            }
+            Err(e @ StorageError::Json { .. }) => {
                 // Keep the broken file for the user; a failed rename is overwritten below.
-                let _ = fs::rename(&path, invalid_backup_path(&path));
+                let backup = invalid_backup_path(&path);
+                match fs::rename(&path, &backup) {
+                    Ok(()) => log::warn!("{e}; moved to {} and reset to defaults", backup.display()),
+                    Err(rename) => log::warn!("{e}; could not keep a copy ({rename}), resetting to defaults"),
+                }
                 Self::create(&path)?
             }
             Err(e) => return Err(e),
@@ -140,10 +191,12 @@ impl SettingsStore {
 
     /// Validates, normalizes and persists `settings`; returns what was stored.
     pub fn save(&self, settings: AppSettings) -> Result<AppSettings, SettingsError> {
-        let settings = normalize(settings)?;
+        let settings = normalize(settings).inspect_err(|e| log::warn!("settings rejected: {e}"))?;
         let mut current = self.lock();
-        json_file::write(&self.path, &settings)?;
+        json_file::write(&self.path, &settings).inspect_err(|e| log::error!("could not write settings: {e}"))?;
         *current = settings.clone();
+        log::info!("settings saved to {}", self.path.display());
+        log::debug!("settings: {settings:?}");
         Ok(settings)
     }
 
@@ -159,6 +212,10 @@ fn invalid_backup_path(path: &Path) -> PathBuf {
 
 fn normalize(mut settings: AppSettings) -> Result<AppSettings, SettingsError> {
     settings.version = SETTINGS_VERSION;
+    settings.diagnostics.log_retention_days = settings
+        .diagnostics
+        .log_retention_days
+        .clamp(*LOG_RETENTION_DAYS.start(), *LOG_RETENTION_DAYS.end());
     let dir = settings
         .general
         .default_project_dir
@@ -207,6 +264,7 @@ mod tests {
 
         assert_eq!(store.get().general.theme, ThemePreference::Dark);
         assert_eq!(store.get().general.language, Language::En);
+        assert_eq!(store.get().diagnostics, DiagnosticsSettings::default());
         fs::remove_dir_all(dir).unwrap();
     }
 
@@ -243,7 +301,15 @@ mod tests {
         assert!(matches!(store.save(bad), Err(SettingsError::FolderNotFound(_))));
         assert_eq!(store.get(), saved);
 
-        let mut blank = saved;
+        let mut diagnostics = saved.clone();
+        diagnostics.diagnostics = DiagnosticsSettings {
+            log_level: LogLevel::Debug,
+            log_retention_days: 0,
+        };
+        let stored = store.save(diagnostics).unwrap().diagnostics;
+        assert_eq!((stored.log_level, stored.log_retention_days), (LogLevel::Debug, 1));
+
+        let mut blank = store.get();
         blank.general.default_project_dir = Some("   ".into());
         assert_eq!(store.save(blank).unwrap().general.default_project_dir, None);
         fs::remove_dir_all(dir).unwrap();

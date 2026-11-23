@@ -14,6 +14,9 @@ export class SettingsPage {
   readonly onStartup: Locator;
   readonly theme: Locator;
   readonly language: Locator;
+  readonly logLevel: Locator;
+  readonly logRetention: Locator;
+  readonly logsSummary: Locator;
 
   constructor(private readonly page: Page) {
     this.root = page.getByTestId('settings-page');
@@ -26,6 +29,9 @@ export class SettingsPage {
     this.onStartup = page.getByTestId('setting-on-startup');
     this.theme = page.getByTestId('setting-theme');
     this.language = page.getByTestId('setting-language');
+    this.logLevel = page.getByTestId('setting-log-level');
+    this.logRetention = page.getByTestId('setting-log-retention');
+    this.logsSummary = page.getByTestId('logs-summary');
   }
 
   /** Opens the page from the sidebar. */
