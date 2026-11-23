@@ -4,6 +4,7 @@ import { getTauriVersion } from '@tauri-apps/api/app';
 import { ButtonComponent } from '@components/button/button.component';
 import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
+import { StorageEntry, StorageService } from '@features/storage/storage.service';
 import { APP_NAME, APP_VERSION } from '@shared/app/app-version';
 import { UpdateCheckResult, UpdateService } from '@shared/app/update.service';
 import { I18nService } from '@shared/i18n/i18n.service';
@@ -45,6 +46,10 @@ import { SettingsSectionComponent } from '../settings-section.component';
               </span>
             }
           </dd>
+          <dt>{{ 'set.about.settings' | t }}</dt>
+          <dd><code data-testid="about-settings-file">{{ paths()?.settings ?? '—' }}</code></dd>
+          <dt>{{ 'set.about.registry' | t }}</dt>
+          <dd><code data-testid="about-registry-file">{{ paths()?.projects ?? '—' }}</code></dd>
           <dt>{{ 'set.about.runtime' | t }}</dt>
           <dd>{{ runtime() }}</dd>
         </dl>
@@ -61,12 +66,15 @@ export class AboutSectionComponent implements OnInit {
   private readonly updates = inject(UpdateService);
   private readonly toast = inject(ToastService);
   private readonly i18n = inject(I18nService);
+  private readonly storage = inject(StorageService);
 
   protected readonly appName = APP_NAME;
   protected readonly version = APP_VERSION;
   protected readonly checking = signal(false);
   protected readonly lastCheck = signal<UpdateCheckResult | null>(null);
   private readonly tauriVersion = signal<string | null>(null);
+  /** Absolute paths of the app data files, keyed by entry; `null` outside the desktop app. */
+  protected readonly paths = signal<Partial<Record<StorageEntry, string>> | null>(null);
 
   protected readonly runtime = computed(() => `Tauri ${this.tauriVersion() ?? '2'} · Angular ${VERSION.full}`);
   protected readonly checkedAt = computed(() => {
@@ -79,8 +87,10 @@ export class AboutSectionComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     try {
       this.tauriVersion.set(await getTauriVersion());
+      const overview = await this.storage.overview();
+      this.paths.set(Object.fromEntries(overview.items.map((item) => [item.entry, item.path])));
     } catch {
-      // Outside Tauri (Storybook, plain browser): show the major version only.
+      // Outside Tauri (Storybook, plain browser): major Tauri version only, no file paths.
     }
   }
 

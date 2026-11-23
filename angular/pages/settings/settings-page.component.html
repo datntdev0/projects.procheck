@@ -8,6 +8,10 @@
         <span>{{ 'set.applies' | t }}</span>
       </div>
     </div>
+    <button pcButton type="button" data-testid="open-data-folder" (click)="openDataFolder()">
+      <pc-icon name="folder-open" />
+      {{ 'set.openfolder' | t }}
+    </button>
   </header>
 
   <div class="set-wrap">
@@ -43,9 +47,7 @@
         <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
       </pc-settings-section>
 
-      <pc-settings-section sectionId="storage" [title]="'set.n.storage' | t" [description]="'set.storage.d' | t">
-        <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
-      </pc-settings-section>
+      <pc-storage-section />
     </div>
   </div>
 </div>

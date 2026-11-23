@@ -52,6 +52,48 @@
   .brand-foot img { height: 22px; width: auto; }
   .logo-dark { display: none; }
 
+  /* ---------- Storage (application data vs. project data) ---------- */
+  .bound-cap { display: flex; justify-content: space-between; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-faint); margin-bottom: 8px; }
+  .bound { display: grid; grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr); align-items: stretch; }
+  // No overflow clipping: it would cut off the CSS tooltip of the open-folder button.
+  .zone { --_z: var(--brand); position: relative; display: flex; flex-direction: column; border-top: 3px solid var(--_z); }
+  .zone.proj { --_z: var(--accent-teal); }
+  .zone-head { padding: var(--space-4) var(--space-5) var(--space-3); display: flex; flex-direction: column; gap: 10px; }
+  .zone-top { display: flex; align-items: center; gap: var(--space-3); }
+  .zone-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--_z) 14%, transparent); color: var(--_z); flex-shrink: 0; }
+  .zone.proj .zone-ico { color: var(--accent-teal-fg); }
+  .zone-top h3 { font-size: var(--text-md); }
+  .zone-top .badge { margin-left: auto; flex-shrink: 0; }
+  .zone-root { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 4px 4px 10px; border-radius: var(--radius-md); background: var(--code-bg); border: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-strong); min-width: 0; }
+  .zone-root > pc-icon { color: var(--fg-subtle); flex-shrink: 0; }
+  .zone-root .sz { margin-left: auto; color: var(--fg-subtle); font-family: var(--font-sans); font-size: 11px; white-space: nowrap; }
+  .zone-root .btn { flex-shrink: 0; }
+  .zone-error { margin: 0 var(--space-5) var(--space-3); }
+  .zone-loading { display: flex; justify-content: center; padding: var(--space-6); }
+  .ztree { margin: 4px 0 var(--space-3) 30px; border-left: 1px solid var(--border-strong); align-self: flex-start; width: calc(100% - 30px); }
+  .znode { position: relative; display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 4px 10px; align-items: start; padding: 7px 18px; }
+  .znode::before { content: ""; position: absolute; left: 0; top: 17px; width: 10px; border-top: 1px solid var(--border-strong); }
+  .znode > pc-icon { color: var(--fg-subtle); margin-top: 2px; }
+  .znode .zp { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-default); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .znode .zd { grid-column: 2; font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.45; }
+  .znode .zs { font-size: 11px; color: var(--fg-faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .znode.is-missing .zp { color: var(--fg-subtle); }
+  .znode:hover { background: var(--bg-hover); }
+  .zone-foot { margin-top: auto; display: flex; align-items: flex-start; gap: var(--space-2); padding: 12px var(--space-5); border-top: 1px solid var(--border-subtle); border-radius: 0 0 var(--radius-lg) var(--radius-lg); background: var(--bg-surface-2); font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.5; }
+  .zone-foot pc-icon { margin-top: 1px; color: var(--_z); flex-shrink: 0; }
+  .zone.proj .zone-foot pc-icon { color: var(--accent-teal-fg); }
+  .gutter { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; color: var(--fg-faint); }
+  .gutter::before { content: ""; position: absolute; top: 12px; bottom: 12px; left: 50%; border-left: 1.5px dashed var(--border-strong); }
+  .gutter span { position: relative; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-canvas); border: 1px solid var(--border-strong); color: var(--fg-subtle); box-shadow: var(--shadow-xs); }
+  .gutter pc-icon { transform: rotate(90deg); }
+
+  @container canvas (max-width: 980px) {
+    .bound { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+    .gutter { height: 28px; flex-direction: row; }
+    .gutter::before { top: 50%; bottom: auto; left: 12px; right: 12px; border-left: 0; border-top: 1.5px dashed var(--border-strong); }
+    .gutter pc-icon { transform: none; }
+  }
+
   @container canvas (max-width: 860px) {
     .set-wrap { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
     .set-nav { position: static; display: flex; flex-wrap: wrap; gap: 2px; }

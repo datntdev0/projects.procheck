@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { expect, test } from '../scripts/fixtures.ts';
 
 test('settings page shows the in-page navigation and its sections', async ({ ui }) => {
@@ -33,4 +35,21 @@ test('about shows the version and always reports up to date', async ({ ui, app }
   await about.getByTestId('check-update').click();
   await expect(about.getByTestId('update-status')).toContainText('You are up to date');
   await expect(app.page.getByRole('status').filter({ hasText: 'You are up to date' }).first()).toBeVisible();
+});
+
+test('storage lists the application data directory', async ({ ui, sandbox }) => {
+  const { settings } = ui;
+  await settings.open();
+
+  const storage = settings.section('storage');
+  await expect(storage.getByTestId('storage-root')).toHaveText(sandbox.dataDir);
+  for (const entry of ['settings', 'projects', 'logs', 'cache']) {
+    await expect(storage.getByTestId(`storage-item-${entry}`)).toBeVisible();
+  }
+  await expect(storage.getByTestId('storage-item-logs')).toContainText('logs\\');
+  await expect(storage.getByTestId('storage-project-zone')).toContainText('procheck.json');
+
+  const about = settings.section('about');
+  await expect(about.getByTestId('about-settings-file')).toHaveText(path.join(sandbox.dataDir, 'settings.json'));
+  await expect(about.getByTestId('about-registry-file')).toHaveText(path.join(sandbox.dataDir, 'projects.json'));
 });
