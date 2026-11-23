@@ -1,0 +1,4 @@
+/* ---------- Toast ---------- */
+.toast-stack { position: fixed; right: 20px; bottom: 20px; z-index: var(--z-toast); display: flex; flex-direction: column; gap: var(--space-2); }
+.toast { display: flex; align-items: center; gap: var(--space-3); min-width: 280px; max-width: 420px; padding: var(--space-3) var(--space-4); background: var(--bg-inverse); color: var(--fg-inverse); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-sm); animation: popIn var(--dur-base) var(--ease-out); }
+

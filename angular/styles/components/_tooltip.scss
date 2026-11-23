@@ -1,0 +1,8 @@
+/* ---------- Tooltip (CSS-only, data-tip) ---------- */
+[data-tip] { position: relative; }
+[data-tip]:hover::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap; padding: 4px 8px; border-radius: var(--radius-sm); background: var(--bg-inverse); color: var(--fg-inverse); font-size: var(--text-2xs); font-weight: var(--weight-medium); z-index: var(--z-toast); pointer-events: none; }
+[data-tip-right]:hover::after { content: attr(data-tip-right); position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); white-space: nowrap; padding: 4px 8px; border-radius: var(--radius-sm); background: var(--bg-inverse); color: var(--fg-inverse); font-size: var(--text-2xs); font-weight: var(--weight-medium); z-index: var(--z-toast); pointer-events: none; }
+[data-tip-right] { position: relative; }
+
+[data-tip-bottom] { position: relative; }
+[data-tip-bottom]:hover::after { content: attr(data-tip-bottom); position: absolute; left: 50%; top: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap; padding: 4px 8px; border-radius: var(--radius-sm); background: var(--bg-inverse); color: var(--fg-inverse); font-size: var(--text-2xs); font-weight: var(--weight-medium); z-index: var(--z-toast); pointer-events: none; }

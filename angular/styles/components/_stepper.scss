@@ -1,0 +1,10 @@
+/* ---------- Stepper (phase / wizard) ---------- */
+.stepper { display: flex; align-items: center; gap: 0; }
+.step { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--fg-subtle); font-weight: var(--weight-medium); }
+.step-index { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: var(--text-xs); font-weight: var(--weight-semibold); border: 1.5px solid var(--border-strong); color: var(--fg-subtle); background: var(--bg-surface); }
+.step.is-done .step-index { background: var(--brand); border-color: var(--brand); color: #fff; }
+.step.is-current { color: var(--fg-strong); }
+.step.is-current .step-index { border-color: var(--brand); color: var(--brand-fg); box-shadow: var(--shadow-focus); }
+.step-line { flex: 1; height: 1.5px; min-width: 24px; background: var(--border-default); margin: 0 var(--space-3); }
+.step-line.is-done { background: var(--brand); }
+

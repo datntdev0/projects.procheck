@@ -1,9 +1,11 @@
 import '../styles.scss';
 
-import type { Decorator, Preview } from '@storybook/angular-vite';
+import { applicationConfig, type Decorator, type Preview } from '@storybook/angular-vite';
+
+import { provideAppIcons } from '../shared/icons/app-icons';
 
 const withTheme: Decorator = (story, context) => {
-  document.documentElement.setAttribute('data-theme', String(context.globals['theme'] ?? 'dark'));
+  document.documentElement.setAttribute('data-theme', String(context.globals['theme'] ?? 'light'));
   return story();
 };
 
@@ -15,15 +17,20 @@ const preview: Preview = {
         title: 'Theme',
         icon: 'mirror',
         items: [
-          { value: 'dark', title: 'Dark' },
           { value: 'light', title: 'Light' },
+          { value: 'dark', title: 'Dark' },
         ],
         dynamicTitle: true,
       },
     },
   },
-  initialGlobals: { theme: 'dark' },
-  decorators: [withTheme],
+  initialGlobals: { theme: 'light' },
+  parameters: {
+    options: {
+      storySort: { order: ['DESIGN SYSTEM', ['_Foundation', 'Components'], '*'] },
+    },
+  },
+  decorators: [withTheme, applicationConfig({ providers: [provideAppIcons()] })],
 };
 
 export default preview;

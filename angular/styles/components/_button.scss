@@ -1,0 +1,35 @@
+/* ---------- Buttons ---------- */
+.btn {
+  --_h: 34px;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  height: var(--_h); padding: 0 var(--space-4);
+  border-radius: var(--radius-md); border: 1px solid transparent;
+  font-size: var(--text-sm); font-weight: var(--weight-medium); line-height: 1;
+  cursor: pointer; white-space: nowrap; user-select: none;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast);
+  text-decoration: none !important;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled, .btn.is-disabled { opacity: .5; pointer-events: none; }
+.btn-primary { background: var(--brand); color: var(--fg-on-brand); box-shadow: var(--shadow-xs); }
+.btn-primary:hover { background: var(--brand-hover); }
+.btn-secondary { background: var(--bg-surface); color: var(--fg-default); border-color: var(--border-default); box-shadow: var(--shadow-xs); }
+.btn-secondary:hover { background: var(--bg-surface-2); border-color: var(--border-strong); }
+.btn-ghost { background: transparent; color: var(--fg-muted); }
+.btn-ghost:hover { background: var(--bg-hover); color: var(--fg-default); }
+.btn-soft { background: var(--brand-soft); color: var(--brand-fg); }
+.btn-soft:hover { background: var(--brand-soft-2); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { filter: brightness(1.08); }
+.btn-ai { background: var(--gradient-ai); color: #fff; background-size: 140% 140%; }
+.btn-ai:hover { background-position: 100% 0; }
+.btn-sm { --_h: 28px; padding: 0 var(--space-3); font-size: var(--text-xs); border-radius: var(--radius-sm); }
+.btn-lg { --_h: 42px; padding: 0 var(--space-6); font-size: var(--text-md); }
+.btn-icon { width: var(--_h); padding: 0; }
+.btn-block { width: 100%; }
+.btn-group { display: inline-flex; }
+.btn-group .btn { border-radius: 0; }
+.btn-group .btn:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.btn-group .btn:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.btn-group .btn + .btn { margin-left: -1px; }
+

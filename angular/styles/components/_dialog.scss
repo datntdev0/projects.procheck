@@ -1,0 +1,9 @@
+/* ---------- Modal / Drawer ---------- */
+.overlay { position: fixed; inset: 0; background: var(--bg-overlay); z-index: var(--z-overlay); display: flex; align-items: center; justify-content: center; padding: var(--space-6); animation: fadeIn var(--dur-base) var(--ease-out); backdrop-filter: blur(2px); }
+.modal { width: min(560px, 100%); max-height: calc(100vh - 48px); overflow: auto; background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); animation: popIn var(--dur-base) var(--ease-out); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-5) var(--space-6) var(--space-3); }
+.modal-body { padding: var(--space-2) var(--space-6) var(--space-5); }
+.modal-footer { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border-subtle); background: var(--bg-surface-2); border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
+@keyframes fadeIn { from { opacity: 0; } }
+@keyframes popIn { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+

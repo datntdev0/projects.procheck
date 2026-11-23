@@ -1,0 +1,22 @@
+// Global styles for the common components in `components/`.
+// Components render these classes on their host, so markup and styles stay in sync
+// with the design system (_proto/DESIGN.html).
+@use 'button';
+@use 'form';
+@use 'card';
+@use 'badge';
+@use 'avatar';
+@use 'kbd';
+@use 'tabs';
+@use 'table';
+@use 'menu';
+@use 'progress';
+@use 'stepper';
+@use 'alert';
+@use 'empty-state';
+@use 'code';
+@use 'dialog';
+@use 'toast';
+@use 'tooltip';
+@use 'file';
+@use 'page';

@@ -11,9 +11,9 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-8) calc(var(--space-8) * 2);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
   text-align: center;
 }
 
@@ -23,9 +23,9 @@
   width: 72px;
   height: 72px;
   margin-bottom: var(--space-2);
-  border-radius: var(--radius-md);
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
+  border-radius: var(--radius-lg);
+  background: var(--brand);
+  color: var(--fg-on-brand);
   font-size: 36px;
   font-weight: 700;
 }
@@ -35,17 +35,17 @@
   font-weight: 600;
 }
 
-.welcome-tagline {
-  color: var(--color-text-muted);
+.welcome-tagline,
+.welcome-meta {
+  color: var(--fg-muted);
 }
 
 .welcome-meta {
   margin-top: var(--space-2);
-  color: var(--color-text-muted);
   font-size: 12px;
 }
 
 .welcome-version {
-  color: var(--color-text);
+  color: var(--fg-default);
   font-variant-numeric: tabular-nums;
 }

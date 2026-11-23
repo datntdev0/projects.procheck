@@ -1,0 +1,24 @@
+/* ---------- Badges / Tags / Status ---------- */
+.badge { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: var(--radius-full); font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: .02em; white-space: nowrap; background: var(--bg-surface-3); color: var(--fg-muted); }
+.badge pc-icon, .badge svg { width: 12px; height: 12px; }
+.badge-brand { background: var(--brand-soft); color: var(--brand-fg); }
+.badge-purple { background: var(--accent-purple-soft); color: var(--accent-purple); }
+.badge-teal { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
+.badge-magenta { background: var(--accent-magenta-soft); color: var(--accent-magenta); }
+.badge-success { background: var(--success-soft); color: var(--success-fg); }
+.badge-warning { background: var(--warning-soft); color: var(--warning-fg); }
+.badge-danger { background: var(--danger-soft); color: var(--danger-fg); }
+.badge-outline { background: transparent; border: 1px solid var(--border-default); }
+.tag { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: var(--radius-sm); font-size: var(--text-xs); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); color: var(--fg-muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--fg-faint); display: inline-block; flex-shrink: 0; }
+.dot-brand { background: var(--brand); } .dot-success { background: var(--success); } .dot-warning { background: var(--warning); } .dot-danger { background: var(--danger); } .dot-purple { background: var(--accent-purple); } .dot-teal { background: var(--accent-teal); }
+.dot-pulse { box-shadow: 0 0 0 0 currentColor; animation: pulse 1.6s infinite; color: var(--success); background: var(--success); }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 50%, transparent); } 70% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+/* Phase chips */
+.phase-chip { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: var(--radius-full); font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; }
+.phase-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.phase-initial { color: var(--phase-initial); background: var(--brand-soft); }
+.phase-release { color: var(--phase-release); background: var(--accent-purple-soft); }
+.phase-sdlc { color: var(--accent-teal-fg); background: var(--accent-teal-soft); }
+

@@ -6,7 +6,8 @@ const config: StorybookConfig = {
     name: '@storybook/angular-vite',
     options: {},
   },
-  staticDirs: ['../assets'],
+  // Same public path as the Angular build (`assets/**` → `/assets/**`).
+  staticDirs: [{ from: '../assets', to: '/assets' }],
   core: {
     disableTelemetry: true,
   },

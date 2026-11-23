@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": true, "types": ["node"], "outDir": "../_output/check" },
+  "include": ["components/**/*.ts", "shared/**/*.ts", "layout/**/*.ts", "pages/**/*.ts", "stories/**/*.ts", "*.ts"]
+}
