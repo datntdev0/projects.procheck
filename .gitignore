@@ -1,0 +1,31 @@
+# Build output (Angular, Rust target, Storybook, Playwright, packages)
+_output/
+
+# Dependencies
+node_modules/
+
+# Tauri generated schemas
+desktop/gen/schemas/
+
+# Angular cache (no leading path: matches angular/.angular/ too)
+.angular/
+
+# Storybook default output
+storybook-static/
+
+# Logs & TypeScript incremental info
+*.log
+*.tsbuildinfo
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+Thumbs.db
+.DS_Store

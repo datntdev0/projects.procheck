@@ -1,0 +1,51 @@
+.welcome-page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: var(--space-8);
+}
+
+.welcome-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) calc(var(--space-8) * 2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.welcome-logo {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.welcome-title {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.welcome-tagline {
+  color: var(--color-text-muted);
+}
+
+.welcome-meta {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.welcome-version {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,17 @@
+{
+  "name": "procheck-playwright",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:app": "pnpm --dir .. run build --debug --no-bundle",
+    "test": "playwright test --project=desktop",
+    "report": "playwright show-report ../_output/playwright/report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "typescript": "~6.0.0"
+  }
+}

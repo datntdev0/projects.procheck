@@ -1,0 +1,22 @@
+{
+  "name": "procheck",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@12.21.0",
+  "scripts": {
+    "start": "tauri dev",
+    "build": "tauri build",
+    "build:portable": "node _scripts/build_portable.mjs",
+    "build:installer": "node _scripts/build_installer.mjs",
+    "tauri": "tauri",
+    "angular:serve": "pnpm --filter procheck-angular run serve",
+    "angular:build": "pnpm --filter procheck-angular run build",
+    "story": "pnpm --filter procheck-angular run story",
+    "story:build": "pnpm --filter procheck-angular run story:build",
+    "playwright:build": "pnpm --filter procheck-playwright run build:app",
+    "playwright:test": "pnpm --filter procheck-playwright run test"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.6"
+  }
+}
