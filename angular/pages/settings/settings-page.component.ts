@@ -9,6 +9,7 @@ import { I18nService } from '@shared/i18n/i18n.service';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { AboutSectionComponent } from './sections/about-section.component';
+import { AgentsSectionComponent } from './sections/agents-section.component';
 import { DiagnosticsSectionComponent } from './sections/diagnostics-section.component';
 import { GeneralSectionComponent } from './sections/general-section.component';
 import { StorageSectionComponent } from './sections/storage-section.component';
@@ -29,6 +30,7 @@ const SPY_OFFSET = 90;
     GeneralSectionComponent,
     DiagnosticsSectionComponent,
     StorageSectionComponent,
+    AgentsSectionComponent,
   ],
   providers: [SettingsFormService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,6 +74,9 @@ export class SettingsPageComponent {
     } else if (result.field === 'defaultProjectDir') {
       this.toast.show(this.i18n.t('set.gen.parent.missing'), { icon: 'circle-alert', tone: 'danger' });
       this.go('general');
+    } else if (result.field === 'claudeBinPath' || result.field === 'codexBinPath') {
+      this.toast.show(this.i18n.t('set.ag.bin.missing'), { icon: 'circle-alert', tone: 'danger' });
+      this.go('agents');
     } else {
       this.toast.show(this.i18n.t('set.save.failed', { reason: result.message }), { icon: 'circle-alert', tone: 'danger', duration: 6000 });
     }

@@ -1,4 +1,5 @@
 // Tauri commands (IPC entry points) live here, one module per feature.
+pub mod agents;
 pub mod diagnostics;
 pub mod settings;
 pub mod storage;

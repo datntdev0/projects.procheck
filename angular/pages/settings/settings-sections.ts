@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@shared/i18n/locales/en';
 
-export type SettingsSectionId = 'about' | 'general' | 'diagnostics' | 'storage';
+export type SettingsSectionId = 'about' | 'general' | 'diagnostics' | 'storage' | 'agents';
 
 export interface SettingsNavItem {
   id: SettingsSectionId;
@@ -26,6 +26,10 @@ export const SETTINGS_NAV: SettingsNavGroup[] = [
   {
     label: 'set.g.data',
     items: [{ id: 'storage', label: 'set.n.storage', icon: 'hard-drive' }],
+  },
+  {
+    label: 'set.g.agents',
+    items: [{ id: 'agents', label: 'set.n.agents', icon: 'square-terminal' }],
   },
 ];
 

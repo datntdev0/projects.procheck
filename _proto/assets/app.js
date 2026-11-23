@@ -106,6 +106,16 @@
       'as.attach': 'Attach', 'as.mention': 'Mention artifact', 'as.footnote': 'Runs through your signed-in CLI with this project’s context only. Chat history is saved per project.',
       'as.thinking': 'Thinking…', 'as.you': 'You',
       'as.reply.default': 'Got it. I\'ll work on that using the project context. Here is a first pass — review it and tell me what to adjust.',
+      'as.footnote.gen': 'General chat — no project files or artifacts are loaded. History is saved in application data.',
+      'as.reply.gen': 'Sure. This is a general chat, so I am answering without any project files. Here is a first pass — tell me what to adjust.',
+      'as.gen.greet': 'Hi 👋 This is a <b>general chat</b>: no project is loaded. Ask anything — or open a project to chat with its artifacts.',
+      'nav.chats': 'Chats', 'nav.chats.project': 'Project chats', 'nav.chats.general': 'General chats', 'nav.chats.all': 'All chats', 'nav.chats.allproject': 'All project chats', 'nav.chats.new': 'New chat', 'nav.chats.empty': 'No chats yet',
+      'chat.general': 'General', 'chat.general.sub': 'No project context', 'time.yesterday': 'Yesterday',
+      'use.context': 'Context window', 'use.context.tip': '{u} of {w} tokens in the context window (last reply)', 'use.limits': 'Usage limits', 'use.plan': 'Plan',
+      'use.w.5h': '5-hour session', 'use.w.7d': 'Weekly · all models', 'use.w.5h.short': '5h', 'use.w.7d.short': 'Week',
+      'use.resets': 'Resets {t} · in {d}', 'use.updated': 'Updated {t} · after the last reply', 'use.account': 'Account-wide: shared by every project and chat that uses this CLI sign-in.',
+      'use.cached': 'Cached (cache read)', 'use.new': 'New input', 'use.out': 'Output', 'use.last': 'Last reply · {t}', 'use.compact.hint': 'Auto-compact runs near 95%.', 'use.compact.warn': 'Context is almost full — compact or start a new chat to keep answers sharp.',
+      'use.compact': 'Compact now', 'use.compacted': '/compact sent to the CLI session', 'use.refresh': 'Refresh', 'use.refreshed': 'Usage refreshed from the CLI', 'use.src': 'Source',
       'pal.placeholder': 'Type a command or search…', 'pal.nav': 'Go to', 'pal.actions': 'Actions',
       'pal.newproject': 'New project', 'pal.toggletheme': 'Toggle theme', 'pal.togglelang': 'Switch language (EN / VI)', 'pal.toggleassistant': 'Toggle assistant',
       'common.cancel': 'Cancel', 'common.save': 'Save', 'common.close': 'Close', 'common.confirm': 'Confirm',
@@ -130,6 +140,16 @@
       'as.attach': 'Đính kèm', 'as.mention': 'Nhắc tới tài liệu', 'as.footnote': 'Chạy qua CLI đã đăng nhập, chỉ với ngữ cảnh của dự án này. Lịch sử chat được lưu theo dự án.',
       'as.thinking': 'Đang suy nghĩ…', 'as.you': 'Bạn',
       'as.reply.default': 'Đã rõ. Tôi sẽ xử lý dựa trên ngữ cảnh dự án. Đây là bản nháp đầu tiên — bạn xem và cho tôi biết cần chỉnh gì.',
+      'as.footnote.gen': 'Chat chung — không nạp file hay tài liệu của dự án nào. Lịch sử lưu trong dữ liệu ứng dụng.',
+      'as.reply.gen': 'Được. Đây là chat chung nên mình trả lời không dựa trên file dự án nào. Đây là bản nháp đầu — bạn cho biết cần chỉnh gì nhé.',
+      'as.gen.greet': 'Chào bạn 👋 Đây là <b>chat chung</b>: không nạp dự án nào. Hỏi gì cũng được — hoặc mở một dự án để chat với tài liệu của nó.',
+      'nav.chats': 'Trò chuyện', 'nav.chats.project': 'Chat của dự án', 'nav.chats.general': 'Chat chung', 'nav.chats.all': 'Tất cả chat', 'nav.chats.allproject': 'Tất cả chat của dự án', 'nav.chats.new': 'Chat mới', 'nav.chats.empty': 'Chưa có chat nào',
+      'chat.general': 'Chung', 'chat.general.sub': 'Không có ngữ cảnh dự án', 'time.yesterday': 'Hôm qua',
+      'use.context': 'Cửa sổ ngữ cảnh', 'use.context.tip': '{u} / {w} token trong cửa sổ ngữ cảnh (lần trả lời gần nhất)', 'use.limits': 'Hạn mức sử dụng', 'use.plan': 'Gói',
+      'use.w.5h': 'Phiên 5 giờ', 'use.w.7d': 'Hằng tuần · mọi model', 'use.w.5h.short': '5h', 'use.w.7d.short': 'Tuần',
+      'use.resets': 'Đặt lại {t} · còn {d}', 'use.updated': 'Cập nhật {t} · sau lần trả lời gần nhất', 'use.account': 'Theo tài khoản: dùng chung cho mọi dự án và chat dùng phiên đăng nhập CLI này.',
+      'use.cached': 'Đã cache (cache read)', 'use.new': 'Đầu vào mới', 'use.out': 'Đầu ra', 'use.last': 'Lần trả lời gần nhất · {t}', 'use.compact.hint': 'Tự động compact khi gần 95%.', 'use.compact.warn': 'Ngữ cảnh sắp đầy — hãy compact hoặc mở chat mới để câu trả lời giữ chất lượng.',
+      'use.compact': 'Compact ngay', 'use.compacted': 'Đã gửi /compact tới phiên CLI', 'use.refresh': 'Làm mới', 'use.refreshed': 'Đã làm mới hạn mức từ CLI', 'use.src': 'Nguồn',
       'pal.placeholder': 'Gõ lệnh hoặc tìm kiếm…', 'pal.nav': 'Đi tới', 'pal.actions': 'Hành động',
       'pal.newproject': 'Tạo dự án mới', 'pal.toggletheme': 'Đổi giao diện sáng/tối', 'pal.togglelang': 'Đổi ngôn ngữ (EN / VI)', 'pal.toggleassistant': 'Bật/tắt trợ lý',
       'common.cancel': 'Huỷ', 'common.save': 'Lưu', 'common.close': 'Đóng', 'common.confirm': 'Xác nhận',
@@ -146,9 +166,26 @@
       { id: 'codex', name: 'Codex', initials: 'CX' },
     ],
     cli: [
-      { id: 'claude', name: 'Claude Code', version: '2.4.1', model: 'claude-opus-5-5', status: 'connected', bin: 'C:\\Users\\me\\AppData\\Roaming\\npm\\claude.cmd' },
-      { id: 'codex', name: 'Codex CLI', version: '0.48.0', model: 'gpt-5-codex', status: 'connected', bin: 'C:\\Users\\me\\AppData\\Roaming\\npm\\codex.cmd' },
+      // ctxWindow comes from the CLI at runtime: claude → result.modelUsage[model].contextWindow, codex → token_count.info.model_context_window
+      { id: 'claude', name: 'Claude Code', version: '2.4.1', model: 'claude-opus-5-5', ctxWindow: 200000, status: 'connected', bin: 'C:\\Users\\me\\AppData\\Roaming\\npm\\claude.cmd' },
+      { id: 'codex', name: 'Codex CLI', version: '0.48.0', model: 'gpt-6-luna', ctxWindow: 258400, status: 'connected', bin: 'C:\\Users\\me\\AppData\\Roaming\\npm\\codex.cmd' },
     ],
+    // Usage limits are per CLI ACCOUNT (shared sign-in), not per project. Refreshed after every reply (end of turn):
+    //   claude → stream-json `rate_limit_event.rate_limit_info.unifiedWindows.{five_hour,seven_day}`
+    //   codex  → rollout `event_msg.token_count.rate_limits.{primary,secondary}` (window_minutes 300 / 10080)
+    usage: {
+      claude: { plan: 'Max', at: '2026-11-23T11:38', src: 'claude -p · rate_limit_event', windows: [{ k: '5h', used: 34, reset: '2026-11-23T14:00' }, { k: '7d', used: 78, reset: '2026-11-27T09:00' }] },
+      codex: { plan: 'Plus', at: '2026-11-22T16:24', src: 'codex · token_count.rate_limits', windows: [{ k: '5h', used: 12, reset: '2026-11-23T13:10' }, { k: '7d', used: 41, reset: '2026-11-26T08:00' }] },
+    },
+    // Sidebar chat index (the Assistant page holds the full transcripts). '__general' = chats with no project context.
+    chats: {
+      '__general': [['g1', 'Tauri vs Electron for a desktop app', 'claude', '2026-11-23T10:05'], ['g2', 'Viết email follow-up sau buổi demo', 'claude', '2026-11-22T17:40'], ['g3', 'Regex for Vietnamese phone numbers', 'codex', '2026-11-20T14:15'], ['g4', 'PERT vs T-shirt sizing', 'claude', '2026-11-12T09:30', true]],
+      'lotus-pay': [['s1', 'Rà soát BRD v3 — yêu cầu KYC', 'claude', '2026-11-23T09:12'], ['s2', 'ADR-005 · Observability stack', 'claude', '2026-11-23T08:30'], ['s3', 'Plan LP-157 · Webhook retry', 'codex', '2026-11-22T16:20'], ['s4', 'Sprint 5 capacity', 'claude', '2026-11-22T10:05'], ['s5', 'Scaffolding review · Nx libs layout', 'codex', '2026-11-19T14:10'], ['s6', 'Soạn change request CR-02', 'claude', '2026-11-16T15:30', true], ['s7', 'Kickoff transcript summary', 'claude', '2026-11-17T09:00']],
+      'saigon-tms': [['sg1', 'Kick-off prep', 'claude', '2026-11-23T09:05'], ['sg2', 'RFP summary', 'claude', '2026-11-21T14:30']],
+      'viethealth': [['vh1', 'Rà soát BRD v1 — kê đơn điện tử & HIS', 'claude', '2026-11-23T08:50'], ['vh2', 'Questions for IT security session', 'claude', '2026-11-21T16:10'], ['vh3', 'Scope options', 'claude', '2026-11-20T10:00']],
+      'mekong': [['mk1', 'ADR-004 · Event bus discussion', 'claude', '2026-11-23T10:20'], ['mk3', 'CI/CD pipeline plan', 'claude', '2026-11-22T15:00'], ['mk2', 'Brownfield repo analysis', 'claude', '2026-11-20T09:30']],
+      'atlas-hr': [['ah1', 'Why AH-311 failed', 'claude', '2026-11-23T11:05'], ['ah2', 'Release v2.0 notes', 'claude', '2026-11-22T17:20'], ['ah3', 'Sprint 9 planning', 'claude', '2026-11-17T09:00']],
+    },
     // Storage boundary — application data vs. project data. There is NO "workspace" concept.
     storage: {
       app: {
@@ -156,7 +193,9 @@
         items: [
           { path: 'settings.json', desc: 'App preferences: theme, language, defaults' },
           { path: 'projects.json', desc: 'Registry of known project directories (recent list)' },
-          { path: 'cli\\', desc: 'CLI tool registrations: binary path, default model (sign-in stays with the CLI)' },
+          { path: 'cli\\', desc: 'CLI home per tool (CLAUDE_CONFIG_DIR / CODEX_HOME): Procheck’s CLI sign-in, base config and sessions — apart from your own profile' },
+          { path: 'chats\\', desc: 'General chat history (chats not tied to a project)' },
+          { path: 'scratch\\', desc: 'Empty working directory for general chats — no project files' },
           { path: 'logs\\', desc: 'Application & harness logs' },
           { path: 'cache\\', desc: 'Indexes, thumbnails, temp files (safe to delete)' },
         ],
@@ -197,12 +236,18 @@
     else { const saved = LS.get('project', null); if (saved && known(saved)) PC.data.currentProjectId = saved; }
   })();
   PC.setProject = function (id) { PC.data.currentProjectId = id; LS.set('project', id); };
-  // CLI context. Procheck never swaps HOME: each CLI keeps its own sign-in (claude login / codex login), shared by every project.
-  // Isolation is per launch instead: cwd = project dir (Assistant) or worktree (agents) + the project's CLI profile
+  // CLI home. Every CLI runs with its own home in application data (%LOCALAPPDATA%\Procheck\cli\<cli>), set through
+  // CLAUDE_CONFIG_DIR / CODEX_HOME. Procheck's sign-in (claude auth login / codex login inside that home), base config and
+  // sessions live there, shared by every project; the user's ~/.claude / ~/.codex are never touched. HOME stays unchanged.
+  PC.cliHome = function (cli) { return '%LOCALAPPDATA%\\Procheck\\cli\\' + (cli || 'claude'); };
+  PC.cliEnv = function (cli) { return cli === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR'; };
+  // Context isolation per launch: cwd = project dir (Assistant) or worktree (agents) + the project's CLI profile
   // (<project dir>\.procheck\cli\<cli>\, no credentials) + only the CLI sessions recorded in this project.
-  PC.projectCli = function (cli, p) { p = p || PC.project(); return p.dir + '\\.procheck\\cli\\' + (cli || 'claude'); };
+  PC.projectCli = function (cli, p) { p = p || PC.project(); return (p.cliRoot ? p.cliRoot + '\\' : p.dir + '\\.procheck\\cli\\') + (cli || 'claude'); };
+  // General chats (no project): cwd = an empty scratch dir; the CLI home itself is the profile, history lives in application data.
+  PC.general = { id: '__general', dir: '%LOCALAPPDATA%\\Procheck\\scratch', cliRoot: '%LOCALAPPDATA%\\Procheck\\cli', chats: '%LOCALAPPDATA%\\Procheck\\chats' };
   PC.cliProfileFiles = function (cli) { return cli === 'codex' ? ['config.toml', 'AGENTS.md'] : ['settings.json', 'mcp.json', 'instructions.md']; };
-  // Launch flags that load the project profile. opts.global = true also keeps the user's global CLI config.
+  // Launch flags that load the project profile. opts.global = true also keeps the shared config of the Procheck CLI home.
   PC.cliFlags = function (cli, p, opts) {
     const d = PC.projectCli(cli, p), g = opts && opts.global;
     if (cli === 'codex') return '--profile-file ' + d + '\\config.toml' + (g ? '' : ' --ignore-user-config');
@@ -383,6 +428,53 @@
     return { el: ov, close };
   };
 
+  /* ------------------------------------------------------------ CHAT INDEX
+     Two scopes: project chats (<project dir>\.procheck\chats) and general chats
+     (%LOCALAPPDATA%\Procheck\chats, no project context). The sidebar lists both;
+     the Assistant page owns the transcripts and writes the same localStorage key. */
+  PC.now = new Date('2026-11-23T11:40:00');   // prototype clock (matches the seeded chats)
+  PC.chats = {
+    key: scope => 'pc.assistant.sessions.v4.' + scope,
+    list(scope) {
+      let saved = null; try { saved = JSON.parse(localStorage.getItem(PC.chats.key(scope)) || 'null'); } catch (e) { /* ignore */ }
+      const rows = Array.isArray(saved) && saved.length
+        ? saved.filter(s => s.messages && s.messages.length).map(s => ({ id: s.id, title: s.title, cli: s.cli, at: s.at, pinned: !!s.pinned }))
+        : (PC.data.chats[scope] || []).map(r => ({ id: r[0], title: r[1], cli: r[2], at: r[3], pinned: !!r[4] }));
+      return rows.sort((a, b) => new Date(b.at) - new Date(a.at));
+    },
+    href(scope, id) { return 'assistant.html' + (scope === '__general' ? '?scope=general' : '') + (id ? '#' + id : ''); },
+    when(iso) {
+      const d = new Date(iso), a = new Date(d), b = new Date(PC.now); a.setHours(0, 0, 0, 0); b.setHours(0, 0, 0, 0);
+      const diff = Math.round((b - a) / 864e5);
+      if (diff <= 0) return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      if (diff === 1) return PC.t('time.yesterday');
+      return new Intl.DateTimeFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-GB', { day: '2-digit', month: 'short' }).format(d);
+    },
+  };
+
+  /* ----------------------------------------------------------------- USAGE
+     Context window = the LAST reply's prompt size, not the chat total:
+       claude: usage.input_tokens + cache_read_input_tokens + cache_creation_input_tokens (+ output_tokens)
+       codex:  last_token_usage.input_tokens (cached is a subset) + output_tokens
+     Limits are account-wide and refreshed at end of turn (no realtime polling). */
+  PC.usage = {
+    get(cli) { let o = null; try { o = JSON.parse(LS.get('usage.v1', 'null')); } catch (e) { /* ignore */ } return (o && o[cli]) || PC.data.usage[cli]; },
+    set(cli, u) { let o = null; try { o = JSON.parse(LS.get('usage.v1', 'null')); } catch (e) { /* ignore */ } o = o || {}; o[cli] = u; LS.set('usage.v1', JSON.stringify(o)); document.dispatchEvent(new CustomEvent('pc:usage', { detail: { cli } })); },
+    // Simulates what the end-of-turn hook/parser records after a reply.
+    record(cli, atIso) { const u = JSON.parse(JSON.stringify(PC.usage.get(cli))); u.at = atIso; u.windows.forEach((w, i) => { w.used = Math.min(100, w.used + (i === 0 ? 1 : 0.4)); }); PC.usage.set(cli, u); },
+    tone: pct => pct >= 95 ? 'danger' : pct >= 80 ? 'warn' : '',
+    worst(cli) { return PC.usage.get(cli).windows.slice().sort((a, b) => b.used - a.used)[0]; },
+    clock(iso) { const d = new Date(iso); const t = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); const days = Math.round((new Date(PC.now).setHours(0, 0, 0, 0) - new Date(iso).setHours(0, 0, 0, 0)) / 864e5); return days === 0 ? t : (new Intl.DateTimeFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-GB', { weekday: 'short', day: '2-digit', month: 'short' }).format(d) + ' ' + t); },
+    left(iso) { const m = Math.max(0, Math.round((new Date(iso) - PC.now) / 6e4)); const d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mm = m % 60; return d ? d + 'd ' + h + 'h' : h ? h + 'h ' + mm + 'm' : mm + 'm'; },
+    rows(cli) {
+      const u = PC.usage.get(cli);
+      return u.windows.map(w => { const pct = Math.round(w.used); return `<div class="u-row"><div class="u-top"><span>${PC.t('use.w.' + w.k)}</span><b class="${PC.usage.tone(pct) ? 'text-' + (pct >= 95 ? 'danger' : 'warning') : ''}">${pct}%</b></div>
+        <div class="u-bar ${PC.usage.tone(pct)}"><i style="width:${pct}%"></i></div><div class="u-sub">${PC.t('use.resets', { t: PC.usage.clock(w.reset), d: PC.usage.left(w.reset) })}</div></div>`; }).join('');
+    },
+    ring(pct, size) { const r = 7, C = 2 * Math.PI * r; return `<svg class="u-ring ${PC.usage.tone(pct)}" viewBox="0 0 18 18" width="${size || 16}" height="${size || 16}"><circle class="bg" cx="9" cy="9" r="${r}" fill="none" stroke-width="2.5"/><circle class="fg" cx="9" cy="9" r="${r}" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${(C * Math.min(100, pct) / 100).toFixed(1)} ${C.toFixed(1)}"/></svg>`; },
+    fmtK: n => n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(n),
+  };
+
   /* ------------------------------------------------------------------ SHELL */
   /* Sidebar replaces the old icon rail. Cross-project navigation happens in the
      topbar breadcrumb:  Projects  /  <Project ▾>  /  <Page>
@@ -431,10 +523,37 @@
       <div class="sb-version"><span data-i18n="app.version"></span> <span>${PC.appVersion}</span></div>
     </div>`;
 
+  /* Chats group: recent chats of the current scope + entry points to both scopes.
+     project shell → this project's chats + "General chats"; home shell → general chats.
+     On the Assistant page the page already lists the chats, so the group only switches scope. */
+  function chatsGroup(shell, page) {
+    const gen = document.body.dataset.scope === 'general';
+    const pid = PC.data.currentProjectId;
+    const genList = PC.chats.list('__general');
+    const projList = shell === 'project' ? PC.chats.list(pid) : [];
+    const scope = shell === 'project' && !gen ? pid : '__general';
+    const scopeLink = (id, icon, label, sc, n, active) => `<a class="nav-item ${active ? 'is-active' : ''}" href="${href(PC.chats.href(sc))}"><i data-lucide="${icon}"></i><span class="truncate" data-i18n="${label}"></span>${n ? `<span class="count">${n}</span>` : ''}</a>`;
+    const item = (sc, c) => `<a class="nav-item chat-item" href="${href(PC.chats.href(sc, c.id))}" title="${PC.esc(c.title)}"><i data-lucide="${c.pinned ? 'pin' : 'message-square'}"></i><span class="truncate">${PC.esc(c.title)}</span><span class="when">${PC.chats.when(c.at)}</span></a>`;
+    let body;
+    if (page === 'assistant') {
+      body = (shell === 'project' ? scopeLink('pc', 'messages-square', 'nav.chats.project', pid, projList.length, !gen) : '')
+        + scopeLink('gc', 'globe', 'nav.chats.general', '__general', genList.length, gen);
+    } else if (shell === 'project') {
+      body = (projList.length ? projList.slice(0, 4).map(c => item(pid, c)).join('') : `<div class="nav-empty" data-i18n="nav.chats.empty"></div>`)
+        + (projList.length > 4 ? scopeLink('pc', 'messages-square', 'nav.chats.allproject', pid, projList.length) : '')
+        + scopeLink('gc', 'globe', 'nav.chats.general', '__general', genList.length);
+    } else {
+      body = (genList.length ? genList.slice(0, 5).map(c => item('__general', c)).join('') : `<div class="nav-empty" data-i18n="nav.chats.empty"></div>`)
+        + scopeLink('gc', 'messages-square', 'nav.chats.all', '__general', genList.length, false);
+    }
+    return `<div class="nav-group nav-chats"><div class="nav-group-title"><span data-i18n="${shell === 'project' || page === 'assistant' ? 'nav.chats' : 'nav.chats.general'}"></span>
+      <a class="btn btn-ghost btn-icon btn-sm" href="${href(PC.chats.href(scope, 'new'))}" data-i18n-tip="nav.chats.new"><i data-lucide="plus"></i></a></div>${body}</div>`;
+  }
+
   function buildProjectSidebar(page) {
     const p = PC.project();
     const nav = NAV.map(g => `<div class="nav-group"><div class="nav-group-title"><span data-i18n="${g.group}"></span></div>
-      ${g.items.map(it => navLink(it, page)).join('')}</div>`).join('');
+      ${g.items.map(it => navLink(it, page)).join('')}</div>`).join('') + chatsGroup('project', page);
     return `<aside class="sidebar"><div class="sidebar-inner">
       ${brandHTML()}
       <div class="sb-project">
@@ -462,6 +581,7 @@
           ${navLink({ id: 'open-project', icon: 'folder-open', label: 'nav.open_project', href: 'new-project.html?mode=open' }, page)}
         </div>
         <div class="nav-group"><div class="nav-group-title"><span data-i18n="nav.recent_projects"></span></div>${projects}</div>
+        ${chatsGroup('home', page)}
       </nav>
       ${footerHTML(page)}
     </div></aside>`;
@@ -515,11 +635,40 @@
       const list = document.getElementById('pc-as-msgs'); if (!list) return;
       const t = h(`<div class="msg"><div class="avatar avatar-ai"><i data-lucide="sparkles" style="width:13px;height:13px"></i></div><div class="msg-body"><div class="typing"><i></i><i></i><i></i></div></div></div>`);
       list.appendChild(t); icons(); list.scrollTop = list.scrollHeight;
-      setTimeout(() => { t.remove(); AS.push(Object.assign({ role: 'ai', text: text || PC.t('as.reply.default') }, extra || {})); }, 1100);
-    }
+      setTimeout(() => {
+        t.remove(); AS.push(Object.assign({ role: 'ai', text: text || PC.t(isGeneral() ? 'as.reply.gen' : 'as.reply.default') }, extra || {}));
+        // end of turn → refresh context + usage limits (what the Stop hook / result parser records)
+        AS.ctxUsed += 1400 + Math.round(Math.random() * 900); PC.usage.record('claude', '2026-11-23T' + String(new Date().getHours()).padStart(2, '0') + ':' + String(new Date().getMinutes()).padStart(2, '0'));
+      }, 1100);
+    },
+    ctxUsed: 23400,
   };
-  const defaultCtx = () => [{ icon: 'folder', label: PC.project().name.split(' — ')[0] }, { icon: 'hard-drive', label: PC.project().dir }, { icon: 'cpu', label: 'claude-opus-5-5' }];
-  const defaultMsgs = () => { const p = PC.project(); if (p.id !== 'lotus-pay' && p.state && p.state.greet) return [{ role: 'ai', time: '09:12', text: '<p>' + PC.esc(PC.L(p.state.greet)) + '</p>' }]; return PC.lang === 'vi' ? [
+  const isGeneral = () => document.body && document.body.dataset.shell === 'home';
+  const defaultCtx = () => isGeneral()
+    ? [{ icon: 'globe', label: PC.t('chat.general') + ' · ' + PC.t('chat.general.sub') }, { icon: 'cpu', label: 'claude-opus-5-5' }]
+    : [{ icon: 'folder', label: PC.project().name.split(' — ')[0] }, { icon: 'hard-drive', label: PC.project().dir }, { icon: 'cpu', label: 'claude-opus-5-5' }];
+  function renderUsage() {
+    const el = document.getElementById('pc-as-usage'); if (!el) return;
+    const win = PC.data.cli[0].ctxWindow, pct = AS.ctxUsed / win * 100, u = PC.usage.get('claude');
+    el.innerHTML = `${PC.usage.ring(pct, 14)}<span>${PC.t('use.context')} <b>${Math.round(pct)}%</b></span>`
+      + u.windows.map(w => `<span class="u-sep"></span><span class="${PC.usage.tone(w.used) ? 'text-' + (w.used >= 95 ? 'danger' : 'warning') : ''}">${PC.t('use.w.' + w.k + '.short')} <b>${Math.round(w.used)}%</b></span>`).join('')
+      + '<i data-lucide="chevron-up" class="icon-sm" style="margin-left:auto"></i>';
+    icons();
+  }
+  function usagePopover(anchor) {
+    const win = PC.data.cli[0].ctxWindow, used = AS.ctxUsed, pct = used / win * 100, u = PC.usage.get('claude');
+    const pop = popover(anchor, `<div class="u-pop">
+      <div class="u-top"><b>${PC.t('use.context')}</b><span class="text-subtle">${PC.usage.fmtK(used)} / ${PC.usage.fmtK(win)}</span></div>
+      <div class="u-bar ${PC.usage.tone(pct)}"><i style="width:${pct.toFixed(1)}%"></i></div><div class="u-sub">${PC.t('use.compact.hint')}</div>
+      <div class="u-top" style="margin-top:14px"><b>${PC.t('use.limits')} · Claude Code</b><span class="badge">${PC.esc(u.plan)}</span></div>
+      ${PC.usage.rows('claude')}
+      <div class="u-sub" style="margin-top:8px">${PC.t('use.updated', { t: PC.usage.clock(u.at) })}</div>
+      <div class="u-sub">${PC.t('use.account')}</div></div>`, () => {});
+    pop.style.width = (anchor.offsetWidth) + 'px';
+    const r = anchor.getBoundingClientRect(); pop.style.left = r.left + 'px'; pop.style.top = Math.max(8, r.top - pop.offsetHeight - 6) + 'px';
+  }
+  document.addEventListener('pc:usage', renderUsage);
+  const defaultMsgs = () => { if (isGeneral()) return [{ role: 'ai', time: '10:02', text: '<p>' + PC.t('as.gen.greet') + '</p>' }]; const p = PC.project(); if (p.id !== 'lotus-pay' && p.state && p.state.greet) return [{ role: 'ai', time: '09:12', text: '<p>' + PC.esc(PC.L(p.state.greet)) + '</p>' }]; return PC.lang === 'vi' ? [
     { role: 'ai', time: '09:12', text: '<p>Chào bạn 👋 Mình đã đọc <b>18 tài liệu</b> của dự án <b>' + PC.esc(PC.project().name.split(' — ')[0]) + '</b>. Giai đoạn SDLC đang ở sprint 4.</p><p>Hôm nay bạn muốn làm gì?</p>' },
     { role: 'user', time: '09:13', text: 'Tóm tắt các task đang chờ review giúp mình.' },
     { role: 'ai', time: '09:13', text: '<p>Có <b>2 task</b> agent đã hoàn thành và chờ bạn review:</p><ul><li><b>LP-142</b> Merchant KYC upload — 14 files, e2e pass 12/12</li><li><b>LP-151</b> Settlement report export — 6 files, e2e pass 5/5</li></ul>', tool: 'board.list --status=review', card: { icon: 'git-pull-request', title: 'LP-142 · Merchant KYC upload', sub: 'Ready for human review', href: 'task.html' } },
@@ -562,6 +711,7 @@
       <div class="as-context" id="pc-as-ctx"></div>
       <div class="as-messages" id="pc-as-msgs"></div>
       <div class="as-suggest" id="pc-as-suggest"></div>
+      <button type="button" class="as-usage" id="pc-as-usage" data-i18n-tip="use.limits"></button>
       <form class="composer" id="pc-composer">
         <textarea rows="1" data-i18n-placeholder="as.placeholder"></textarea>
         <div class="composer-bar">
@@ -571,7 +721,7 @@
           <button type="submit" class="send" aria-label="send"><i data-lucide="arrow-up"></i></button>
         </div>
       </form>
-      <div class="as-footnote" data-i18n="as.footnote"></div>
+      <div class="as-footnote" data-i18n="${isGeneral() ? 'as.footnote.gen' : 'as.footnote'}"></div>
     </div></aside>`;
   }
   AS.setSuggestions = function (list, custom) {
@@ -684,7 +834,8 @@
       app.appendChild(canvas);
       app.insertAdjacentHTML('beforeend', buildAssistant());
       body.insertBefore(app, body.firstChild);
-      renderCtx(); renderMsgs();
+      renderCtx(); renderMsgs(); renderUsage();
+      document.getElementById('pc-as-usage').addEventListener('click', e => usagePopover(e.currentTarget));
       const pcrumb = document.getElementById('pc-project-crumb');
       if (pcrumb) pcrumb.addEventListener('click', () => projectSwitcher(pcrumb));
       // hash-aware sidebar highlight (e.g. overview.html#initial)
@@ -719,8 +870,7 @@
       else if (act === 'lang') PC.setLang(PC.lang === 'en' ? 'vi' : 'en');
       else if (act === 'theme') popover(a, ['system', 'light', 'dark'].map(t => `<button class="menu-item" data-v="${t}"><i data-lucide="${t === 'system' ? 'monitor' : t === 'dark' ? 'moon' : 'sun'}"></i><span data-i18n="theme.${t}"></span>${PC.theme === t ? '<i data-lucide="check" style="margin-left:auto"></i>' : ''}</button>`).join(''), v => PC.setTheme(v));
       else if (act === 'as-new') { AS.msgs = []; renderMsgs(); }
-      else if (act === 'as-history') location.href = href('assistant.html');
-      else if (act === 'switch-project') projectSwitcher(a);
+      else if (act === 'as-history') location.href = href(isGeneral() ? 'assistant.html?scope=general' : 'assistant.html');      else if (act === 'switch-project') projectSwitcher(a);
     });
     document.addEventListener('keydown', e => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette(); }
@@ -731,7 +881,7 @@
       const t = e.target.closest('[data-theme-set]'); if (t) PC.setTheme(t.dataset.themeSet);
       const l = e.target.closest('[data-lang-set]'); if (l) PC.setLang(l.dataset.langSet);
     });
-    document.addEventListener('pc:lang', () => { if (!customMsgs && !AS.msgsLocked) { AS.msgs = null; renderMsgs(); } renderCtx(); if (!AS.customSuggest) defaultSuggest(); });
+    document.addEventListener('pc:lang', () => { if (!customMsgs && !AS.msgsLocked) { AS.msgs = null; renderMsgs(); } renderCtx(); renderUsage(); if (!AS.customSuggest) defaultSuggest(); });
 
     updateTitle(); applyI18n(); updateToggles();
     isReady = true; readyQ.splice(0).forEach(fn => { try { fn(); } catch (err) { console.error(err); } });

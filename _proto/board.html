@@ -543,7 +543,7 @@
       doMove(t, col, beforeId);
     }
     function confirmAgent(t) {
-      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5'], codex: ['gpt-5-codex'] };
+      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5'], codex: ['gpt-6-luna'] };
       const noPlan = ['backlog', 'ready'].includes(t.col) || (t.col === 'planning' && t.plan);
       const m = PC.modal({
         title: T('board.a.title'), width: 560,

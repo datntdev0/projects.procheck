@@ -7,6 +7,7 @@ use std::sync::Mutex;
 use log::LevelFilter;
 use serde::{Deserialize, Serialize};
 
+use crate::features::agents::AgentId;
 use crate::infra::storage::{StorageError, json_file};
 
 /// Current layout of `settings.json`.
@@ -19,6 +20,7 @@ pub struct AppSettings {
     pub version: u32,
     pub general: GeneralSettings,
     pub diagnostics: DiagnosticsSettings,
+    pub agents: AgentsSettings,
 }
 
 impl Default for AppSettings {
@@ -27,6 +29,7 @@ impl Default for AppSettings {
             version: SETTINGS_VERSION,
             general: GeneralSettings::default(),
             diagnostics: DiagnosticsSettings::default(),
+            agents: AgentsSettings::default(),
         }
     }
 }
@@ -108,10 +111,40 @@ impl From<LogLevel> for LevelFilter {
     }
 }
 
+/// AI CLI tools (Settings → Agent Integration). Projects use these unless they override them.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct AgentsSettings {
+    /// CLI used when a project does not choose one.
+    pub default_agent: AgentId,
+    pub claude: AgentSettings,
+    pub codex: AgentSettings,
+}
+
+impl AgentsSettings {
+    fn get_mut(&mut self, agent: AgentId) -> &mut AgentSettings {
+        match agent {
+            AgentId::Claude => &mut self.claude,
+            AgentId::Codex => &mut self.codex,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct AgentSettings {
+    /// Executable to run; `None` = find it on PATH.
+    pub bin_path: Option<String>,
+    /// Model passed to the CLI; `None` = the CLI's own default.
+    pub model: Option<String>,
+}
+
 #[derive(Debug)]
 pub enum SettingsError {
     /// `defaultProjectDir` is not an existing directory.
     FolderNotFound(String),
+    /// The executable set for an agent CLI does not exist.
+    BinaryNotFound(AgentId, String),
     Storage(StorageError),
 }
 
@@ -120,6 +153,8 @@ impl SettingsError {
     pub fn code(&self) -> &'static str {
         match self {
             Self::FolderNotFound(_) => "folderNotFound",
+            Self::BinaryNotFound(AgentId::Claude, _) => "claudeBinaryNotFound",
+            Self::BinaryNotFound(AgentId::Codex, _) => "codexBinaryNotFound",
             Self::Storage(_) => "storage",
         }
     }
@@ -129,6 +164,7 @@ impl fmt::Display for SettingsError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::FolderNotFound(path) => write!(f, "folder not found: {path}"),
+            Self::BinaryNotFound(agent, path) => write!(f, "{} executable not found: {path}", agent.name()),
             Self::Storage(e) => write!(f, "could not save settings: {e}"),
         }
     }
@@ -228,7 +264,23 @@ fn normalize(mut settings: AppSettings) -> Result<AppSettings, SettingsError> {
         }
     }
     settings.general.default_project_dir = dir;
+
+    for agent in AgentId::ALL {
+        let entry = settings.agents.get_mut(agent);
+        entry.bin_path = trimmed(entry.bin_path.take());
+        entry.model = trimmed(entry.model.take());
+        if let Some(bin) = &entry.bin_path {
+            if !Path::new(bin).is_file() {
+                return Err(SettingsError::BinaryNotFound(agent, bin.clone()));
+            }
+        }
+    }
     Ok(settings)
+}
+
+/// Trims a text field; blank becomes `None`.
+fn trimmed(value: Option<String>) -> Option<String> {
+    value.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty())
 }
 
 #[cfg(test)]
@@ -312,6 +364,37 @@ mod tests {
         let mut blank = store.get();
         blank.general.default_project_dir = Some("   ".into());
         assert_eq!(store.save(blank).unwrap().general.default_project_dir, None);
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn agents_are_normalized_and_binaries_validated() {
+        let dir = temp_dir("agents");
+        let path = dir.join("settings.json");
+        let bin = dir.join("claude.cmd");
+        fs::write(&bin, "@echo off").unwrap();
+        let store = SettingsStore::load(path.clone()).unwrap();
+        assert_eq!(store.get().agents, AgentsSettings::default());
+
+        let mut next = store.get();
+        next.agents.default_agent = AgentId::Codex;
+        next.agents.claude = AgentSettings {
+            bin_path: Some(format!(" {} ", bin.display())),
+            model: Some(" sonnet ".into()),
+        };
+        next.agents.codex.model = Some("   ".into());
+        let saved = store.save(next).unwrap().agents;
+        assert_eq!(saved.default_agent, AgentId::Codex);
+        assert_eq!(saved.claude.bin_path, Some(bin.display().to_string()));
+        assert_eq!(saved.claude.model.as_deref(), Some("sonnet"));
+        assert_eq!(saved.codex, AgentSettings::default());
+        assert_eq!(SettingsStore::load(path).unwrap().get().agents, saved);
+
+        let mut bad = store.get();
+        bad.agents.codex.bin_path = Some(dir.join("codex.exe").display().to_string());
+        let error = store.save(bad).unwrap_err();
+        assert_eq!(error.code(), "codexBinaryNotFound");
+        assert_eq!(store.get().agents, saved);
         fs::remove_dir_all(dir).unwrap();
     }
 }

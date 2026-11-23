@@ -18,6 +18,7 @@ const APP_ITEM_DESC: Record<StorageEntry, TranslationKey> = {
   settings: 'set.st.a.settings',
   projects: 'set.st.a.projects',
   logs: 'set.st.a.logs',
+  cli: 'set.st.a.cli',
   cache: 'set.st.a.cache',
 };
 

@@ -12,23 +12,26 @@ pub enum StorageEntry {
     Settings,
     Projects,
     Logs,
+    /// Home folders of the AI CLIs (sign-in, config, sessions).
+    Cli,
     Cache,
 }
 
 impl StorageEntry {
-    pub const ALL: [Self; 4] = [Self::Settings, Self::Projects, Self::Logs, Self::Cache];
+    pub const ALL: [Self; 5] = [Self::Settings, Self::Projects, Self::Logs, Self::Cli, Self::Cache];
 
     pub fn path(self, directories: &AppDirectories) -> PathBuf {
         match self {
             Self::Settings => directories.settings_file(),
             Self::Projects => directories.projects_file(),
             Self::Logs => directories.logs_dir(),
+            Self::Cli => directories.cli_dir(),
             Self::Cache => directories.cache_dir(),
         }
     }
 
     pub fn is_directory(self) -> bool {
-        matches!(self, Self::Logs | Self::Cache)
+        matches!(self, Self::Logs | Self::Cli | Self::Cache)
     }
 }
 

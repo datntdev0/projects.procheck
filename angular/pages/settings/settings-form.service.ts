@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { AppSettings, DiagnosticsSettings, StartupView } from '@features/settings/app-settings.model';
+import { AGENT_IDS, AgentId, AppSettings, DiagnosticsSettings, StartupView } from '@features/settings/app-settings.model';
 import { AppSettingsService } from '@features/settings/app-settings.service';
 import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
 
@@ -15,9 +15,25 @@ export interface SettingsForm {
     onStartup: StartupView;
   };
   diagnostics: DiagnosticsSettings;
+  agents: {
+    defaultAgent: AgentId;
+  } & Record<AgentId, AgentForm>;
 }
 
-export type SettingsField = 'defaultProjectDir';
+/** One CLI in the form; empty strings = not set (auto-detect / CLI default). */
+export interface AgentForm {
+  binPath: string;
+  model: string;
+}
+
+export type SettingsField = 'defaultProjectDir' | `${AgentId}BinPath`;
+
+/** Error code from `settings_save` → the field it rejects. */
+const FIELD_ERRORS: Record<string, SettingsField> = {
+  folderNotFound: 'defaultProjectDir',
+  claudeBinaryNotFound: 'claudeBinPath',
+  codexBinaryNotFound: 'codexBinPath',
+};
 
 function toForm(settings: AppSettings): SettingsForm {
   return {
@@ -26,6 +42,11 @@ function toForm(settings: AppSettings): SettingsForm {
       onStartup: settings.general.onStartup,
     },
     diagnostics: { ...settings.diagnostics },
+    agents: {
+      defaultAgent: settings.agents.defaultAgent,
+      claude: { binPath: settings.agents.claude.binPath ?? '', model: settings.agents.claude.model ?? '' },
+      codex: { binPath: settings.agents.codex.binPath ?? '', model: settings.agents.codex.model ?? '' },
+    },
   };
 }
 
@@ -38,6 +59,12 @@ function applyForm(settings: AppSettings, form: SettingsForm): AppSettings {
       onStartup: form.general.onStartup,
     },
     diagnostics: { ...form.diagnostics },
+    agents: {
+      defaultAgent: form.agents.defaultAgent,
+      ...(Object.fromEntries(
+        AGENT_IDS.map((id) => [id, { binPath: form.agents[id].binPath.trim() || null, model: form.agents[id].model.trim() || null }]),
+      ) as Record<AgentId, AppSettings['agents'][AgentId]>),
+    },
   };
 }
 
@@ -64,6 +91,15 @@ export class SettingsFormService {
     this.value.update((v) => ({ ...v, diagnostics: { ...v.diagnostics, ...patch } }));
   }
 
+  patchAgent(agent: AgentId, patch: Partial<AgentForm>): void {
+    this.value.update((v) => ({ ...v, agents: { ...v.agents, [agent]: { ...v.agents[agent], ...patch } } }));
+    if ('binPath' in patch && this.invalidField() === `${agent}BinPath`) this.invalidField.set(null);
+  }
+
+  setDefaultAgent(agent: AgentId): void {
+    this.value.update((v) => ({ ...v, agents: { ...v.agents, defaultAgent: agent } }));
+  }
+
   async save(): Promise<SaveResult> {
     if (this.saving()) return { ok: false, field: null, message: '' };
     this.saving.set(true);
@@ -74,7 +110,7 @@ export class SettingsFormService {
       this.invalidField.set(null);
       return { ok: true };
     } catch (error) {
-      const field: SettingsField | null = error instanceof DesktopIpcError && error.code === 'folderNotFound' ? 'defaultProjectDir' : null;
+      const field: SettingsField | null = (error instanceof DesktopIpcError && error.code && FIELD_ERRORS[error.code]) || null;
       this.invalidField.set(field);
       return { ok: false, field, message: error instanceof DesktopIpcError ? error.reason : String(error) };
     } finally {

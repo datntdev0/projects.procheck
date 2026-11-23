@@ -173,13 +173,32 @@
       .acard { flex-wrap: wrap; }
     }
     .sess-toggle { display: none; }
+    .sess-scope { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .sess-scope .project-avatar, .sess-scope .gen-av { width: 26px; height: 26px; border-radius: 7px; font-size: 10px; flex-shrink: 0; }
+    .gen-av { display: inline-flex; align-items: center; justify-content: center; background: var(--bg-surface-3); color: var(--fg-muted); }
+    .gen-av svg { width: 14px; height: 14px; }
+    .sess-scope b { display: block; font-size: var(--text-sm); color: var(--fg-strong); line-height: 1.2; }
+    .sess-scope span.d { display: block; font-size: var(--text-2xs); color: var(--fg-subtle); }
+    .scope-b { display: inline-flex; align-items: center; gap: 4px; height: 18px; padding: 0 6px; border-radius: var(--radius-sm); background: var(--bg-surface-3); color: var(--fg-muted); font-size: 10px; font-weight: 600; }
+    .scope-b svg { width: 11px; height: 11px; }
+    .meter.quota svg { transform: none; } .meter .warn-t { color: var(--warning-fg); } .meter .danger-t { color: var(--danger-fg); }
+    .meter.danger .fg { stroke: var(--danger); }
+    .cx-sub { font-size: var(--text-2xs); color: var(--fg-faint); line-height: 1.5; margin-top: 6px; }
+    .cx-warn { margin-top: 10px; padding: 8px 10px; border-radius: var(--radius-md); background: var(--warning-soft); color: var(--warning-fg); font-size: var(--text-xs); line-height: 1.45; display: flex; gap: 8px; align-items: flex-start; }
+    .cx-warn svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+    .src { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-faint); margin-top: 6px; overflow-wrap: anywhere; }
+    .tokbar .cr { background: var(--accent-teal); } .tokbar .nw { background: var(--brand); } .tokbar .ou { background: var(--accent-purple); }
+    .dotk.cr { background: var(--accent-teal); } .dotk.nw { background: var(--brand); } .dotk.ou { background: var(--accent-purple); }
   </style>
 </head>
 <body data-page="assistant" data-shell="project" data-crumb="nav.assistant" data-assistant="closed">
+  <!-- ?scope=general → chats with no project context: app sidebar (home shell), history in application data -->
+  <script>if (/[?&]scope=general\b/.test(location.search)) { document.body.dataset.scope = 'general'; document.body.dataset.shell = 'home'; document.body.dataset.crumb = 'nav.chats.general'; }</script>
   <main class="canvas"><div class="canvas-inner flush">
     <div class="ac-wrap"><div class="ac ctx-open" id="ac">
       <aside class="sess">
         <div class="sess-top">
+          <div class="sess-scope" id="s-scope"></div>
           <button class="btn btn-primary btn-block" id="btn-new"><i data-lucide="square-pen"></i><span data-i18n="as.new"></span></button>
           <div class="input-group"><i data-lucide="search"></i><input class="input" id="s-q" data-i18n-placeholder="ac.search" style="height:32px"></div>
         </div>
@@ -200,6 +219,7 @@
               <span style="flex:1"></span>
               <button class="pill" id="b-cli"></button>
               <button class="meter" id="b-meter"></button>
+              <button class="meter quota" id="b-quota"></button>
               <button class="sendb" id="b-send" aria-label="send"><i data-lucide="arrow-up"></i></button>
             </div>
           </div>
@@ -242,6 +262,17 @@
         'ac.ctx.chat': 'Chat history', 'ac.ctx.chat.note': 'Saved in the project directory, next to your project data — never in application data.', 'ac.ctx.sid': 'CLI session', 'ac.ctx.cli': 'CLI', 'ac.ctx.model': 'Model', 'ac.ctx.tokens': 'Token usage', 'ac.ctx.in': 'Input', 'ac.ctx.out': 'Output', 'ac.ctx.cache': 'Cache read', 'ac.ctx.window': 'Context window', 'ac.ctx.cost': 'Est. cost',
         'ac.ctx.transcript': 'Transcript', 'ac.ctx.transcript.sub': 'Download the full conversation, including tool calls and artifact changes.',
         'ac.ctx.dir': 'Project directory', 'ac.ctx.pphase': 'Project phase', 'ac.isolated': 'project-scoped', 'ac.created': 'Started {t}', 'ac.messages': 'Messages',
+        'ac.ph.gen': 'Ask anything — no project context…', 'ac.hint.gen': 'Enter to send · Shift+Enter for a new line', 'ac.ctx.totals': 'Chat totals', 'ac.ctx.scope': 'Scope', 'ac.quota.tip': 'Usage limits · {cli}',
+        'ac.scope.project': '{n} chats in this project', 'ac.scope.gen': '{n} chats · no project context',
+        'ac.gen.saved': 'Saved to app history', 'ac.gen.empty.sub': 'A general chat has no project files or artifacts. Use it for questions that do not belong to one project.',
+        'ac.gen.dir': 'Working directory', 'ac.gen.home': 'App CLI profile', 'ac.gen.isolated': 'no project', 'ac.gen.home.note': 'Uses your existing CLI sign-in. No project directory, artifacts or project CLI profile is loaded.',
+        'ac.gen.chat.note': 'General chats are saved in application data, not in any project directory.',
+        'ac.gen.delete.body': 'The transcript and its CLI session reference will be removed from the app history. This cannot be undone.',
+        'ac.move': 'Move to project…', 'ac.move.title': 'Move to a project', 'ac.moved': 'Moved to {p} — the chat now uses that project’s context',
+        'ac.gen.sg1': 'Compare two technologies', 'ac.gen.sg1.d': 'Trade-offs in a short table', 'ac.gen.sg1.p': 'Compare Spring Boot and NestJS for a small team building REST APIs.',
+        'ac.gen.sg2': 'Draft a client e-mail', 'ac.gen.sg2.d': 'Clear, polite, short', 'ac.gen.sg2.p': 'Draft an e-mail asking a client to confirm the meeting agenda for Thursday.',
+        'ac.gen.sg3': 'Explain a concept', 'ac.gen.sg3.d': 'With a simple example', 'ac.gen.sg3.p': 'Explain event sourcing with a simple example.',
+        'ac.gen.sg4': 'Write a quick script', 'ac.gen.sg4.d': 'One-off helper, no project', 'ac.gen.sg4.p': 'Write a PowerShell script that renames photos by their date taken.',
       },
       vi: {
         'ac.search': 'Tìm cuộc trò chuyện…', 'ac.pinned': 'Đã ghim', 'ac.today': 'Hôm nay', 'ac.yesterday': 'Hôm qua', 'ac.week': '7 ngày qua', 'ac.older': 'Cũ hơn',
@@ -272,6 +303,17 @@
         'ac.ctx.chat': 'Lịch sử chat', 'ac.ctx.chat.note': 'Lưu trong thư mục dự án, cạnh dữ liệu dự án — không lưu trong dữ liệu ứng dụng.', 'ac.ctx.sid': 'Phiên CLI', 'ac.ctx.cli': 'CLI', 'ac.ctx.model': 'Model', 'ac.ctx.tokens': 'Mức dùng token', 'ac.ctx.in': 'Đầu vào', 'ac.ctx.out': 'Đầu ra', 'ac.ctx.cache': 'Đọc từ cache', 'ac.ctx.window': 'Cửa sổ ngữ cảnh', 'ac.ctx.cost': 'Chi phí ước tính',
         'ac.ctx.transcript': 'Bản ghi', 'ac.ctx.transcript.sub': 'Tải toàn bộ cuộc trò chuyện, gồm các lệnh gọi công cụ và thay đổi tài liệu.',
         'ac.ctx.dir': 'Thư mục dự án', 'ac.ctx.pphase': 'Giai đoạn dự án', 'ac.isolated': 'theo dự án', 'ac.created': 'Bắt đầu {t}', 'ac.messages': 'Tin nhắn',
+        'ac.ph.gen': 'Hỏi bất cứ điều gì — không có ngữ cảnh dự án…', 'ac.hint.gen': 'Enter để gửi · Shift+Enter xuống dòng', 'ac.ctx.totals': 'Tổng của chat', 'ac.ctx.scope': 'Phạm vi', 'ac.quota.tip': 'Hạn mức sử dụng · {cli}',
+        'ac.scope.project': '{n} chat trong dự án này', 'ac.scope.gen': '{n} chat · không có ngữ cảnh dự án',
+        'ac.gen.saved': 'Đã lưu vào lịch sử ứng dụng', 'ac.gen.empty.sub': 'Chat chung không có file hay tài liệu dự án. Dùng cho những câu hỏi không thuộc riêng dự án nào.',
+        'ac.gen.dir': 'Thư mục làm việc', 'ac.gen.home': 'CLI profile của ứng dụng', 'ac.gen.isolated': 'không dự án', 'ac.gen.home.note': 'Dùng phiên đăng nhập CLI sẵn có. Không nạp thư mục dự án, tài liệu hay CLI profile của dự án nào.',
+        'ac.gen.chat.note': 'Chat chung được lưu trong dữ liệu ứng dụng, không nằm trong thư mục dự án nào.',
+        'ac.gen.delete.body': 'Bản ghi và tham chiếu phiên CLI sẽ bị xoá khỏi lịch sử ứng dụng. Không thể hoàn tác.',
+        'ac.move': 'Chuyển vào dự án…', 'ac.move.title': 'Chuyển vào một dự án', 'ac.moved': 'Đã chuyển vào {p} — chat sẽ dùng ngữ cảnh của dự án đó',
+        'ac.gen.sg1': 'So sánh hai công nghệ', 'ac.gen.sg1.d': 'Đánh đổi trong một bảng ngắn', 'ac.gen.sg1.p': 'So sánh Spring Boot và NestJS cho một team nhỏ làm REST API.',
+        'ac.gen.sg2': 'Soạn e-mail cho khách hàng', 'ac.gen.sg2.d': 'Rõ ràng, lịch sự, ngắn gọn', 'ac.gen.sg2.p': 'Soạn e-mail nhờ khách hàng xác nhận agenda buổi họp thứ Năm.',
+        'ac.gen.sg3': 'Giải thích một khái niệm', 'ac.gen.sg3.d': 'Kèm ví dụ đơn giản', 'ac.gen.sg3.p': 'Giải thích event sourcing bằng một ví dụ đơn giản.',
+        'ac.gen.sg4': 'Viết nhanh một script', 'ac.gen.sg4.d': 'Tiện ích dùng một lần, không cần dự án', 'ac.gen.sg4.p': 'Viết script PowerShell đổi tên ảnh theo ngày chụp.',
       }
     });
 
@@ -282,11 +324,15 @@
       const L = (en, vi) => ({ en, vi });
       const T = o => (o && typeof o === 'object') ? (o[PC.lang] || o.en) : o;
       const NOW = new Date('2026-11-23T11:40:00');
-      const p = PC.project();
-      const CLI = { claude: { name: 'Claude Code', model: 'claude-opus-5-5', win: 200000, ver: '2.4.1' }, codex: { name: 'Codex CLI', model: 'gpt-5-codex', win: 256000, ver: '0.48.0' } };
-      const PROJ_DIR = PC.project().dir;   // CLI working directory = the project directory
-      const homeOf = c => PC.projectCli(c);   // <project dir>\\.procheck\\cli\\<cli> (project CLI profile; sign-in stays shared)
-      const chatOf = s => PROJ_DIR + '\\.procheck\\chats\\' + s.sid + '.jsonl';   // chat history stays in the project directory
+      // Scope: a project (default) or general chats (?scope=general) that have no project context at all.
+      const GEN = document.body.dataset.scope === 'general';
+      const p = GEN ? Object.assign({ name: PC.t('nav.chats.general'), phase: null, artifacts: 0 }, PC.general) : PC.project();
+      const cliW = id => PC.data.cli.find(c => c.id === id).ctxWindow;   // at runtime: reported by the CLI after each reply
+      const CLI = { claude: { name: 'Claude Code', model: 'claude-opus-5-5', win: cliW('claude'), ver: '2.4.1' }, codex: { name: 'Codex CLI', model: 'gpt-6-luna', win: cliW('codex'), ver: '0.48.0' } };
+      const PROJ_DIR = p.dir;   // CLI working directory = the project directory (general: an empty scratch dir)
+      const homeOf = c => PC.projectCli(c, p);   // context profile — project: <project dir>\\.procheck\\cli\\<cli> · general: the CLI home %LOCALAPPDATA%\\Procheck\\cli\\<cli> (sign-in: PC.cliHome)
+      const chatOf = s => (GEN ? PC.general.chats : PROJ_DIR + '\\.procheck\\chats') + '\\' + s.sid + '.jsonl';
+      const phaseChip = ph => ph ? `<span class="phase-chip phase-${ph}">${PC.t('phase.' + ph)}</span>` : `<span class="scope-b"><i data-lucide="globe"></i>${PC.t('chat.general')}</span>`;
       const ARTL_LOTUS = [['brd', 'Business Requirements Doc', 'file-text'], ['scope', 'Scope Definition – Release 1', 'target'], ['estimation', 'Effort Estimation', 'calculator'], ['sow', 'Statement of Work', 'file-signature'], ['c4', 'Solution Architecture (C4)', 'network'], ['adr-004', 'ADR-004 · OIDC via Keycloak', 'git-pull-request-arrow'], ['tech-stack', 'Tech Stack Decision', 'layers'], ['infra', 'Infra plan', 'cloud'], ['cicd', 'CI/CD Pipeline Spec', 'workflow'], ['spec-kyc', 'Feature spec – Merchant KYC', 'file-text'], ['spec-settlement', 'Feature spec – Settlement Report', 'file-text'], ['test-strategy', 'Test strategy', 'flask-conical'], ['release-notes', 'Release notes 1.3', 'megaphone']];
       const artOf = id => ARTL.find(a => a[0] === id);
 
@@ -467,13 +513,34 @@
             A('09:01', tx('Based on sprints 6 to 8 (45, 49 and 47 points) I would commit **48 points**:\n\n| Item | Points |\n|---|---|\n| AH-311 Payroll export to bank file (NAPAS) | 13 |\n| AH-298 Leave approval delegation | 8 |\n| Release hardening and regression | 12 |\n| Defect buffer | 8 |\n| Release notes and UAT prep | 7 |\n\nThe two feature items are on the critical path for v2.0, so I would start both agent runs on day one.')) ] },
       ];
 
+      // General chats: not tied to any project (no artifacts, no phase). Stored in %LOCALAPPDATA%\Procheck\chats.
+      const SEED_GENERAL = [
+        { id: 'g1', title: 'Tauri vs Electron for a desktop app', phase: null, cli: 'claude', at: '2026-11-23T10:05', pinned: false, def: true, attached: [], sid: 'ses_01JB8E4T9K2GQA', tok: { i: 18400, o: 3200, c: 9600 },
+          messages: [
+            U('10:03', 'For a local desktop tool that wraps CLI processes, should I pick Tauri or Electron?'),
+            A('10:05', tx('For a tool that mostly **spawns CLI processes and reads their output**, Tauri is the better default:\n\n| Criterion | Tauri | Electron |\n|---|---|---|\n| Installer size | ~10 MB | ~90 MB |\n| Memory at idle | Low (system WebView) | High (bundled Chromium) |\n| Process control | Rust `std::process` / plugin-shell | Node `child_process` |\n| Rendering consistency | Depends on WebView2 / WebKit | Identical everywhere |\n\nPick Electron only if you need pixel-identical rendering on every OS or rely on Node-only libraries.')) ] },
+        { id: 'g2', title: 'Viết email follow-up sau buổi demo', phase: null, cli: 'claude', at: '2026-11-22T17:40', pinned: false, attached: [], sid: 'ses_01JB7Z6C3M8PLE', tok: { i: 9200, o: 2100, c: 4800 },
+          messages: [
+            U('17:38', 'Viết giúp mình email follow-up ngắn sau buổi demo sản phẩm, nhờ khách xác nhận các điểm cần chỉnh.'),
+            A('17:40', tx('**Tiêu đề:** Tóm tắt buổi demo và các điểm cần anh/chị xác nhận\n\nChào anh/chị,\n\nCảm ơn anh/chị đã dành thời gian tham gia buổi demo hôm nay. Bên em tóm tắt các điểm cần xác nhận:\n\n1. Bổ sung bộ lọc theo chi nhánh trên màn hình báo cáo.\n2. Giới hạn dung lượng file tải lên là 10 MB.\n3. Lịch UAT dự kiến bắt đầu từ thứ Hai tuần sau.\n\nAnh/chị phản hồi giúp em trước thứ Năm để bên em kịp cập nhật kế hoạch nhé.\n\nTrân trọng.')) ] },
+        { id: 'g3', title: 'Regex for Vietnamese phone numbers', phase: null, cli: 'codex', at: '2026-11-20T14:15', pinned: false, attached: [], sid: 'cdx_5d17b0e93a4c', tok: { i: 7600, o: 1300, c: 3900 },
+          messages: [
+            U('14:14', 'Regex that validates Vietnamese mobile numbers, with or without +84.'),
+            A('14:15', tx('`^(?:\\+84|0)(?:3|5|7|8|9)\\d{8}$`\n\n- `+84` or a leading `0`\n- a valid mobile prefix (3, 5, 7, 8, 9)\n- then exactly 8 digits\n\nStrip spaces and dots before matching, e.g. `0912 345 678` → `0912345678`.')) ] },
+        { id: 'g4', title: 'PERT vs T-shirt sizing', phase: null, cli: 'claude', at: '2026-11-12T09:30', pinned: true, attached: [], sid: 'ses_01JAZ3R5W1N7KD', tok: { i: 11300, o: 2600, c: 6200 },
+          messages: [
+            U('09:28', 'When should I use PERT instead of T-shirt sizing for early estimates?'),
+            A('09:30', tx('Use **T-shirt sizing** when scope is still fuzzy and you only need relative size to prioritise. Switch to **PERT** (optimistic, most likely, pessimistic) once you can list the work items, because it gives a range and makes the uncertainty visible to the client: `E = (O + 4M + P) / 6`.')) ] },
+      ];
+
       const ARTLS = {
+        '__general': [],
         'saigon-tms': [['rfp', 'RFP – Transport Management System.pdf', 'file-text'], ['dispatch', 'Current dispatch process.xlsx', 'table-2'], ['intro', 'Intro call with Ops Director (transcript)', 'mic']],
         'viethealth': [['meeting-notes', 'Meeting notes', 'mic'], ['brd', 'BRD v1', 'file-text'], ['scope', 'Scope Definition – Release 1', 'target'], ['his', 'Current HIS integration spec.docx', 'file-text'], ['estimation', 'Effort Estimation', 'calculator'], ['sow', 'Statement of Work', 'file-signature']],
         'mekong': [['c4', 'Solution Architecture (C4)', 'network'], ['adr-001', 'ADR-001 · Azure DevOps', 'git-pull-request-arrow'], ['adr-002', 'ADR-002 · AKS + managed PostgreSQL', 'git-pull-request-arrow'], ['adr-003', 'ADR-003 · Modular services', 'git-pull-request-arrow'], ['adr-004', 'ADR-004 · Event bus', 'git-pull-request-arrow'], ['tech-stack', 'Tech Stack Decision', 'layers'], ['infra', 'Infra plan', 'cloud'], ['cicd', 'CI/CD Pipeline Spec', 'workflow']],
         'atlas-hr': [['brd', 'Business Requirements Doc', 'file-text'], ['spec-payroll', 'Feature spec – Payroll bank export', 'file-text'], ['spec-leave', 'Feature spec – Leave management', 'file-text'], ['test-strategy', 'Test strategy', 'flask-conical'], ['release-notes', 'Release notes v2.0', 'megaphone']],
       };
-      const SEEDS = { 'lotus-pay': SEED_LOTUS, 'saigon-tms': SEED_SAIGON, 'viethealth': SEED_VIETHEALTH, 'mekong': SEED_MEKONG, 'atlas-hr': SEED_ATLAS };
+      const SEEDS = { '__general': SEED_GENERAL, 'lotus-pay': SEED_LOTUS, 'saigon-tms': SEED_SAIGON, 'viethealth': SEED_VIETHEALTH, 'mekong': SEED_MEKONG, 'atlas-hr': SEED_ATLAS };
       const SEED = SEEDS[p.id] || SEED_LOTUS;
       const SGS = {
         'saigon-tms': [['calendar-check', L('Prepare the kick-off', 'Chuẩn bị kick-off'), L('Questions and agenda from the RFP', 'Câu hỏi và agenda từ RFP'), L('Prepare the kick-off: list the questions I should ask from the RFP and the dispatch process.', 'Chuẩn bị kick-off: liệt kê các câu hỏi tôi nên hỏi dựa trên RFP và quy trình điều xe.')], ['file-search', L('Summarize the RFP', 'Tóm tắt RFP'), L('Goals, scope, constraints, timeline', 'Mục tiêu, phạm vi, ràng buộc, tiến độ'), L('/summarize the RFP in one page.', '/summarize RFP trong một trang.')], ['mic', L('Extract insights from the intro call', 'Trích ý chính cuộc gọi intro'), L('Decisions, risks, open questions', 'Quyết định, rủi ro, câu hỏi mở'), L('Extract insights from the intro call transcript.', 'Trích ý chính từ transcript cuộc gọi intro.')], ['files', L('Summarize latest documents', 'Tóm tắt tài liệu mới nhất'), L('What changed in the last 7 days', 'Thay đổi trong 7 ngày qua'), L('/summarize the documents changed in the last 7 days', '/summarize các tài liệu thay đổi trong 7 ngày qua')]],
@@ -490,6 +557,12 @@
       const state = { sessions: lsGet() || JSON.parse(JSON.stringify(SEED)), cur: null, q: '', ctx: true, sessOpen: false, mode: 'ask', menu: null, chips: [], stream: null, seq: 0 };
       const save = () => lsSet(state.sessions);
       const S = () => state.sessions.find(s => s.id === state.cur);
+      // s.ctx = context-window snapshot of the LAST reply (recorded at end of turn), not the running chat total.
+      //   cr = cache read, nw = new input (+ cache write), o = output.  s.tok = cumulative totals for the chat.
+      const CTX_FILL = { ah1: 0.86 };   // AH-311 debugging chat: almost full → shows the compact warning
+      const ctxSeed = s => { const w = CLI[s.cli].win, t = CTX_FILL[s.id] ? CTX_FILL[s.id] * w : Math.min(w * .7, (s.tok.i + s.tok.o + s.tok.c) * .55); return { cr: Math.round(t * .78), nw: Math.round(t * .18), o: Math.round(t * .04), at: s.at }; };
+      state.sessions.forEach(s => { if (!s.ctx) s.ctx = s.messages.length ? ctxSeed(s) : { cr: 0, nw: 0, o: 0, at: null }; });
+      const ctxUsed = s => s.ctx.cr + s.ctx.nw + s.ctx.o;
 
       /* ===================== helpers ===================== */
       const nowIso = () => '2026-11-23T' + hhmm(new Date());
@@ -515,7 +588,7 @@
 
       /* ===================== block renderers ===================== */
       function toolHTML(b, running) {
-        const cmd = `cd ${PROJ_DIR} && ${b.cmd} ${PC.cliFlags(b.cmd.startsWith('codex') ? 'codex' : 'claude')}`;
+        const cmd = `cd ${PROJ_DIR} && ${b.cmd} ${PC.cliFlags(b.cmd.startsWith('codex') ? 'codex' : 'claude', p)}`;
         return `<div class="tool blk ${running ? 'running' : ''}"><button class="tool-h" data-tool><i data-lucide="terminal" class="icon-sm"></i><span class="l">${esc(b.label)}</span><code>${esc(b.cmd)}</code>
           <span class="st">${running ? '<span class="spinner" style="width:12px;height:12px;border-width:1.5px"></span>' + PC.t('ac.tool.running') : '<i data-lucide="check" class="icon-sm"></i>' + esc(b.dur || '')}</span><i data-lucide="chevron-down" class="icon-sm chev"></i></button>
           <div class="tool-b"><div class="terminal"><span class="t-dim">$</span> <span class="t-cmd">${esc(cmd)}</span>\n${(b.out || []).map(l => `<span class="t-${l[0]}">${esc(l[1])}</span>`).join('\n')}</div></div></div>`;
@@ -564,17 +637,21 @@
           const items = list.filter(s => groupOf(s) === g); if (!items.length) return;
           html += `<div class="sg-h">${g === 'pinned' ? '<i data-lucide="pin" class="icon-sm"></i>' : ''}${PC.t('ac.' + g)}</div>` + items.map(s => `<div class="si ${s.id === state.cur ? 'is-active' : ''}" data-sid="${s.id}">
             <div class="si-t"><span class="truncate">${esc(s.title)}</span></div>
-            <div class="si-s"><span class="phase-chip phase-${s.phase}">${PC.t('phase.' + s.phase)}</span><span class="cli-b ${s.cli}">${CLI[s.cli].name.split(' ')[0]}</span><span>${PC.t('ac.msgs', { n: s.messages.length })}</span><span class="time">${timeLabel(s)}</span></div>
+            <div class="si-s">${s.phase ? phaseChip(s.phase) : ''}<span class="cli-b ${s.cli}">${CLI[s.cli].name.split(' ')[0]}</span><span>${PC.t('ac.msgs', { n: s.messages.length })}</span><span class="time">${timeLabel(s)}</span></div>
             <button class="si-m" data-menu="${s.id}"><i data-lucide="ellipsis" class="icon-sm"></i></button></div>`).join('');
         });
         el.innerHTML = html || `<div class="sess-empty">${PC.t('ac.nomatch')}</div>`; PC.refresh(el);
+        const nChats = state.sessions.filter(s => s.messages.length).length;
+        $('#s-scope').innerHTML = GEN ? `<span class="gen-av"><i data-lucide="globe"></i></span><div style="min-width:0"><b class="truncate">${PC.t('nav.chats.general')}</b><span class="d truncate">${PC.t('ac.scope.gen', { n: nChats })}</span></div>`
+          : `<span class="project-avatar" style="background:${p.color}">${p.short}</span><div style="min-width:0"><b class="truncate">${esc(p.name.split(' — ')[0])}</b><span class="d truncate">${PC.t('ac.scope.project', { n: nChats })}</span></div>`;
+        PC.refresh($('#s-scope'));
       }
 
       /* ===================== header, thread, composer ===================== */
       function renderHead() {
         const s = S();
         $('#c-head').innerHTML = `<button class="btn btn-ghost btn-icon sess-toggle" id="h-sess"><i data-lucide="panel-left"></i></button>
-          <div class="grow" style="min-width:0"><h3 class="truncate">${esc(s.title)}</h3><div class="sub"><span class="phase-chip phase-${s.phase}">${PC.t('phase.' + s.phase)}</span><span class="cli-b ${s.cli}">${CLI[s.cli].name}</span><span class="mono" style="font-size:11px">${CLI[s.cli].model}</span><span class="text-faint">·</span><span class="row gap-1" style="color:var(--success-fg)"><i data-lucide="circle-check" class="icon-sm"></i>${PC.t('ac.saved')}</span></div></div>
+          <div class="grow" style="min-width:0"><h3 class="truncate">${esc(s.title)}</h3><div class="sub">${phaseChip(s.phase)}<span class="cli-b ${s.cli}">${CLI[s.cli].name}</span><span class="mono" style="font-size:11px">${CLI[s.cli].model}</span><span class="text-faint">·</span><span class="row gap-1" style="color:var(--success-fg)"><i data-lucide="circle-check" class="icon-sm"></i>${PC.t(GEN ? 'ac.gen.saved' : 'ac.saved')}</span></div></div>
           <button class="btn btn-secondary btn-sm" id="h-export"><i data-lucide="download" class="icon-sm"></i><span>${PC.t('ac.export')}</span></button>
           <button class="btn btn-ghost btn-icon" id="h-ctx" data-i18n-tip="ac.context"><i data-lucide="panel-right"></i></button>`;
         PC.refresh($('#c-head'));
@@ -585,19 +662,23 @@
       function renderThread(keepScroll) {
         const s = S(), th = $('#thread'), prev = th.scrollTop;
         if (!s.messages.length) {
-          const sg = SGS[p.id] ? SGS[p.id].map(x => [x[0], T(x[1]), T(x[2]), T(x[3])]) : [['file-search', 1], ['list-checks', 2], ['kanban', 3], ['files', 4]].map(x => [x[0], PC.t('ac.sg' + x[1]), PC.t('ac.sg' + x[1] + '.d'), PC.t('ac.sg' + x[1] + '.p')]);
-          th.innerHTML = `<div class="hero"><div class="orb"><i data-lucide="sparkles"></i></div><h2>${PC.t('ac.empty.title')}</h2><p>${PC.t('ac.empty.sub', { name: p.name.split(' — ')[0] })}</p><div class="sg-grid">${sg.map(x => `<div class="sg" data-fill="${esc(x[3])}"><span class="file-tile"><i data-lucide="${x[0]}" class="icon-sm"></i></span><div><b>${esc(x[1])}</b><span class="d">${esc(x[2])}</span></div></div>`).join('')}</div></div>`;
+          const sg = GEN ? [['scale', 1], ['mail', 2], ['lightbulb', 3], ['terminal', 4]].map(x => [x[0], PC.t('ac.gen.sg' + x[1]), PC.t('ac.gen.sg' + x[1] + '.d'), PC.t('ac.gen.sg' + x[1] + '.p')])
+            : SGS[p.id] ? SGS[p.id].map(x => [x[0], T(x[1]), T(x[2]), T(x[3])]) : [['file-search', 1], ['list-checks', 2], ['kanban', 3], ['files', 4]].map(x => [x[0], PC.t('ac.sg' + x[1]), PC.t('ac.sg' + x[1] + '.d'), PC.t('ac.sg' + x[1] + '.p')]);
+          th.innerHTML = `<div class="hero"><div class="orb"><i data-lucide="sparkles"></i></div><h2>${PC.t('ac.empty.title')}</h2><p>${GEN ? PC.t('ac.gen.empty.sub') : PC.t('ac.empty.sub', { name: p.name.split(' — ')[0] })}</p><div class="sg-grid">${sg.map(x => `<div class="sg" data-fill="${esc(x[3])}"><span class="file-tile"><i data-lucide="${x[0]}" class="icon-sm"></i></span><div><b>${esc(x[1])}</b><span class="d">${esc(x[2])}</span></div></div>`).join('')}</div></div>`;
         } else th.innerHTML = `<div class="t-in" id="t-in">${s.messages.map((m, i) => msgHTML(m, i, s)).join('')}</div>`;
         PC.refresh(th);
         th.style.scrollBehavior = 'auto'; th.scrollTop = keepScroll ? prev : th.scrollHeight; th.style.scrollBehavior = '';
       }
       function renderComposer() {
         const s = S();
-        $('#ta').placeholder = PC.t('ac.ph.' + state.mode);
+        $('#ta').placeholder = GEN ? PC.t('ac.ph.gen') : PC.t('ac.ph.' + state.mode);
+        $('.cmp-hint').textContent = PC.t(GEN ? 'ac.hint.gen' : 'ac.hint');
         const MI = { ask: 'message-circle', edit: 'file-pen-line', agent: 'bot' };
         $('#b-mode').className = 'pill mode-' + state.mode; $('#b-mode').innerHTML = `<i data-lucide="${MI[state.mode]}" class="icon-sm"></i>${PC.t('as.mode.' + state.mode)}<i data-lucide="chevron-down" class="icon-sm"></i>`;
         $('#b-cli').innerHTML = `<span class="dot dot-success" style="width:6px;height:6px"></span>${CLI[s.cli].name} · <span class="mono" style="font-size:11px">${CLI[s.cli].model}</span><i data-lucide="chevron-down" class="icon-sm"></i>`;
         renderMeter();
+        // general chats: plain Q&A only — no artifacts to mention, no edit/agent modes, no project commands
+        ['#b-mode', '#b-at', '#b-slash'].forEach(id => $(id).classList.toggle('hidden', GEN));
         const ch = $('#cmp-chips'); ch.classList.toggle('hidden', !state.chips.length);
         ch.innerHTML = state.chips.map((c, i) => `<span class="chip"><i data-lucide="${c.icon}"></i>${esc(c.label)}<button data-rm="${i}"><i data-lucide="x" class="icon-sm"></i></button></span>`).join('');
         PC.refresh($('#cmp'));
@@ -606,46 +687,68 @@
         sb.className = 'sendb' + (busy ? ' stop' : ''); sb.innerHTML = `<i data-lucide="${busy ? 'square' : 'arrow-up'}"></i>`; sb.title = busy ? PC.t('ac.stop') : ''; PC.refresh(sb);
       }
       function renderMeter() {
-        const s = S(), w = CLI[s.cli].win, u = used(s), pct = Math.min(100, u / w * 100), C = 2 * Math.PI * 7;
-        const b = $('#b-meter'); b.className = 'meter' + (pct > 80 ? ' warn' : '');
+        const s = S(), w = CLI[s.cli].win, u = ctxUsed(s), pct = Math.min(100, u / w * 100), C = 2 * Math.PI * 7;
+        const b = $('#b-meter'); b.className = 'meter' + (PC.usage.tone(pct) ? ' ' + PC.usage.tone(pct) : '');
         b.innerHTML = `<svg viewBox="0 0 18 18"><circle class="bg" cx="9" cy="9" r="7" fill="none" stroke-width="2.5"/><circle class="fg" cx="9" cy="9" r="7" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${(C * pct / 100).toFixed(1)} ${C.toFixed(1)}"/></svg>${Math.round(pct)}%`;
-        b.setAttribute('data-tip', PC.t('ac.meter.tip', { u: fmtK(u), w: fmtK(w) }));
+        b.setAttribute('data-tip', PC.t('use.context.tip', { u: fmtK(u), w: fmtK(w) }));
+        // account limit: show the tightest window (5h or weekly) of the CLI this chat runs on
+        const q = $('#b-quota'), wst = PC.usage.worst(s.cli), qp = Math.round(wst.used), tone = PC.usage.tone(qp);
+        q.innerHTML = `<i data-lucide="gauge" class="icon-sm"></i><span class="${tone ? tone + '-t' : ''}">${PC.t('use.w.' + wst.k + '.short')} ${qp}%</span>`;
+        q.setAttribute('data-tip', PC.t('ac.quota.tip', { cli: CLI[s.cli].name }) + ' — ' + PC.usage.get(s.cli).windows.map(x => PC.t('use.w.' + x.k + '.short') + ' ' + Math.round(x.used) + '%').join(' · '));
+        PC.refresh(q);
       }
 
       /* ===================== context pane ===================== */
       function renderCtx() {
-        const s = S(), w = CLI[s.cli].win, u = used(s), tot = u || 1;
+        const s = S(), w = CLI[s.cli].win, u = ctxUsed(s), pct = u / w * 100, n = x => x.toLocaleString('en-US');
         const cost = (s.tok.i * 15 + s.tok.o * 75 + s.tok.c * 1.5) / 1e6;
+        const lim = PC.usage.get(s.cli);
+        const pathRow = v => `<div class="path"><span>${v}</span><button class="btn btn-ghost btn-icon btn-sm" data-copy="${v}" style="--_h:22px"><i data-lucide="copy" class="icon-sm"></i></button></div>`;
         $('#ctxp').innerHTML = `<div class="cx"><div class="cx-h">${PC.t('ac.context')}</div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.project')}</span><span class="v truncate">${esc(p.name.split(' — ')[0])}</span></div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.phase')}</span><span class="v"><span class="phase-chip phase-${s.phase}">${PC.t('phase.' + s.phase)}</span></span></div>
-            <div class="kv"><span class="k">${PC.t('ac.ctx.pphase')}</span><span class="v"><span class="phase-chip phase-${p.phase}">${PC.t('phase.' + p.phase)}</span></span></div>
+            ${GEN ? `<div class="kv"><span class="k">${PC.t('ac.ctx.scope')}</span><span class="v">${phaseChip(null)}</span></div>`
+              : `<div class="kv"><span class="k">${PC.t('ac.ctx.project')}</span><span class="v truncate">${esc(p.name.split(' — ')[0])}</span></div>
+            <div class="kv"><span class="k">${PC.t('ac.ctx.phase')}</span><span class="v">${phaseChip(s.phase)}</span></div>
+            <div class="kv"><span class="k">${PC.t('ac.ctx.pphase')}</span><span class="v">${phaseChip(p.phase)}</span></div>`}
             <div class="kv"><span class="k">${PC.t('ac.messages')}</span><span class="v">${s.messages.length}</span></div></div>
-          <div class="cx"><div class="cx-h">${PC.t('ac.ctx.attached')}<button class="btn btn-ghost btn-sm" id="x-add" style="margin:-6px -8px -6px 0"><i data-lucide="plus" class="icon-sm"></i>${PC.t('ac.ctx.add')}</button></div>
-            ${s.attached.length ? s.attached.map(id => { const a = artOf(id); return a ? `<div class="a-row"><span class="file-tile"><i data-lucide="${a[2]}" class="icon-sm"></i></span><a href="artifacts.html#${a[0]}" class="truncate">${esc(a[1])}</a><button class="btn btn-ghost btn-icon btn-sm x" data-detach="${id}"><i data-lucide="x" class="icon-sm"></i></button></div>` : ''; }).join('') : `<div class="text-xs text-faint">${PC.t('ac.ctx.none')}</div>`}</div>
+          <div class="cx" id="cx-usage"><div class="cx-h">${PC.t('use.context')}<span class="text-faint" style="text-transform:none;letter-spacing:0;font-weight:500">${fmtK(u)} / ${fmtK(w)} · ${Math.round(pct)}%</span></div>
+            <div class="tokbar"><i class="cr" style="width:${s.ctx.cr / w * 100}%"></i><i class="nw" style="width:${s.ctx.nw / w * 100}%"></i><i class="ou" style="width:${s.ctx.o / w * 100}%"></i></div>
+            <div class="kv"><span class="k"><i class="dotk cr"></i>${PC.t('use.cached')}</span><span class="v">${n(s.ctx.cr)}</span></div>
+            <div class="kv"><span class="k"><i class="dotk nw"></i>${PC.t('use.new')}</span><span class="v">${n(s.ctx.nw)}</span></div>
+            <div class="kv"><span class="k"><i class="dotk ou"></i>${PC.t('use.out')}</span><span class="v">${n(s.ctx.o)}</span></div>
+            <div class="cx-sub">${s.ctx.at ? PC.t('use.last', { t: PC.usage.clock(s.ctx.at) }) + ' · ' : ''}${PC.t('use.compact.hint')}</div>
+            ${pct >= 80 ? `<div class="cx-warn"><i data-lucide="triangle-alert"></i><div>${PC.t('use.compact.warn')}<div class="row gap-2" style="margin-top:8px"><button class="btn btn-secondary btn-sm" id="x-compact"><i data-lucide="fold-vertical" class="icon-sm"></i>${PC.t('use.compact')}</button><button class="btn btn-ghost btn-sm" id="x-newchat"><i data-lucide="square-pen" class="icon-sm"></i>${PC.t('as.new')}</button></div></div></div>` : ''}</div>
+          <div class="cx"><div class="cx-h"><span>${PC.t('use.limits')} · ${CLI[s.cli].name}</span><span class="row gap-1"><span class="badge">${esc(lim.plan)}</span><button class="btn btn-ghost btn-icon btn-sm" id="x-refresh" data-i18n-tip="use.refresh" style="margin:-6px -8px -6px 0"><i data-lucide="refresh-cw" class="icon-sm"></i></button></span></div>
+            ${PC.usage.rows(s.cli)}
+            <div class="cx-sub">${PC.t('use.updated', { t: PC.usage.clock(lim.at) })}</div>
+            <div class="note"><i data-lucide="user-round"></i><span>${PC.t('use.account')}</span></div>
+            <div class="src">${PC.t('use.src')}: ${esc(lim.src)}</div></div>
+          ${GEN ? '' : `<div class="cx"><div class="cx-h">${PC.t('ac.ctx.attached')}<button class="btn btn-ghost btn-sm" id="x-add" style="margin:-6px -8px -6px 0"><i data-lucide="plus" class="icon-sm"></i>${PC.t('ac.ctx.add')}</button></div>
+            ${s.attached.length ? s.attached.map(id => { const a = artOf(id); return a ? `<div class="a-row"><span class="file-tile"><i data-lucide="${a[2]}" class="icon-sm"></i></span><a href="artifacts.html#${a[0]}" class="truncate">${esc(a[1])}</a><button class="btn btn-ghost btn-icon btn-sm x" data-detach="${id}"><i data-lucide="x" class="icon-sm"></i></button></div>` : ''; }).join('') : `<div class="text-xs text-faint">${PC.t('ac.ctx.none')}</div>`}</div>`}
           <div class="cx"><div class="cx-h">${PC.t('ac.ctx.runtime')}</div>
             <div class="kv"><span class="k">${PC.t('ac.ctx.cli')}</span><span class="v">${CLI[s.cli].name} <span class="text-faint" style="font-weight:400">${CLI[s.cli].ver}</span></span></div>
             <div class="kv"><span class="k">${PC.t('ac.ctx.model')}</span><span class="v mono" style="font-size:12px">${CLI[s.cli].model}</span></div>
-            <div class="cx-h" style="margin:12px 0 6px">${PC.t('ac.ctx.dir')}</div>
-            <div class="path"><span>${PROJ_DIR}</span><button class="btn btn-ghost btn-icon btn-sm" data-copy="${PROJ_DIR}" style="--_h:22px"><i data-lucide="copy" class="icon-sm"></i></button></div>
-            <div class="cx-h" style="margin:14px 0 6px"><span>${PC.t('ac.ctx.home')}</span><span class="badge badge-success"><i data-lucide="shield-check"></i>${PC.t('ac.isolated')}</span></div>
-            <div class="path"><span>${homeOf(s.cli)}</span><button class="btn btn-ghost btn-icon btn-sm" data-copy="${homeOf(s.cli)}" style="--_h:22px"><i data-lucide="copy" class="icon-sm"></i></button></div>
-            <div class="note"><i data-lucide="lock-keyhole"></i><span>${PC.t('ac.ctx.home.note')}</span></div>
+            <div class="cx-h" style="margin:12px 0 6px">${PC.t(GEN ? 'ac.gen.dir' : 'ac.ctx.dir')}</div>
+            ${pathRow(PROJ_DIR)}
+            <div class="cx-h" style="margin:14px 0 6px"><span>${PC.t(GEN ? 'ac.gen.home' : 'ac.ctx.home')}</span><span class="badge badge-success"><i data-lucide="shield-check"></i>${PC.t(GEN ? 'ac.gen.isolated' : 'ac.isolated')}</span></div>
+            ${pathRow(homeOf(s.cli))}
+            <div class="note"><i data-lucide="lock-keyhole"></i><span>${PC.t(GEN ? 'ac.gen.home.note' : 'ac.ctx.home.note')}</span></div>
             <div class="cx-h" style="margin:14px 0 6px">${PC.t('ac.ctx.sid')}</div>
-            <div class="path"><span>${s.sid}</span><button class="btn btn-ghost btn-icon btn-sm" data-copy="${s.sid}" style="--_h:22px"><i data-lucide="copy" class="icon-sm"></i></button></div>
+            ${pathRow(s.sid)}
             <div class="cx-h" style="margin:14px 0 6px">${PC.t('ac.ctx.chat')}</div>
-            <div class="path"><span>${chatOf(s)}</span><button class="btn btn-ghost btn-icon btn-sm" data-copy="${chatOf(s)}" style="--_h:22px"><i data-lucide="copy" class="icon-sm"></i></button></div>
-            <div class="note"><i data-lucide="folder-open"></i><span>${PC.t('ac.ctx.chat.note')}</span></div></div>
-          <div class="cx"><div class="cx-h">${PC.t('ac.ctx.tokens')}<span class="text-faint" style="text-transform:none;letter-spacing:0;font-weight:500">${fmtK(u)} / ${fmtK(w)}</span></div>
-            <div class="tokbar"><i class="a" style="width:${s.tok.i / w * 100}%"></i><i class="b" style="width:${s.tok.o / w * 100}%"></i><i class="c" style="width:${s.tok.c / w * 100}%"></i></div>
-            <div class="kv"><span class="k"><i class="dotk a"></i>${PC.t('ac.ctx.in')}</span><span class="v">${s.tok.i.toLocaleString('en-US')}</span></div>
-            <div class="kv"><span class="k"><i class="dotk b"></i>${PC.t('ac.ctx.out')}</span><span class="v">${s.tok.o.toLocaleString('en-US')}</span></div>
-            <div class="kv"><span class="k"><i class="dotk c"></i>${PC.t('ac.ctx.cache')}</span><span class="v">${s.tok.c.toLocaleString('en-US')}</span></div>
+            ${pathRow(chatOf(s))}
+            <div class="note"><i data-lucide="folder-open"></i><span>${PC.t(GEN ? 'ac.gen.chat.note' : 'ac.ctx.chat.note')}</span></div></div>
+          <div class="cx"><div class="cx-h">${PC.t('ac.ctx.totals')}</div>
+            <div class="kv"><span class="k">${PC.t('ac.ctx.in')}</span><span class="v">${n(s.tok.i)}</span></div>
+            <div class="kv"><span class="k">${PC.t('ac.ctx.out')}</span><span class="v">${n(s.tok.o)}</span></div>
+            <div class="kv"><span class="k">${PC.t('ac.ctx.cache')}</span><span class="v">${n(s.tok.c)}</span></div>
             <div class="kv"><span class="k">${PC.t('ac.ctx.cost')}</span><span class="v">$${cost.toFixed(2)}</span></div></div>
           <div class="cx" style="border-bottom:0"><div class="cx-h">${PC.t('ac.ctx.transcript')}</div><p class="text-xs text-subtle" style="margin:0 0 10px">${PC.t('ac.ctx.transcript.sub')}</p>
             <div class="row gap-2"><button class="btn btn-secondary btn-sm grow" data-exp="md"><i data-lucide="file-code-2" class="icon-sm"></i>Markdown</button><button class="btn btn-secondary btn-sm grow" data-exp="json"><i data-lucide="braces" class="icon-sm"></i>JSON</button></div></div>`;
         PC.refresh($('#ctxp'));
-        $('#x-add').onclick = e => mentionPopover(e.currentTarget, id => { if (!s.attached.includes(id)) { s.attached.push(id); save(); renderCtx(); } });
+        const xc = $('#x-compact'); if (xc) xc.onclick = () => { s.ctx = { cr: Math.round(w * .05), nw: Math.round(w * .02), o: 0, at: nowIso() }; save(); renderCtx(); renderMeter(); PC.toast(PC.t('use.compacted'), { icon: 'fold-vertical' }); };
+        const xn = $('#x-newchat'); if (xn) xn.onclick = newChat;
+        $('#x-refresh').onclick = () => { const l = PC.usage.get(s.cli); l.at = nowIso(); PC.usage.set(s.cli, l); PC.toast(PC.t('use.refreshed'), { icon: 'refresh-cw' }); };
+        if ($('#x-add')) $('#x-add').onclick = e => mentionPopover(e.currentTarget, id => { if (!s.attached.includes(id)) { s.attached.push(id); save(); renderCtx(); } });
         $$('[data-detach]', $('#ctxp')).forEach(b => b.onclick = () => { s.attached = s.attached.filter(x => x !== b.dataset.detach); save(); renderCtx(); });
         $$('[data-copy]', $('#ctxp')).forEach(b => b.onclick = () => { try { navigator.clipboard && navigator.clipboard.writeText(b.dataset.copy); } catch (e) { /* ignore */ } PC.toast(PC.t('ac.copied')); });
         $$('[data-exp]', $('#ctxp')).forEach(b => b.onclick = () => exportTranscript(b.dataset.exp));
@@ -656,7 +759,7 @@
 
       /* ===================== export ===================== */
       function transcriptMd(s) {
-        const lines = [`# ${s.title}`, '', `- Project: ${p.name}`, `- Phase: ${s.phase}`, `- CLI: ${CLI[s.cli].name} (${CLI[s.cli].model})`, `- CLI profile: ${homeOf(s.cli)}`, `- Chat history: ${chatOf(s)}`, `- CLI session: ${s.sid}`, ''];
+        const lines = [`# ${s.title}`, '', GEN ? '- Scope: general (no project)' : `- Project: ${p.name}`, `- Phase: ${s.phase || '—'}`, `- CLI: ${CLI[s.cli].name} (${CLI[s.cli].model})`, `- CLI profile: ${homeOf(s.cli)}`, `- Chat history: ${chatOf(s)}`, `- CLI session: ${s.sid}`, ''];
         s.messages.forEach(m => {
           if (m.role === 'user') { lines.push(`### You · ${m.time}`, '', m.text, ''); return; }
           lines.push(`### Assistant · ${m.time}`, '');
@@ -707,7 +810,15 @@
         if (mode === 'edit') return { tool: mk(X('Propose edit', 'Đề xuất chỉnh sửa'), out(['info', 'read  attached artifacts'], ['ok', 'diff  proposed']), '5.2s'), md: X('The proposed change is ready for **' + t + '**. It is not applied until you click **Apply changes**.', 'Thay đổi đề xuất cho **' + t + '** đã sẵn sàng. Nó chưa được áp dụng cho tới khi bạn bấm **Áp dụng thay đổi**.'), extra: [] };
         return { tool: mk(X('Search project context', 'Tìm trong ngữ cảnh dự án'), out(['info', 'search  ' + p.artifacts + ' artifacts and sources'], ['ok', 'done']), '6.0s'), md: X('Regarding **' + short + '**: ', 'Về **' + short + '**: ') + PC.L(F.ans), extra: [] };
       }
+      function generalReply(text, s) {
+        const vi = PC.lang === 'vi', X = (en, v) => vi ? v : en;
+        const short = text.length > 60 ? text.slice(0, 60) + '…' : text;
+        const bin = s.cli === 'codex' ? 'codex exec' : 'claude -p';
+        return { tool: tool(X('Answer (no project context)', 'Trả lời (không ngữ cảnh dự án)'), `${bin} "${short.replace(/"/g, "'")}"`, out(['info', 'cwd   ' + PROJ_DIR + ' (empty)'], ['ok', 'done']), '4.1s'),
+          md: X('Here is a short answer to **' + short + '**. Because this is a general chat, I did not read any project files — if this belongs to a project, use **Move to project…** in the chat menu so the next answers can use its artifacts.', 'Đây là câu trả lời ngắn cho **' + short + '**. Vì đây là chat chung nên mình không đọc file dự án nào — nếu nội dung thuộc một dự án, dùng **Chuyển vào dự án…** trong menu của chat để các câu trả lời sau dùng được tài liệu của dự án đó.'), extra: [] };
+      }
       function makeReply(text, cmd, mode, s) {
+        if (GEN) return generalReply(text, s);
         if (p.id !== 'lotus-pay') return genericReply(text, cmd, mode, s);
         const vi = PC.lang === 'vi', X = (en, v) => vi ? v : en;
         const t = text.replace(/^\/\w+\s*/, '').trim() || X('the current project context', 'ngữ cảnh dự án hiện tại');
@@ -766,7 +877,11 @@
       function finish() {
         const st = state.stream; if (!st) return; const { s, rep } = st;
         s.messages.push({ role: 'ai', time: hhmm(new Date()), blocks: [rep.tool, tx(st.partial || rep.md), ...rep.extra] });
-        s.tok.i += 700 + Math.round(rep.md.length * .6); s.tok.o += Math.round(rep.md.length / 3.2) + 120; s.tok.c += 1800;
+        const di = 700 + Math.round(rep.md.length * .6), dout = Math.round(rep.md.length / 3.2) + 120;
+        s.tok.i += di; s.tok.o += dout; s.tok.c += 1800;
+        // end of turn (Stop hook / result event): the whole previous prompt is now cache read, plus the new input and output
+        const at = nowIso(); s.ctx = { cr: ctxUsed(s), nw: di, o: dout, at };
+        PC.usage.record(s.cli, at);   // also fires pc:usage → meter + limits re-render
         state.stream = null; timers = []; save(); renderThread(); renderComposer(); renderList(); renderCtx();
       }
       function stopStream() { const st = state.stream; if (!st) return; clearInterval(st.iv); timers.forEach(clearTimeout); timers = []; if (!st.partial) st.partial = rep0(st); finish(); }
@@ -804,15 +919,32 @@
         if (state.stream) return;
         const ex = state.sessions.find(s => !s.messages.length); if (ex) return openSession(ex.id);
         const id = 'n' + Date.now().toString(36), cli = S() ? S().cli : 'claude';
-        state.sessions.unshift({ id, title: PC.t('ac.newchat'), phase: p.phase, cli, at: nowIso(), pinned: false, attached: [], sid: (cli === 'codex' ? 'cdx_' : 'ses_') + Math.random().toString(16).slice(2, 14).toUpperCase(), tok: { i: 0, o: 0, c: 0 }, messages: [] });
+        state.sessions.unshift({ id, title: PC.t('ac.newchat'), phase: p.phase, cli, at: nowIso(), pinned: false, attached: [], sid: (cli === 'codex' ? 'cdx_' : 'ses_') + Math.random().toString(16).slice(2, 14).toUpperCase(), tok: { i: 0, o: 0, c: 0 }, ctx: { cr: 0, nw: 0, o: 0, at: null }, messages: [] });
         save(); openSession(id); $('#ta').focus();
       }
       function sessionMenu(anchor, id) {
         const s = state.sessions.find(x => x.id === id);
-        PC.popover(anchor, `<button class="menu-item" data-v="pin"><i data-lucide="${s.pinned ? 'pin-off' : 'pin'}"></i>${PC.t(s.pinned ? 'ac.unpin' : 'ac.pin')}</button><button class="menu-item" data-v="rename"><i data-lucide="pencil"></i>${PC.t('ac.rename')}</button><div class="menu-sep"></div><button class="menu-item" data-v="del" style="color:var(--danger-fg)"><i data-lucide="trash-2"></i>${PC.t('ac.delete')}</button>`, v => {
+        PC.popover(anchor, `<button class="menu-item" data-v="pin"><i data-lucide="${s.pinned ? 'pin-off' : 'pin'}"></i>${PC.t(s.pinned ? 'ac.unpin' : 'ac.pin')}</button><button class="menu-item" data-v="rename"><i data-lucide="pencil"></i>${PC.t('ac.rename')}</button>${GEN ? `<button class="menu-item" data-v="move"><i data-lucide="folder-input"></i>${PC.t('ac.move')}</button>` : ''}<div class="menu-sep"></div><button class="menu-item" data-v="del" style="color:var(--danger-fg)"><i data-lucide="trash-2"></i>${PC.t('ac.delete')}</button>`, v => {
           if (v === 'pin') { s.pinned = !s.pinned; save(); renderList(); }
           else if (v === 'rename') PC.modal({ title: PC.t('ac.rename.title'), width: 440, body: `<input class="input" id="rn" value="${esc(s.title)}">`, actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('common.save'), kind: 'primary', onClick: ov => { const v2 = $('#rn', ov).value.trim(); if (v2) { s.title = v2; save(); renderList(); renderHead(); PC.toast(PC.t('ac.renamed')); } } }] });
-          else if (v === 'del') PC.modal({ title: PC.t('ac.delete.title'), width: 440, body: `<p class="text-muted">${PC.t('ac.delete.body')}</p>`, actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('ac.delete'), kind: 'danger', icon: 'trash-2', onClick: () => { state.sessions = state.sessions.filter(x => x.id !== id); save(); if (!state.sessions.length) { newChat(); } else if (state.cur === id) openSession(state.sessions.slice().sort((a, b) => new Date(b.at) - new Date(a.at))[0].id); else renderList(); PC.toast(PC.t('ac.deleted'), { icon: 'trash-2' }); } }] });
+          else if (v === 'move') moveToProject(s);
+          else if (v === 'del') PC.modal({ title: PC.t('ac.delete.title'), width: 440, body: `<p class="text-muted">${PC.t(GEN ? 'ac.gen.delete.body' : 'ac.delete.body')}</p>`, actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('ac.delete'), kind: 'danger', icon: 'trash-2', onClick: () => { state.sessions = state.sessions.filter(x => x.id !== id); save(); if (!state.sessions.length) { newChat(); } else if (state.cur === id) openSession(state.sessions.slice().sort((a, b) => new Date(b.at) - new Date(a.at))[0].id); else renderList(); PC.toast(PC.t('ac.deleted'), { icon: 'trash-2' }); } }] });
+        });
+      }
+
+      // General chat → project: the transcript moves into <project dir>\.procheck\chats and picks up that project's context.
+      function moveToProject(s) {
+        const ov = PC.modal({ title: PC.t('ac.move.title'), width: 460, body: PC.data.projects.map(pr => `<button class="menu-item" data-move="${pr.id}" style="width:100%"><span class="project-avatar" style="background:${pr.color};width:24px;height:24px;border-radius:6px;font-size:9px">${pr.short}</span><span class="grow truncate">${esc(pr.name)}</span><span class="phase-chip phase-${pr.phase}">${PC.t('phase.' + pr.phase)}</span></button>`).join(''), actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }] });
+        ov.el.addEventListener('click', e => {
+          const b = e.target.closest('[data-move]'); if (!b) return;
+          const pr = PC.project(b.dataset.move), key = PC.chats.key(pr.id);
+          let list = null; try { list = JSON.parse(localStorage.getItem(key) || 'null'); } catch (err) { /* ignore */ }
+          if (!Array.isArray(list) || !list.length) list = JSON.parse(JSON.stringify(SEEDS[pr.id] || []));
+          list.unshift(Object.assign({}, s, { phase: pr.phase, pinned: false }));
+          try { localStorage.setItem(key, JSON.stringify(list)); } catch (err) { /* ignore */ }
+          state.sessions = state.sessions.filter(x => x.id !== s.id); save(); ov.close();
+          if (!state.sessions.length) newChat(); else if (state.cur === s.id) openSession(state.sessions.slice().sort((a, c) => new Date(c.at) - new Date(a.at))[0].id); else renderList();
+          PC.toast(PC.t('ac.moved', { p: esc(pr.name.split(' — ')[0]) }), { icon: 'folder-input', tone: 'success' });
         });
       }
 
@@ -853,7 +985,11 @@
         const fit = () => { const n = wrap.clientWidth <= 1240; if (n !== narrow) { narrow = n; state.ctx = !n; $('#ac').classList.toggle('ctx-open', state.ctx); } };
         fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(wrap);
         document.addEventListener('mousedown', e => { if (state.menu && !e.target.closest('#cmp-menu, #ta')) closeMenu(); });
-        PC.assistant.setContext([{ icon: 'folder', label: p.name.split(' — ')[0] }, { icon: 'sparkles', label: PC.t('nav.assistant') }]);
+        PC.assistant.setContext(GEN ? [{ icon: 'globe', label: PC.t('nav.chats.general') }] : [{ icon: 'folder', label: p.name.split(' — ')[0] }, { icon: 'sparkles', label: PC.t('nav.assistant') }]);
+        $('#b-quota').onclick = () => { state.ctx = true; $('#ac').classList.add('ctx-open'); const u = $('#cx-usage'); u && u.nextElementSibling && u.nextElementSibling.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+        // sidebar "+" / chat links on this page only change the hash
+        window.addEventListener('hashchange', () => { const hh = location.hash.slice(1); if (hh === 'new') newChat(); else if (hh && hh !== state.cur && state.sessions.some(s => s.id === hh)) openSession(hh); });
+        document.addEventListener('pc:usage', () => { if (state.cur) { renderMeter(); renderCtx(); } });
         renderAll();
       });
       document.addEventListener('pc:lang', () => { if (state.cur) { closeMenu(); renderAll(); } });

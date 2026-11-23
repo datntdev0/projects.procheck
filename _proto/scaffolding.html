@@ -592,7 +592,7 @@
       { c: 't-cmd', t: () => '$ claude -p "Generate Azure Pipelines YAML for the existing modules (adapt, do not replace)" \\' },
       { c: 't-cmd', t: () => '    --model claude-opus-5-5 --add-dir ' + repoPath() + ' --output-format stream-json \\' },
       { c: 't-cmd', t: () => '    ' + PC.cliFlags('claude') },
-      { c: 't-dim', t: () => '[harness] sign-in   shared · your Claude Code login (HOME unchanged)' },
+      { c: 't-dim', t: () => '[harness] sign-in   ' + PC.cliEnv('claude') + '=' + PC.cliHome('claude') + '  (Procheck CLI home)' },
       { c: 't-dim', t: () => '[harness] worktree  ' + P.dir + '\\.procheck\\worktrees\\SC-04  (branch scaffold/ci-pipelines)' },
       { c: 't-dim', t: () => '[harness] run log   ' + P.dir + '\\.procheck\\runs\\SC-04.jsonl' },
       { c: 't-info', t: '● Reading existing pipeline: azure-pipelines.yml (classic editor export, API only)' },

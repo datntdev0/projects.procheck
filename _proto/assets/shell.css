@@ -153,6 +153,31 @@ html, body { height: 100%; overflow: hidden; }
 .composer-bar .mode { height: 26px; border: 0; border-radius: var(--radius-sm); background: var(--bg-surface-2); font-size: var(--text-2xs); font-weight: var(--weight-medium); color: var(--fg-muted); padding: 0 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 .composer-bar .send { margin-left: auto; width: 30px; height: 30px; border-radius: var(--radius-md); border: 0; background: var(--brand); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
 .composer-bar .send:hover { background: var(--brand-hover); }
+/* usage strip (context window + account limits), refreshed at the end of every reply */
+.as-usage { display: flex; align-items: center; gap: 8px; margin: 0 var(--space-3) 6px; height: 28px; padding: 0 8px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface-2); font-size: var(--text-2xs); color: var(--fg-subtle); cursor: pointer; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.as-usage:hover { border-color: var(--border-default); color: var(--fg-default); }
+.as-usage b { font-weight: var(--weight-semibold); color: var(--fg-default); }
+.as-usage .text-warning b { color: var(--warning-fg); } .as-usage .text-danger b { color: var(--danger-fg); }
+.as-usage > span { display: inline-flex; align-items: center; gap: 4px; }
+.u-sep { width: 1px; height: 12px; background: var(--border-default); }
+.u-ring { flex-shrink: 0; transform: rotate(-90deg); } .u-ring .bg { stroke: var(--border-default); } .u-ring .fg { stroke: var(--brand); }
+.u-ring.warn .fg { stroke: var(--warning); } .u-ring.danger .fg { stroke: var(--danger); }
+.u-pop { padding: 10px 12px; }
+.u-row { padding: 6px 0; }
+.u-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: var(--text-xs); color: var(--fg-default); }
+.u-top b { font-weight: var(--weight-semibold); font-variant-numeric: tabular-nums; }
+.u-bar { height: 6px; border-radius: 3px; background: var(--bg-surface-3); overflow: hidden; margin: 6px 0 4px; }
+.u-bar > i { display: block; height: 100%; border-radius: inherit; background: var(--brand); transition: width var(--dur-slow); }
+.u-bar.warn > i { background: var(--warning); } .u-bar.danger > i { background: var(--danger); }
+.u-sub { font-size: var(--text-2xs); color: var(--fg-faint); line-height: 1.5; }
+.u-top .text-warning { color: var(--warning-fg); } .u-top .text-danger { color: var(--danger-fg); }
+
+/* sidebar chats */
+.sidebar .nav-item.chat-item { height: 30px; font-size: var(--text-xs); gap: 8px; }
+.sidebar .nav-item.chat-item svg { width: 14px; height: 14px; color: var(--fg-faint); }
+.sidebar .nav-item.chat-item .when { margin-left: auto; flex-shrink: 0; font-size: var(--text-2xs); color: var(--fg-faint); font-variant-numeric: tabular-nums; }
+.nav-empty { padding: 4px 10px 6px; font-size: var(--text-xs); color: var(--fg-faint); }
+
 .as-footnote { font-size: 9.5px; color: var(--fg-faint); text-align: center; padding: 0 var(--space-3) var(--space-2); }
 
 /* ---------- Command palette ---------- */

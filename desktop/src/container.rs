@@ -12,6 +12,8 @@ const SETTINGS_FILE: &str = "settings.json";
 const PROJECTS_FILE: &str = "projects.json";
 const LOGS_DIR: &str = "logs";
 const CACHE_DIR: &str = "cache";
+const SCRATCH_DIR: &str = "scratch";
+const CLI_DIR: &str = "cli";
 
 /// Well-known locations inside the application data directory
 /// (`%LOCALAPPDATA%\Procheck` by default). Project data never lives here.
@@ -32,7 +34,7 @@ impl AppDirectories {
 
     pub(crate) fn at(root: PathBuf) -> StorageResult<Self> {
         let directories = Self { root };
-        for dir in [&directories.root, &directories.logs_dir(), &directories.cache_dir()] {
+        for dir in [&directories.root, &directories.logs_dir(), &directories.cache_dir(), &directories.scratch_dir(), &directories.cli_dir()] {
             fs::create_dir_all(dir)?;
         }
         Ok(directories)
@@ -56,5 +58,21 @@ impl AppDirectories {
     /// Rebuildable data: indexes, thumbnails, temp files. Always safe to delete.
     pub fn cache_dir(&self) -> PathBuf {
         self.root.join(CACHE_DIR)
+    }
+
+    /// Empty working directory for CLI runs that belong to no project (connection tests, general chats).
+    pub fn scratch_dir(&self) -> PathBuf {
+        self.root.join(SCRATCH_DIR)
+    }
+
+    /// Home folders of the AI CLIs Procheck runs (sign-in, config, sessions), one per CLI.
+    pub fn cli_dir(&self) -> PathBuf {
+        self.root.join(CLI_DIR)
+    }
+
+    /// Home folder of one CLI (`cli\claude`, `cli\codex`): the CLI's own config directory
+    /// while Procheck runs it, kept apart from the user's profile.
+    pub fn cli_home(&self, cli: &str) -> PathBuf {
+        self.cli_dir().join(cli)
     }
 }

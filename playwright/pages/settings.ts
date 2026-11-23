@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-export type SettingsSection = 'about' | 'general' | 'diagnostics' | 'storage';
+export type SettingsSection = 'about' | 'general' | 'diagnostics' | 'storage' | 'agents';
 
 /** App settings page: in-page navigation and one section per topic. */
 export class SettingsPage {

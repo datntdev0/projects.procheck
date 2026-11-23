@@ -99,6 +99,8 @@
     .mini-label { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); margin-bottom: 4px; }
     .path { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--code-bg); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-muted); min-width: 0; height: 34px; }
     .path span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cli-home-row .path { color: var(--fg-strong); }
+    .cli-hint { margin-top: 6px; font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.5; }
     .cli-card .select { height: 34px; }
     .cli-add { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 14px 20px; background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
     input[type="range"] { accent-color: var(--brand); width: 180px; }
@@ -363,9 +365,9 @@
         'ap.gen.startup': 'On startup', 'ap.gen.startup.d': 'What Procheck shows when it launches.', 'ap.gen.startup.last': 'Reopen last project', 'ap.gen.startup.all': 'Show all projects',
         'ap.theme.d': 'System follows Windows light / dark mode.', 'ap.lang.d': 'Interface language. Project content is not translated.',
         'ap.ai.d': 'Register the AI CLI tools installed on this PC. Projects pick from this list and can override the CLI and model in Project settings.',
-        'ap.ai.note': 'Procheck uses each CLI’s own sign-in (<code>claude login</code>, <code>codex login</code>) and never changes <code>HOME</code>. Sign in once here and every project reuses it; each project only adds its own context profile.', 'ap.ai.add': 'Add CLI tool',
-        'ap.ai.bin': 'Binary path', 'ap.ai.auth': 'Authentication', 'ap.ai.model': 'Default model', 'ap.ai.change': 'Change', 'ap.ai.test': 'Test connection', 'ap.ai.testing': 'Testing…', 'ap.ai.testok': '{n} responded in 0.8 s',
-        'ap.ai.default': 'Default', 'ap.ai.setdefault': 'Set as default', 'ap.ai.signed': 'Authenticated', 'ap.ai.key': 'API key', 'ap.ai.sub': 'Subscription', 'ap.ai.signout': 'Sign out', 'ap.ai.signedout': 'Signed out of {n} · applies to every project',
+        'ap.ai.note': 'Procheck runs each CLI with its own home in application data (<code>cli\\claude</code>, <code>cli\\codex</code> — set through <code>CLAUDE_CONFIG_DIR</code> / <code>CODEX_HOME</code>). Your own CLI profile is never read or changed. Sign in once here and every project reuses it; each project only adds its own context profile.', 'ap.ai.add': 'Add CLI tool',
+        'ap.ai.bin': 'Binary path', 'ap.ai.auth': 'Authentication', 'ap.ai.model': 'Default model', 'ap.ai.home': 'CLI home', 'ap.ai.home.d': '{env} · sign-in, config and sessions used by Procheck', 'ap.ai.change': 'Change', 'ap.ai.test': 'Test connection', 'ap.ai.testing': 'Testing…', 'ap.ai.testok': '{n} responded in 0.8 s',
+        'ap.ai.default': 'Default', 'ap.ai.setdefault': 'Set as default', 'ap.ai.signed': 'Authenticated', 'ap.ai.key': 'API key', 'ap.ai.sub': 'Subscription', 'ap.ai.signout': 'Sign out', 'ap.ai.signedout': 'Signed out of {n} in Procheck · applies to every project, your own CLI sign-in is untouched',
         'ap.ai.add.t': 'Add CLI tool', 'ap.ai.add.name': 'Display name', 'ap.ai.add.name.ph': 'e.g. Gemini CLI', 'ap.ai.add.bin': 'Path to executable', 'ap.ai.add.bin.ph': 'C:\\Users\\me\\AppData\\Roaming\\npm\\gemini.cmd', 'ap.ai.add.btn': 'Add & detect', 'ap.ai.added': '{n} added',
         'ap.assistant.d': 'Starting values for the Assistant in every project.', 'ap.as.mode': 'Default mode', 'ap.as.mode.d': 'Mode a new chat starts in.',
         'ap.as.ctx': 'Attach project context automatically', 'ap.as.ctx.d': 'Include the project summary and recent artifacts in each chat.',
@@ -420,9 +422,9 @@
         'ap.gen.startup': 'Khi khởi động', 'ap.gen.startup.d': 'Màn hình Procheck hiển thị khi mở ứng dụng.', 'ap.gen.startup.last': 'Mở lại dự án gần nhất', 'ap.gen.startup.all': 'Hiện tất cả dự án',
         'ap.theme.d': 'Theo hệ thống sẽ dùng chế độ sáng/tối của Windows.', 'ap.lang.d': 'Ngôn ngữ giao diện. Nội dung dự án không bị dịch.',
         'ap.ai.d': 'Đăng ký các công cụ AI CLI đã cài trên máy. Dự án chọn từ danh sách này và có thể ghi đè CLI, model trong Cài đặt dự án.',
-        'ap.ai.note': 'Procheck dùng chính phiên đăng nhập của từng CLI (<code>claude login</code>, <code>codex login</code>) và không đổi <code>HOME</code>. Đăng nhập một lần ở đây, mọi dự án dùng chung; mỗi dự án chỉ thêm profile ngữ cảnh riêng.', 'ap.ai.add': 'Thêm công cụ CLI',
-        'ap.ai.bin': 'Đường dẫn tệp thực thi', 'ap.ai.auth': 'Xác thực', 'ap.ai.model': 'Model mặc định', 'ap.ai.change': 'Đổi', 'ap.ai.test': 'Kiểm tra kết nối', 'ap.ai.testing': 'Đang kiểm tra…', 'ap.ai.testok': '{n} phản hồi sau 0,8 giây',
-        'ap.ai.default': 'Mặc định', 'ap.ai.setdefault': 'Đặt làm mặc định', 'ap.ai.signed': 'Đã xác thực', 'ap.ai.key': 'API key', 'ap.ai.sub': 'Gói đăng ký', 'ap.ai.signout': 'Đăng xuất', 'ap.ai.signedout': 'Đã đăng xuất khỏi {n}',
+        'ap.ai.note': 'Procheck chạy mỗi CLI với thư mục home riêng trong dữ liệu ứng dụng (<code>cli\\claude</code>, <code>cli\\codex</code> — đặt qua <code>CLAUDE_CONFIG_DIR</code> / <code>CODEX_HOME</code>). Profile CLI của bạn không bao giờ bị đọc hay thay đổi. Đăng nhập một lần ở đây, mọi dự án dùng chung; mỗi dự án chỉ thêm profile ngữ cảnh riêng.', 'ap.ai.add': 'Thêm công cụ CLI',
+        'ap.ai.bin': 'Đường dẫn tệp thực thi', 'ap.ai.auth': 'Xác thực', 'ap.ai.model': 'Model mặc định', 'ap.ai.home': 'Home của CLI', 'ap.ai.home.d': '{env} · đăng nhập, cấu hình và session Procheck dùng', 'ap.ai.change': 'Đổi', 'ap.ai.test': 'Kiểm tra kết nối', 'ap.ai.testing': 'Đang kiểm tra…', 'ap.ai.testok': '{n} phản hồi sau 0,8 giây',
+        'ap.ai.default': 'Mặc định', 'ap.ai.setdefault': 'Đặt làm mặc định', 'ap.ai.signed': 'Đã xác thực', 'ap.ai.key': 'API key', 'ap.ai.sub': 'Gói đăng ký', 'ap.ai.signout': 'Đăng xuất', 'ap.ai.signedout': 'Đã đăng xuất {n} trong Procheck · áp dụng cho mọi dự án, phiên đăng nhập CLI của bạn không bị ảnh hưởng',
         'ap.ai.add.t': 'Thêm công cụ CLI', 'ap.ai.add.name': 'Tên hiển thị', 'ap.ai.add.name.ph': 'VD: Gemini CLI', 'ap.ai.add.bin': 'Đường dẫn tệp thực thi', 'ap.ai.add.bin.ph': 'C:\\Users\\me\\AppData\\Roaming\\npm\\gemini.cmd', 'ap.ai.add.btn': 'Thêm & nhận diện', 'ap.ai.added': 'Đã thêm {n}',
         'ap.assistant.d': 'Giá trị khởi đầu của Trợ lý trong mọi dự án.', 'ap.as.mode': 'Chế độ mặc định', 'ap.as.mode.d': 'Chế độ khi bắt đầu một cuộc chat mới.',
         'ap.as.ctx': 'Tự đính kèm ngữ cảnh dự án', 'ap.as.ctx.d': 'Đưa tóm tắt dự án và các tài liệu gần đây vào mỗi cuộc chat.',
@@ -462,7 +464,7 @@
       const APP_SIZES = ['4 KB', '2 KB', '3.1 MB', '18 MB', '248 MB'];
       const PROJ_SIZES = ['3 KB', '86 MB', '41 MB', '12 MB', '6 MB', '148 MB', '22 MB', '94 MB', '1 KB'];
       const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
-      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-4-5'], codex: ['gpt-5-codex', 'gpt-5-codex-mini'] };
+      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-fable-5-2'], codex: ['gpt-6-luna', 'gpt-5.6-terra', 'gpt-5.6-luna'] };
       const AUTH = { claude: 'sub', codex: 'key' };
       const INTS = [
         { id: 'gh', icon: 'github', name: 'GitHub', on: true }, { id: 'gl', icon: 'gitlab', name: 'GitLab', on: false }, { id: 'az', icon: 'cloud', name: 'Azure DevOps', on: false },
@@ -524,7 +526,10 @@
               <div><div class="mini-label">${tx('ap.ai.bin')}</div><div class="row"><div class="path grow" title="${PC.esc(c.bin)}"><i data-lucide="file-terminal" class="icon-sm"></i><span>${PC.esc(c.bin)}</span></div><button class="btn btn-secondary btn-sm" style="height:34px" data-act="browse">${tx('ap.ai.change')}</button></div></div>
               <div><div class="mini-label">${tx('ap.ai.auth')}</div><div class="row" style="height:34px;gap:8px"><span class="badge badge-success"><i data-lucide="check"></i>${tx('ap.ai.signed')}</span><span class="text-xs text-subtle nowrap">${tx(AUTH[c.id] === 'key' ? 'ap.ai.key' : 'ap.ai.sub')}</span></div></div>
               <div><div class="mini-label">${tx('ap.ai.model')}</div><select class="select">${(MODELS[c.id] || [c.model]).map(m => `<option ${m === c.model ? 'selected' : ''}>${m}</option>`).join('')}</select></div>
-            </div></div>`;
+            </div>
+            <div class="cli-home-row"><div class="mini-label">${tx('ap.ai.home')}</div>
+              <div class="path" title="${PC.esc(PC.cliHome(c.id))}"><i data-lucide="folder" class="icon-sm"></i><span>${PC.esc(PC.cliHome(c.id))}</span></div>
+              <div class="cli-hint">${tx('ap.ai.home.d').replace('{env}', PC.cliEnv(c.id))}</div></div></div>`;
         }).join('');
         PC.refresh($('clis'));
       }

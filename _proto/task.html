@@ -638,7 +638,7 @@
     const BRANCH = 'agent/LP-142-merchant-kyc-upload';
     const PRJ = PC.project();
     const WT = PRJ.dir + '\\.procheck\\worktrees\\LP-142';
-    const HOME = PC.projectCli('claude', PRJ);   // project CLI profile; sign-in is the user's shared Claude Code login
+    const HOME = PC.projectCli('claude', PRJ);   // project CLI profile; sign-in comes from the Procheck CLI home (PC.cliHome)
     const RUNS = PRJ.dir + '\\.procheck\\runs';
     const EVID = RUNS + '\\LP-142\\evidence\\';
     const SESSION = RUNS + '\\LP-142\\run-0187.jsonl';
@@ -884,7 +884,7 @@
       add('t-cmd', '$ claude -p @.procheck\\plan-v2.md \\', 160);
       add('t-cmd', '    --model claude-opus-5-5 --permission-mode acceptEdits --output-format stream-json \\');
       add('t-cmd', '    ' + PC.cliFlags('claude', PRJ), 300);
-      add('t-dim', '[harness] sign-in         shared · your Claude Code login (HOME unchanged)');
+      add('t-dim', '[harness] sign-in         ' + PC.cliEnv('claude') + '=' + PC.cliHome('claude') + '  (Procheck CLI home)');
       add('t-dim', '[harness] profile         ' + HOME + '  (global CLI config ignored)');
       add('t-dim', '[harness] worktree        ' + WT + '  (' + BRANCH + ' from develop)');
       add('t-dim', '[harness] run log        ' + SESSION, 300);
@@ -1361,7 +1361,7 @@ const GR = {
       steps: gStd(3, [ll('git worktree add from develop', 'git worktree add từ nhánh develop'), ll('3 artifacts read · 3,120 tokens', 'Đọc 3 tài liệu · 3.120 token'), ll('3 files · +167 lines · keys hashed with argon2', '3 file · +167 dòng · key băm bằng argon2')], 'running'),
       files: [gF('apps/api/src/api-keys/api-keys.controller.ts', 'A', 58, 0, 2), gF('apps/api/src/api-keys/api-keys.service.ts', 'A', 91, 0, 2), gF('apps/api/src/api-keys/hash.util.ts', 'A', 18, 0, 2), gF('apps/web/src/app/api-keys/api-key-list.component.ts', 'A', 64, 0, 3), gF('apps/web/src/app/api-keys/api-key-create-dialog.component.ts', 'A', 41, 0, 3)],
       sum: ll('<p>The agent is implementing API key management: create, rotate and revoke keys, with keys shown once and stored hashed.</p>', '<p>Agent đang triển khai quản lý API key: tạo, xoay vòng và thu hồi key; key chỉ hiển thị một lần và lưu dạng băm.</p>') },
-    { id: 'LP-159', scope: 'sdlc', status: 'running', pri: 'high', progress: 24, title: ll('Bulk refund endpoint', 'Endpoint hoàn tiền hàng loạt'), agent: 'codex', model: 'gpt-5-codex', started: ll('Today · 11:22', 'Hôm nay · 11:22'), dur: '…', ago: ll('18 min ago', '18 phút trước'), tok: '96k / 9k', cost: '$1.12', sess: '0208',
+    { id: 'LP-159', scope: 'sdlc', status: 'running', pri: 'high', progress: 24, title: ll('Bulk refund endpoint', 'Endpoint hoàn tiền hàng loạt'), agent: 'codex', model: 'gpt-6-luna', started: ll('Today · 11:22', 'Hôm nay · 11:22'), dur: '…', ago: ll('18 min ago', '18 phút trước'), tok: '96k / 9k', cost: '$1.12', sess: '0208',
       branch: 'agent/LP-159-bulk-refund', spec: ll('Refunds v1.2', 'Hoàn tiền v1.2'), unit: '8 passed', e2eApp: 'api-e2e', tag: '@refund',
       steps: gStd(2, [ll('git worktree add from develop', 'git worktree add từ nhánh develop'), ll('4 artifacts read · 4,060 tokens', 'Đọc 4 tài liệu · 4.060 token')], 'running'),
       files: [gF('apps/api/src/refunds/bulk-refund.controller.ts', 'A', 49, 0, 2), gF('apps/api/src/refunds/bulk-refund.service.ts', 'A', 37, 0, 2)],
@@ -1371,7 +1371,7 @@ const GR = {
       files: [gF('apps/api/src/merchant/profile.controller.ts', 'M', 36, 4), gF('apps/web/src/app/merchant/profile-form.component.ts', 'A', 88, 0), gF('apps/web-e2e/src/profile.spec.ts', 'A', 54, 0)],
       steps: gStd(7, [ll('git worktree add from develop', 'git worktree add từ nhánh develop'), ll('2 artifacts read', 'Đọc 2 tài liệu'), ll('1 file · +32 lines', '1 file · +32 dòng'), ll('1 file · +88 lines', '1 file · +88 dòng'), ll('8 unit specs + 4 e2e', '8 unit spec và 4 e2e'), ll('8 / 8 passed', 'Đạt 8/8'), ll('evidence collected', 'đã thu thập bằng chứng')]),
       sum: ll('<p>Merchants can edit company name, contact and settlement account from the profile page. Validation mirrors the API rules.</p>', '<p>Merchant sửa được tên công ty, liên hệ và tài khoản nhận tiền ngay trên trang hồ sơ. Việc validate khớp với quy tắc của API.</p>') },
-    { id: 'LP-131', scope: 'sdlc', status: 'merged', title: ll('Transaction list filters', 'Bộ lọc danh sách giao dịch'), agent: 'codex', model: 'gpt-5-codex', started: ll('15 Nov · 14:05', '15/11 · 14:05'), dur: '16m 40s', ago: ll('8 d ago', '8 ngày trước'), meta: ll('PR #297 · 10/10 e2e', 'PR #297 · 10/10 e2e'), branch: 'agent/LP-131-transaction-filters', tok: '270k / 24k', cost: '$3.20', sess: '0155', spec: ll('Merchant portal v1.0', 'Merchant portal v1.0'), cov: '+2.9%', e2eN: [10, 10],
+    { id: 'LP-131', scope: 'sdlc', status: 'merged', title: ll('Transaction list filters', 'Bộ lọc danh sách giao dịch'), agent: 'codex', model: 'gpt-6-luna', started: ll('15 Nov · 14:05', '15/11 · 14:05'), dur: '16m 40s', ago: ll('8 d ago', '8 ngày trước'), meta: ll('PR #297 · 10/10 e2e', 'PR #297 · 10/10 e2e'), branch: 'agent/LP-131-transaction-filters', tok: '270k / 24k', cost: '$3.20', sess: '0155', spec: ll('Merchant portal v1.0', 'Merchant portal v1.0'), cov: '+2.9%', e2eN: [10, 10],
       pr: { n: 297, base: 'develop', sha: '7b02d5e', date: ll('16 Nov · 09:30', '16/11 · 09:30'), title: 'feat(transactions): list filters (LP-131)' },
       files: [gF('apps/api/src/transactions/transactions.query.ts', 'M', 58, 12), gF('apps/web/src/app/transactions/filter-bar.component.ts', 'A', 102, 0), gF('apps/web-e2e/src/transaction-filters.spec.ts', 'A', 71, 0)],
       steps: gStd(7, ['git worktree add', ll('3 artifacts read', 'Đọc 3 tài liệu'), ll('1 file · +46 lines', '1 file · +46 dòng'), ll('1 file · +102 lines', '1 file · +102 dòng'), ll('9 unit specs + 6 e2e', '9 unit spec và 6 e2e'), ll('10 / 10 passed', 'Đạt 10/10'), ll('evidence collected', 'đã thu thập bằng chứng')]),
@@ -1425,7 +1425,7 @@ const GR = {
       files: [gF('apps/timesheet/src/notify/approval-notifier.ts', 'A', 66, 0), gF('apps/timesheet/src/timesheet.module.ts', 'M', 5, 1), gF('apps/timesheet-e2e/src/notify.spec.ts', 'A', 58, 0)],
       steps: gStd(7, ['git worktree add', ll('2 artifacts read', 'Đọc 2 tài liệu'), ll('2 files · +71 lines', '2 file · +71 dòng'), ll('no UI changes', 'không đổi giao diện'), ll('6 unit specs + 3 e2e', '6 unit spec và 3 e2e'), ll('7 / 7 passed', 'Đạt 7/7'), ll('evidence collected', 'đã thu thập bằng chứng')]),
       sum: ll('<p>Employees and approvers are notified by e-mail and in-app when a timesheet is submitted, approved or rejected.</p>', '<p>Nhân viên và người duyệt được thông báo qua e-mail và trong ứng dụng khi bảng chấm công được gửi, duyệt hoặc từ chối.</p>') },
-    { id: 'AH-279', scope: 'sdlc', status: 'merged', title: ll('Org chart PDF export', 'Xuất sơ đồ tổ chức ra PDF'), agent: 'codex', model: 'gpt-5-codex', started: ll('10 Nov · 15:40', '10/11 · 15:40'), dur: '13m 02s', ago: ll('13 d ago', '13 ngày trước'), meta: ll('PR #208 · 5/5 e2e', 'PR #208 · 5/5 e2e'), branch: 'agent/AH-279-org-chart-pdf', tok: '230k / 20k', cost: '$2.64', sess: '0138', spec: ll('Org management v1.2', 'Quản lý tổ chức v1.2'), cov: '+2.2%', e2eN: [5, 5],
+    { id: 'AH-279', scope: 'sdlc', status: 'merged', title: ll('Org chart PDF export', 'Xuất sơ đồ tổ chức ra PDF'), agent: 'codex', model: 'gpt-6-luna', started: ll('10 Nov · 15:40', '10/11 · 15:40'), dur: '13m 02s', ago: ll('13 d ago', '13 ngày trước'), meta: ll('PR #208 · 5/5 e2e', 'PR #208 · 5/5 e2e'), branch: 'agent/AH-279-org-chart-pdf', tok: '230k / 20k', cost: '$2.64', sess: '0138', spec: ll('Org management v1.2', 'Quản lý tổ chức v1.2'), cov: '+2.2%', e2eN: [5, 5],
       pr: { n: 208, base: 'develop', sha: 'a1c5e72', date: ll('11 Nov · 11:30', '11/11 · 11:30'), title: 'feat(org): org chart PDF export (AH-279)' },
       files: [gF('apps/org/src/export/org-chart-pdf.service.ts', 'A', 92, 0), gF('apps/web/src/app/org/export-button.component.ts', 'A', 34, 0), gF('apps/org-e2e/src/pdf-export.spec.ts', 'A', 44, 0)],
       steps: gStd(7, ['git worktree add', ll('2 artifacts read', 'Đọc 2 tài liệu'), ll('1 file · +92 lines', '1 file · +92 dòng'), ll('1 file · +34 lines', '1 file · +34 dòng'), ll('4 unit specs + 3 e2e', '4 unit spec và 3 e2e'), ll('5 / 5 passed', 'Đạt 5/5'), ll('evidence collected', 'đã thu thập bằng chứng')]),
@@ -1525,7 +1525,7 @@ function gMkLog(r) {
   add('t-cmd', '$ ' + (agentId === 'codex' ? 'codex exec' : 'claude -p') + ' @.procheck\\plan-' + r.id + '.md \\', 160, -1);
   add('t-cmd', '    --model ' + r.model + ' --permission-mode acceptEdits --output-format stream-json \\', 70, -1);
   add('t-cmd', '    ' + PC.cliFlags(agentId, GP), 280, -1);
-  add('t-dim', '[harness] sign-in         shared · your ' + (agentId === 'codex' ? 'Codex' : 'Claude Code') + ' login (HOME unchanged)', 70, -1);
+  add('t-dim', '[harness] sign-in         ' + PC.cliEnv(agentId) + '=' + PC.cliHome(agentId) + '  (Procheck CLI home)', 70, -1);
   add('t-dim', '[harness] profile         ' + home + '  (global CLI config ignored)', 70, -1);
   add('t-dim', '[harness] worktree        ' + gWt(r.id) + '  (' + r.branch + ')', 70, -1);
   add('t-dim', '[harness] run log         ' + gRd(r.id), 280, -1);
@@ -1597,7 +1597,7 @@ function gRenderHeader(r) {
   else if (rel) acts = `<a class="btn btn-secondary" href="scaffolding.html?p=${GP.id}"><i data-lucide="blocks"></i>${T('rl.btn.scaffold')}</a>${live ? `<button class="btn btn-secondary" data-gact="stop"><i data-lucide="square"></i>${T('rl.btn.stop')}</button>` : ''}`;
   else if (live) acts = `${vs}<button class="btn btn-secondary" data-gact="stop"><i data-lucide="square"></i>${T('rl.btn.stop')}</button>`;
   $('gHead').innerHTML = `<div class="tk-title"><div class="grow" style="min-width:300px"><div class="row gap-3 wrap"><span class="tk-id">${r.id}</span>${gBadge(r, true)}${extra}${gScopeChip(r)}</div><h1 class="mt-2">${esc(L(r.title))}</h1></div><div class="row gap-2 wrap" style="margin-top:4px">${acts}</div></div>`;
-  const agent = r.agent === 'codex' ? ['Codex CLI', 'gpt-5-codex'] : ['Claude Code', 'claude-opus-5-5'];
+  const agent = r.agent === 'codex' ? ['Codex CLI', 'gpt-6-luna'] : ['Claude Code', 'claude-opus-5-5'];
   const cell = (k, v, cls) => `<div class="${cls || ''}"><div class="k">${k}</div><div class="v">${v}</div></div>`;
   const exec = cell(T('task.meta.exec'), `<span class="avatar avatar-sm avatar-ai" style="border-width:0"><i data-lucide="bot" style="width:12px;height:12px"></i></span><span class="truncate">${agent[0]}</span><span class="badge badge-purple">${T('rl.m.agent')}</span>`);
   const row1 = rel

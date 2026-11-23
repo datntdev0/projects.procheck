@@ -1558,9 +1558,10 @@ PC.popover(anchor, menuHTML, id => { PC.setProject(id); location.href = 'overvie
     <script type="text/plain" data-snip>
 PC.data.storage.app.root          // %LOCALAPPDATA%\Procheck
 PC.data.storage.app.items         // settings.json, projects.json, cli\, logs\, cache\
+PC.cliHome('claude')              // %LOCALAPPDATA%\Procheck\cli\claude  (CLI home: Procheck's sign-in, set via PC.cliEnv)
 PC.data.storage.project.items     // relative to PC.project().dir
 PC.projectCli('claude')           // <project dir>\.procheck\cli\claude  (project CLI profile, no credentials)
-PC.cliFlags('claude')             // launch flags that load that profile; HOME and the CLI sign-in are never changed
+PC.cliFlags('claude')             // launch flags that load that profile; the sign-in comes from PC.cliHome, HOME is unchanged
     </script>
   </div>
 
@@ -2354,7 +2355,7 @@ PC.i18n.extend({
 
     'ds.p.store': `Storage boundary`,
     'ds.p.store.d': `Procheck keeps two kinds of data apart. Application data is per user and lives under %LOCALAPPDATA%\\Procheck. Project data lives inside the directory chosen for the project, so it moves and backs up with it.`,
-    'ds.store.note': `<b>Rule.</b> A project is a directory — nothing sits above it. Chat history is saved in <code>.procheck\\chats\\</code> and each CLI gets a project profile (settings, MCP servers, instructions) in <code>.procheck\\cli\\&lt;cli&gt;</code>, both inside the project directory. The CLI sign-in is never copied there: Procheck keeps <code>HOME</code> unchanged, so one login serves every project.`,
+    'ds.store.note': `<b>Rule.</b> A project is a directory — nothing sits above it. Chat history is saved in <code>.procheck\\chats\\</code> and each CLI gets a project profile (settings, MCP servers, instructions) in <code>.procheck\\cli\\&lt;cli&gt;</code>, both inside the project directory. The CLI sign-in is never copied there: it lives in Procheck’s CLI home in application data (<code>cli\\&lt;cli&gt;</code>, via <code>CLAUDE_CONFIG_DIR</code> / <code>CODEX_HOME</code>), apart from your own profile, so one login serves every project.`,
     'ds.sa.0': `App preferences: theme, language, defaults`, 'ds.sa.1': `Registry of known project directories (recent list)`, 'ds.sa.2': `CLI tool registrations: binary path, default model`, 'ds.sa.3': `Application & harness logs`, 'ds.sa.4': `Indexes, thumbnails, temp files (safe to delete)`,
     'ds.sp.0': `Project manifest: name, client, phase, linked repo`, 'ds.sp.1': `Uploaded documents (inputs)`, 'ds.sp.2': `Generated & edited artifacts with versions`, 'ds.sp.3': `Tasks, plans, review evidence`, 'ds.sp.4': `Assistant chat history`, 'ds.sp.5': `Agent run logs & evidence`, 'ds.sp.6': `CLI profile per tool: settings, MCP, instructions`, 'ds.sp.7': `Git worktrees created by agents`, 'ds.sp.8': `Project-level overrides (CLI, model, harness)`,
 
@@ -2394,7 +2395,7 @@ PC.i18n.extend({
 
     'ds.p.store': `Ranh giới lưu trữ`,
     'ds.p.store.d': `Procheck tách riêng hai loại dữ liệu. Dữ liệu ứng dụng thuộc về từng người dùng, nằm trong %LOCALAPPDATA%\\Procheck. Dữ liệu dự án nằm ngay trong thư mục được chọn cho dự án, nên di chuyển và sao lưu cùng dự án.`,
-    'ds.store.note': `<b>Quy tắc.</b> Một dự án là một thư mục — không có cấp nào cao hơn. Lịch sử chat lưu trong <code>.procheck\\chats\\</code> và mỗi CLI có profile của dự án (settings, MCP server, chỉ dẫn) tại <code>.procheck\\cli\\&lt;cli&gt;</code>, đều nằm trong thư mục dự án. Phiên đăng nhập CLI không bao giờ được sao chép vào đó: Procheck giữ nguyên <code>HOME</code>, nên một lần đăng nhập dùng cho mọi dự án.`,
+    'ds.store.note': `<b>Quy tắc.</b> Một dự án là một thư mục — không có cấp nào cao hơn. Lịch sử chat lưu trong <code>.procheck\\chats\\</code> và mỗi CLI có profile của dự án (settings, MCP server, chỉ dẫn) tại <code>.procheck\\cli\\&lt;cli&gt;</code>, đều nằm trong thư mục dự án. Phiên đăng nhập CLI không bao giờ được sao chép vào đó: nó nằm trong home CLI của Procheck trong dữ liệu ứng dụng (<code>cli\\&lt;cli&gt;</code>, qua <code>CLAUDE_CONFIG_DIR</code> / <code>CODEX_HOME</code>), tách khỏi profile của bạn, nên một lần đăng nhập dùng cho mọi dự án.`,
     'ds.sa.0': `Tùy chọn ứng dụng: giao diện, ngôn ngữ, mặc định`, 'ds.sa.1': `Danh sách thư mục dự án đã biết (dự án gần đây)`, 'ds.sa.2': `Đăng ký công cụ CLI: đường dẫn, model mặc định`, 'ds.sa.3': `Nhật ký ứng dụng và harness`, 'ds.sa.4': `Chỉ mục, ảnh thu nhỏ, tệp tạm (xoá được)`,
     'ds.sp.0': `Manifest dự án: tên, khách hàng, giai đoạn, repo liên kết`, 'ds.sp.1': `Tài liệu tải lên (đầu vào)`, 'ds.sp.2': `Tài liệu được tạo & chỉnh sửa, có phiên bản`, 'ds.sp.3': `Task, kế hoạch, bằng chứng review`, 'ds.sp.4': `Lịch sử chat của Trợ lý`, 'ds.sp.5': `Nhật ký & bằng chứng lượt chạy agent`, 'ds.sp.6': `CLI profile cho từng công cụ: settings, MCP, chỉ dẫn`, 'ds.sp.7': `Git worktree do agent tạo`, 'ds.sp.8': `Ghi đè cấp dự án (CLI, model, harness)`,
 

@@ -462,8 +462,8 @@
         'np.repo.err': 'Connect a local repository to start from this phase.',
         'np.repo.ok': 'Git repository detected · branch main · clean working tree', 'np.repo.picked': 'Folder selected',
         'np.ai.cli': 'CLI tool', 'np.ai.signed': 'Signed in · shared', 'np.ai.model': 'Model', 'np.ai.default': 'Default', 'np.ai.version': 'v{v}',
-        'np.ai.home.t': 'Shared sign-in, project-only context',
-        'np.ai.home.d': 'No new sign-in needed: the CLI keeps using the login you already have. Procheck runs it in the project directory with this project’s profile (settings, MCP servers, instructions), so context and sessions never mix between projects. Profile: <code>&lt;project dir&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
+        'np.ai.home.t': 'Procheck sign-in, project-only context',
+        'np.ai.home.d': 'No new sign-in needed: the CLI uses the sign-in made once in App settings, kept in Procheck’s CLI home (<code>%LOCALAPPDATA%\\Procheck\\cli\\&lt;cli&gt;</code>), apart from your own profile. Procheck runs it in the project directory with this project’s profile (settings, MCP servers, instructions), so context and sessions never mix between projects. Profile: <code>&lt;project dir&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
         'np.tg.history': 'Save chat history', 'np.tg.history.d': 'Keep Assistant conversations per project so you can resume them later.',
         'np.tg.worktree': 'Allow agent to create worktrees', 'np.tg.worktree.d': 'The agent implements each task in an isolated git worktree, never in your working copy.',
         'np.tg.approval': 'Require human approval before PR', 'np.tg.approval.d': 'Agents stop at review. Only you can promote changes to a pull request.',
@@ -495,7 +495,7 @@
         'np.open.c.manifest': 'procheck.json is valid (schema v1)', 'np.open.c.dirs': '<code>sources\\</code>, <code>artifacts\\</code> and <code>board\\</code> found',
         'np.open.c.settings': 'Project overrides found in <code>.procheck\\settings.json</code>',
         'np.open.c.reg': 'Added to <code>%LOCALAPPDATA%\\Procheck\\projects.json</code> so it shows up in your project list',
-        'np.open.c.home.ok': 'CLI profile found in <code>.procheck\\cli\\claude</code> · uses your existing sign-in', 'np.open.c.home.new': 'CLI profile will be written to <code>.procheck\\cli\\claude</code> · uses your existing sign-in',
+        'np.open.c.home.ok': 'CLI profile found in <code>.procheck\\cli\\claude</code> · uses the Procheck CLI sign-in', 'np.open.c.home.new': 'CLI profile will be written to <code>.procheck\\cli\\claude</code> · uses the Procheck CLI sign-in',
         'np.open.btn': 'Open project', 'np.open.create': 'Create a new project instead',
         'np.upd.min': '12 min ago', 'np.upd.h': '2 h ago',
         'np.as.s1': 'Which phase should I start from?', 'np.as.s2': 'Suggest a project code', 'np.as.s3': 'Draft a description from my notes',
@@ -543,8 +543,8 @@
         'np.repo.err': 'Hãy kết nối repository cục bộ để bắt đầu từ giai đoạn này.',
         'np.repo.ok': 'Đã nhận diện git repository · nhánh main · working tree sạch', 'np.repo.picked': 'Đã chọn thư mục',
         'np.ai.cli': 'Công cụ CLI', 'np.ai.signed': 'Đã đăng nhập · dùng chung', 'np.ai.model': 'Mô hình', 'np.ai.default': 'Mặc định', 'np.ai.version': 'v{v}',
-        'np.ai.home.t': 'Đăng nhập dùng chung, ngữ cảnh riêng dự án',
-        'np.ai.home.d': 'Không cần đăng nhập lại: CLI tiếp tục dùng phiên đăng nhập bạn đang có. Procheck chạy CLI trong thư mục dự án với profile của dự án (settings, MCP server, chỉ dẫn), nên ngữ cảnh và phiên làm việc không lẫn giữa các dự án. Profile: <code>&lt;thư mục dự án&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
+        'np.ai.home.t': 'Đăng nhập của Procheck, ngữ cảnh riêng dự án',
+        'np.ai.home.d': 'Không cần đăng nhập lại: CLI dùng phiên đăng nhập đã thực hiện một lần trong Cài đặt ứng dụng, lưu trong home CLI của Procheck (<code>%LOCALAPPDATA%\\Procheck\\cli\\&lt;cli&gt;</code>), tách khỏi profile của bạn. Procheck chạy CLI trong thư mục dự án với profile của dự án (settings, MCP server, chỉ dẫn), nên ngữ cảnh và phiên làm việc không lẫn giữa các dự án. Profile: <code>&lt;thư mục dự án&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
         'np.tg.history': 'Lưu lịch sử chat', 'np.tg.history.d': 'Giữ các cuộc trò chuyện với Trợ lý theo từng dự án để tiếp tục về sau.',
         'np.tg.worktree': 'Cho phép agent tạo worktree', 'np.tg.worktree.d': 'Agent thực hiện mỗi task trong một git worktree riêng, không đụng vào bản làm việc của bạn.',
         'np.tg.approval': 'Yêu cầu người duyệt trước khi tạo PR', 'np.tg.approval.d': 'Agent dừng ở bước review. Chỉ bạn mới có thể đẩy thay đổi lên pull request.',
@@ -576,7 +576,7 @@
         'np.open.c.manifest': 'procheck.json hợp lệ (schema v1)', 'np.open.c.dirs': 'Có <code>sources\\</code>, <code>artifacts\\</code> và <code>board\\</code>',
         'np.open.c.settings': 'Có ghi đè cấp dự án trong <code>.procheck\\settings.json</code>',
         'np.open.c.reg': 'Được thêm vào <code>%LOCALAPPDATA%\\Procheck\\projects.json</code> để hiện trong danh sách dự án',
-        'np.open.c.home.ok': 'Đã có CLI profile trong <code>.procheck\\cli\\claude</code> · dùng phiên đăng nhập sẵn có', 'np.open.c.home.new': 'CLI profile sẽ được ghi vào <code>.procheck\\cli\\claude</code> · dùng phiên đăng nhập sẵn có',
+        'np.open.c.home.ok': 'Đã có CLI profile trong <code>.procheck\\cli\\claude</code> · dùng phiên đăng nhập CLI của Procheck', 'np.open.c.home.new': 'CLI profile sẽ được ghi vào <code>.procheck\\cli\\claude</code> · dùng phiên đăng nhập CLI của Procheck',
         'np.open.btn': 'Mở dự án', 'np.open.create': 'Tạo dự án mới',
         'np.upd.min': '12 phút trước', 'np.upd.h': '2 giờ trước',
         'np.as.s1': 'Nên bắt đầu từ giai đoạn nào?', 'np.as.s2': 'Gợi ý mã dự án', 'np.as.s3': 'Soạn mô tả từ ghi chú của tôi',
@@ -594,7 +594,7 @@
         $('new-flow').classList.add('hidden'); $('open-flow').classList.remove('hidden');
       }
       const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
-      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-4-5'], codex: ['gpt-5-codex', 'gpt-5-codex-mini'] };
+      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-fable-5-2'], codex: ['gpt-6-luna', 'gpt-5.6-terra', 'gpt-5.6-luna'] };
       const SAMPLES = [
         { name: 'Kickoff-meeting-transcript.vtt', size: 184 * 1024 },
         { name: 'Merchant-BRD-v2.docx', size: 1.2 * 1024 * 1024 },

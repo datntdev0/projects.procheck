@@ -14,7 +14,9 @@ Open `index.html` in a browser (double-click works; `npx serve _proto` is nicer)
 | Chrome colors | Sidebar/topbar follow the selected theme (`--bg-sidebar`, `--bg-topbar`) like native chrome — no fixed navy. |
 | People | **Single user, local PC.** There is only **me** ("You") and **agents** (Claude Code, Codex). No assignees, members, reviewers or teams. |
 | Storage boundary | **Application data** → `%LOCALAPPDATA%\Procheck\` (settings.json, projects.json registry, cli\, logs\, cache\). **Project data** → the directory chosen for the project (procheck.json, sources\, artifacts\, board\, .procheck\chats, .procheck\runs, .procheck\cli\<cli> (project CLI profile), .procheck\worktrees, .procheck\settings.json). See `PC.data.storage`. |
-| CLI isolation | **Shared sign-in, isolated context.** Procheck never changes `HOME` / `USERPROFILE` / `APPDATA`, so each CLI keeps its own login (`claude login`, `codex login`) and the user signs in once for all projects. Per project, Procheck isolates the context of each launch: cwd = project dir (Assistant) or worktree (agents) · project CLI profile in `.procheck\cli\<cli>\` (settings, MCP servers, instructions — no credentials) · global CLI config ignored by default · `--resume` only with session ids recorded in the project · env allowlist. See `PC.projectCli`, `PC.cliFlags`. |
+| CLI isolation | **Procheck CLI home, isolated context.** Connecting a CLI = running its exe with a **CLI home in application data**: `%LOCALAPPDATA%\Procheck\cli\<cli>\`, set through the CLI's home variable (`CLAUDE_CONFIG_DIR`, `CODEX_HOME`). Procheck's sign-in (`claude auth login`, `codex login` run inside that home), base config and sessions live there; the user's own profile (`~/.claude`, `~/.codex`) is never read or changed, and credential env vars (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, …) are not passed. `HOME` / `USERPROFILE` stay unchanged so git, ssh and npm keep working. The user signs in once in **App settings → Agent Integration** and every project reuses it. Per project, Procheck isolates the context of each launch: cwd = project dir (Assistant) or worktree (agents) · project CLI profile in `.procheck\cli\<cli>\` (settings, MCP servers, instructions — no credentials) · shared CLI-home config ignored by default · `--resume` only with session ids recorded in the project · env allowlist. See `PC.cliHome`, `PC.cliEnv`, `PC.projectCli`, `PC.cliFlags`. |
+| Chat scopes | **Project chats** (`<project dir>\.procheck\chats`, cwd = project dir) and **General chats** (`%LOCALAPPDATA%\Procheck\chats`, cwd = empty `%LOCALAPPDATA%\Procheck\scratch`, app-level CLI profile, Ask mode only, no artifacts). Both appear in the sidebar **Chats** group; `assistant.html?scope=general` opens general chats in the app (home) shell. A general chat can be **moved to a project**. |
+| Usage display | Assistant shows **context window** (last reply's prompt size / model window) and **usage limits** (5-hour + weekly, per CLI account). Updated **at the end of each reply**, not realtime. See *Usage telemetry* below. |
 | Workspace | **No "workspace" concept.** A project = a directory. Never use the word "workspace" in UI. |
 | Settings | `settings.html` = **App settings** (stored in LOCALAPPDATA). `project-settings.html` = **Project settings** (stored in the project directory). |
 | Language | Bilingual EN / VI with toggle (persisted). |
@@ -86,3 +88,22 @@ Every project page renders from `PC.project().state` (defined in `assets/app.js`
 | `atlas-hr` | done | done | **in_progress — release hardening** (AH-311 agent run FAILED 6/9 e2e, AH-298 changes requested) | Failure & recovery states |
 
 Locked phase screens show a **locked state**: what the phase does, the gate/prerequisites (`state.<phase>.gate`), progress of the previous phase, and a CTA to the phase that must be finished. Phase-specific metrics only appear when the phase has data.
+
+## Usage telemetry (context window & quota) — feasibility
+
+Verified on 2026-11-23 with Claude Code 2.1.330 and codex-cli 0.168.0. Everything is read **at the end of a turn**, so no polling is needed.
+
+| Data | Claude Code | Codex |
+|---|---|---|
+| Context used (last reply) | `result.usage`: `input_tokens + cache_read_input_tokens + cache_creation_input_tokens` (+ `output_tokens`). Also on every `assistant` line of the transcript JSONL. | `token_count.info.last_token_usage`: `input_tokens` (`cached_input_tokens` is a subset) + `output_tokens` |
+| Context window size | `result.modelUsage[<model>].contextWindow` | `token_count.info.model_context_window` (e.g. 258400) |
+| Usage limits | `rate_limit_event.rate_limit_info.unifiedWindows.five_hour / seven_day` → `utilization`, `resetsAt`, `status` (`claude -p --output-format stream-json --verbose`) | `token_count.rate_limits.primary / secondary` → `used_percent`, `window_minutes`, `resets_at`, `plan_type` (rollout file `~/.codex/sessions/YYYY/MM/DD/rollout-*-<thread_id>.jsonl`) |
+| Chat totals / cost | `result.total_cost_usd`, `modelUsage[*].costUSD` | `token_count.info.total_token_usage` (no cost) |
+
+**Recommended capture path.** Procheck spawns the CLI itself, so the main source is its own output: parse `result` and `rate_limit_event` from Claude's `stream-json`, and after Codex's `turn.completed` read the last `token_count` line of that thread's rollout file (`thread.started.thread_id` gives the file). Use the **Stop hook** only for runs Procheck does not parse, such as an interactive TUI or an agent in a worktree. Put it in the project CLI profile and have it append one line to `.procheck\runs\usage.jsonl`:
+
+- Claude `Stop` hook stdin = `session_id, transcript_path, cwd, last_assistant_message, …`. It has **no usage fields**, so the hook reads the last `assistant` usage from `transcript_path`. Context is available that way, but the window size and the limits are not, so keep the last values from the stream.
+- Codex `hooks` is a stable feature. Hooks need persisted trust, or `--dangerously-bypass-hook-trust` for automation. The Stop payload is not verified yet. Fallback: the `notify` program on `agent-turn-complete` plus the rollout file.
+
+**Not recommended:** calling the undocumented OAuth usage endpoint. It needs the CLI's credentials, which breaks the "no credentials" rule.
+**Still to check:** whether Claude's `utilization` is a 0–1 fraction or a percentage. Compare it with `/usage` before display. The Codex free plan reports one monthly window (`window_minutes` 43200).

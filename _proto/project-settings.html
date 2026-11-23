@@ -343,17 +343,17 @@
         'ps.ai.cli': 'CLI tool', 'ps.ai.model': 'Model',
         'ps.prompts': 'System prompt templates per phase', 'ps.prompts.h': 'Use <code>{project}</code>, <code>{client}</code> and <code>{phase}</code> as placeholders.', 'ps.prompt.reset': 'Template reset',
         'ps.iso.d': 'Sign in to each CLI once and every project reuses it. What is isolated per project is the context the CLI sees: working directory, profile, instructions, tools and sessions.',
-        'ps.iso.l1': 'Sign-in', 'ps.iso.l1.d': 'The CLI’s own sign-in (<code>claude login</code>, <code>codex login</code>). Procheck never changes <code>HOME</code>, so you never sign in again per project.',
+        'ps.iso.l1': 'Sign-in', 'ps.iso.l1.d': 'Procheck’s CLI home in application data (<code>cli\\&lt;cli&gt;</code>, via <code>CLAUDE_CONFIG_DIR</code> / <code>CODEX_HOME</code>), signed in once in App settings. Shared by every project and kept apart from your own CLI profile.',
         'ps.iso.l2': 'Context', 'ps.iso.l2.d': 'Working directory, settings, MCP servers and instructions come from this project’s CLI profile — nothing from other projects.',
         'ps.iso.l3': 'Sessions', 'ps.iso.l3.d': 'Chats and agent runs only resume CLI sessions recorded in this project (<code>.procheck\\chats</code>, <code>.procheck\\runs</code>).',
         'ps.iso.shared': 'Shared', 'ps.iso.per': 'Per project',
         'ps.iso.note': 'Sign-in belongs to the CLI and is shown in App settings. Signing in or out there applies to every project. The project profile holds no credentials, so it is safe to keep next to the project.',
         'ps.prof.signed': 'Signed in · shared', 'ps.prof.sub': 'Subscription', 'ps.prof.key': 'API key',
         'ps.home.ready': 'Ready', 'ps.home.reset': 'Reset profile', 'ps.home.reset.t': 'Reset CLI profile?', 'ps.home.reset.d': 'Regenerates <code>{p}</code> from the app defaults and this project’s settings. Your CLI sign-in, chat history and artifacts are not affected.', 'ps.home.done': 'CLI profile regenerated',
-        'ps.iso.global': 'Ignore my global CLI config', 'ps.iso.global.d': 'Your personal <code>CLAUDE.md</code> / <code>AGENTS.md</code>, memory, MCP servers and plugins are not loaded. Only this project’s profile applies.',
+        'ps.iso.global': 'Ignore the shared CLI-home config', 'ps.iso.global.d': 'Instructions, memory, MCP servers and plugins set in Procheck’s CLI home (shared by all projects) are not loaded. Only this project’s profile applies. Your personal CLI profile is never loaded either way.',
         'ps.iso.fs': 'Limit file access to the project', 'ps.iso.fs.d': 'The CLI can only read and write the project directory, the linked repository and agent worktrees.',
         'ps.iso.sess': 'Project-scoped sessions', 'ps.iso.sess.d': 'Always on. <code>--resume</code> only offers session ids saved in this project.',
-        'ps.env': 'Environment variable allowlist', 'ps.env.d': 'Only these variables are passed from your system into the CLI, plus what the CLI needs to find its sign-in. Everything else is dropped.', 'ps.env.prev': 'Resolved launch for', 'ps.env.inh': 'inherited', 'ps.env.nopass': 'not passed', 'ps.env.signin': 'inherited · shared sign-in',
+        'ps.env': 'Environment variable allowlist', 'ps.env.d': 'Only these variables are passed from your system into the CLI, plus the CLI home Procheck sets. Everything else, including API keys, is dropped.', 'ps.env.prev': 'Resolved launch for', 'ps.env.inh': 'inherited', 'ps.env.nopass': 'not passed', 'ps.env.signin': 'inherited · unchanged', 'ps.env.home': 'Procheck CLI home · sign-in',
         'ps.env.c.cwd': 'working directory', 'ps.env.c.cmd': 'command', 'ps.env.c.env': 'environment',
         'ps.harness.d': 'How agents implement tasks in this project. Overrides the app defaults.',
         'ps.h.par': 'Max parallel worktrees', 'ps.h.par.d': 'How many agents can work at the same time.',
@@ -397,15 +397,15 @@
         'ps.ai.cli': 'Công cụ CLI', 'ps.ai.model': 'Model',
         'ps.prompts': 'Mẫu system prompt theo giai đoạn', 'ps.prompts.h': 'Dùng <code>{project}</code>, <code>{client}</code> và <code>{phase}</code> làm biến thay thế.', 'ps.prompt.reset': 'Đã đặt lại mẫu',
         'ps.iso.d': 'Đăng nhập mỗi CLI một lần, mọi dự án dùng chung. Phần được cô lập theo dự án là ngữ cảnh mà CLI nhìn thấy: thư mục làm việc, profile, chỉ dẫn, công cụ và phiên làm việc.',
-        'ps.iso.l1': 'Đăng nhập', 'ps.iso.l1.d': 'Dùng chính phiên đăng nhập của CLI (<code>claude login</code>, <code>codex login</code>). Procheck không đổi <code>HOME</code>, nên không phải đăng nhập lại cho từng dự án.',
+        'ps.iso.l1': 'Đăng nhập', 'ps.iso.l1.d': 'Thư mục home CLI của Procheck trong dữ liệu ứng dụng (<code>cli\\&lt;cli&gt;</code>, qua <code>CLAUDE_CONFIG_DIR</code> / <code>CODEX_HOME</code>), đăng nhập một lần trong Cài đặt ứng dụng. Dùng chung cho mọi dự án và tách khỏi profile CLI của bạn.',
         'ps.iso.l2': 'Ngữ cảnh', 'ps.iso.l2.d': 'Thư mục làm việc, settings, MCP server và chỉ dẫn lấy từ CLI profile của dự án này — không lẫn từ dự án khác.',
         'ps.iso.l3': 'Phiên làm việc', 'ps.iso.l3.d': 'Chat và lượt chạy agent chỉ tiếp tục các phiên CLI được ghi trong dự án này (<code>.procheck\\chats</code>, <code>.procheck\\runs</code>).',
         'ps.iso.shared': 'Dùng chung', 'ps.iso.per': 'Theo dự án',
-        'ps.iso.global': 'Bỏ qua cấu hình CLI toàn cục của tôi', 'ps.iso.global.d': '<code>CLAUDE.md</code> / <code>AGENTS.md</code> cá nhân, memory, MCP server và plugin không được nạp. Chỉ áp dụng profile của dự án.',
+        'ps.iso.global': 'Bỏ qua cấu hình dùng chung trong home CLI', 'ps.iso.global.d': 'Chỉ dẫn, memory, MCP server và plugin đặt trong home CLI của Procheck (dùng chung cho mọi dự án) không được nạp. Chỉ áp dụng profile của dự án. Profile CLI cá nhân của bạn không bao giờ được nạp.',
         'ps.iso.fs': 'Giới hạn truy cập tệp trong dự án', 'ps.iso.fs.d': 'CLI chỉ được đọc/ghi thư mục dự án, repository liên kết và worktree của agent.',
         'ps.iso.sess': 'Phiên làm việc theo dự án', 'ps.iso.sess.d': 'Luôn bật. <code>--resume</code> chỉ đưa ra các session id đã lưu trong dự án này.',
         'ps.prof.signed': 'Đã đăng nhập · dùng chung', 'ps.prof.sub': 'Gói thuê bao', 'ps.prof.key': 'API key',
-        'ps.env.signin': 'kế thừa · đăng nhập dùng chung', 'ps.env.c.cwd': 'thư mục làm việc', 'ps.env.c.cmd': 'lệnh', 'ps.env.c.env': 'môi trường',
+        'ps.env.signin': 'kế thừa · không đổi', 'ps.env.home': 'home CLI của Procheck · đăng nhập', 'ps.env.c.cwd': 'thư mục làm việc', 'ps.env.c.cmd': 'lệnh', 'ps.env.c.env': 'môi trường',
         'ps.iso.note': 'Đăng nhập thuộc về CLI và hiển thị trong Cài đặt ứng dụng. Đăng nhập hoặc đăng xuất ở đó áp dụng cho mọi dự án. Profile của dự án không chứa thông tin xác thực nên có thể lưu cạnh dự án.',
         'ps.home.ready': 'Sẵn sàng', 'ps.home.reset': 'Tạo lại profile', 'ps.home.reset.t': 'Tạo lại CLI profile?', 'ps.home.reset.d': 'Tạo lại <code>{p}</code> từ mặc định của ứng dụng và cài đặt dự án. Đăng nhập CLI, lịch sử chat và tài liệu không bị ảnh hưởng.', 'ps.home.done': 'Đã tạo lại CLI profile',
         'ps.env': 'Danh sách biến môi trường được phép', 'ps.env.d': 'Chỉ các biến này được chuyển từ hệ thống vào CLI. Mọi biến khác bị loại bỏ.', 'ps.env.prev': 'Môi trường sau khi áp dụng cho', 'ps.env.inh': 'kế thừa', 'ps.env.nopass': 'không chuyển',
@@ -434,7 +434,7 @@
       const tx = k => PC.t(k);
       const P = () => PC.project();
       const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
-      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-4-5'], codex: ['gpt-5-codex', 'gpt-5-codex-mini'] };
+      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-fable-5-2'], codex: ['gpt-6-luna', 'gpt-5.6-terra', 'gpt-5.6-luna'] };
       const PROJ_SIZES = [[0.003, '3 KB'], [86, '86 MB'], [41, '41 MB'], [12, '12 MB'], [6, '6 MB'], [148, '148 MB'], [22, '22 MB'], [94, '94 MB'], [0.001, '1 KB']];
       const TREE_COL = ['var(--fg-faint)', 'var(--brand)', 'var(--accent-purple)', 'var(--accent-teal)', 'var(--accent-sky)', 'var(--warning)', 'var(--accent-magenta)', 'var(--success)', 'var(--fg-faint)'];
       const PROMPTS = {
@@ -525,7 +525,8 @@
           C(tx('ps.env.c.cwd')), PC.esc(p.dir), '',
           C(tx('ps.env.c.cmd')), PC.esc(bin + ' ' + flags.join(' \\\n')), '',
           C(tx('ps.env.c.env')),
-          L('HOME', '<' + tx('ps.env.signin') + '>', 'c-ok'), L('USERPROFILE', '<' + tx('ps.env.signin') + '>', 'c-ok'), L('APPDATA', '<' + tx('ps.env.inh') + '>', 'c-d'),
+          L(PC.cliEnv(cli), PC.esc(PC.cliHome(cli)) + '  <' + tx('ps.env.home') + '>', 'c-ok'),
+          L('HOME', '<' + tx('ps.env.signin') + '>', 'c-d'), L('USERPROFILE', '<' + tx('ps.env.signin') + '>', 'c-d'), L('APPDATA', '<' + tx('ps.env.inh') + '>', 'c-d'),
           ...S.env.map(v => L(v, '<' + tx('ps.env.inh') + '>', 'c-d')),
           L(cli === 'claude' ? 'ANTHROPIC_API_KEY' : 'OPENAI_API_KEY', '<' + tx('ps.env.nopass') + '>', 'c-no')
         ];

@@ -61,6 +61,12 @@ import {
   LucideUndo2,
   LucideUpload,
   LucideX,
+  LucideBotMessageSquare,
+  LucideLogIn,
+  LucideLogOut,
+  LucidePlugZap,
+  LucideSquareTerminal,
+  LucideStar,
   provideLucideIcons,
 } from '@lucide/angular';
 
@@ -127,6 +133,12 @@ export const APP_ICONS = [
   LucideUndo2,
   LucideUpload,
   LucideX,
+  LucideBotMessageSquare,
+  LucideLogIn,
+  LucideLogOut,
+  LucidePlugZap,
+  LucideSquareTerminal,
+  LucideStar,
 ];
 
 export function provideAppIcons(): Provider {

@@ -99,6 +99,38 @@
   .gutter span { position: relative; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-canvas); border: 1px solid var(--border-strong); color: var(--fg-subtle); box-shadow: var(--shadow-xs); }
   .gutter pc-icon { transform: rotate(90deg); }
 
+  /* ---------- Agent Integration (AI CLI tools) ---------- */
+  .cli-list { overflow: visible; }
+  .cli-list .note-row { border-top: 0; }
+  .cli-card { display: flex; flex-direction: column; gap: var(--space-4); padding: 18px 20px; border-bottom: 1px solid var(--border-subtle); }
+  .cli-head { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .cli-logo { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface-3); color: var(--fg-default); flex-shrink: 0; }
+  .cli-title { flex: 1 1 auto; min-width: 0; }
+  .cname { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--fg-strong); }
+  .cli-stat { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: var(--text-xs); color: var(--fg-subtle); }
+  .cli-stat .spinner { width: 10px; height: 10px; }
+  .cli-acts { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+  .cli-acts .spinner { width: 12px; height: 12px; }
+  .cli-fields { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+  .cli-field { min-width: 0; }
+  .mini-label { display: block; margin-bottom: 4px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); }
+  .cli-bin { display: flex; align-items: center; gap: var(--space-2); }
+  .cli-bin .input { flex: 1 1 auto; min-width: 0; height: 34px; font-size: 11.5px; }
+  .cli-bin .btn { flex-shrink: 0; height: 34px; }
+  .cli-field .select { width: 100%; height: 34px; }
+  .cli-auth { display: flex; align-items: center; gap: var(--space-2); height: 34px; }
+  .cli-auth-d { font-size: var(--text-xs); color: var(--fg-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cli-hint { margin-top: 6px; font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.5; overflow-wrap: anywhere; }
+  .cli-hint code { font-family: var(--font-mono); font-size: 11px; }
+  .cli-hint .is-error { color: var(--danger-fg); }
+  .cli-home { display: flex; align-items: center; gap: 8px; min-width: 0; height: 34px; padding: 0 10px; border-radius: var(--radius-sm); background: var(--code-bg); border: 1px solid var(--border-subtle); }
+  .cli-home > pc-icon { color: var(--fg-subtle); flex-shrink: 0; }
+  .cli-home-path { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-strong); }
+
+  @container canvas (max-width: 980px) {
+    .cli-fields { grid-template-columns: minmax(0, 1fr); }
+  }
+
   @container canvas (max-width: 980px) {
     .bound { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
     .gutter { height: 28px; flex-direction: row; }

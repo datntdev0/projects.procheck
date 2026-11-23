@@ -16,6 +16,11 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
+            commands::agents::agents_status,
+            commands::agents::agents_test,
+            commands::agents::agents_sign_in,
+            commands::agents::agents_sign_out,
+            commands::agents::agents_pick_binary,
             commands::diagnostics::diagnostics_logs,
             commands::diagnostics::diagnostics_export,
             commands::diagnostics::diagnostics_log,
