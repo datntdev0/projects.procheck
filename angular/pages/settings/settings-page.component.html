@@ -1,0 +1,53 @@
+<div class="canvas-inner settings-page" data-testid="settings-page">
+  <header class="ap-head">
+    <div>
+      <div class="kicker"><pc-icon name="settings" [size]="14" /><span>{{ 'set.kicker' | t }}</span></div>
+      <h1>{{ 'set.title' | t }}</h1>
+      <div class="ap-scope">
+        <pc-icon name="monitor" [size]="14" />
+        <span>{{ 'set.applies' | t }}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="set-wrap">
+    <nav class="set-nav" [attr.aria-label]="'set.title' | t" data-testid="settings-nav">
+      @for (group of nav; track group.label) {
+        <div class="grp">
+          <div class="grp-t">{{ group.label | t }}</div>
+          @for (item of group.items; track item.id) {
+            <button
+              type="button"
+              class="set-nav-item"
+              [class.is-active]="active() === item.id"
+              [attr.aria-current]="active() === item.id ? 'true' : null"
+              [attr.data-testid]="'settings-nav-' + item.id"
+              (click)="go(item.id)"
+            >
+              <pc-icon [name]="item.icon" [size]="15" />
+              <span>{{ item.label | t }}</span>
+            </button>
+          }
+        </div>
+      }
+    </nav>
+
+    <div class="set-content">
+      <pc-settings-section sectionId="about" [title]="'set.n.about' | t">
+        <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
+      </pc-settings-section>
+
+      <pc-settings-section sectionId="general" [title]="'set.n.general' | t" [description]="'set.general.d' | t">
+        <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
+      </pc-settings-section>
+
+      <pc-settings-section sectionId="diagnostics" [title]="'set.n.diagnostics' | t" [description]="'set.diag.d' | t">
+        <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
+      </pc-settings-section>
+
+      <pc-settings-section sectionId="storage" [title]="'set.n.storage' | t" [description]="'set.storage.d' | t">
+        <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
+      </pc-settings-section>
+    </div>
+  </div>
+</div>

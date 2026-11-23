@@ -1,11 +1,13 @@
 import { test as base } from '@playwright/test';
 
+import { SettingsPage } from '../pages/settings.ts';
 import { ShellPage } from '../pages/shell.ts';
 import { AppSession } from './app.ts';
 import { type Sandbox, createSandbox } from './sandbox.ts';
 
 export interface Ui {
   shell: ShellPage;
+  settings: SettingsPage;
 }
 
 interface Fixtures {
@@ -42,6 +44,9 @@ export const test = base.extend<Fixtures>({
     await use({
       get shell() {
         return new ShellPage(app.page);
+      },
+      get settings() {
+        return new SettingsPage(app.page);
       },
     });
   },

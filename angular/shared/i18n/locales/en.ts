@@ -73,6 +73,19 @@ export const en = {
   'soon.page': 'This page',
   'soon.desc': 'We are still building this screen.',
   'soon.back': 'Back to all projects',
+
+  'set.kicker': 'App settings',
+  'set.title': 'App settings',
+  'set.applies': 'Preferences for Procheck on this PC — they apply to all projects.',
+  'set.g.system': 'System',
+  'set.g.data': 'Data',
+  'set.n.about': 'About',
+  'set.n.general': 'General',
+  'set.n.diagnostics': 'Diagnostics',
+  'set.n.storage': 'Storage',
+  'set.general.d': 'App behavior, theme and language.',
+  'set.diag.d': 'What Procheck records and how to collect it for support.',
+  'set.storage.d': 'Procheck keeps two kinds of data in two separate places. Application data belongs to this PC and is shared by every project; project data lives inside the project directory and travels with it.',
 };
 
 export type TranslationKey = keyof typeof en;

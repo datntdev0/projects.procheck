@@ -5,6 +5,7 @@ import type { TranslationKey } from '@shared/i18n/locales/en';
 import { MainLayoutComponent } from '@layout/main-layout/main-layout.component';
 import { ComingSoonPageComponent } from '@pages/coming-soon/coming-soon-page.component';
 import { ProjectsPageComponent } from '@pages/projects/projects-page.component';
+import { SettingsPageComponent } from '@pages/settings/settings-page.component';
 
 const crumb = (key: TranslationKey): LayoutRouteData => ({ crumb: key });
 
@@ -17,7 +18,7 @@ export const routes: Routes = [
       { path: 'projects', component: ProjectsPageComponent, title: 'Projects · Procheck' },
       { path: 'projects/new', component: ComingSoonPageComponent, data: crumb('nav.new_project'), title: 'New project · Procheck' },
       { path: 'projects/open', component: ComingSoonPageComponent, data: crumb('nav.open_project'), title: 'Open project · Procheck' },
-      { path: 'settings', component: ComingSoonPageComponent, data: crumb('nav.settings'), title: 'Settings · Procheck' },
+      { path: 'settings', component: SettingsPageComponent, data: crumb('nav.settings'), title: 'Settings · Procheck' },
       { path: '**', component: ComingSoonPageComponent },
     ],
   },

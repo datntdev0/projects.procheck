@@ -75,4 +75,17 @@ export const vi: Translations = {
   'soon.page': 'Trang này',
   'soon.desc': 'Chúng tôi vẫn đang xây dựng màn hình này.',
   'soon.back': 'Về tất cả dự án',
+
+  'set.kicker': 'Cài đặt ứng dụng',
+  'set.title': 'Cài đặt ứng dụng',
+  'set.applies': 'Tuỳ chọn của Procheck trên máy này — áp dụng cho mọi dự án.',
+  'set.g.system': 'Hệ thống',
+  'set.g.data': 'Dữ liệu',
+  'set.n.about': 'Giới thiệu',
+  'set.n.general': 'Chung',
+  'set.n.diagnostics': 'Chẩn đoán',
+  'set.n.storage': 'Lưu trữ',
+  'set.general.d': 'Hành vi ứng dụng, giao diện và ngôn ngữ.',
+  'set.diag.d': 'Procheck ghi lại những gì và cách thu thập để hỗ trợ.',
+  'set.storage.d': 'Procheck lưu hai loại dữ liệu ở hai nơi tách biệt. Dữ liệu ứng dụng thuộc về máy này và dùng chung cho mọi dự án; dữ liệu dự án nằm trong thư mục dự án và đi theo dự án.',
 };
