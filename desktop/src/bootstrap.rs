@@ -3,6 +3,8 @@ use tauri::Manager;
 
 use crate::commands;
 use crate::container::AppDirectories;
+use crate::features::chats::runner::ChatRuns;
+use crate::features::chats::store::ChatStore;
 use crate::features::settings::SettingsStore;
 use crate::infra::logger;
 use crate::shared::env;
@@ -21,6 +23,15 @@ pub fn run() {
             commands::agents::agents_sign_in,
             commands::agents::agents_sign_out,
             commands::agents::agents_pick_binary,
+            commands::chats::chats_overview,
+            commands::chats::chats_create,
+            commands::chats::chats_set_model,
+            commands::chats::chats_messages,
+            commands::chats::chats_rename,
+            commands::chats::chats_pin,
+            commands::chats::chats_delete,
+            commands::chats::chats_stop,
+            commands::chats::chats_send,
             commands::diagnostics::diagnostics_logs,
             commands::diagnostics::diagnostics_export,
             commands::diagnostics::diagnostics_log,
@@ -50,8 +61,12 @@ pub fn run() {
                 log::info!("deleted {pruned} log file(s) older than {} days", diagnostics.log_retention_days);
             }
 
+            let chats = ChatStore::open(directories.chats_dir()).inspect_err(|e| log::error!("could not open the chat history: {e}"))?;
+
             app.manage(directories);
             app.manage(settings);
+            app.manage(chats);
+            app.manage(ChatRuns::default());
             Ok(())
         })
         .run(tauri::generate_context!())
