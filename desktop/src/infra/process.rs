@@ -1,8 +1,10 @@
 //! Running external programs (the agent CLIs) with a timeout and without a console window.
 use std::ffi::{OsStr, OsString};
-use std::io::{self, Read};
+use std::io::{self, BufRead, BufReader, Lines, Read, Write};
 use std::path::Path;
-use std::process::{Child, Command, ExitStatus, Stdio};
+use std::process::{Child, ChildStdout, Command, ExitStatus, Stdio};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -125,6 +127,123 @@ where
     wait(&mut child, timeout)
 }
 
+/// Stops a streaming program and everything it started (e.g. `node` behind a `.cmd` shim).
+#[derive(Debug)]
+pub struct KillSwitch {
+    pid: u32,
+    killed: AtomicBool,
+}
+
+impl KillSwitch {
+    pub fn kill(&self) {
+        if self.killed.swap(true, Ordering::SeqCst) {
+            return;
+        }
+        kill_tree(self.pid);
+    }
+
+    pub fn was_killed(&self) -> bool {
+        self.killed.load(Ordering::SeqCst)
+    }
+}
+
+#[cfg(windows)]
+fn kill_tree(pid: u32) {
+    use std::os::windows::process::CommandExt;
+    let _ = Command::new("taskkill")
+        .args(["/pid", &pid.to_string(), "/T", "/F"])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .creation_flags(CREATE_NO_WINDOW)
+        .status();
+}
+
+#[cfg(not(windows))]
+fn kill_tree(pid: u32) {
+    let _ = Command::new("kill").args(["-9", &pid.to_string()]).status();
+}
+
+/// How a streaming program ended.
+#[derive(Debug)]
+pub struct StreamEnd {
+    pub status: ExitStatus,
+    pub stderr: String,
+    pub killed: bool,
+}
+
+/// A running program whose stdout is read line by line while it runs.
+pub struct StreamingChild {
+    child: Child,
+    lines: Lines<BufReader<ChildStdout>>,
+    stderr: thread::JoinHandle<String>,
+    stdin: thread::JoinHandle<()>,
+    switch: Arc<KillSwitch>,
+}
+
+impl StreamingChild {
+    pub fn kill_switch(&self) -> Arc<KillSwitch> {
+        Arc::clone(&self.switch)
+    }
+
+    pub fn next_line(&mut self) -> Option<String> {
+        self.lines.next().and_then(Result::ok)
+    }
+
+    pub fn finish(mut self) -> Result<StreamEnd, RunError> {
+        let status = self.child.wait().map_err(RunError::Io)?;
+        let _ = self.stdin.join();
+        Ok(StreamEnd {
+            status,
+            stderr: self.stderr.join().unwrap_or_default(),
+            killed: self.switch.was_killed(),
+        })
+    }
+}
+
+/// Starts `program` hidden, writes `input` to its stdin and closes it, and hands back its stdout
+/// as lines. Passing the prompt on stdin keeps it away from `cmd.exe` argument parsing.
+pub fn spawn_streaming<I, S>(program: &Path, args: I, launch: &Launch<'_>, input: &str) -> Result<StreamingChild, RunError>
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<OsStr>,
+{
+    let mut command = base_command(program, args, launch);
+    command.stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped());
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        command.creation_flags(CREATE_NO_WINDOW);
+    }
+
+    let mut child = command.spawn().map_err(RunError::Spawn)?;
+    let stdin = feed(child.stdin.take(), input.to_owned());
+    let stderr = drain(child.stderr.take());
+    let stdout = child
+        .stdout
+        .take()
+        .ok_or_else(|| RunError::Io(io::Error::other("stdout is not captured")))?;
+    let switch = Arc::new(KillSwitch {
+        pid: child.id(),
+        killed: AtomicBool::new(false),
+    });
+    Ok(StreamingChild {
+        child,
+        lines: BufReader::new(stdout).lines(),
+        stderr,
+        stdin,
+        switch,
+    })
+}
+
+fn feed<W: Write + Send + 'static>(pipe: Option<W>, input: String) -> thread::JoinHandle<()> {
+    thread::spawn(move || {
+        if let Some(mut pipe) = pipe {
+            let _ = pipe.write_all(input.as_bytes());
+        }
+    })
+}
+
 fn drain<R: Read + Send + 'static>(pipe: Option<R>) -> thread::JoinHandle<String> {
     thread::spawn(move || {
         let mut bytes = Vec::new();
@@ -196,6 +315,35 @@ mod tests {
         let cmd = find_on_path("cmd").expect("cmd.exe on PATH");
         let result = run(&cmd, ["/c", "ping -n 30 127.0.0.1 >nul"], &Launch::default(), Duration::from_millis(300));
         assert!(matches!(result, Err(RunError::Timeout(_))));
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn streams_stdout_lines_and_reads_stdin() {
+        let cmd = find_on_path("cmd").expect("cmd.exe on PATH");
+        let mut child = spawn_streaming(&cmd, ["/c", "echo first& more"], &Launch::default(), "from stdin\r\n").unwrap();
+        let mut lines = Vec::new();
+        while let Some(line) = child.next_line() {
+            lines.push(line.trim().to_owned());
+        }
+        let end = child.finish().unwrap();
+        assert!(end.status.success());
+        assert!(!end.killed);
+        assert_eq!(lines.iter().filter(|l| !l.is_empty()).collect::<Vec<_>>(), ["first", "from stdin"]);
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn kill_switch_stops_a_streaming_program() {
+        let cmd = find_on_path("cmd").expect("cmd.exe on PATH");
+        let mut child = spawn_streaming(&cmd, ["/c", "echo ready& ping -n 30 127.0.0.1 >nul"], &Launch::default(), "").unwrap();
+        assert_eq!(child.next_line().as_deref().map(str::trim), Some("ready"));
+        let started = Instant::now();
+        child.kill_switch().kill();
+        while child.next_line().is_some() {}
+        let end = child.finish().unwrap();
+        assert!(end.killed);
+        assert!(started.elapsed() < Duration::from_secs(10));
     }
 
     #[test]
