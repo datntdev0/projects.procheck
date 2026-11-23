@@ -35,8 +35,20 @@
   .sctl { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
   .sctl .input, .sctl .select { width: 270px; }
   .sctl .select.sm { width: 200px; }
+  // An input with its action button (e.g. folder + Browse) stays on one line; the input shrinks first.
+  .sctl:has(> .input) { flex-wrap: nowrap; }
+  .sctl:has(> .input) > .input { flex: 1 1 auto; min-width: 0; }
+  .sctl:has(> .input) > .btn { flex-shrink: 0; }
   .note-row { display: flex; align-items: flex-start; gap: var(--space-3); padding: 12px 20px; background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.55; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
   .note-row pc-icon { margin-top: 1px; color: var(--brand-fg); }
+
+  /* ---------- Save bar ---------- */
+  .savebar { position: sticky; bottom: 16px; z-index: 15; max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-3); padding: 10px 12px 10px 16px; border-radius: var(--radius-lg); background: var(--bg-inverse); color: var(--fg-inverse); box-shadow: var(--shadow-lg); font-size: var(--text-sm); transform: translateY(0); transition: opacity var(--dur-base), transform var(--dur-base) var(--ease-out); }
+  .savebar.is-off { opacity: 0; transform: translateY(12px); pointer-events: none; visibility: hidden; transition: opacity var(--dur-base), transform var(--dur-base) var(--ease-out), visibility 0s var(--dur-base); }
+  .savebar .grow { display: flex; align-items: center; gap: 8px; }
+  .savebar .savebar-dot { color: var(--warning); }
+  .savebar .btn-ghost { color: var(--fg-inverse); opacity: .8; }
+  .savebar .btn-ghost:hover { background: rgba(127, 127, 127, .2); opacity: 1; }
 
   /* ---------- About ---------- */
   .about-card { overflow: hidden; }

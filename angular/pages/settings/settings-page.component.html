@@ -4,8 +4,16 @@
       <div class="kicker"><pc-icon name="settings" [size]="14" /><span>{{ 'set.kicker' | t }}</span></div>
       <h1>{{ 'set.title' | t }}</h1>
       <div class="ap-scope">
-        <pc-icon name="monitor" [size]="14" />
-        <span>{{ 'set.applies' | t }}</span>
+        @if (settingsFile(); as path) {
+          <pc-icon name="file-json" [size]="14" />
+          <span>{{ 'set.stored' | t }}</span>
+          <code data-testid="settings-file">{{ path }}</code>
+          <span class="sep">—</span>
+          <span>{{ 'set.applies.short' | t }}</span>
+        } @else {
+          <pc-icon name="monitor" [size]="14" />
+          <span>{{ 'set.applies' | t }}</span>
+        }
       </div>
     </div>
     <button pcButton type="button" data-testid="open-data-folder" (click)="openDataFolder()">
@@ -39,9 +47,7 @@
     <div class="set-content">
       <pc-about-section />
 
-      <pc-settings-section sectionId="general" [title]="'set.n.general' | t" [description]="'set.general.d' | t">
-        <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
-      </pc-settings-section>
+      <pc-general-section />
 
       <pc-settings-section sectionId="diagnostics" [title]="'set.n.diagnostics' | t" [description]="'set.diag.d' | t">
         <pc-card [padded]="true"><span class="text-sm text-subtle">{{ 'soon.desc' | t }}</span></pc-card>
@@ -49,5 +55,15 @@
 
       <pc-storage-section />
     </div>
+  </div>
+
+  <div class="savebar" [class.is-off]="!form.dirty()" role="region" [attr.aria-label]="'set.unsaved' | t" [attr.aria-hidden]="!form.dirty()" data-testid="settings-savebar">
+    <span class="grow"><pc-icon name="circle-dot" [size]="14" class="savebar-dot" />{{ 'set.unsaved' | t }}</span>
+    <button pcButton variant="ghost" size="sm" type="button" data-testid="settings-discard" [disabled]="form.saving()" (click)="discard()">
+      {{ 'set.discard' | t }}
+    </button>
+    <button pcButton variant="primary" size="sm" type="button" data-testid="settings-save" [disabled]="form.saving()" (click)="save()">
+      {{ 'common.save' | t }}
+    </button>
   </div>
 </div>

@@ -4,13 +4,16 @@ import { ButtonComponent } from '@components/button/button.component';
 import { CARD } from '@components/card/card.component';
 import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
+import { AppSettingsService } from '@features/settings/app-settings.service';
 import { StorageService } from '@features/storage/storage.service';
 import { I18nService } from '@shared/i18n/i18n.service';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
-import { SettingsSectionComponent } from './settings-section.component';
 import { AboutSectionComponent } from './sections/about-section.component';
+import { GeneralSectionComponent } from './sections/general-section.component';
 import { StorageSectionComponent } from './sections/storage-section.component';
+import { SettingsFormService } from './settings-form.service';
+import { SettingsSectionComponent } from './settings-section.component';
 import { SETTINGS_NAV, SETTINGS_SECTION_IDS, SettingsSectionId } from './settings-sections';
 
 /** Offset (px) below the top of the canvas at which a section counts as the current one. */
@@ -19,7 +22,17 @@ const SPY_OFFSET = 90;
 /** App settings (ported from _proto/settings.html): in-page navigation + one section per topic. */
 @Component({
   selector: 'pc-settings-page',
-  imports: [ButtonComponent, IconComponent, TranslatePipe, SettingsSectionComponent, ...CARD, AboutSectionComponent, StorageSectionComponent],
+  imports: [
+    ButtonComponent,
+    IconComponent,
+    TranslatePipe,
+    SettingsSectionComponent,
+    ...CARD,
+    AboutSectionComponent,
+    GeneralSectionComponent,
+    StorageSectionComponent,
+  ],
+  providers: [SettingsFormService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './settings-page.component.html',
 })
@@ -29,7 +42,9 @@ export class SettingsPageComponent {
   private readonly storage = inject(StorageService);
   private readonly toast = inject(ToastService);
   private readonly i18n = inject(I18nService);
+  protected readonly form = inject(SettingsFormService);
 
+  protected readonly settingsFile = inject(AppSettingsService).filePath;
   protected readonly nav = SETTINGS_NAV;
   protected readonly active = signal<SettingsSectionId>(SETTINGS_SECTION_IDS[0]);
 
@@ -50,6 +65,23 @@ export class SettingsPageComponent {
     } catch {
       this.toast.show(this.i18n.t('set.st.open.failed'), { icon: 'circle-alert', tone: 'danger' });
     }
+  }
+
+  protected async save(): Promise<void> {
+    const result = await this.form.save();
+    if (result.ok) {
+      this.toast.show(this.i18n.t('set.saved'), { tone: 'success' });
+    } else if (result.field === 'defaultProjectDir') {
+      this.toast.show(this.i18n.t('set.gen.parent.missing'), { icon: 'circle-alert', tone: 'danger' });
+      this.go('general');
+    } else {
+      this.toast.show(this.i18n.t('set.save.failed', { reason: result.message }), { icon: 'circle-alert', tone: 'danger', duration: 6000 });
+    }
+  }
+
+  protected discard(): void {
+    this.form.discard();
+    this.toast.show(this.i18n.t('set.discarded'), { icon: 'undo-2' });
   }
 
   protected go(id: SettingsSectionId): void {
