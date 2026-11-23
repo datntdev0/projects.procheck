@@ -243,7 +243,7 @@
         'board.t.created': '{id} created in Backlog', 'board.t.ai': 'Acceptance criteria drafted by AI', 'board.t.titlereq': 'Please enter a title',
         'board.a.title': 'Start agent in a new worktree?',
         'board.a.desc': 'The agent creates an isolated git worktree from {base}, implements the task following the approved plan and self-verifies with e2e tests. You review the evidence before any PR is created.',
-        'board.a.cli': 'CLI tool', 'board.a.model': 'Model', 'board.a.branch': 'Branch', 'board.a.worktree': 'Worktree', 'board.a.home': 'Isolated HOME', 'board.a.base': 'Base branch',
+        'board.a.cli': 'CLI tool', 'board.a.model': 'Model', 'board.a.branch': 'Branch', 'board.a.worktree': 'Worktree', 'board.a.home': 'CLI profile', 'board.a.base': 'Base branch',
         'board.a.verify': 'Self-verify with e2e before handing back', 'board.a.start': 'Start agent', 'board.a.noplan': 'No approved plan yet — the agent will draft one first and wait for your approval.',
         'board.n.title': 'New task', 'board.n.f.title': 'Title', 'board.n.f.title.ph': 'e.g. Add retry to payout webhook', 'board.n.f.desc': 'Description', 'board.n.f.desc.ph': 'What problem does it solve? Add context for the agent.',
         'board.n.f.type': 'Type', 'board.n.f.pri': 'Priority', 'board.n.f.art': 'Linked artifact / spec', 'board.n.f.none': 'None',
@@ -288,7 +288,7 @@
         'board.t.created': 'Đã tạo {id} trong Backlog', 'board.t.ai': 'AI đã soạn tiêu chí chấp nhận', 'board.t.titlereq': 'Vui lòng nhập tiêu đề',
         'board.a.title': 'Chạy agent trong worktree mới?',
         'board.a.desc': 'Agent sẽ tạo một git worktree cô lập từ nhánh {base}, triển khai task theo kế hoạch đã duyệt và tự kiểm chứng bằng test e2e. Bạn sẽ xem bằng chứng trước khi tạo bất kỳ PR nào.',
-        'board.a.cli': 'Công cụ CLI', 'board.a.model': 'Model', 'board.a.branch': 'Nhánh', 'board.a.worktree': 'Worktree', 'board.a.home': 'HOME cô lập', 'board.a.base': 'Nhánh gốc',
+        'board.a.cli': 'Công cụ CLI', 'board.a.model': 'Model', 'board.a.branch': 'Nhánh', 'board.a.worktree': 'Worktree', 'board.a.home': 'CLI profile', 'board.a.base': 'Nhánh gốc',
         'board.a.verify': 'Tự kiểm chứng bằng e2e trước khi bàn giao', 'board.a.start': 'Chạy agent', 'board.a.noplan': 'Chưa có kế hoạch được duyệt — agent sẽ soạn kế hoạch trước rồi chờ bạn duyệt.',
         'board.n.title': 'Task mới', 'board.n.f.title': 'Tiêu đề', 'board.n.f.title.ph': 'Ví dụ: Thêm retry cho webhook chi trả', 'board.n.f.desc': 'Mô tả', 'board.n.f.desc.ph': 'Task này giải quyết vấn đề gì? Thêm bối cảnh cho agent.',
         'board.n.f.type': 'Loại', 'board.n.f.pri': 'Độ ưu tiên', 'board.n.f.art': 'Tài liệu / spec liên kết', 'board.n.f.none': 'Không có',
@@ -572,7 +572,7 @@
         m.el.querySelector('#aModel').innerHTML = MODELS[cli].map(x => `<option>${x}</option>`).join('');
         m.el.querySelector('#aBranch').textContent = branchOf(t);
         m.el.querySelector('#aWt').textContent = PC.project().dir + '\\.procheck\\worktrees\\' + t.id;
-        m.el.querySelector('#aHome').textContent = PC.projectHome(cli);
+        m.el.querySelector('#aHome').textContent = PC.projectCli(cli);
       };
       m.el.querySelector('#aCli').addEventListener('change', upd); upd();
     }

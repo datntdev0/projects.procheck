@@ -87,7 +87,7 @@
   /* Shared shell strings */
   PC.i18n.extend({
     en: {
-      'app.name': 'Procheck', 'app.by': 'by KMS Technology',
+      'app.name': 'Procheck', 'app.by': 'by KMS Technology', 'app.version': 'Version', 'nav.settings': 'Settings',
       'shell.search': 'Search projects, artifacts, tasks…',
       'shell.home': 'Projects', 'shell.search.tip': 'Search (Ctrl K)', 'shell.assistant': 'Assistant', 'shell.activity': 'Activity',
       'shell.runs': 'Agent runs', 'shell.design': 'Design system', 'shell.settings': 'Settings', 'shell.profile': 'Profile',
@@ -100,10 +100,10 @@
       'crumb.switch': 'Switch project',
       'phase.initial': 'Initial', 'phase.release': 'Scaffolding', 'phase.sdlc': 'SDLC',
       'storage.app': 'Application data', 'storage.project': 'Project data',
-      'cli.connected': 'connected', 'cli.isolated': 'HOME isolated',
+      'cli.connected': 'connected',
       'as.title': 'Procheck Assistant', 'as.placeholder': 'Ask, or type / for commands…', 'as.new': 'New chat', 'as.history': 'History',
       'as.close': 'Close', 'as.mode.ask': 'Ask', 'as.mode.edit': 'Edit artifact', 'as.mode.agent': 'Agent',
-      'as.attach': 'Attach', 'as.mention': 'Mention artifact', 'as.footnote': 'Runs through your connected CLI in an isolated HOME. Chat history is saved per project.',
+      'as.attach': 'Attach', 'as.mention': 'Mention artifact', 'as.footnote': 'Runs through your signed-in CLI with this project’s context only. Chat history is saved per project.',
       'as.thinking': 'Thinking…', 'as.you': 'You',
       'as.reply.default': 'Got it. I\'ll work on that using the project context. Here is a first pass — review it and tell me what to adjust.',
       'pal.placeholder': 'Type a command or search…', 'pal.nav': 'Go to', 'pal.actions': 'Actions',
@@ -111,7 +111,7 @@
       'common.cancel': 'Cancel', 'common.save': 'Save', 'common.close': 'Close', 'common.confirm': 'Confirm',
     },
     vi: {
-      'app.name': 'Procheck', 'app.by': 'bởi KMS Technology',
+      'app.name': 'Procheck', 'app.by': 'bởi KMS Technology', 'app.version': 'Phiên bản', 'nav.settings': 'Cài đặt',
       'shell.search': 'Tìm dự án, tài liệu, task…',
       'shell.home': 'Dự án', 'shell.search.tip': 'Tìm kiếm (Ctrl K)', 'shell.assistant': 'Trợ lý', 'shell.activity': 'Hoạt động',
       'shell.runs': 'Lượt chạy agent', 'shell.design': 'Design system', 'shell.settings': 'Cài đặt', 'shell.profile': 'Hồ sơ',
@@ -124,10 +124,10 @@
       'crumb.switch': 'Chuyển dự án',
       'phase.initial': 'Khởi tạo', 'phase.release': 'Scaffolding', 'phase.sdlc': 'SDLC',
       'storage.app': 'Dữ liệu ứng dụng', 'storage.project': 'Dữ liệu dự án',
-      'cli.connected': 'đã kết nối', 'cli.isolated': 'HOME cô lập',
+      'cli.connected': 'đã kết nối',
       'as.title': 'Trợ lý Procheck', 'as.placeholder': 'Hỏi, hoặc gõ / để dùng lệnh…', 'as.new': 'Chat mới', 'as.history': 'Lịch sử',
       'as.close': 'Đóng', 'as.mode.ask': 'Hỏi', 'as.mode.edit': 'Sửa tài liệu', 'as.mode.agent': 'Agent',
-      'as.attach': 'Đính kèm', 'as.mention': 'Nhắc tới tài liệu', 'as.footnote': 'Chạy qua CLI đã kết nối trong HOME cô lập. Lịch sử chat được lưu theo dự án.',
+      'as.attach': 'Đính kèm', 'as.mention': 'Nhắc tới tài liệu', 'as.footnote': 'Chạy qua CLI đã đăng nhập, chỉ với ngữ cảnh của dự án này. Lịch sử chat được lưu theo dự án.',
       'as.thinking': 'Đang suy nghĩ…', 'as.you': 'Bạn',
       'as.reply.default': 'Đã rõ. Tôi sẽ xử lý dựa trên ngữ cảnh dự án. Đây là bản nháp đầu tiên — bạn xem và cho tôi biết cần chỉnh gì.',
       'pal.placeholder': 'Gõ lệnh hoặc tìm kiếm…', 'pal.nav': 'Đi tới', 'pal.actions': 'Hành động',
@@ -137,6 +137,7 @@
   });
 
   /* -------------------------------------------------------------- MOCK DATA */
+  PC.appVersion = '0.1.0';   // shown in the sidebar footer (the app reads it from the Tauri app info)
   PC.data = {
     // Local, single-user desktop app: there is only "me" and the agents (no assignees / members).
     user: { name: 'You', initials: 'ME' },
@@ -155,7 +156,7 @@
         items: [
           { path: 'settings.json', desc: 'App preferences: theme, language, defaults' },
           { path: 'projects.json', desc: 'Registry of known project directories (recent list)' },
-          { path: 'cli\\', desc: 'CLI tool registrations & auth' },
+          { path: 'cli\\', desc: 'CLI tool registrations: binary path, default model (sign-in stays with the CLI)' },
           { path: 'logs\\', desc: 'Application & harness logs' },
           { path: 'cache\\', desc: 'Indexes, thumbnails, temp files (safe to delete)' },
         ],
@@ -168,7 +169,7 @@
           { path: 'board\\', desc: 'Tasks, plans, review evidence' },
           { path: '.procheck\\chats\\', desc: 'Assistant chat history' },
           { path: '.procheck\\runs\\', desc: 'Agent run logs & evidence' },
-          { path: '.procheck\\home\\<cli>\\', desc: 'Isolated HOME for each CLI tool' },
+          { path: '.procheck\\cli\\<cli>\\', desc: 'CLI profile per tool: settings, MCP servers, instructions (no credentials)' },
           { path: '.procheck\\worktrees\\', desc: 'Git worktrees created by agents' },
           { path: '.procheck\\settings.json', desc: 'Project-level overrides (CLI, model, harness)' },
         ],
@@ -196,7 +197,17 @@
     else { const saved = LS.get('project', null); if (saved && known(saved)) PC.data.currentProjectId = saved; }
   })();
   PC.setProject = function (id) { PC.data.currentProjectId = id; LS.set('project', id); };
-  PC.projectHome = function (cli, p) { p = p || PC.project(); return p.dir + '\\.procheck\\home\\' + (cli || 'claude'); };
+  // CLI context. Procheck never swaps HOME: each CLI keeps its own sign-in (claude login / codex login), shared by every project.
+  // Isolation is per launch instead: cwd = project dir (Assistant) or worktree (agents) + the project's CLI profile
+  // (<project dir>\.procheck\cli\<cli>\, no credentials) + only the CLI sessions recorded in this project.
+  PC.projectCli = function (cli, p) { p = p || PC.project(); return p.dir + '\\.procheck\\cli\\' + (cli || 'claude'); };
+  PC.cliProfileFiles = function (cli) { return cli === 'codex' ? ['config.toml', 'AGENTS.md'] : ['settings.json', 'mcp.json', 'instructions.md']; };
+  // Launch flags that load the project profile. opts.global = true also keeps the user's global CLI config.
+  PC.cliFlags = function (cli, p, opts) {
+    const d = PC.projectCli(cli, p), g = opts && opts.global;
+    if (cli === 'codex') return '--profile-file ' + d + '\\config.toml' + (g ? '' : ' --ignore-user-config');
+    return (g ? '' : '--setting-sources project ') + '--settings ' + d + '\\settings.json --mcp-config ' + d + '\\mcp.json' + (g ? '' : ' --strict-mcp-config') + ' --append-system-prompt-file ' + d + '\\instructions.md';
+  };
   PC.project = function (id) { return PC.data.projects.find(p => p.id === (id || PC.data.currentProjectId)); };
   /* ----------------------------------------------------------- PHASE STATES
      Each sample project demonstrates a DIFFERENT lifecycle state. Every page
@@ -310,6 +321,41 @@
   PC.h = h;
   const href = p => base + p;
 
+  /* ---------------------------------------------------------------- TOOLTIP
+     One fixed-position layer on <body>, driven by [data-tip] (above) and
+     [data-tip-right] (to the right). Lives outside every container, so
+     overflow:hidden / scroll panes can never clip it. Flips + clamps to the viewport. */
+  (function tooltip() {
+    const SEL = '[data-tip], [data-tip-right]', GAP = 6, PAD = 8;
+    let tipEl = null, cur = null;
+    function show(el) {
+      const right = !el.hasAttribute('data-tip') && el.hasAttribute('data-tip-right');
+      const text = el.getAttribute(right ? 'data-tip-right' : 'data-tip');
+      if (!text) return;
+      if (!tipEl) { tipEl = document.createElement('div'); tipEl.className = 'pc-tip'; tipEl.setAttribute('role', 'tooltip'); document.body.appendChild(tipEl); }
+      cur = el; tipEl.textContent = text; tipEl.classList.add('is-on');
+      const r = el.getBoundingClientRect(), t = tipEl.getBoundingClientRect(), vw = innerWidth, vh = innerHeight;
+      let x, y;
+      if (right) {
+        x = r.right + GAP + 4; y = r.top + r.height / 2 - t.height / 2;
+        if (x + t.width > vw - PAD) x = r.left - GAP - 4 - t.width;
+      } else {
+        x = r.left + r.width / 2 - t.width / 2; y = r.top - GAP - t.height;
+        if (y < PAD) y = r.bottom + GAP;
+      }
+      x = Math.max(PAD, Math.min(x, vw - PAD - t.width));
+      y = Math.max(PAD, Math.min(y, vh - PAD - t.height));
+      tipEl.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    }
+    function hide() { cur = null; if (tipEl) tipEl.classList.remove('is-on'); }
+    document.addEventListener('mouseover', e => { const el = e.target.closest && e.target.closest(SEL); if (el !== cur) (el ? show(el) : hide()); });
+    document.addEventListener('focusin', e => { const el = e.target.closest && e.target.closest(SEL); if (el && el.matches(':focus-visible')) show(el); });
+    document.addEventListener('focusout', hide);
+    document.addEventListener('mousedown', hide, true);
+    addEventListener('scroll', hide, true);
+    addEventListener('blur', hide);
+  })();
+
   PC.toast = function (msg, opts) {
     opts = opts || {};
     let stack = document.querySelector('.toast-stack');
@@ -381,9 +427,8 @@
     </a>`;
   };
   const footerHTML = (page) => `<div class="sidebar-footer">
-      ${navLink({ id: 'settings', icon: 'settings', label: 'nav.app_settings', href: 'settings.html' }, page)}
-      ${navLink({ id: 'design', icon: 'palette', label: 'shell.design', href: 'DESIGN.html' }, page)}
-      <div class="cli-status"><span class="dot dot-pulse"></span><span class="truncate"><b>Claude Code</b> · <span data-i18n="cli.connected"></span></span><span class="badge badge-outline" style="margin-left:auto" data-i18n="cli.isolated"></span></div>
+      ${navLink({ id: 'settings', icon: 'settings', label: 'nav.settings', href: 'settings.html' }, page)}
+      <div class="sb-version"><span data-i18n="app.version"></span> <span>${PC.appVersion}</span></div>
     </div>`;
 
   function buildProjectSidebar(page) {

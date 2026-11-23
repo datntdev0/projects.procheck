@@ -238,10 +238,10 @@
         'ac.cmd.summarize': 'Summarize documents or a thread', 'ac.cmd.brd': 'Draft or update the BRD', 'ac.cmd.stories': 'Write user stories with acceptance criteria', 'ac.cmd.estimate': 'Estimate effort and capacity',
         'ac.cmd.adr': 'Write an architecture decision record', 'ac.cmd.scaffold': 'Plan repo scaffolding & pipelines', 'ac.cmd.plan': 'Create a solution & implementation plan',
         'ac.ctx.phase': 'Phase', 'ac.ctx.project': 'Project', 'ac.ctx.attached': 'Attached artifacts', 'ac.ctx.add': 'Attach', 'ac.ctx.none': 'No artifacts attached to this chat.',
-        'ac.ctx.runtime': 'Runtime', 'ac.ctx.home': 'Isolated HOME', 'ac.ctx.home.note': 'This CLI runs with its own HOME: separate config, credentials and history. Your global CLI setup is never read or modified.', 'ac.ctx.copy': 'Copy',
+        'ac.ctx.runtime': 'Runtime', 'ac.ctx.home': 'Project CLI profile', 'ac.ctx.home.note': 'Uses your existing CLI sign-in, shared by every project. Settings, MCP servers, instructions and sessions come from this project only — your global CLI config is not loaded.', 'ac.ctx.copy': 'Copy',
         'ac.ctx.chat': 'Chat history', 'ac.ctx.chat.note': 'Saved in the project directory, next to your project data — never in application data.', 'ac.ctx.sid': 'CLI session', 'ac.ctx.cli': 'CLI', 'ac.ctx.model': 'Model', 'ac.ctx.tokens': 'Token usage', 'ac.ctx.in': 'Input', 'ac.ctx.out': 'Output', 'ac.ctx.cache': 'Cache read', 'ac.ctx.window': 'Context window', 'ac.ctx.cost': 'Est. cost',
         'ac.ctx.transcript': 'Transcript', 'ac.ctx.transcript.sub': 'Download the full conversation, including tool calls and artifact changes.',
-        'ac.ctx.dir': 'Project directory', 'ac.ctx.pphase': 'Project phase', 'ac.isolated': 'isolated', 'ac.created': 'Started {t}', 'ac.messages': 'Messages',
+        'ac.ctx.dir': 'Project directory', 'ac.ctx.pphase': 'Project phase', 'ac.isolated': 'project-scoped', 'ac.created': 'Started {t}', 'ac.messages': 'Messages',
       },
       vi: {
         'ac.search': 'Tìm cuộc trò chuyện…', 'ac.pinned': 'Đã ghim', 'ac.today': 'Hôm nay', 'ac.yesterday': 'Hôm qua', 'ac.week': '7 ngày qua', 'ac.older': 'Cũ hơn',
@@ -268,10 +268,10 @@
         'ac.cmd.summarize': 'Tóm tắt tài liệu hoặc một cuộc trao đổi', 'ac.cmd.brd': 'Soạn hoặc cập nhật BRD', 'ac.cmd.stories': 'Viết user story kèm tiêu chí chấp nhận', 'ac.cmd.estimate': 'Ước lượng effort và năng lực đội',
         'ac.cmd.adr': 'Viết bản ghi quyết định kiến trúc', 'ac.cmd.scaffold': 'Lập kế hoạch scaffolding repo & pipeline', 'ac.cmd.plan': 'Tạo giải pháp & kế hoạch triển khai',
         'ac.ctx.phase': 'Giai đoạn', 'ac.ctx.project': 'Dự án', 'ac.ctx.attached': 'Tài liệu đính kèm', 'ac.ctx.add': 'Đính kèm', 'ac.ctx.none': 'Chưa có tài liệu nào đính kèm.',
-        'ac.ctx.runtime': 'Môi trường chạy', 'ac.ctx.home': 'HOME cô lập', 'ac.ctx.home.note': 'CLI này chạy với HOME riêng: cấu hình, thông tin đăng nhập và lịch sử tách biệt. Thiết lập CLI toàn cục của bạn không bao giờ bị đọc hay sửa.', 'ac.ctx.copy': 'Sao chép',
+        'ac.ctx.runtime': 'Môi trường chạy', 'ac.ctx.home': 'CLI profile của dự án', 'ac.ctx.home.note': 'Dùng phiên đăng nhập CLI sẵn có, chung cho mọi dự án. Settings, MCP server, chỉ dẫn và phiên làm việc chỉ lấy từ dự án này — cấu hình CLI toàn cục không được nạp.', 'ac.ctx.copy': 'Sao chép',
         'ac.ctx.chat': 'Lịch sử chat', 'ac.ctx.chat.note': 'Lưu trong thư mục dự án, cạnh dữ liệu dự án — không lưu trong dữ liệu ứng dụng.', 'ac.ctx.sid': 'Phiên CLI', 'ac.ctx.cli': 'CLI', 'ac.ctx.model': 'Model', 'ac.ctx.tokens': 'Mức dùng token', 'ac.ctx.in': 'Đầu vào', 'ac.ctx.out': 'Đầu ra', 'ac.ctx.cache': 'Đọc từ cache', 'ac.ctx.window': 'Cửa sổ ngữ cảnh', 'ac.ctx.cost': 'Chi phí ước tính',
         'ac.ctx.transcript': 'Bản ghi', 'ac.ctx.transcript.sub': 'Tải toàn bộ cuộc trò chuyện, gồm các lệnh gọi công cụ và thay đổi tài liệu.',
-        'ac.ctx.dir': 'Thư mục dự án', 'ac.ctx.pphase': 'Giai đoạn dự án', 'ac.isolated': 'cô lập', 'ac.created': 'Bắt đầu {t}', 'ac.messages': 'Tin nhắn',
+        'ac.ctx.dir': 'Thư mục dự án', 'ac.ctx.pphase': 'Giai đoạn dự án', 'ac.isolated': 'theo dự án', 'ac.created': 'Bắt đầu {t}', 'ac.messages': 'Tin nhắn',
       }
     });
 
@@ -285,7 +285,7 @@
       const p = PC.project();
       const CLI = { claude: { name: 'Claude Code', model: 'claude-opus-5-5', win: 200000, ver: '2.4.1' }, codex: { name: 'Codex CLI', model: 'gpt-5-codex', win: 256000, ver: '0.48.0' } };
       const PROJ_DIR = PC.project().dir;   // CLI working directory = the project directory
-      const homeOf = c => PC.projectHome(c);   // <project dir>\\.procheck\\home\\<cli> (isolated HOME)
+      const homeOf = c => PC.projectCli(c);   // <project dir>\\.procheck\\cli\\<cli> (project CLI profile; sign-in stays shared)
       const chatOf = s => PROJ_DIR + '\\.procheck\\chats\\' + s.sid + '.jsonl';   // chat history stays in the project directory
       const ARTL_LOTUS = [['brd', 'Business Requirements Doc', 'file-text'], ['scope', 'Scope Definition – Release 1', 'target'], ['estimation', 'Effort Estimation', 'calculator'], ['sow', 'Statement of Work', 'file-signature'], ['c4', 'Solution Architecture (C4)', 'network'], ['adr-004', 'ADR-004 · OIDC via Keycloak', 'git-pull-request-arrow'], ['tech-stack', 'Tech Stack Decision', 'layers'], ['infra', 'Infra plan', 'cloud'], ['cicd', 'CI/CD Pipeline Spec', 'workflow'], ['spec-kyc', 'Feature spec – Merchant KYC', 'file-text'], ['spec-settlement', 'Feature spec – Settlement Report', 'file-text'], ['test-strategy', 'Test strategy', 'flask-conical'], ['release-notes', 'Release notes 1.3', 'megaphone']];
       const artOf = id => ARTL.find(a => a[0] === id);
@@ -515,7 +515,7 @@
 
       /* ===================== block renderers ===================== */
       function toolHTML(b, running) {
-        const cmd = `HOME=${homeOf(b.cmd.startsWith('codex') ? 'codex' : 'claude')} ${b.cmd}`;
+        const cmd = `cd ${PROJ_DIR} && ${b.cmd} ${PC.cliFlags(b.cmd.startsWith('codex') ? 'codex' : 'claude')}`;
         return `<div class="tool blk ${running ? 'running' : ''}"><button class="tool-h" data-tool><i data-lucide="terminal" class="icon-sm"></i><span class="l">${esc(b.label)}</span><code>${esc(b.cmd)}</code>
           <span class="st">${running ? '<span class="spinner" style="width:12px;height:12px;border-width:1.5px"></span>' + PC.t('ac.tool.running') : '<i data-lucide="check" class="icon-sm"></i>' + esc(b.dur || '')}</span><i data-lucide="chevron-down" class="icon-sm chev"></i></button>
           <div class="tool-b"><div class="terminal"><span class="t-dim">$</span> <span class="t-cmd">${esc(cmd)}</span>\n${(b.out || []).map(l => `<span class="t-${l[0]}">${esc(l[1])}</span>`).join('\n')}</div></div></div>`;
@@ -656,7 +656,7 @@
 
       /* ===================== export ===================== */
       function transcriptMd(s) {
-        const lines = [`# ${s.title}`, '', `- Project: ${p.name}`, `- Phase: ${s.phase}`, `- CLI: ${CLI[s.cli].name} (${CLI[s.cli].model})`, `- HOME: ${homeOf(s.cli)}`, `- Chat history: ${chatOf(s)}`, `- CLI session: ${s.sid}`, ''];
+        const lines = [`# ${s.title}`, '', `- Project: ${p.name}`, `- Phase: ${s.phase}`, `- CLI: ${CLI[s.cli].name} (${CLI[s.cli].model})`, `- CLI profile: ${homeOf(s.cli)}`, `- Chat history: ${chatOf(s)}`, `- CLI session: ${s.sid}`, ''];
         s.messages.forEach(m => {
           if (m.role === 'user') { lines.push(`### You · ${m.time}`, '', m.text, ''); return; }
           lines.push(`### Assistant · ${m.time}`, '');

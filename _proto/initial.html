@@ -495,7 +495,7 @@
         'in.a.src.meeting': 'Kickoff, workshops, interviews', 'in.a.src.brd': 'Meeting notes, RFP, clarifications', 'in.a.src.scope': 'BRD, MoSCoW workshop', 'in.a.src.est': 'Scope, volume forecast', 'in.a.src.sow': 'Scope, estimation, RFP',
         'in.gen.title': 'Update with AI', 'in.gen.sub': 'The Assistant drafts a new version of {name} and keeps the previous one in history.',
         'in.gen.s1': 'Reading {n} sources and answered clarifications', 'in.gen.s2': 'Drafting sections', 'in.gen.s3': 'Cross-checking with related artifacts', 'in.gen.s4': 'Saving to {path}',
-        'in.cli.line': 'Claude Code · HOME={home}',
+        'in.cli.line': 'Claude Code · profile {home}',
         'in.t.generated': '{name} v{v} drafted — review and approve', 'in.t.approved': '{name} v{v} approved', 'in.t.exported': 'Exported {f} to {dir}', 'in.t.exported_all': 'Exported {n} artifacts as {fmt} to {dir}',
         'in.exp.pkg.docx': 'Client package (DOCX)', 'in.exp.pkg.pdf': 'Client package (PDF)', 'in.exp.pkg.md': 'Markdown bundle', 'in.exp.pkg.pptx': 'Summary slides (PPTX)',
 
@@ -639,7 +639,7 @@
         'in.a.src.meeting': 'Họp khởi động, workshop, phỏng vấn', 'in.a.src.brd': 'Biên bản họp, RFP, các câu hỏi làm rõ', 'in.a.src.scope': 'BRD, workshop MoSCoW', 'in.a.src.est': 'Phạm vi, dự báo khối lượng', 'in.a.src.sow': 'Phạm vi, ước tính, RFP',
         'in.gen.title': 'Cập nhật bằng AI', 'in.gen.sub': 'Trợ lý soạn phiên bản mới của {name} và giữ lại phiên bản cũ trong lịch sử.',
         'in.gen.s1': 'Đọc {n} nguồn và các câu hỏi đã làm rõ', 'in.gen.s2': 'Soạn các mục', 'in.gen.s3': 'Đối chiếu với các tài liệu liên quan', 'in.gen.s4': 'Lưu vào {path}',
-        'in.cli.line': 'Claude Code · HOME={home}',
+        'in.cli.line': 'Claude Code · profile {home}',
         'in.t.generated': 'Đã soạn {name} v{v} — hãy xem lại và duyệt', 'in.t.approved': 'Đã duyệt {name} v{v}', 'in.t.exported': 'Đã xuất {f} vào {dir}', 'in.t.exported_all': 'Đã xuất {n} tài liệu dạng {fmt} vào {dir}',
         'in.exp.pkg.docx': 'Bộ hồ sơ khách hàng (DOCX)', 'in.exp.pkg.pdf': 'Bộ hồ sơ khách hàng (PDF)', 'in.exp.pkg.md': 'Gói Markdown', 'in.exp.pkg.pptx': 'Slide tóm tắt (PPTX)',
 
@@ -1483,7 +1483,7 @@
       const body = `<p class="text-sm text-muted">${o.sub}</p>
         <div class="pg-list">${o.steps.map((s, n) => `<div class="pg-step" data-n="${n}"><span class="pg-ic"></span><span>${s}</span></div>`).join('')}</div>
         <div class="progress progress-ai mt-4"><span id="pgBar" style="width:0%"></span></div>
-        <div class="hint mt-2 mono">${esc(t('in.cli.line', { home: PC.projectHome('claude') }))}</div>`;
+        <div class="hint mt-2 mono">${esc(t('in.cli.line', { home: PC.projectCli('claude') }))}</div>`;
       const m = PC.modal({ title: o.title, width: 540, body, actions: [{ label: t('common.cancel'), kind: 'secondary' }], onClose: () => { if (!finished) clearTimeout(timer); } });
       const paint = () => {
         m.el.querySelectorAll('.pg-step').forEach((el, n) => {

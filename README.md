@@ -10,7 +10,7 @@
 **Constrains:**
 - Các chức năng cần sử dụng AI tools sẽ sử dụng CLI tools đã kết nối
 - Có Assistant là wraper layer giúp tương tác với model của các CLI tools
-- Khi kết nối tới CLI tools, cần isolate lại context bằng cách chuyển HOME directory.
+- Khi kết nối tới CLI tools, cần isolate lại context khỏi default profile của user.
 - Có lưu lại chat history với Assistant
 
 ## Key user journeys

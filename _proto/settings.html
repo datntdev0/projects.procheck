@@ -10,7 +10,6 @@
   <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
     .canvas { container-type: inline-size; scroll-behavior: smooth; }
-    html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
     code { font-size: .92em; background: var(--code-bg); padding: 1px 6px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); }
 
     /* ---------- Page header ---------- */
@@ -38,7 +37,7 @@
     .sec-head h2 { font-size: var(--text-xl); font-weight: var(--weight-semibold); letter-spacing: -0.01em; }
     .sec-head p { margin: 4px 0 0; color: var(--fg-muted); font-size: var(--text-sm); max-width: 640px; }
 
-    .srow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
+    .srow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); padding: 9px 20px; border-bottom: 1px solid var(--border-subtle); }
     .srow:last-child { border-bottom: 0; }
     .sinfo { min-width: 0; }
     .slabel { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
@@ -48,7 +47,6 @@
     .sctl .select.sm { width: 200px; }
     .note-row { display: flex; align-items: flex-start; gap: var(--space-3); padding: 12px 20px; background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.55; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
     .note-row svg { margin-top: 1px; color: var(--brand-fg); }
-    html[data-density="compact"] .srow { padding: 9px 20px; }
 
     /* ---------- Storage & data boundary ---------- */
     .bound { display: grid; grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr); gap: 0; align-items: stretch; }
@@ -79,8 +77,6 @@
     .gutter span { position: relative; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-canvas); border: 1px solid var(--border-strong); color: var(--fg-subtle); box-shadow: var(--shadow-xs); }
     .bound-cap { display: flex; justify-content: space-between; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-faint); margin-bottom: 8px; }
 
-    .reg-title { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin: var(--space-6) 0 var(--space-3); }
-    .reg-title h3 { font-size: var(--text-md); }
     .tbl-proj { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
     .tbl-proj .project-avatar { width: 30px; height: 30px; border-radius: 8px; font-size: 11px; }
     .tbl-dir { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-muted); }
@@ -129,8 +125,8 @@
     .about-hero .mark { width: 56px; height: 56px; border-radius: 14px; background: var(--bg-surface); border: 1px solid var(--border-default); padding: 8px; box-shadow: var(--shadow-sm); }
     .kv { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 10px var(--space-4); padding: var(--space-4) 20px; font-size: var(--text-sm); margin: 0; border-top: 1px solid var(--border-subtle); }
     .kv dt { color: var(--fg-subtle); } .kv dd { margin: 0; color: var(--fg-default); min-width: 0; overflow-wrap: anywhere; }
-    .brand-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-6); padding-top: var(--space-5); border-top: 1px solid var(--border-subtle); }
-    .brand-foot img { height: 28px; width: auto; }
+    .brand-foot { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; padding: 12px 20px; background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); }
+    .brand-foot img { height: 22px; width: auto; }
 
     /* ---------- Save bar ---------- */
     .savebar { position: sticky; bottom: 16px; z-index: 15; max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-3); padding: 10px 12px 10px 16px; border-radius: var(--radius-lg); background: var(--bg-inverse); color: var(--fg-inverse); box-shadow: var(--shadow-lg); font-size: var(--text-sm); transform: translateY(0); transition: opacity var(--dur-base), transform var(--dur-base) var(--ease-out); }
@@ -174,37 +170,40 @@
 
       <!-- ============ In-page navigation ============ -->
       <nav class="set-nav" aria-label="App settings" id="setnav">
-        <div class="grp"><div class="grp-t" data-i18n="ap.g.data"></div>
-          <a href="#storage" data-sec="storage"><i data-lucide="hard-drive"></i><span data-i18n="ap.n.storage"></span></a></div>
         <div class="grp"><div class="grp-t" data-i18n="ap.g.pref"></div>
+          <a href="#about" data-sec="about"><i data-lucide="info"></i><span data-i18n="ap.n.about"></span></a>
           <a href="#general" data-sec="general"><i data-lucide="sliders-horizontal"></i><span data-i18n="ap.n.general"></span></a>
-          <a href="#appearance" data-sec="appearance"><i data-lucide="palette"></i><span data-i18n="ap.n.appearance"></span></a></div>
+          <a href="#logs" data-sec="logs"><i data-lucide="scroll-text"></i><span data-i18n="ap.n.logs"></span></a></div>
+        <div class="grp"><div class="grp-t" data-i18n="ap.g.data"></div>
+          <a href="#storage" data-sec="storage"><i data-lucide="hard-drive"></i><span data-i18n="ap.n.storage"></span></a>
+          <a href="#projects" data-sec="projects"><i data-lucide="folder-kanban"></i><span data-i18n="ap.n.projects"></span></a></div>
         <div class="grp"><div class="grp-t" data-i18n="ap.g.ai"></div>
           <a href="#ai" data-sec="ai"><i data-lucide="terminal-square"></i><span data-i18n="ap.n.ai"></span></a>
           <a href="#assistant" data-sec="assistant"><i data-lucide="sparkles"></i><span data-i18n="ap.n.assistant"></span></a>
           <a href="#harness" data-sec="harness"><i data-lucide="bot"></i><span data-i18n="ap.n.harness"></span></a></div>
         <div class="grp"><div class="grp-t" data-i18n="ap.g.sys"></div>
           <a href="#integrations" data-sec="integrations"><i data-lucide="plug-zap"></i><span data-i18n="ap.n.integrations"></span></a>
-          <a href="#logs" data-sec="logs"><i data-lucide="scroll-text"></i><span data-i18n="ap.n.logs"></span></a>
-          <a href="#cache" data-sec="cache"><i data-lucide="database-zap"></i><span data-i18n="ap.n.cache"></span></a>
-          <a href="#about" data-sec="about"><i data-lucide="info"></i><span data-i18n="ap.n.about"></span></a></div>
+          <a href="#cache" data-sec="cache"><i data-lucide="database-zap"></i><span data-i18n="ap.n.cache"></span></a></div>
       </nav>
 
       <div id="content">
 
-        <!-- ============ Storage & data boundary ============ -->
-        <section class="sec" id="storage" data-sec="storage">
-          <div class="sec-head"><div><h2 data-i18n="ap.n.storage"></h2><p data-i18n="ap.storage.d"></p></div></div>
-          <div class="bound-cap"><span data-i18n="ap.bound.l"></span><span data-i18n="ap.bound.r"></span></div>
-          <div class="bound" id="bound"></div>
-
-          <div class="reg-title"><h3 data-i18n="ap.reg.title"></h3><button class="btn btn-secondary btn-sm" data-act="add-existing"><i data-lucide="folder-plus"></i><span data-i18n="ap.reg.add"></span></button></div>
-          <div class="table-wrap">
-            <table class="table">
-              <thead><tr><th data-i18n="ap.reg.c.name"></th><th class="tbl-hide" data-i18n="ap.reg.c.dir"></th><th class="num" data-i18n="ap.reg.c.size"></th><th class="tbl-hide" data-i18n="ap.reg.c.last"></th><th></th></tr></thead>
-              <tbody id="reg-body"></tbody>
-            </table>
-            <div class="reg-foot"><i data-lucide="info" class="icon-sm"></i><span data-i18n-html="ap.reg.note"></span></div>
+        <!-- ============ About ============ -->
+        <section class="sec" id="about" data-sec="about">
+          <div class="sec-head"><div><h2 data-i18n="ap.n.about"></h2></div></div>
+          <div class="card" style="overflow:hidden">
+            <div class="about-hero">
+              <div class="mark"><img src="assets/kms-mark.svg" alt=""></div>
+              <div class="grow"><div class="h3">Procheck</div><div class="text-sm text-muted" data-i18n="ap.about.tag"></div></div>
+              <button class="btn btn-secondary" data-act="check-update"><i data-lucide="refresh-cw"></i><span data-i18n="ap.about.check"></span></button>
+            </div>
+            <dl class="kv">
+              <dt data-i18n="ap.about.ver"></dt><dd>0.1.0 (prototype) · build 2026.11.23</dd>
+              <dt data-i18n="ap.about.settings"></dt><dd><code>%LOCALAPPDATA%\Procheck\settings.json</code></dd>
+              <dt data-i18n="ap.about.registry"></dt><dd><code>%LOCALAPPDATA%\Procheck\projects.json</code></dd>
+              <dt data-i18n="ap.about.runtime"></dt><dd>Tauri 2 · Angular 20 (planned)</dd>
+            </dl>
+            <div class="brand-foot"><img class="logo-light" src="assets/kms-logo.svg" alt="KMS Technology"><img class="logo-dark" src="assets/kms-logo-white.svg" alt="KMS Technology"><span class="text-xs text-subtle" data-i18n="ap.about.foot"></span></div>
           </div>
         </section>
 
@@ -216,17 +215,6 @@
               <div class="sctl"><input class="input mono" value="D:\Projects"><button class="btn btn-secondary" data-act="browse"><i data-lucide="folder-open"></i><span data-i18n="ap.browse"></span></button></div></div>
             <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.gen.startup"></div><div class="sdesc" data-i18n="ap.gen.startup.d"></div></div>
               <div class="sctl"><select class="select sm"><option data-i18n="ap.gen.startup.last"></option><option data-i18n="ap.gen.startup.all"></option></select></div></div>
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.gen.login"></div><div class="sdesc" data-i18n="ap.gen.login.d"></div></div>
-              <div class="sctl"><label class="switch"><input type="checkbox"></label></div></div>
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.gen.update"></div><div class="sdesc" data-i18n="ap.gen.update.d"></div></div>
-              <div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
-          </div>
-        </section>
-
-        <!-- ============ Appearance ============ -->
-        <section class="sec" id="appearance" data-sec="appearance">
-          <div class="sec-head"><div><h2 data-i18n="ap.n.appearance"></h2><p data-i18n="ap.appearance.d"></p></div></div>
-          <div class="card">
             <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="shell.theme"></div><div class="sdesc" data-i18n="ap.theme.d"></div></div>
               <div class="sctl"><div class="segmented">
                 <button data-theme-set="system"><i data-lucide="monitor"></i><span data-i18n="theme.system"></span></button>
@@ -235,11 +223,41 @@
             <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="shell.lang"></div><div class="sdesc" data-i18n="ap.lang.d"></div></div>
               <div class="sctl"><div class="segmented">
                 <button data-lang-set="en">English</button><button data-lang-set="vi">Tiếng Việt</button></div></div></div>
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.density"></div><div class="sdesc" data-i18n="ap.density.d"></div></div>
-              <div class="sctl"><div class="segmented" id="density">
-                <button data-density="comfortable" data-i18n="ap.density.c"></button><button data-density="compact" data-i18n="ap.density.k"></button></div></div></div>
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.motion"></div><div class="sdesc" data-i18n="ap.motion.d"></div></div>
-              <div class="sctl"><label class="switch"><input type="checkbox" id="motion"></label></div></div>
+          </div>
+        </section>
+
+        <!-- ============ Diagnostics ============ -->
+        <section class="sec" id="logs" data-sec="logs">
+          <div class="sec-head"><div><h2 data-i18n="ap.n.logs"></h2><p data-i18n="ap.logs.d"></p></div></div>
+          <div class="card">
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.level"></div><div class="sdesc" data-i18n="ap.log.level.d"></div></div>
+              <div class="sctl"><select class="select sm"><option>error</option><option>warn</option><option selected>info</option><option>debug</option></select></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.ret"></div><div class="sdesc" data-i18n="ap.log.ret.d"></div></div>
+              <div class="sctl"><select class="select sm"><option data-i18n="ap.d.7"></option><option selected data-i18n="ap.d.14"></option><option data-i18n="ap.d.30"></option></select></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.folder"></div><div class="sdesc"><code>%LOCALAPPDATA%\Procheck\logs\</code> · 18 MB</div></div>
+              <div class="sctl"><button class="btn btn-secondary" data-act="open-logs"><i data-lucide="folder-open"></i><span data-i18n="ap.log.open"></span></button></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.export"></div><div class="sdesc" data-i18n="ap.log.export.d"></div></div>
+              <div class="sctl"><button class="btn btn-secondary" data-act="export-diag"><i data-lucide="package-open"></i><span data-i18n="ap.log.export.btn"></span></button></div></div>
+          </div>
+        </section>
+
+        <!-- ============ Storage (data directory structure) ============ -->
+        <section class="sec" id="storage" data-sec="storage">
+          <div class="sec-head"><div><h2 data-i18n="ap.n.storage"></h2><p data-i18n="ap.storage.d"></p></div></div>
+          <div class="bound-cap"><span data-i18n="ap.bound.l"></span><span data-i18n="ap.bound.r"></span></div>
+          <div class="bound" id="bound"></div>
+        </section>
+
+        <!-- ============ Projects (registry) ============ -->
+        <section class="sec" id="projects" data-sec="projects">
+          <div class="sec-head"><div><h2 data-i18n="ap.n.projects"></h2><p data-i18n-html="ap.projects.d"></p></div>
+            <button class="btn btn-secondary btn-sm" data-act="add-existing"><i data-lucide="folder-plus"></i><span data-i18n="ap.reg.add"></span></button></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th data-i18n="ap.reg.c.name"></th><th class="tbl-hide" data-i18n="ap.reg.c.dir"></th><th class="num" data-i18n="ap.reg.c.size"></th><th class="tbl-hide" data-i18n="ap.reg.c.last"></th><th></th></tr></thead>
+              <tbody id="reg-body"></tbody>
+            </table>
+            <div class="reg-foot"><i data-lucide="info" class="icon-sm"></i><span data-i18n-html="ap.reg.note"></span></div>
           </div>
         </section>
 
@@ -291,21 +309,6 @@
           <div class="card" id="ints"></div>
         </section>
 
-        <!-- ============ Logs & diagnostics ============ -->
-        <section class="sec" id="logs" data-sec="logs">
-          <div class="sec-head"><div><h2 data-i18n="ap.n.logs"></h2><p data-i18n="ap.logs.d"></p></div></div>
-          <div class="card">
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.level"></div><div class="sdesc" data-i18n="ap.log.level.d"></div></div>
-              <div class="sctl"><select class="select sm"><option>error</option><option>warn</option><option selected>info</option><option>debug</option></select></div></div>
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.ret"></div><div class="sdesc" data-i18n="ap.log.ret.d"></div></div>
-              <div class="sctl"><select class="select sm"><option data-i18n="ap.d.7"></option><option selected data-i18n="ap.d.14"></option><option data-i18n="ap.d.30"></option></select></div></div>
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.folder"></div><div class="sdesc"><code>%LOCALAPPDATA%\Procheck\logs\</code> · 18 MB</div></div>
-              <div class="sctl"><button class="btn btn-secondary" data-act="open-logs"><i data-lucide="folder-open"></i><span data-i18n="ap.log.open"></span></button></div></div>
-            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ap.log.export"></div><div class="sdesc" data-i18n="ap.log.export.d"></div></div>
-              <div class="sctl"><button class="btn btn-secondary" data-act="export-diag"><i data-lucide="package-open"></i><span data-i18n="ap.log.export.btn"></span></button></div></div>
-          </div>
-        </section>
-
         <!-- ============ Cache ============ -->
         <section class="sec" id="cache" data-sec="cache">
           <div class="sec-head"><div><h2 data-i18n="ap.n.cache"></h2><p data-i18n="ap.cache.d"></p></div></div>
@@ -319,27 +322,6 @@
               <div class="sctl"><button class="btn btn-secondary" data-act="clear-cache"><i data-lucide="trash-2"></i><span data-i18n="ap.cache.clear"></span></button></div>
             </div>
             <div class="note-row"><i data-lucide="shield-check" class="icon-sm"></i><span data-i18n="ap.cache.note"></span></div>
-          </div>
-        </section>
-
-        <!-- ============ About ============ -->
-        <section class="sec" id="about" data-sec="about">
-          <div class="sec-head"><div><h2 data-i18n="ap.n.about"></h2></div></div>
-          <div class="card" style="overflow:hidden">
-            <div class="about-hero">
-              <div class="mark"><img src="assets/kms-mark.svg" alt=""></div>
-              <div class="grow"><div class="h3">Procheck</div><div class="text-sm text-muted" data-i18n="ap.about.tag"></div></div>
-              <button class="btn btn-secondary" data-act="check-update"><i data-lucide="refresh-cw"></i><span data-i18n="ap.about.check"></span></button>
-            </div>
-            <dl class="kv">
-              <dt data-i18n="ap.about.ver"></dt><dd>0.1.0 (prototype) · build 2026.11.23</dd>
-              <dt data-i18n="ap.about.settings"></dt><dd><code>%LOCALAPPDATA%\Procheck\settings.json</code></dd>
-              <dt data-i18n="ap.about.registry"></dt><dd><code>%LOCALAPPDATA%\Procheck\projects.json</code></dd>
-              <dt data-i18n="ap.about.runtime"></dt><dd>Tauri 2 · Angular 20 (planned)</dd>
-            </dl>
-          </div>
-          <div class="brand-foot">
-            <div class="row gap-3"><img class="logo-light" src="assets/kms-logo.svg" alt="KMS Technology"><img class="logo-dark" src="assets/kms-logo-white.svg" alt="KMS Technology"><span class="text-xs text-subtle" data-i18n="ap.about.foot"></span></div>
           </div>
         </section>
 
@@ -359,34 +341,31 @@
       en: {
         'ap.kicker': 'App settings', 'ap.stored': 'Stored in', 'ap.applies': 'applies to all projects', 'ap.openfolder': 'Open folder',
         'ap.looking': 'Looking for project settings?', 'ap.looking.link': 'Open a project → Project settings',
-        'ap.g.data': 'Data', 'ap.g.pref': 'Preferences', 'ap.g.ai': 'AI', 'ap.g.sys': 'Connections & system',
-        'ap.n.storage': 'Storage & data boundary', 'ap.n.general': 'General', 'ap.n.appearance': 'Appearance', 'ap.n.ai': 'AI & CLI tools', 'ap.n.assistant': 'Assistant defaults',
-        'ap.n.harness': 'Agent harness defaults', 'ap.n.integrations': 'Integrations', 'ap.n.logs': 'Logs & diagnostics', 'ap.n.cache': 'Cache', 'ap.n.about': 'About',
+        'ap.g.data': 'Data', 'ap.g.pref': 'System', 'ap.g.ai': 'AI', 'ap.g.sys': 'Connections & system',
+        'ap.n.storage': 'Storage', 'ap.n.projects': 'Projects', 'ap.projects.d': 'Projects registered on this PC. Procheck finds them through <code>projects.json</code> in the application data folder.', 'ap.n.general': 'General', 'ap.n.ai': 'AI & CLI tools', 'ap.n.assistant': 'Assistant defaults',
+        'ap.n.harness': 'Agent harness defaults', 'ap.n.integrations': 'Integrations', 'ap.n.logs': 'Diagnostics', 'ap.n.cache': 'Cache', 'ap.n.about': 'About',
         'ap.browse': 'Browse', 'ap.unsaved': 'Unsaved changes', 'ap.discard': 'Discard', 'ap.saved': 'Saved to settings.json', 'ap.discarded': 'Changes discarded',
         'ap.storage.d': 'Procheck keeps two kinds of data in two separate places. Application data belongs to this PC and is shared by every project; project data lives inside the project directory and travels with it.',
         'ap.bound.l': 'Stays on this PC', 'ap.bound.r': 'Travels with each project',
         'ap.zone.app': 'Application data', 'ap.zone.app.badge': 'All projects', 'ap.zone.app.foot': 'Never written into a project. Deleting <code>cache\\</code> is always safe; everything else is rebuilt on demand.',
         'ap.zone.proj': 'Project data', 'ap.zone.proj.badge': 'One per project', 'ap.zone.proj.root': '<project directory>\\', 'ap.zone.proj.foot': 'The whole directory is the project — copy it, back it up or move it, then open it again from any PC.',
-        'ap.a.0': 'App preferences: theme, language, defaults', 'ap.a.1': 'Registry of known project directories (recent list)', 'ap.a.2': 'CLI tool registrations & auth', 'ap.a.3': 'Application & harness logs', 'ap.a.4': 'Indexes, thumbnails, temp files (safe to delete)',
+        'ap.a.0': 'App preferences: theme, language, defaults', 'ap.a.1': 'Registry of known project directories (recent list)', 'ap.a.2': 'CLI tool registrations: binary path, default model', 'ap.a.3': 'Application & harness logs', 'ap.a.4': 'Indexes, thumbnails, temp files (safe to delete)',
         'ap.p.0': 'Project manifest: name, client, phase, linked repo', 'ap.p.1': 'Uploaded documents (inputs)', 'ap.p.2': 'Generated & edited artifacts with versions', 'ap.p.3': 'Tasks, plans, review evidence',
-        'ap.p.4': 'Assistant chat history', 'ap.p.5': 'Agent run logs & evidence', 'ap.p.6': 'Isolated HOME for each CLI tool', 'ap.p.7': 'Git worktrees created by agents', 'ap.p.8': 'Project-level overrides (CLI, model, harness)',
-        'ap.reg.title': 'Registered projects', 'ap.reg.add': 'Add existing folder',
+        'ap.p.4': 'Assistant chat history', 'ap.p.5': 'Agent run logs & evidence', 'ap.p.6': 'CLI profile per tool: settings, MCP, instructions', 'ap.p.7': 'Git worktrees created by agents', 'ap.p.8': 'Project-level overrides (CLI, model, harness)',
+        'ap.reg.add': 'Add existing folder',
         'ap.reg.c.name': 'Project', 'ap.reg.c.dir': 'Directory', 'ap.reg.c.size': 'Size', 'ap.reg.c.last': 'Last opened',
         'ap.reg.reveal': 'Reveal', 'ap.reg.remove': 'Remove from list', 'ap.reg.revealed': 'Revealed {p}',
         'ap.reg.note': 'Removing a project only deletes its entry in <code>projects.json</code>. The project directory and its files stay untouched.',
         'ap.reg.rm.t': 'Remove “{n}” from the list?', 'ap.reg.rm.d': 'The project will no longer appear in Procheck. Its directory <code>{p}</code> and all files inside stay on disk, and you can open it again at any time.', 'ap.reg.rm.btn': 'Remove from list', 'ap.reg.removed': 'Removed from projects.json',
         'ap.reg.empty': 'No projects registered. Create or open one from All projects.',
-        'ap.general.d': 'Behavior of the app itself.',
+        'ap.general.d': 'App behavior, theme and language.',
         'ap.gen.parent': 'Default parent folder for new projects', 'ap.gen.parent.d': 'Only the starting point of the folder picker when you create a project. Every project lives in its own directory, wherever you choose.',
         'ap.gen.startup': 'On startup', 'ap.gen.startup.d': 'What Procheck shows when it launches.', 'ap.gen.startup.last': 'Reopen last project', 'ap.gen.startup.all': 'Show all projects',
-        'ap.gen.login': 'Launch at Windows sign-in', 'ap.gen.login.d': 'Start Procheck in the background when you sign in.',
-        'ap.gen.update': 'Check for updates automatically', 'ap.gen.update.d': 'Procheck looks for a new version when it starts.',
-        'ap.appearance.d': 'Theme, language and density.', 'ap.theme.d': 'System follows Windows light / dark mode.', 'ap.lang.d': 'Interface language. Project content is not translated.',
-        'ap.density': 'Density', 'ap.density.d': 'Compact fits more rows on screen.', 'ap.density.c': 'Comfortable', 'ap.density.k': 'Compact', 'ap.motion': 'Reduce motion', 'ap.motion.d': 'Turn off transitions and animations.',
+        'ap.theme.d': 'System follows Windows light / dark mode.', 'ap.lang.d': 'Interface language. Project content is not translated.',
         'ap.ai.d': 'Register the AI CLI tools installed on this PC. Projects pick from this list and can override the CLI and model in Project settings.',
-        'ap.ai.note': 'Credentials are kept in <code>%LOCALAPPDATA%\\Procheck\\cli\\</code>. Each project runs the CLI in its own isolated HOME.', 'ap.ai.add': 'Add CLI tool',
+        'ap.ai.note': 'Procheck uses each CLI’s own sign-in (<code>claude login</code>, <code>codex login</code>) and never changes <code>HOME</code>. Sign in once here and every project reuses it; each project only adds its own context profile.', 'ap.ai.add': 'Add CLI tool',
         'ap.ai.bin': 'Binary path', 'ap.ai.auth': 'Authentication', 'ap.ai.model': 'Default model', 'ap.ai.change': 'Change', 'ap.ai.test': 'Test connection', 'ap.ai.testing': 'Testing…', 'ap.ai.testok': '{n} responded in 0.8 s',
-        'ap.ai.default': 'Default', 'ap.ai.setdefault': 'Set as default', 'ap.ai.signed': 'Authenticated', 'ap.ai.key': 'API key', 'ap.ai.sub': 'Subscription', 'ap.ai.signout': 'Sign out', 'ap.ai.signedout': 'Signed out of {n}',
+        'ap.ai.default': 'Default', 'ap.ai.setdefault': 'Set as default', 'ap.ai.signed': 'Authenticated', 'ap.ai.key': 'API key', 'ap.ai.sub': 'Subscription', 'ap.ai.signout': 'Sign out', 'ap.ai.signedout': 'Signed out of {n} · applies to every project',
         'ap.ai.add.t': 'Add CLI tool', 'ap.ai.add.name': 'Display name', 'ap.ai.add.name.ph': 'e.g. Gemini CLI', 'ap.ai.add.bin': 'Path to executable', 'ap.ai.add.bin.ph': 'C:\\Users\\me\\AppData\\Roaming\\npm\\gemini.cmd', 'ap.ai.add.btn': 'Add & detect', 'ap.ai.added': '{n} added',
         'ap.assistant.d': 'Starting values for the Assistant in every project.', 'ap.as.mode': 'Default mode', 'ap.as.mode.d': 'Mode a new chat starts in.',
         'ap.as.ctx': 'Attach project context automatically', 'ap.as.ctx.d': 'Include the project summary and recent artifacts in each chat.',
@@ -419,32 +398,29 @@
       vi: {
         'ap.kicker': 'Cài đặt ứng dụng', 'ap.stored': 'Lưu tại', 'ap.applies': 'áp dụng cho mọi dự án', 'ap.openfolder': 'Mở thư mục',
         'ap.looking': 'Bạn đang tìm cài đặt dự án?', 'ap.looking.link': 'Mở một dự án → Cài đặt dự án',
-        'ap.g.data': 'Dữ liệu', 'ap.g.pref': 'Tuỳ chọn', 'ap.g.ai': 'AI', 'ap.g.sys': 'Kết nối & hệ thống',
-        'ap.n.storage': 'Lưu trữ & ranh giới dữ liệu', 'ap.n.general': 'Chung', 'ap.n.appearance': 'Giao diện', 'ap.n.ai': 'AI & công cụ CLI', 'ap.n.assistant': 'Mặc định của Trợ lý',
-        'ap.n.harness': 'Mặc định cho agent harness', 'ap.n.integrations': 'Tích hợp', 'ap.n.logs': 'Log & chẩn đoán', 'ap.n.cache': 'Bộ nhớ đệm', 'ap.n.about': 'Giới thiệu',
+        'ap.g.data': 'Dữ liệu', 'ap.g.pref': 'Hệ thống', 'ap.g.ai': 'AI', 'ap.g.sys': 'Kết nối & hệ thống',
+        'ap.n.storage': 'Lưu trữ', 'ap.n.projects': 'Dự án', 'ap.projects.d': 'Các dự án đã đăng ký trên máy này. Procheck tìm chúng qua <code>projects.json</code> trong thư mục dữ liệu ứng dụng.', 'ap.n.general': 'Chung', 'ap.n.ai': 'AI & công cụ CLI', 'ap.n.assistant': 'Mặc định của Trợ lý',
+        'ap.n.harness': 'Mặc định cho agent harness', 'ap.n.integrations': 'Tích hợp', 'ap.n.logs': 'Chẩn đoán', 'ap.n.cache': 'Bộ nhớ đệm', 'ap.n.about': 'Giới thiệu',
         'ap.browse': 'Chọn thư mục', 'ap.unsaved': 'Có thay đổi chưa lưu', 'ap.discard': 'Bỏ thay đổi', 'ap.saved': 'Đã lưu vào settings.json', 'ap.discarded': 'Đã bỏ các thay đổi',
         'ap.storage.d': 'Procheck lưu hai loại dữ liệu ở hai nơi tách biệt. Dữ liệu ứng dụng thuộc về máy này và dùng chung cho mọi dự án; dữ liệu dự án nằm trong thư mục dự án và đi theo dự án.',
         'ap.bound.l': 'Ở lại trên máy này', 'ap.bound.r': 'Đi theo từng dự án',
         'ap.zone.app': 'Dữ liệu ứng dụng', 'ap.zone.app.badge': 'Mọi dự án', 'ap.zone.app.foot': 'Không bao giờ ghi vào dự án. Xoá <code>cache\\</code> luôn an toàn; phần còn lại được tạo lại khi cần.',
         'ap.zone.proj': 'Dữ liệu dự án', 'ap.zone.proj.badge': 'Mỗi dự án một bộ', 'ap.zone.proj.root': '<thư mục dự án>\\', 'ap.zone.proj.foot': 'Cả thư mục chính là dự án — sao chép, sao lưu hoặc di chuyển rồi mở lại trên bất kỳ máy nào.',
-        'ap.a.0': 'Tuỳ chọn ứng dụng: giao diện, ngôn ngữ, mặc định', 'ap.a.1': 'Danh sách các thư mục dự án đã biết (mục gần đây)', 'ap.a.2': 'Đăng ký & xác thực công cụ CLI', 'ap.a.3': 'Log của ứng dụng và harness', 'ap.a.4': 'Chỉ mục, ảnh thu nhỏ, tệp tạm (xoá an toàn)',
+        'ap.a.0': 'Tuỳ chọn ứng dụng: giao diện, ngôn ngữ, mặc định', 'ap.a.1': 'Danh sách các thư mục dự án đã biết (mục gần đây)', 'ap.a.2': 'Đăng ký công cụ CLI: đường dẫn, model mặc định', 'ap.a.3': 'Log của ứng dụng và harness', 'ap.a.4': 'Chỉ mục, ảnh thu nhỏ, tệp tạm (xoá an toàn)',
         'ap.p.0': 'Tệp mô tả dự án: tên, khách hàng, giai đoạn, repo liên kết', 'ap.p.1': 'Tài liệu tải lên (đầu vào)', 'ap.p.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ap.p.3': 'Task, kế hoạch, bằng chứng review',
-        'ap.p.4': 'Lịch sử chat với Trợ lý', 'ap.p.5': 'Log và bằng chứng các lượt chạy agent', 'ap.p.6': 'HOME cô lập cho từng công cụ CLI', 'ap.p.7': 'Git worktree do agent tạo', 'ap.p.8': 'Ghi đè ở cấp dự án (CLI, model, harness)',
-        'ap.reg.title': 'Dự án đã đăng ký', 'ap.reg.add': 'Thêm thư mục có sẵn',
+        'ap.p.4': 'Lịch sử chat với Trợ lý', 'ap.p.5': 'Log và bằng chứng các lượt chạy agent', 'ap.p.6': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ap.p.7': 'Git worktree do agent tạo', 'ap.p.8': 'Ghi đè ở cấp dự án (CLI, model, harness)',
+        'ap.reg.add': 'Thêm thư mục có sẵn',
         'ap.reg.c.name': 'Dự án', 'ap.reg.c.dir': 'Thư mục', 'ap.reg.c.size': 'Dung lượng', 'ap.reg.c.last': 'Mở lần cuối',
         'ap.reg.reveal': 'Mở thư mục', 'ap.reg.remove': 'Gỡ khỏi danh sách', 'ap.reg.revealed': 'Đã mở {p}',
         'ap.reg.note': 'Gỡ dự án chỉ xoá mục tương ứng trong <code>projects.json</code>. Thư mục dự án và các tệp bên trong được giữ nguyên.',
         'ap.reg.rm.t': 'Gỡ “{n}” khỏi danh sách?', 'ap.reg.rm.d': 'Dự án sẽ không còn hiện trong Procheck. Thư mục <code>{p}</code> và mọi tệp bên trong vẫn nằm trên ổ đĩa, bạn có thể mở lại bất cứ lúc nào.', 'ap.reg.rm.btn': 'Gỡ khỏi danh sách', 'ap.reg.removed': 'Đã gỡ khỏi projects.json',
         'ap.reg.empty': 'Chưa có dự án nào được đăng ký. Hãy tạo hoặc mở dự án từ trang Tất cả dự án.',
-        'ap.general.d': 'Hành vi của chính ứng dụng.',
+        'ap.general.d': 'Hành vi ứng dụng, giao diện và ngôn ngữ.',
         'ap.gen.parent': 'Thư mục cha mặc định cho dự án mới', 'ap.gen.parent.d': 'Chỉ là điểm bắt đầu của hộp chọn thư mục khi tạo dự án. Mỗi dự án nằm trong thư mục riêng, ở bất cứ đâu bạn chọn.',
         'ap.gen.startup': 'Khi khởi động', 'ap.gen.startup.d': 'Màn hình Procheck hiển thị khi mở ứng dụng.', 'ap.gen.startup.last': 'Mở lại dự án gần nhất', 'ap.gen.startup.all': 'Hiện tất cả dự án',
-        'ap.gen.login': 'Chạy cùng Windows', 'ap.gen.login.d': 'Tự khởi động Procheck ở chế độ nền khi bạn đăng nhập.',
-        'ap.gen.update': 'Tự động kiểm tra cập nhật', 'ap.gen.update.d': 'Procheck kiểm tra phiên bản mới mỗi khi khởi động.',
-        'ap.appearance.d': 'Giao diện sáng/tối, ngôn ngữ và mật độ hiển thị.', 'ap.theme.d': 'Theo hệ thống sẽ dùng chế độ sáng/tối của Windows.', 'ap.lang.d': 'Ngôn ngữ giao diện. Nội dung dự án không bị dịch.',
-        'ap.density': 'Mật độ', 'ap.density.d': 'Gọn hiển thị được nhiều dòng hơn.', 'ap.density.c': 'Thoải mái', 'ap.density.k': 'Gọn', 'ap.motion': 'Giảm chuyển động', 'ap.motion.d': 'Tắt hiệu ứng chuyển cảnh và hoạt ảnh.',
+        'ap.theme.d': 'Theo hệ thống sẽ dùng chế độ sáng/tối của Windows.', 'ap.lang.d': 'Ngôn ngữ giao diện. Nội dung dự án không bị dịch.',
         'ap.ai.d': 'Đăng ký các công cụ AI CLI đã cài trên máy. Dự án chọn từ danh sách này và có thể ghi đè CLI, model trong Cài đặt dự án.',
-        'ap.ai.note': 'Thông tin xác thực lưu trong <code>%LOCALAPPDATA%\\Procheck\\cli\\</code>. Mỗi dự án chạy CLI trong HOME cô lập riêng.', 'ap.ai.add': 'Thêm công cụ CLI',
+        'ap.ai.note': 'Procheck dùng chính phiên đăng nhập của từng CLI (<code>claude login</code>, <code>codex login</code>) và không đổi <code>HOME</code>. Đăng nhập một lần ở đây, mọi dự án dùng chung; mỗi dự án chỉ thêm profile ngữ cảnh riêng.', 'ap.ai.add': 'Thêm công cụ CLI',
         'ap.ai.bin': 'Đường dẫn tệp thực thi', 'ap.ai.auth': 'Xác thực', 'ap.ai.model': 'Model mặc định', 'ap.ai.change': 'Đổi', 'ap.ai.test': 'Kiểm tra kết nối', 'ap.ai.testing': 'Đang kiểm tra…', 'ap.ai.testok': '{n} phản hồi sau 0,8 giây',
         'ap.ai.default': 'Mặc định', 'ap.ai.setdefault': 'Đặt làm mặc định', 'ap.ai.signed': 'Đã xác thực', 'ap.ai.key': 'API key', 'ap.ai.sub': 'Gói đăng ký', 'ap.ai.signout': 'Đăng xuất', 'ap.ai.signedout': 'Đã đăng xuất khỏi {n}',
         'ap.ai.add.t': 'Thêm công cụ CLI', 'ap.ai.add.name': 'Tên hiển thị', 'ap.ai.add.name.ph': 'VD: Gemini CLI', 'ap.ai.add.bin': 'Đường dẫn tệp thực thi', 'ap.ai.add.bin.ph': 'C:\\Users\\me\\AppData\\Roaming\\npm\\gemini.cmd', 'ap.ai.add.btn': 'Thêm & nhận diện', 'ap.ai.added': 'Đã thêm {n}',
@@ -575,8 +551,6 @@
       /* ---- display prefs ---- */
       const LSget = (k, d) => { try { return localStorage.getItem('pc.' + k) || d; } catch (e) { return d; } };
       const LSset = (k, v) => { try { localStorage.setItem('pc.' + k, v); } catch (e) {} };
-      function applyDensity(v) { document.documentElement.setAttribute('data-density', v); document.querySelectorAll('#density button').forEach(b => b.classList.toggle('is-active', b.dataset.density === v)); }
-      function applyMotion(on) { if (on) document.documentElement.setAttribute('data-motion', 'reduced'); else document.documentElement.removeAttribute('data-motion'); $('motion').checked = on; }
 
       /* ---- dirty / save bar ---- */
       function setDirty(v) { S.dirty = v; $('savebar').classList.toggle('is-off', !v); }
@@ -584,9 +558,10 @@
       /* ---- scroll spy ---- */
       function spy() {
         const cv = $('canvas'), top = cv.getBoundingClientRect().top + 90;
-        let cur = 'storage';
-        document.querySelectorAll('.sec').forEach(s => { if (s.getBoundingClientRect().top <= top) cur = s.id; });
-        if (cv.scrollTop + cv.clientHeight >= cv.scrollHeight - 4) cur = 'about';
+        const secs = [...document.querySelectorAll('.sec')];
+        let cur = secs[0].id;
+        secs.forEach(s => { if (s.getBoundingClientRect().top <= top) cur = s.id; });
+        if (cv.scrollTop + cv.clientHeight >= cv.scrollHeight - 4) cur = secs[secs.length - 1].id;
         document.querySelectorAll('#setnav a').forEach(a => a.classList.toggle('is-active', a.dataset.sec === cur));
       }
 
@@ -632,18 +607,15 @@
           else if (act === 'save') { setDirty(false); PC.toast(tx('ap.saved')); }
           else if (act === 'discard') { setDirty(false); PC.toast(tx('ap.discarded'), { icon: 'undo-2' }); }
         });
-        $('content').addEventListener('input', e => { if (e.target.closest('.card') && e.target.id !== 'motion') setDirty(true); });
-        $('content').addEventListener('change', e => { if (e.target.closest('.card') && e.target.id !== 'motion') setDirty(true); });
+        $('content').addEventListener('input', e => { if (e.target.closest('.card')) setDirty(true); });
+        $('content').addEventListener('change', e => { if (e.target.closest('.card')) setDirty(true); });
         $('par').addEventListener('input', e => { $('par-v').textContent = e.target.value; });
-        $('density').addEventListener('click', e => { const b = e.target.closest('[data-density]'); if (!b) return; LSset('density', b.dataset.density); applyDensity(b.dataset.density); });
-        $('motion').addEventListener('change', e => { LSset('motion', e.target.checked ? 'reduced' : 'full'); applyMotion(e.target.checked); });
         $('as-mode').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; document.querySelectorAll('#as-mode button').forEach(x => x.classList.toggle('is-active', x === b)); setDirty(true); });
         $('setnav').addEventListener('click', e => { const a = e.target.closest('a[data-sec]'); if (!a) return; e.preventDefault(); const el = document.getElementById(a.dataset.sec); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); history.replaceState(null, '', '#' + a.dataset.sec); } });
         $('canvas').addEventListener('scroll', spy, { passive: true });
       }
 
       PC.onReady(() => {
-        applyDensity(LSget('density', 'comfortable')); applyMotion(LSget('motion', 'full') === 'reduced');
         wire(); renderAll(); spy();
         if (location.hash) { const el = document.getElementById(location.hash.slice(1)); if (el && el.classList.contains('sec')) setTimeout(() => el.scrollIntoView(), 50); }
         PC.assistant.setContext([{ icon: 'settings', label: PC.t('nav.app_settings') }, { icon: 'hard-drive', label: '%LOCALAPPDATA%\\Procheck' }]);

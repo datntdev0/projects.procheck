@@ -1037,7 +1037,7 @@ PC.refresh(container);
           <label class="radio"><input type="radio" name="r1" checked> Claude Code</label>
           <label class="radio"><input type="radio" name="r1"> Codex CLI</label></div>
         <div class="ds-stack" style="gap:var(--space-3)"><div class="ds-label">Switch</div>
-          <label class="switch"><input type="checkbox" checked> Isolated HOME</label>
+          <label class="switch"><input type="checkbox" checked> Ignore global CLI config</label>
           <label class="switch"><input type="checkbox"> Auto-run tests</label></div>
         <div class="ds-stack" style="gap:var(--space-3)"><div class="ds-label">Segmented</div>
           <div class="segmented" id="seg-demo"><button class="is-active">Ask</button><button>Edit</button><button>Agent</button></div></div>
@@ -1403,7 +1403,7 @@ PC.modal({
   ]
 });
 PC.toast('Saved', { tone: 'success' });          // tone: success | warning | danger · icon: any lucide name
-<button data-tip="Copy link">…</button>           <!-- CSS tooltip; i18n via data-i18n-tip -->
+<button data-tip="Copy link">…</button>           <!-- body-level tooltip (app.js), never clipped; i18n via data-i18n-tip -->
     </script>
   </div>
 </section>
@@ -1518,9 +1518,8 @@ PC.popover(anchor, menuHTML, id => { PC.setProject(id); location.href = 'overvie
               <div class="nav-group"><div class="nav-item"><i data-lucide="sliders-horizontal"></i><span class="truncate" data-i18n="nav.project_settings"></span></div></div>
             </nav>
             <div class="sidebar-footer">
-              <div class="nav-item"><i data-lucide="settings"></i><span class="truncate" data-i18n="nav.app_settings"></span></div>
-              <div class="nav-item"><i data-lucide="palette"></i><span class="truncate" data-i18n="shell.design"></span></div>
-              <div class="cli-status"><span class="dot dot-pulse"></span><span class="truncate"><b>Claude Code</b> · <span data-i18n="cli.connected"></span></span><span class="badge badge-outline" style="margin-left:auto" data-i18n="cli.isolated"></span></div>
+              <div class="nav-item"><i data-lucide="settings"></i><span class="truncate" data-i18n="nav.settings"></span></div>
+              <div class="sb-version"><span data-i18n="app.version"></span> <span>0.1.0</span></div>
             </div>
           </div></aside>
         </div>
@@ -1560,7 +1559,8 @@ PC.popover(anchor, menuHTML, id => { PC.setProject(id); location.href = 'overvie
 PC.data.storage.app.root          // %LOCALAPPDATA%\Procheck
 PC.data.storage.app.items         // settings.json, projects.json, cli\, logs\, cache\
 PC.data.storage.project.items     // relative to PC.project().dir
-PC.projectHome('claude')          // <project dir>\.procheck\home\claude  (isolated HOME)
+PC.projectCli('claude')           // <project dir>\.procheck\cli\claude  (project CLI profile, no credentials)
+PC.cliFlags('claude')             // launch flags that load that profile; HOME and the CLI sign-in are never changed
     </script>
   </div>
 
@@ -1631,7 +1631,7 @@ PC.projectHome('claude')          // <project dir>\.procheck\home\claude  (isola
               <button type="submit" class="send" aria-label="Send"><i data-lucide="arrow-up"></i></button>
             </div>
           </form>
-          <div class="as-footnote">Runs through your connected CLI in an isolated HOME.</div>
+          <div class="as-footnote">Runs through your signed-in CLI with this project’s context only.</div>
         </div>
         <ul class="ds-list">
           <li><i data-lucide="tags"></i><span data-i18n-html="ds.as.l1"></span></li>
@@ -1727,7 +1727,7 @@ PC.assistant.reply('Here is a first pass…');
     <div class="ds-demo flush">
       <div class="card-header" style="border-radius:0">
         <div class="row gap-3"><span class="avatar avatar-ai" style="border:0"><i data-lucide="bot" style="width:14px;height:14px"></i></span><div><div class="h5">LP-142 · Merchant KYC upload</div><div class="text-xs text-subtle">Claude Code 2.4.1 · worktree <span class="ds-code-inline" id="run-wt"></span></div></div></div>
-        <div class="row gap-2"><span class="badge badge-outline"><i data-lucide="lock"></i>HOME isolated</span><span class="badge badge-warning">Awaiting review</span></div>
+        <div class="row gap-2"><span class="badge badge-outline"><i data-lucide="folder-lock"></i>Project-scoped</span><span class="badge badge-warning">Awaiting review</span></div>
       </div>
       <div class="run">
         <div class="run-side">
@@ -1760,7 +1760,7 @@ PC.assistant.reply('Here is a first pass…');
       </div>
     </div>
     <script type="text/plain" data-snip>
-<div class="card-header">…<span class="badge badge-outline"><i data-lucide="lock"></i>HOME isolated</span></div>
+<div class="card-header">…<span class="badge badge-outline"><i data-lucide="folder-lock"></i>Project-scoped</span></div>
 <ol class="run-steps">
   <li class="is-done"><span class="ic"><i data-lucide="check"></i></span>…</li>   <!-- is-done | is-run | (queued) -->
 </ol>
@@ -2100,7 +2100,7 @@ PC.i18n.extend({
     'ds.as.l4': `<b>User bubbles</b> use the soft brand tint; the Assistant speaks on the plain surface.`,
     'ds.as.l5': `<b>Modes</b> — Ask, Edit artifact, Agent — decide what the composer is allowed to do.`,
     'ds.p.kanban': `Kanban card`, 'ds.p.kanban.d': `A task card shows its key, title and evidence, and which agent ran it. You appear only where a review is waiting on you. There are no assignees.`,
-    'ds.p.run': `Agent run status`, 'ds.p.run.d': `The agent works in an isolated worktree with an isolated HOME. You review the evidence, then promote to a PR.`,
+    'ds.p.run': `Agent run status`, 'ds.p.run.d': `The agent works in an isolated worktree with the project’s CLI profile, using your shared CLI sign-in. You review the evidence, then promote to a PR.`,
     'ds.p.phase': `Phase stepper`, 'ds.p.phase.d': `Initial, Scaffolding and SDLC always appear in this order with their phase color — blue, purple, teal. Each phase has its own screen: initial.html, scaffolding.html, board.html.`,
     'ds.st.done': `Done`, 'ds.st.current': `In progress`, 'ds.st.next': `Next`,
     'ds.ph1.d': `Client info gathered, 6 documents uploaded, vision and user stories approved.`,
@@ -2276,7 +2276,7 @@ PC.i18n.extend({
     'ds.as.l4': `<b>Bong bóng của người dùng</b> dùng màu brand nhạt; Trợ lý nói trên nền thường.`,
     'ds.as.l5': `<b>Chế độ</b> — Hỏi, Sửa tài liệu, Agent — quyết định composer được phép làm gì.`,
     'ds.p.kanban': `Thẻ Kanban`, 'ds.p.kanban.d': `Thẻ task hiển thị mã, tiêu đề, bằng chứng và agent đã chạy nó. Bạn chỉ xuất hiện khi có review đang chờ bạn. Không có người được giao việc.`,
-    'ds.p.run': `Trạng thái lượt chạy agent`, 'ds.p.run.d': `Agent làm việc trong worktree cô lập với HOME cô lập. Bạn xem bằng chứng rồi đẩy lên PR.`,
+    'ds.p.run': `Trạng thái lượt chạy agent`, 'ds.p.run.d': `Agent làm việc trong worktree cô lập với CLI profile của dự án, dùng chung phiên đăng nhập CLI. Bạn xem bằng chứng rồi đẩy lên PR.`,
     'ds.p.phase': `Stepper giai đoạn`, 'ds.p.phase.d': `Khởi tạo, Scaffolding và SDLC luôn xuất hiện theo thứ tự này cùng màu giai đoạn — xanh dương, tím, xanh ngọc. Mỗi giai đoạn có màn hình riêng: initial.html, scaffolding.html, board.html.`,
     'ds.st.done': `Hoàn tất`, 'ds.st.current': `Đang thực hiện`, 'ds.st.next': `Tiếp theo`,
     'ds.ph1.d': `Đã thu thập thông tin khách hàng, tải 6 tài liệu, duyệt vision và user story.`,
@@ -2349,19 +2349,19 @@ PC.i18n.extend({
     'ds.sb.l1': `<b>Project card</b> shows the name and the project directory in mono — the one place you see where project data lives.`,
     'ds.sb.l2': `<b>Phase track</b> has three bars in phase colors — blue Initial, purple Scaffolding, teal SDLC — and a chip for the current phase.`,
     'ds.sb.l3': `<b>Nav items</b> are grouped Project and Workflow. Workflow items carry a phase dot; the active item uses <code>--bg-active</code> and <code>--brand-fg</code>.`,
-    'ds.sb.l4': `<b>Footer</b> holds App settings, Design system and the CLI status (connected, HOME isolated). Project settings close the nav list.`,
+    'ds.sb.l4': `<b>Footer</b> holds Settings and the app version. Project settings close the nav list.`,
     'ds.sb.l5': `<b>Home variant.</b> Pages with <code>data-shell="home"</code> use the app sidebar: All projects, New project, Open project folder…, Recent projects.`,
 
     'ds.p.store': `Storage boundary`,
     'ds.p.store.d': `Procheck keeps two kinds of data apart. Application data is per user and lives under %LOCALAPPDATA%\\Procheck. Project data lives inside the directory chosen for the project, so it moves and backs up with it.`,
-    'ds.store.note': `<b>Rule.</b> A project is a directory — nothing sits above it. Chat history is saved in <code>.procheck\\chats\\</code> and each CLI gets an isolated HOME in <code>.procheck\\home\\&lt;cli&gt;</code>, both inside the project directory.`,
-    'ds.sa.0': `App preferences: theme, language, defaults`, 'ds.sa.1': `Registry of known project directories (recent list)`, 'ds.sa.2': `CLI tool registrations & auth`, 'ds.sa.3': `Application & harness logs`, 'ds.sa.4': `Indexes, thumbnails, temp files (safe to delete)`,
-    'ds.sp.0': `Project manifest: name, client, phase, linked repo`, 'ds.sp.1': `Uploaded documents (inputs)`, 'ds.sp.2': `Generated & edited artifacts with versions`, 'ds.sp.3': `Tasks, plans, review evidence`, 'ds.sp.4': `Assistant chat history`, 'ds.sp.5': `Agent run logs & evidence`, 'ds.sp.6': `Isolated HOME for each CLI tool`, 'ds.sp.7': `Git worktrees created by agents`, 'ds.sp.8': `Project-level overrides (CLI, model, harness)`,
+    'ds.store.note': `<b>Rule.</b> A project is a directory — nothing sits above it. Chat history is saved in <code>.procheck\\chats\\</code> and each CLI gets a project profile (settings, MCP servers, instructions) in <code>.procheck\\cli\\&lt;cli&gt;</code>, both inside the project directory. The CLI sign-in is never copied there: Procheck keeps <code>HOME</code> unchanged, so one login serves every project.`,
+    'ds.sa.0': `App preferences: theme, language, defaults`, 'ds.sa.1': `Registry of known project directories (recent list)`, 'ds.sa.2': `CLI tool registrations: binary path, default model`, 'ds.sa.3': `Application & harness logs`, 'ds.sa.4': `Indexes, thumbnails, temp files (safe to delete)`,
+    'ds.sp.0': `Project manifest: name, client, phase, linked repo`, 'ds.sp.1': `Uploaded documents (inputs)`, 'ds.sp.2': `Generated & edited artifacts with versions`, 'ds.sp.3': `Tasks, plans, review evidence`, 'ds.sp.4': `Assistant chat history`, 'ds.sp.5': `Agent run logs & evidence`, 'ds.sp.6': `CLI profile per tool: settings, MCP, instructions`, 'ds.sp.7': `Git worktrees created by agents`, 'ds.sp.8': `Project-level overrides (CLI, model, harness)`,
 
     'ds.p.id': `Agent vs You`,
     'ds.p.id.d': `Procheck is a single-user desktop app, so there are exactly two kinds of actor: you, and the agents you run. There are no assignees, members, reviewers or teams.`,
     'ds.id.you.d': `Reviews evidence, approves plans, promotes to a PR`,
-    'ds.id.agent.d': `CLI agent · isolated HOME · works in a worktree`,
+    'ds.id.agent.d': `CLI agent · shared sign-in · project profile · works in a worktree`,
     'ds.id.asst.n': `Assistant`, 'ds.id.asst.d': `Chat panel · answers through the connected CLI`,
     'ds.id.ex': `In context`, 'ds.id.runby': `Run by`, 'ds.id.revby': `Needs review from`,
     'ds.id.do': `Do`, 'ds.id.dont': `Don’t`,
@@ -2389,19 +2389,19 @@ PC.i18n.extend({
     'ds.sb.l1': `<b>Thẻ dự án</b> hiển thị tên và thư mục dự án bằng font mono — nơi duy nhất bạn thấy dữ liệu dự án nằm ở đâu.`,
     'ds.sb.l2': `<b>Thanh giai đoạn</b> gồm ba thanh theo màu giai đoạn — xanh dương Khởi tạo, tím Scaffolding, xanh ngọc SDLC — cùng chip giai đoạn hiện tại.`,
     'ds.sb.l3': `<b>Mục điều hướng</b> chia nhóm Dự án và Quy trình. Mục quy trình có chấm màu giai đoạn; mục đang chọn dùng <code>--bg-active</code> và <code>--brand-fg</code>.`,
-    'ds.sb.l4': `<b>Chân sidebar</b> gồm Cài đặt ứng dụng, Design system và trạng thái CLI (đã kết nối, HOME cô lập). Cài đặt dự án nằm cuối danh sách điều hướng.`,
+    'ds.sb.l4': `<b>Chân sidebar</b> gồm Cài đặt và phiên bản ứng dụng. Cài đặt dự án nằm cuối danh sách điều hướng.`,
     'ds.sb.l5': `<b>Biến thể Home.</b> Trang có <code>data-shell="home"</code> dùng sidebar ứng dụng: Tất cả dự án, Tạo dự án, Mở thư mục dự án…, Dự án gần đây.`,
 
     'ds.p.store': `Ranh giới lưu trữ`,
     'ds.p.store.d': `Procheck tách riêng hai loại dữ liệu. Dữ liệu ứng dụng thuộc về từng người dùng, nằm trong %LOCALAPPDATA%\\Procheck. Dữ liệu dự án nằm ngay trong thư mục được chọn cho dự án, nên di chuyển và sao lưu cùng dự án.`,
-    'ds.store.note': `<b>Quy tắc.</b> Một dự án là một thư mục — không có cấp nào cao hơn. Lịch sử chat lưu trong <code>.procheck\\chats\\</code> và mỗi CLI có HOME cô lập tại <code>.procheck\\home\\&lt;cli&gt;</code>, đều nằm trong thư mục dự án.`,
-    'ds.sa.0': `Tùy chọn ứng dụng: giao diện, ngôn ngữ, mặc định`, 'ds.sa.1': `Danh sách thư mục dự án đã biết (dự án gần đây)`, 'ds.sa.2': `Đăng ký & xác thực công cụ CLI`, 'ds.sa.3': `Nhật ký ứng dụng và harness`, 'ds.sa.4': `Chỉ mục, ảnh thu nhỏ, tệp tạm (xoá được)`,
-    'ds.sp.0': `Manifest dự án: tên, khách hàng, giai đoạn, repo liên kết`, 'ds.sp.1': `Tài liệu tải lên (đầu vào)`, 'ds.sp.2': `Tài liệu được tạo & chỉnh sửa, có phiên bản`, 'ds.sp.3': `Task, kế hoạch, bằng chứng review`, 'ds.sp.4': `Lịch sử chat của Trợ lý`, 'ds.sp.5': `Nhật ký & bằng chứng lượt chạy agent`, 'ds.sp.6': `HOME cô lập cho từng công cụ CLI`, 'ds.sp.7': `Git worktree do agent tạo`, 'ds.sp.8': `Ghi đè cấp dự án (CLI, model, harness)`,
+    'ds.store.note': `<b>Quy tắc.</b> Một dự án là một thư mục — không có cấp nào cao hơn. Lịch sử chat lưu trong <code>.procheck\\chats\\</code> và mỗi CLI có profile của dự án (settings, MCP server, chỉ dẫn) tại <code>.procheck\\cli\\&lt;cli&gt;</code>, đều nằm trong thư mục dự án. Phiên đăng nhập CLI không bao giờ được sao chép vào đó: Procheck giữ nguyên <code>HOME</code>, nên một lần đăng nhập dùng cho mọi dự án.`,
+    'ds.sa.0': `Tùy chọn ứng dụng: giao diện, ngôn ngữ, mặc định`, 'ds.sa.1': `Danh sách thư mục dự án đã biết (dự án gần đây)`, 'ds.sa.2': `Đăng ký công cụ CLI: đường dẫn, model mặc định`, 'ds.sa.3': `Nhật ký ứng dụng và harness`, 'ds.sa.4': `Chỉ mục, ảnh thu nhỏ, tệp tạm (xoá được)`,
+    'ds.sp.0': `Manifest dự án: tên, khách hàng, giai đoạn, repo liên kết`, 'ds.sp.1': `Tài liệu tải lên (đầu vào)`, 'ds.sp.2': `Tài liệu được tạo & chỉnh sửa, có phiên bản`, 'ds.sp.3': `Task, kế hoạch, bằng chứng review`, 'ds.sp.4': `Lịch sử chat của Trợ lý`, 'ds.sp.5': `Nhật ký & bằng chứng lượt chạy agent`, 'ds.sp.6': `CLI profile cho từng công cụ: settings, MCP, chỉ dẫn`, 'ds.sp.7': `Git worktree do agent tạo`, 'ds.sp.8': `Ghi đè cấp dự án (CLI, model, harness)`,
 
     'ds.p.id': `Agent và Bạn`,
     'ds.p.id.d': `Procheck là ứng dụng desktop một người dùng, nên chỉ có hai loại tác nhân: bạn và các agent bạn chạy. Không có người được giao việc, thành viên, người duyệt hay nhóm.`,
     'ds.id.you.d': `Xem bằng chứng, duyệt kế hoạch, đẩy lên PR`,
-    'ds.id.agent.d': `Agent CLI · HOME cô lập · làm việc trong worktree`,
+    'ds.id.agent.d': `Agent CLI · đăng nhập dùng chung · profile dự án · làm việc trong worktree`,
     'ds.id.asst.n': `Trợ lý`, 'ds.id.asst.d': `Panel chat · trả lời qua CLI đã kết nối`,
     'ds.id.ex': `Trong ngữ cảnh`, 'ds.id.runby': `Chạy bởi`, 'ds.id.revby': `Chờ review từ`,
     'ds.id.do': `Nên`, 'ds.id.dont': `Không nên`,

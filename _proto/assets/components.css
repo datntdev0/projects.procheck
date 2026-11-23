@@ -287,11 +287,10 @@ p { margin: 0 0 var(--space-3); }
 .toast-stack { position: fixed; right: 20px; bottom: 20px; z-index: var(--z-toast); display: flex; flex-direction: column; gap: var(--space-2); }
 .toast { display: flex; align-items: center; gap: var(--space-3); min-width: 280px; max-width: 420px; padding: var(--space-3) var(--space-4); background: var(--bg-inverse); color: var(--fg-inverse); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-sm); animation: popIn var(--dur-base) var(--ease-out); }
 
-/* ---------- Tooltip (CSS-only, data-tip) ---------- */
-[data-tip] { position: relative; }
-[data-tip]:hover::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap; padding: 4px 8px; border-radius: var(--radius-sm); background: var(--bg-inverse); color: var(--fg-inverse); font-size: var(--text-2xs); font-weight: var(--weight-medium); z-index: var(--z-toast); pointer-events: none; }
-[data-tip-right]:hover::after { content: attr(data-tip-right); position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); white-space: nowrap; padding: 4px 8px; border-radius: var(--radius-sm); background: var(--bg-inverse); color: var(--fg-inverse); font-size: var(--text-2xs); font-weight: var(--weight-medium); z-index: var(--z-toast); pointer-events: none; }
-[data-tip-right] { position: relative; }
+/* ---------- Tooltip (data-tip / data-tip-right) ----------
+   Rendered by app.js as one fixed layer on <body> so no container can clip it. */
+.pc-tip { position: fixed; left: 0; top: 0; max-width: 320px; padding: 4px 8px; border-radius: var(--radius-sm); background: var(--bg-inverse); color: var(--fg-inverse); font-size: var(--text-2xs); font-weight: var(--weight-medium); line-height: 1.4; white-space: nowrap; z-index: calc(var(--z-toast) + 10); pointer-events: none; opacity: 0; visibility: hidden; }
+.pc-tip.is-on { opacity: 1; visibility: visible; }
 
 /* ---------- Dropzone ---------- */
 .dropzone { border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg); padding: var(--space-8); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); text-align: center; color: var(--fg-subtle); background: var(--bg-surface-2); transition: border-color var(--dur-fast), background var(--dur-fast); cursor: pointer; }

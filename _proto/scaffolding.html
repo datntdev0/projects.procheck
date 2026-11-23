@@ -250,7 +250,7 @@
         'sc.st.pending': 'Pending', 'sc.st.running': 'Running', 'sc.st.done': 'Done', 'sc.st.blocked': 'Blocked', 'sc.st.files': '{n} files',
         'sc.blocked.by': 'Blocked by {id} awaiting approval', 'sc.blocked.released': 'Released, queued after CI/CD',
         'sc.run.agent': 'Agent', 'sc.run.branch': 'Branch', 'sc.run.started': 'Started {n} min ago', 'sc.run.stop': 'Stop', 'sc.run.log': 'Run log', 'sc.run.stopped': 'Run paused. Resume from the worktree list.', 'sc.run.resume': 'Resume',
-        'sc.home.tip': 'Each CLI runs with its own HOME directory',
+        'sc.home.tip': 'Project CLI profile · shared sign-in, project-only context',
         'sc.struct.title': 'Generated structure', 'sc.struct.files': '{n} files · {c} commits',
         /* worktrees / commits */
         'sc.wt.title': 'Worktrees', 'sc.wt.sub': 'Each scaffolding step runs in its own git worktree under .procheck\\worktrees, so your main checkout stays clean.',
@@ -317,7 +317,7 @@
         'sc.st.pending': 'Chờ', 'sc.st.running': 'Đang chạy', 'sc.st.done': 'Xong', 'sc.st.blocked': 'Bị chặn', 'sc.st.files': '{n} file',
         'sc.blocked.by': 'Bị chặn bởi {id} đang chờ duyệt', 'sc.blocked.released': 'Đã mở, xếp hàng sau CI/CD',
         'sc.run.agent': 'Agent', 'sc.run.branch': 'Nhánh', 'sc.run.started': 'Bắt đầu {n} phút trước', 'sc.run.stop': 'Dừng', 'sc.run.log': 'Log lượt chạy', 'sc.run.stopped': 'Đã tạm dừng. Tiếp tục từ danh sách worktree.', 'sc.run.resume': 'Tiếp tục',
-        'sc.home.tip': 'Mỗi CLI chạy với thư mục HOME riêng',
+        'sc.home.tip': 'CLI profile của dự án · đăng nhập dùng chung, ngữ cảnh riêng dự án',
         'sc.struct.title': 'Cấu trúc đã tạo', 'sc.struct.files': '{n} file · {c} commit',
         'sc.wt.title': 'Worktree', 'sc.wt.sub': 'Mỗi bước scaffolding chạy trong một git worktree riêng trong .procheck\\worktrees, nên thư mục chính luôn sạch.',
         'sc.wt.path': 'Đường dẫn', 'sc.wt.branch': 'Nhánh', 'sc.wt.task': 'Lượt chạy liên kết', 'sc.wt.status': 'Trạng thái', 'sc.wt.main': 'thư mục chính', 'sc.wt.running': 'Agent đang chạy', 'sc.wt.clean': 'Sạch', 'sc.wt.open': 'Mở lượt chạy',
@@ -589,8 +589,10 @@
 
     /* ===================================================== IN PROGRESS (mekong, brownfield) */
     const TERM = [
-      { c: 't-cmd', t: () => '$ HOME=' + PC.projectHome('claude') + ' claude -p "Generate Azure Pipelines YAML for the existing modules (adapt, do not replace)" \\' },
-      { c: 't-cmd', t: () => '    --model claude-opus-5-5 --add-dir ' + repoPath() + ' --output-format stream-json' },
+      { c: 't-cmd', t: () => '$ claude -p "Generate Azure Pipelines YAML for the existing modules (adapt, do not replace)" \\' },
+      { c: 't-cmd', t: () => '    --model claude-opus-5-5 --add-dir ' + repoPath() + ' --output-format stream-json \\' },
+      { c: 't-cmd', t: () => '    ' + PC.cliFlags('claude') },
+      { c: 't-dim', t: () => '[harness] sign-in   shared · your Claude Code login (HOME unchanged)' },
       { c: 't-dim', t: () => '[harness] worktree  ' + P.dir + '\\.procheck\\worktrees\\SC-04  (branch scaffold/ci-pipelines)' },
       { c: 't-dim', t: () => '[harness] run log   ' + P.dir + '\\.procheck\\runs\\SC-04.jsonl' },
       { c: 't-info', t: '● Reading existing pipeline: azure-pipelines.yml (classic editor export, API only)' },
@@ -671,7 +673,7 @@
             <div class="gen"><div class="steps">${STEP_IDS.map(gstepHTML).join('')}</div>
               <div class="run-pane"><div class="run-cfg"><span class="row gap-2 text-xs text-muted"><span class="ag-ic">CC</span><b style="color:var(--fg-default)">Claude Code</b><span class="text-subtle">· claude-opus-5-5</span></span>
                   <span class="badge badge-purple mono"><i data-lucide="git-branch"></i>${esc(run.branch)}</span><span class="text-xs text-subtle">${t('sc.run.started', { n: run.startedMin })}</span>
-                  <span class="badge badge-outline" data-i18n-tip="sc.home.tip"><i data-lucide="shield-check"></i><span class="mono">${esc(PC.projectHome('claude'))}</span></span></div>
+                  <span class="badge badge-outline" data-i18n-tip="sc.home.tip"><i data-lucide="shield-check"></i><span class="mono">${esc(PC.projectCli('claude'))}</span></span></div>
                 <div class="gen-progress"><div class="progress progress-ai"><span id="runBar" style="width:${S.progress}%"></span></div><b id="runPct">${S.progress}%</b></div>
                 <div class="terminal run-term" id="term"></div></div></div></div></section>
         <section class="section"><div class="section-title"><div><h3>${t('sc.wt.title')}</h3><div class="text-xs text-subtle mt-2">${t('sc.wt.sub')}</div></div></div>

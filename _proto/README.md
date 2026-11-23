@@ -13,7 +13,8 @@ Open `index.html` in a browser (double-click works; `npx serve _proto` is nicer)
 | Navigation | Cross-project overview via breadcrumb: **Projects** (→ `index.html`) **/ Project ▾** (switcher) **/ Page**. |
 | Chrome colors | Sidebar/topbar follow the selected theme (`--bg-sidebar`, `--bg-topbar`) like native chrome — no fixed navy. |
 | People | **Single user, local PC.** There is only **me** ("You") and **agents** (Claude Code, Codex). No assignees, members, reviewers or teams. |
-| Storage boundary | **Application data** → `%LOCALAPPDATA%\Procheck\` (settings.json, projects.json registry, cli\, logs\, cache\). **Project data** → the directory chosen for the project (procheck.json, sources\, artifacts\, board\, .procheck\chats, .procheck\runs, .procheck\home\<cli> (isolated HOME), .procheck\worktrees, .procheck\settings.json). See `PC.data.storage`. |
+| Storage boundary | **Application data** → `%LOCALAPPDATA%\Procheck\` (settings.json, projects.json registry, cli\, logs\, cache\). **Project data** → the directory chosen for the project (procheck.json, sources\, artifacts\, board\, .procheck\chats, .procheck\runs, .procheck\cli\<cli> (project CLI profile), .procheck\worktrees, .procheck\settings.json). See `PC.data.storage`. |
+| CLI isolation | **Shared sign-in, isolated context.** Procheck never changes `HOME` / `USERPROFILE` / `APPDATA`, so each CLI keeps its own login (`claude login`, `codex login`) and the user signs in once for all projects. Per project, Procheck isolates the context of each launch: cwd = project dir (Assistant) or worktree (agents) · project CLI profile in `.procheck\cli\<cli>\` (settings, MCP servers, instructions — no credentials) · global CLI config ignored by default · `--resume` only with session ids recorded in the project · env allowlist. See `PC.projectCli`, `PC.cliFlags`. |
 | Workspace | **No "workspace" concept.** A project = a directory. Never use the word "workspace" in UI. |
 | Settings | `settings.html` = **App settings** (stored in LOCALAPPDATA). `project-settings.html` = **Project settings** (stored in the project directory). |
 | Language | Bilingual EN / VI with toggle (persisted). |
@@ -67,7 +68,7 @@ _proto/
 
 - `data-shell`: `project` (project sidebar) · `home` (app sidebar: all projects, new/open project, recent projects) · `none` (no chrome).
 - `data-page` ids — project sidebar: `overview`, `artifacts`, `assistant`, `initial`, `scaffolding`, `board`, `task`, `project-settings`; app sidebar: `home`, `new-project`, `open-project`, `settings`, `design`.
-- `PC.project()` = current project (switchable via breadcrumb, `?p=<id>`, persisted). Use `p.dir`, `p.repo`, `PC.projectHome('claude')` for paths. `PC.data.agents`, `PC.data.storage`, `PC.data.cli`.
+- `PC.project()` = current project (switchable via breadcrumb, `?p=<id>`, persisted). Use `p.dir`, `p.repo`, `PC.projectCli('claude')` for paths and `PC.cliFlags('claude')` for CLI launch lines. `PC.data.agents`, `PC.data.storage`, `PC.data.cli`.
 - i18n: `data-i18n`, `-placeholder`, `-title`, `-tip`, `-html`; dynamic text via `PC.t()` + `pc:lang`. Shared keys: `phase.release` = "Scaffolding", `nav.scaffolding`, `nav.board` = "SDLC board", `storage.app`, `storage.project`.
 - Helpers: `PC.toast`, `PC.modal`, `PC.popover`, `PC.assistant.setContext / seed / setSuggestions / reply`, `PC.esc`.
 - Only semantic tokens so both themes work.

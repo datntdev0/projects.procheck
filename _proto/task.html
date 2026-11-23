@@ -573,7 +573,7 @@
         'task.pl.solution': 'Solution design', 'task.pl.arch': 'Architecture', 'task.pl.components': 'Components', 'task.pl.api': 'API contract', 'task.pl.model': 'Data model', 'task.pl.plan': 'Implementation plan',
         'task.th.method': 'Method', 'task.th.endpoint': 'Endpoint', 'task.th.purpose': 'Purpose', 'task.th.response': 'Response', 'task.th.column': 'Column', 'task.th.type': 'Type', 'task.th.notes': 'Constraints / notes',
         'task.th.test': 'Test', 'task.th.status': 'Status', 'task.th.duration': 'Duration',
-        'task.rn.title': 'Run metadata', 'task.rn.cli': 'CLI tool', 'task.rn.model': 'Model', 'task.rn.home': 'Isolated HOME', 'task.rn.worktree': 'Worktree', 'task.rn.started': 'Started', 'task.rn.duration': 'Duration', 'task.rn.tokens': 'Tokens (in / out)', 'task.rn.session': 'Session', 'task.rn.cost': 'Cost',
+        'task.rn.title': 'Run metadata', 'task.rn.cli': 'CLI tool', 'task.rn.model': 'Model', 'task.rn.home': 'CLI profile', 'task.rn.worktree': 'Worktree', 'task.rn.started': 'Started', 'task.rn.duration': 'Duration', 'task.rn.tokens': 'Tokens (in / out)', 'task.rn.session': 'Session', 'task.rn.cost': 'Cost',
         'task.rn.timeline': 'Step timeline', 'task.rn.log': 'Agent log', 'task.rn.replay': 'Replay', 'task.rn.pause': 'Pause', 'task.rn.resume': 'Resume', 'task.rn.stop': 'Stop', 'task.rn.live': 'LIVE', 'task.rn.finished': 'FINISHED', 'task.rn.paused': 'PAUSED',
         'task.rn.history': 'Session saved to {p}', 'task.rn.run': 'Run #{n}',
         'task.rs.1': 'Created worktree', 'task.rs.2': 'Read spec', 'task.rs.3': 'Implemented API', 'task.rs.4': 'Implemented UI', 'task.rs.5': 'Wrote tests', 'task.rs.6': 'Ran e2e', 'task.rs.7': 'Collected evidence', 'task.rs.8': 'Applied review feedback',
@@ -608,7 +608,7 @@
         'task.pl.solution': 'Thiết kế giải pháp', 'task.pl.arch': 'Kiến trúc', 'task.pl.components': 'Thành phần', 'task.pl.api': 'Hợp đồng API', 'task.pl.model': 'Mô hình dữ liệu', 'task.pl.plan': 'Kế hoạch triển khai',
         'task.th.method': 'Phương thức', 'task.th.endpoint': 'Endpoint', 'task.th.purpose': 'Mục đích', 'task.th.response': 'Phản hồi', 'task.th.column': 'Cột', 'task.th.type': 'Kiểu', 'task.th.notes': 'Ràng buộc / ghi chú',
         'task.th.test': 'Test', 'task.th.status': 'Trạng thái', 'task.th.duration': 'Thời lượng',
-        'task.rn.title': 'Thông tin lượt chạy', 'task.rn.cli': 'Công cụ CLI', 'task.rn.model': 'Model', 'task.rn.home': 'HOME cô lập', 'task.rn.worktree': 'Worktree', 'task.rn.started': 'Bắt đầu', 'task.rn.duration': 'Thời lượng', 'task.rn.tokens': 'Token (vào / ra)', 'task.rn.session': 'Phiên làm việc', 'task.rn.cost': 'Chi phí',
+        'task.rn.title': 'Thông tin lượt chạy', 'task.rn.cli': 'Công cụ CLI', 'task.rn.model': 'Model', 'task.rn.home': 'CLI profile', 'task.rn.worktree': 'Worktree', 'task.rn.started': 'Bắt đầu', 'task.rn.duration': 'Thời lượng', 'task.rn.tokens': 'Token (vào / ra)', 'task.rn.session': 'Phiên làm việc', 'task.rn.cost': 'Chi phí',
         'task.rn.timeline': 'Dòng thời gian các bước', 'task.rn.log': 'Nhật ký agent', 'task.rn.replay': 'Phát lại', 'task.rn.pause': 'Tạm dừng', 'task.rn.resume': 'Tiếp tục', 'task.rn.stop': 'Dừng', 'task.rn.live': 'TRỰC TIẾP', 'task.rn.finished': 'ĐÃ XONG', 'task.rn.paused': 'ĐANG TẠM DỪNG',
         'task.rn.history': 'Phiên đã lưu tại {p}', 'task.rn.run': 'Lượt #{n}',
         'task.rs.1': 'Tạo worktree', 'task.rs.2': 'Đọc spec', 'task.rs.3': 'Code xong API', 'task.rs.4': 'Code xong giao diện', 'task.rs.5': 'Viết test', 'task.rs.6': 'Chạy e2e', 'task.rs.7': 'Thu thập bằng chứng', 'task.rs.8': 'Áp dụng phản hồi review',
@@ -638,7 +638,7 @@
     const BRANCH = 'agent/LP-142-merchant-kyc-upload';
     const PRJ = PC.project();
     const WT = PRJ.dir + '\\.procheck\\worktrees\\LP-142';
-    const HOME = PC.projectHome('claude', PRJ);
+    const HOME = PC.projectCli('claude', PRJ);   // project CLI profile; sign-in is the user's shared Claude Code login
     const RUNS = PRJ.dir + '\\.procheck\\runs';
     const EVID = RUNS + '\\LP-142\\evidence\\';
     const SESSION = RUNS + '\\LP-142\\run-0187.jsonl';
@@ -880,9 +880,12 @@
     function buildLog() {
       const L1 = [];
       const add = (c, t, d) => L1.push({ c, t, d });
-      add('t-cmd', '$ HOME=' + HOME + ' claude -p @.procheck\\plan-v2.md \\', 160);
-      add('t-cmd', '    --model claude-opus-5-5 --permission-mode acceptEdits --output-format stream-json', 300);
-      add('t-dim', '[harness] isolated HOME   ' + HOME);
+      add('t-cmd', '$ cd ' + WT, 120);
+      add('t-cmd', '$ claude -p @.procheck\\plan-v2.md \\', 160);
+      add('t-cmd', '    --model claude-opus-5-5 --permission-mode acceptEdits --output-format stream-json \\');
+      add('t-cmd', '    ' + PC.cliFlags('claude', PRJ), 300);
+      add('t-dim', '[harness] sign-in         shared · your Claude Code login (HOME unchanged)');
+      add('t-dim', '[harness] profile         ' + HOME + '  (global CLI config ignored)');
       add('t-dim', '[harness] worktree        ' + WT + '  (' + BRANCH + ' from develop)');
       add('t-dim', '[harness] run log        ' + SESSION, 300);
       add('t-info', '● Reading: KYC onboarding v1.3 · Merchant service OpenAPI · ADR-007 · wireframes', 300);
@@ -1138,7 +1141,7 @@
       S.commentsExtra.push({ who: 'ME', t: nowStr(), raw: '<b>' + T('task.ac.you') + '</b> ' + (PC.lang === 'vi' ? 'yêu cầu chỉnh sửa' : 'requested changes'), c: {}, rawc: esc(fb).replace(/\n/g, '<br>') });
       addEvent('rotate-cw', PC.lang === 'vi' ? 'Agent bắt đầu <b>lượt #2</b> để xử lý phản hồi' : 'Agent started <b>run #2</b> to address the feedback');
       renderAll(); setTab('run');
-      const lines = [{ c: 't-dim', t: '', d: 300 }, { c: 't-cmd', t: '$ HOME=' + HOME + ' claude --resume run-0187 -p "Apply review feedback"', d: 400 }, { c: 't-info', t: '● Feedback received from you', d: 350 }]
+      const lines = [{ c: 't-dim', t: '', d: 300 }, { c: 't-cmd', t: '$ claude --resume run-0187 -p "Apply review feedback" ' + PC.cliFlags('claude', PRJ), d: 400 }, { c: 't-info', t: '● Feedback received from you', d: 350 }]
         .concat(fb.split('\n').filter(Boolean).slice(0, 3).map(x => ({ c: 't-dim', t: '  ' + x.replace(/^[-•]\s*/, '• ').slice(0, 96), d: 200 })))
         .concat([{ c: 't-info', t: '▸ Applying changes', d: 350 }, { c: 't-warn', t: '  ~ apps/web/src/app/kyc/kyc-upload.component.ts', d: 300 }, { c: 't-ok', t: '  + apps/web/src/assets/i18n/kyc.vi.json', d: 250 }, { c: 't-warn', t: '  ~ apps/web-e2e/src/kyc-upload.spec.ts', d: 400 },
           { c: 't-cmd', t: '$ npx nx e2e web-e2e --grep @kyc', d: 900 }, { c: 't-ok', t: '  ✓ 13 passed (50.9s)', d: 400 }, { c: 't-ok', t: '✓ Run #2 complete — evidence updated, ready for human review', d: 200 }, { c: 't-dim', t: '[harness] run saved · +$0.79' }]);
@@ -1517,10 +1520,13 @@ const gCard = (title, body, o) => { o = o || {}; return `<div class="card ${o.cl
 function gMkLog(r) {
   const out = []; const add = (c, t, d, step, fin) => out.push({ c, t, d: d || 70, step, fin: !!fin });
   const agentId = r.agent === 'codex' ? 'codex' : 'claude';
-  const home = PC.projectHome(agentId, GP);
-  add('t-cmd', '$ HOME=' + home + ' ' + (agentId === 'codex' ? 'codex exec' : 'claude -p') + ' @.procheck\\plan-' + r.id + '.md \\', 160, -1);
-  add('t-cmd', '    --model ' + r.model + ' --permission-mode acceptEdits --output-format stream-json', 280, -1);
-  add('t-dim', '[harness] isolated HOME   ' + home, 70, -1);
+  const home = PC.projectCli(agentId, GP);
+  add('t-cmd', '$ cd ' + gWt(r.id), 120, -1);
+  add('t-cmd', '$ ' + (agentId === 'codex' ? 'codex exec' : 'claude -p') + ' @.procheck\\plan-' + r.id + '.md \\', 160, -1);
+  add('t-cmd', '    --model ' + r.model + ' --permission-mode acceptEdits --output-format stream-json \\', 70, -1);
+  add('t-cmd', '    ' + PC.cliFlags(agentId, GP), 280, -1);
+  add('t-dim', '[harness] sign-in         shared · your ' + (agentId === 'codex' ? 'Codex' : 'Claude Code') + ' login (HOME unchanged)', 70, -1);
+  add('t-dim', '[harness] profile         ' + home + '  (global CLI config ignored)', 70, -1);
   add('t-dim', '[harness] worktree        ' + gWt(r.id) + '  (' + r.branch + ')', 70, -1);
   add('t-dim', '[harness] run log         ' + gRd(r.id), 280, -1);
   (r.preLog || []).forEach(l => add(l[0], l[1], l[2], -1));
@@ -1719,7 +1725,7 @@ function gVerify(r) {
 
 /* ===================================================== agent run tab + terminal */
 function gRunTab(r) {
-  const live = gLive(r), agentId = r.agent === 'codex' ? 'codex' : 'claude', home = PC.projectHome(agentId, GP);
+  const live = gLive(r), agentId = r.agent === 'codex' ? 'codex' : 'claude', home = PC.projectCli(agentId, GP);
   const sess = gRd(r.id) + 'run-' + r.sess + '.jsonl', cli = agentId === 'codex' ? ['Codex CLI', '0.48.0'] : ['Claude Code', '2.4.1'];
   const st = gStatusOf(r);
   return `<div class="card"><div class="card-header"><span class="tk-h">${T('task.rn.title')}</span><span class="badge ${live ? 'badge-teal' : st === 'failed' ? 'badge-danger' : 'badge-success'}">${live ? '<span class="dot dot-pulse" style="width:6px;height:6px"></span>' : `<i data-lucide="${st === 'failed' ? 'x' : 'check'}"></i>`}${T('task.rn.run', { n: r.runNo || 1 })}</span></div>
@@ -1885,8 +1891,8 @@ function gRerun(r, fb, kind) {
   r.steps.forEach(s => { if (s.st === 'failed') { s.st = 'pending'; s.d = ll('Re-running after your guidance', 'Chạy lại sau hướng dẫn của bạn'); } });
   const n = r.steps.length + 1;
   r.steps.push({ n: ll('Apply your ' + (kind === 'retry' ? 'guidance' : 'feedback'), 'Áp dụng ' + (kind === 'retry' ? 'hướng dẫn' : 'phản hồi') + ' của bạn'), d: '', t: '…', st: 'running' });
-  const home = PC.projectHome(r.agent === 'codex' ? 'codex' : 'claude', GP);
-  const lines = [{ c: 't-dim', t: '', d: 300, step: -1 }, { c: 't-cmd', t: '$ HOME=' + home + ' claude --resume run-' + r.sess + ' -p "Apply ' + (kind === 'retry' ? 'guidance and retry' : 'review feedback') + '"', d: 400, step: -1 }, { c: 't-info', t: '● ' + (kind === 'retry' ? 'Guidance' : 'Feedback') + ' received from you', d: 350, step: -1 }]
+  const rAgent = r.agent === 'codex' ? 'codex' : 'claude';
+  const lines = [{ c: 't-dim', t: '', d: 300, step: -1 }, { c: 't-cmd', t: '$ claude --resume run-' + r.sess + ' -p "Apply ' + (kind === 'retry' ? 'guidance and retry' : 'review feedback') + '" ' + PC.cliFlags(rAgent, GP), d: 400, step: -1 }, { c: 't-info', t: '● ' + (kind === 'retry' ? 'Guidance' : 'Feedback') + ' received from you', d: 350, step: -1 }]
     .concat(fb.split('\n').filter(Boolean).slice(0, 3).map(x => ({ c: 't-dim', t: '  ' + x.replace(/^[-•]\s*/, '• ').slice(0, 100), d: 200, step: -1 })))
     .concat([{ c: 't-info', t: '▸ Step ' + n + '/' + n + '  Applying your ' + (kind === 'retry' ? 'guidance' : 'feedback'), d: 350, step: 8 }])
     .concat(rf.map(f => ({ c: f[0] === 'A' ? 't-ok' : 't-warn', t: '  ' + (f[0] === 'A' ? '+ ' : '~ ') + f[1], d: 320, step: 8 })))

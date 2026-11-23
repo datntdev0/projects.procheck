@@ -438,9 +438,9 @@
         'np.dir.h': 'Procheck creates this folder if needed and keeps all project data inside it. Suggested from the project name — edit freely.',
         'np.dir.err.empty': 'Choose a project directory.', 'np.dir.err.bad': 'Enter a full path, for example D:\\Projects\\my-project.', 'np.dir.picked': 'Folder selected',
         'np.tree.title': 'What Procheck will create', 'np.tree.sub': 'inside your project directory', 'np.tree.new': 'New',
-        'np.tree.note': 'Application-level data — settings, CLI sign-ins, logs and cache — stays in <code>%LOCALAPPDATA%\\Procheck</code> and is never written into your project.',
+        'np.tree.note': 'Application-level data — settings, CLI registrations, logs and cache — stays in <code>%LOCALAPPDATA%\\Procheck</code> and is never written into your project.',
         'np.t.0': 'Project manifest: name, client, phase, linked repo', 'np.t.1': 'Uploaded documents (inputs)', 'np.t.2': 'Generated & edited artifacts with versions', 'np.t.3': 'Tasks, plans, review evidence',
-        'np.t.4': 'Assistant chat history', 'np.t.5': 'Agent run logs & evidence', 'np.t.6': 'Isolated HOME for each CLI tool', 'np.t.7': 'Git worktrees created by agents', 'np.t.8': 'Project-level overrides (CLI, model, harness)',
+        'np.t.4': 'Assistant chat history', 'np.t.5': 'Agent run logs & evidence', 'np.t.6': 'CLI profile per tool: settings, MCP, instructions', 'np.t.7': 'Git worktrees created by agents', 'np.t.8': 'Project-level overrides (CLI, model, harness)',
         'np.phase.initial.t': 'Initial phase', 'np.phase.initial.d': 'Start with discovery. Upload existing documents; the Assistant consults the initial-phase process and the AI drafts meeting notes, BRD, scope, estimates and SOW.',
         'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Design the architecture and bootstrap the product. Link a repository and AI builds the scaffolding, repo structure, infra and pipelines.',
         'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Run delivery on a Kanban board. Pick a task and plan the solution; the agent works in a git worktree, self-verifies end to end, and you review before a PR.',
@@ -461,14 +461,14 @@
         'np.repo.hint.req': 'Required for Scaffolding and SDLC. The agent works in git worktrees of this repository.',
         'np.repo.err': 'Connect a local repository to start from this phase.',
         'np.repo.ok': 'Git repository detected · branch main · clean working tree', 'np.repo.picked': 'Folder selected',
-        'np.ai.cli': 'CLI tool', 'np.ai.model': 'Model', 'np.ai.default': 'Default', 'np.ai.version': 'v{v}',
-        'np.ai.home.t': 'Isolated HOME directory',
-        'np.ai.home.d': 'Each CLI runs with its own HOME so credentials, config and history never leak between projects. Location: <code>&lt;project dir&gt;\\.procheck\\home\\&lt;cli&gt;</code>',
+        'np.ai.cli': 'CLI tool', 'np.ai.signed': 'Signed in · shared', 'np.ai.model': 'Model', 'np.ai.default': 'Default', 'np.ai.version': 'v{v}',
+        'np.ai.home.t': 'Shared sign-in, project-only context',
+        'np.ai.home.d': 'No new sign-in needed: the CLI keeps using the login you already have. Procheck runs it in the project directory with this project’s profile (settings, MCP servers, instructions), so context and sessions never mix between projects. Profile: <code>&lt;project dir&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
         'np.tg.history': 'Save chat history', 'np.tg.history.d': 'Keep Assistant conversations per project so you can resume them later.',
         'np.tg.worktree': 'Allow agent to create worktrees', 'np.tg.worktree.d': 'The agent implements each task in an isolated git worktree, never in your working copy.',
         'np.tg.approval': 'Require human approval before PR', 'np.tg.approval.d': 'Agents stop at review. Only you can promote changes to a pull request.',
         'np.rev.title': 'Review summary', 'np.rev.ready': 'Ready to create',
-        'np.rev.folder': 'Project directory', 'np.rev.registry': 'Registered in', 'np.rev.home': 'Isolated HOME', 'np.rev.docs': 'Documents to index', 'np.rev.assistant': 'Assistant', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Safeguards',
+        'np.rev.folder': 'Project directory', 'np.rev.registry': 'Registered in', 'np.rev.home': 'CLI profile', 'np.rev.docs': 'Documents to index', 'np.rev.assistant': 'Assistant', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Safeguards',
         'np.rev.docs.v': '{n} documents', 'np.rev.assistant.v': '{cli} · {model} · {phase} process',
         'np.rev.safety.v': '{a}', 'np.on': 'on', 'np.off': 'off',
         'np.rev.hist': 'chat history saved', 'np.rev.nohist': 'chat history off', 'np.rev.wt': 'worktrees allowed', 'np.rev.nowt': 'no worktrees', 'np.rev.appr': 'approval before PR', 'np.rev.noappr': 'no PR approval gate',
@@ -480,7 +480,7 @@
         'np.tip.3': 'Tip: an existing repository lets the agent read your conventions before it scaffolds or implements anything.',
         'np.tip.4': 'Tip: you can switch CLI tool or model per task later, in Project settings.',
         'np.back': 'Back', 'np.next': 'Next', 'np.create': 'Create project', 'np.step.of': 'Step {a} of {b}',
-        'np.create.title': 'Creating project…', 'np.create.s1': 'Create project directory structure', 'np.create.s2': 'Write procheck.json', 'np.create.s3': 'Register in %LOCALAPPDATA%\\Procheck\\projects.json', 'np.create.s4': 'Prepare isolated HOME', 'np.create.s5': 'Index sources',
+        'np.create.title': 'Creating project…', 'np.create.s1': 'Create project directory structure', 'np.create.s2': 'Write procheck.json', 'np.create.s3': 'Register in %LOCALAPPDATA%\\Procheck\\projects.json', 'np.create.s4': 'Write project CLI profile', 'np.create.s5': 'Index sources',
         'np.create.done': 'Project ready. Opening…', 'np.create.toast': 'Project created',
         'np.open.title': 'Open project folder', 'np.open.h1': 'Open an existing project',
         'np.open.sub': 'Pick a folder that already contains procheck.json — a project you created earlier, restored from a backup or moved to another drive.',
@@ -495,7 +495,7 @@
         'np.open.c.manifest': 'procheck.json is valid (schema v1)', 'np.open.c.dirs': '<code>sources\\</code>, <code>artifacts\\</code> and <code>board\\</code> found',
         'np.open.c.settings': 'Project overrides found in <code>.procheck\\settings.json</code>',
         'np.open.c.reg': 'Added to <code>%LOCALAPPDATA%\\Procheck\\projects.json</code> so it shows up in your project list',
-        'np.open.c.home.ok': 'Isolated HOME found in <code>.procheck\\home\\claude</code>', 'np.open.c.home.new': 'Isolated HOME will be prepared in <code>.procheck\\home\\claude</code>',
+        'np.open.c.home.ok': 'CLI profile found in <code>.procheck\\cli\\claude</code> · uses your existing sign-in', 'np.open.c.home.new': 'CLI profile will be written to <code>.procheck\\cli\\claude</code> · uses your existing sign-in',
         'np.open.btn': 'Open project', 'np.open.create': 'Create a new project instead',
         'np.upd.min': '12 min ago', 'np.upd.h': '2 h ago',
         'np.as.s1': 'Which phase should I start from?', 'np.as.s2': 'Suggest a project code', 'np.as.s3': 'Draft a description from my notes',
@@ -519,9 +519,9 @@
         'np.dir.h': 'Procheck tạo thư mục này nếu chưa có và lưu toàn bộ dữ liệu dự án bên trong. Gợi ý theo tên dự án — bạn có thể sửa tuỳ ý.',
         'np.dir.err.empty': 'Hãy chọn thư mục dự án.', 'np.dir.err.bad': 'Nhập đường dẫn đầy đủ, ví dụ D:\\Projects\\du-an-cua-toi.', 'np.dir.picked': 'Đã chọn thư mục',
         'np.tree.title': 'Procheck sẽ tạo những gì', 'np.tree.sub': 'bên trong thư mục dự án', 'np.tree.new': 'Mới',
-        'np.tree.note': 'Dữ liệu cấp ứng dụng — cài đặt, đăng nhập CLI, log và cache — vẫn nằm ở <code>%LOCALAPPDATA%\\Procheck</code> và không bao giờ được ghi vào dự án của bạn.',
+        'np.tree.note': 'Dữ liệu cấp ứng dụng — cài đặt, đăng ký CLI, log và cache — vẫn nằm ở <code>%LOCALAPPDATA%\\Procheck</code> và không bao giờ được ghi vào dự án của bạn.',
         'np.t.0': 'Tệp mô tả dự án: tên, khách hàng, giai đoạn, repo liên kết', 'np.t.1': 'Tài liệu tải lên (đầu vào)', 'np.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'np.t.3': 'Task, kế hoạch, bằng chứng review',
-        'np.t.4': 'Lịch sử chat với Trợ lý', 'np.t.5': 'Log và bằng chứng các lượt chạy agent', 'np.t.6': 'HOME cô lập cho từng công cụ CLI', 'np.t.7': 'Git worktree do agent tạo', 'np.t.8': 'Ghi đè ở cấp dự án (CLI, model, harness)',
+        'np.t.4': 'Lịch sử chat với Trợ lý', 'np.t.5': 'Log và bằng chứng các lượt chạy agent', 'np.t.6': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'np.t.7': 'Git worktree do agent tạo', 'np.t.8': 'Ghi đè ở cấp dự án (CLI, model, harness)',
         'np.phase.initial.t': 'Giai đoạn khởi tạo', 'np.phase.initial.d': 'Bắt đầu từ khảo sát. Tải lên tài liệu có sẵn; Trợ lý tư vấn theo quy trình khởi tạo và AI soạn biên bản họp, BRD, phạm vi, ước lượng và SOW.',
         'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Thiết kế kiến trúc và dựng nền tảng sản phẩm. Liên kết repository để AI tạo scaffolding, cấu trúc repo, hạ tầng và pipeline.',
         'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Vận hành phát triển trên bảng Kanban. Chọn task và lên giải pháp; agent làm việc trong git worktree, tự kiểm thử end-to-end và bạn review trước khi tạo PR.',
@@ -542,14 +542,14 @@
         'np.repo.hint.req': 'Bắt buộc với Scaffolding và SDLC. Agent làm việc trong các git worktree của repository này.',
         'np.repo.err': 'Hãy kết nối repository cục bộ để bắt đầu từ giai đoạn này.',
         'np.repo.ok': 'Đã nhận diện git repository · nhánh main · working tree sạch', 'np.repo.picked': 'Đã chọn thư mục',
-        'np.ai.cli': 'Công cụ CLI', 'np.ai.model': 'Mô hình', 'np.ai.default': 'Mặc định', 'np.ai.version': 'v{v}',
-        'np.ai.home.t': 'Thư mục HOME cô lập',
-        'np.ai.home.d': 'Mỗi CLI chạy với HOME riêng nên thông tin xác thực, cấu hình và lịch sử không bị lẫn giữa các dự án. Vị trí: <code>&lt;thư mục dự án&gt;\\.procheck\\home\\&lt;cli&gt;</code>',
+        'np.ai.cli': 'Công cụ CLI', 'np.ai.signed': 'Đã đăng nhập · dùng chung', 'np.ai.model': 'Mô hình', 'np.ai.default': 'Mặc định', 'np.ai.version': 'v{v}',
+        'np.ai.home.t': 'Đăng nhập dùng chung, ngữ cảnh riêng dự án',
+        'np.ai.home.d': 'Không cần đăng nhập lại: CLI tiếp tục dùng phiên đăng nhập bạn đang có. Procheck chạy CLI trong thư mục dự án với profile của dự án (settings, MCP server, chỉ dẫn), nên ngữ cảnh và phiên làm việc không lẫn giữa các dự án. Profile: <code>&lt;thư mục dự án&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
         'np.tg.history': 'Lưu lịch sử chat', 'np.tg.history.d': 'Giữ các cuộc trò chuyện với Trợ lý theo từng dự án để tiếp tục về sau.',
         'np.tg.worktree': 'Cho phép agent tạo worktree', 'np.tg.worktree.d': 'Agent thực hiện mỗi task trong một git worktree riêng, không đụng vào bản làm việc của bạn.',
         'np.tg.approval': 'Yêu cầu người duyệt trước khi tạo PR', 'np.tg.approval.d': 'Agent dừng ở bước review. Chỉ bạn mới có thể đẩy thay đổi lên pull request.',
         'np.rev.title': 'Tóm tắt xem lại', 'np.rev.ready': 'Sẵn sàng tạo',
-        'np.rev.folder': 'Thư mục dự án', 'np.rev.registry': 'Đăng ký tại', 'np.rev.home': 'HOME cô lập', 'np.rev.docs': 'Tài liệu sẽ lập chỉ mục', 'np.rev.assistant': 'Trợ lý', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Biện pháp an toàn',
+        'np.rev.folder': 'Thư mục dự án', 'np.rev.registry': 'Đăng ký tại', 'np.rev.home': 'CLI profile', 'np.rev.docs': 'Tài liệu sẽ lập chỉ mục', 'np.rev.assistant': 'Trợ lý', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Biện pháp an toàn',
         'np.rev.docs.v': '{n} tài liệu', 'np.rev.assistant.v': '{cli} · {model} · quy trình {phase}',
         'np.rev.safety.v': '{a}', 'np.on': 'bật', 'np.off': 'tắt',
         'np.rev.hist': 'lưu lịch sử chat', 'np.rev.nohist': 'tắt lịch sử chat', 'np.rev.wt': 'cho phép worktree', 'np.rev.nowt': 'không dùng worktree', 'np.rev.appr': 'duyệt trước khi tạo PR', 'np.rev.noappr': 'không cần duyệt PR',
@@ -561,7 +561,7 @@
         'np.tip.3': 'Mẹo: có repository sẵn giúp agent đọc quy ước của bạn trước khi tạo scaffolding hay triển khai.',
         'np.tip.4': 'Mẹo: sau này bạn có thể đổi công cụ CLI hoặc mô hình cho từng task trong Cài đặt dự án.',
         'np.back': 'Quay lại', 'np.next': 'Tiếp theo', 'np.create': 'Tạo dự án', 'np.step.of': 'Bước {a}/{b}',
-        'np.create.title': 'Đang tạo dự án…', 'np.create.s1': 'Tạo cấu trúc thư mục dự án', 'np.create.s2': 'Ghi procheck.json', 'np.create.s3': 'Đăng ký vào %LOCALAPPDATA%\\Procheck\\projects.json', 'np.create.s4': 'Chuẩn bị HOME cô lập', 'np.create.s5': 'Lập chỉ mục nguồn',
+        'np.create.title': 'Đang tạo dự án…', 'np.create.s1': 'Tạo cấu trúc thư mục dự án', 'np.create.s2': 'Ghi procheck.json', 'np.create.s3': 'Đăng ký vào %LOCALAPPDATA%\\Procheck\\projects.json', 'np.create.s4': 'Ghi CLI profile của dự án', 'np.create.s5': 'Lập chỉ mục nguồn',
         'np.create.done': 'Dự án đã sẵn sàng. Đang mở…', 'np.create.toast': 'Đã tạo dự án',
         'np.open.title': 'Mở thư mục dự án', 'np.open.h1': 'Mở dự án có sẵn',
         'np.open.sub': 'Chọn thư mục đã có procheck.json — dự án bạn tạo trước đó, khôi phục từ bản sao lưu hoặc đã chuyển sang ổ đĩa khác.',
@@ -576,7 +576,7 @@
         'np.open.c.manifest': 'procheck.json hợp lệ (schema v1)', 'np.open.c.dirs': 'Có <code>sources\\</code>, <code>artifacts\\</code> và <code>board\\</code>',
         'np.open.c.settings': 'Có ghi đè cấp dự án trong <code>.procheck\\settings.json</code>',
         'np.open.c.reg': 'Được thêm vào <code>%LOCALAPPDATA%\\Procheck\\projects.json</code> để hiện trong danh sách dự án',
-        'np.open.c.home.ok': 'Đã có HOME cô lập trong <code>.procheck\\home\\claude</code>', 'np.open.c.home.new': 'HOME cô lập sẽ được chuẩn bị trong <code>.procheck\\home\\claude</code>',
+        'np.open.c.home.ok': 'Đã có CLI profile trong <code>.procheck\\cli\\claude</code> · dùng phiên đăng nhập sẵn có', 'np.open.c.home.new': 'CLI profile sẽ được ghi vào <code>.procheck\\cli\\claude</code> · dùng phiên đăng nhập sẵn có',
         'np.open.btn': 'Mở dự án', 'np.open.create': 'Tạo dự án mới',
         'np.upd.min': '12 phút trước', 'np.upd.h': '2 giờ trước',
         'np.as.s1': 'Nên bắt đầu từ giai đoạn nào?', 'np.as.s2': 'Gợi ý mã dự án', 'np.as.s3': 'Soạn mô tả từ ghi chú của tôi',
@@ -632,7 +632,7 @@
       const cliObj = () => D.cli.find(c => c.id === S.cli) || D.cli[0];
       const defaultDir = () => 'D:\\Projects\\' + slug();
       const dirPath = () => S.dir.trim().replace(/[\\/]+$/, '') || defaultDir();
-      const homeRoot = () => dirPath() + '\\.procheck\\home';
+      const homeRoot = () => dirPath() + '\\.procheck\\cli';   // project CLI profiles (no credentials)
       const repoInside = () => dirPath() + '\\repo';
       const REGISTRY = '%LOCALAPPDATA%\\Procheck\\projects.json';
 
@@ -698,7 +698,7 @@
           <span class="tick"><i data-lucide="check"></i></span>
           <div class="cli-top"><span class="cli-logo"><i data-lucide="${CLI_ICON[c.id] || 'terminal'}" class="icon-lg"></i></span>
             <div><h4 style="font-size:var(--text-md)">${PC.esc(c.name)}</h4><div class="row gap-2 text-xs text-subtle"><span class="dot dot-success"></span><span>${PC.t('cli.connected')}</span><span>·</span><span>${PC.t('np.ai.version', { v: c.version })}</span></div></div></div>
-          <div class="cli-meta"><span>${PC.t('np.ai.model')}: <code>${PC.esc(c.model)}</code></span><span>HOME: <code>${PC.esc(homeRoot() + '\\' + c.id)}</code></span></div>
+          <div class="cli-meta"><span>${PC.t('np.ai.model')}: <code>${PC.esc(c.model)}</code></span><span>${PC.t('np.ai.signed')}</span></div>
         </div>`).join('');
         PC.refresh($('clis'));
       }
@@ -707,7 +707,7 @@
         if (!list.includes(S.model)) S.model = cliObj().model;
         $('model').innerHTML = list.map((m, i) => `<option value="${m}" ${m === S.model ? 'selected' : ''}>${m}${m === cliObj().model ? ' · ' + PC.t('np.ai.default') : ''}</option>`).join('');
       }
-      function renderHome() { $('home-code').textContent = `HOME=${homeRoot()}\\${S.cli}`; }
+      function renderHome() { $('home-code').textContent = `cd ${dirPath()}\n${S.cli === 'codex' ? 'codex' : 'claude'} ${PC.cliFlags(S.cli, { dir: dirPath() }).split(' --').join(' \\\n    --')}`; }
 
       function renderReview() {
         const c = cliObj(), ready = S.files.length;

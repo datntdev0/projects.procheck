@@ -10,7 +10,6 @@
   <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
     .canvas { container-type: inline-size; scroll-behavior: smooth; }
-    html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { scroll-behavior: auto !important; }
     code { font-size: .92em; background: var(--code-bg); padding: 1px 6px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); font-family: var(--font-mono); }
 
     /* ---------- Header ---------- */
@@ -41,7 +40,7 @@
     .sec-head h2 { font-size: var(--text-xl); font-weight: var(--weight-semibold); letter-spacing: -0.01em; }
     .sec-head p { margin: 4px 0 0; color: var(--fg-muted); font-size: var(--text-sm); max-width: 640px; }
 
-    .srow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
+    .srow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); padding: 9px 20px; border-bottom: 1px solid var(--border-subtle); }
     .srow:last-child { border-bottom: 0; }
     .srow.stack { flex-direction: column; align-items: stretch; gap: var(--space-3); }
     .sinfo { min-width: 0; }
@@ -59,7 +58,6 @@
     .ro.wide { width: 100%; }
     input[type="range"] { accent-color: var(--brand); width: 180px; }
     .range-val { min-width: 24px; text-align: right; font-weight: var(--weight-semibold); color: var(--fg-strong); font-variant-numeric: tabular-nums; }
-    html[data-density="compact"] .srow { padding: 9px 20px; }
 
     /* radio cards */
     .opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); padding: var(--space-4) 20px; }
@@ -95,6 +93,16 @@
     /* isolation */
     .home-row { display: flex; align-items: center; gap: var(--space-3); padding: 14px 20px; border-bottom: 1px solid var(--border-subtle); }
     .home-row:last-of-type { border-bottom: 0; }
+    .iso-layers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
+    .iso-layer { padding: 14px 16px; border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); display: flex; flex-direction: column; gap: 6px; }
+    .iso-layer .h { display: flex; align-items: center; gap: 8px; font-size: var(--text-sm); font-weight: 600; color: var(--fg-strong); }
+    .iso-layer .h svg { width: 16px; height: 16px; color: var(--brand-fg); }
+    .iso-layer .h .badge { margin-left: auto; }
+    .iso-layer p { font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.55; margin: 0; }
+    .prof-files { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .prof-files code { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); color: var(--fg-muted); }
+    .signin { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 2px; }
+    @media (max-width: 760px) { .iso-layers { grid-template-columns: 1fr; } }
     .cli-logo { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface-3); color: var(--fg-default); flex-shrink: 0; }
     .chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .chip { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 4px 0 10px; border-radius: var(--radius-sm); background: var(--bg-surface-2); border: 1px solid var(--border-default); font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-default); }
@@ -225,9 +233,19 @@
         <!-- Isolation -->
         <section class="sec" id="isolation" data-sec="isolation">
           <div class="sec-head"><h2 data-i18n="ps.n.isolation"></h2><p data-i18n="ps.iso.d"></p></div>
+          <div class="iso-layers">
+            <div class="iso-layer"><div class="h"><i data-lucide="key-round"></i><span data-i18n="ps.iso.l1"></span><span class="badge badge-outline" data-i18n="ps.iso.shared"></span></div><p data-i18n-html="ps.iso.l1.d"></p></div>
+            <div class="iso-layer"><div class="h"><i data-lucide="folder-lock"></i><span data-i18n="ps.iso.l2"></span><span class="badge badge-success" data-i18n="ps.iso.per"></span></div><p data-i18n-html="ps.iso.l2.d"></p></div>
+            <div class="iso-layer"><div class="h"><i data-lucide="history"></i><span data-i18n="ps.iso.l3"></span><span class="badge badge-success" data-i18n="ps.iso.per"></span></div><p data-i18n-html="ps.iso.l3.d"></p></div>
+          </div>
           <div class="card" style="overflow:hidden">
             <div id="homes"></div>
-            <div class="note-row"><i data-lucide="shield-check" class="icon-sm"></i><span data-i18n-html="ps.iso.note"></span></div>
+            <div class="note-row"><i data-lucide="key-round" class="icon-sm"></i><span data-i18n-html="ps.iso.note"></span></div>
+          </div>
+          <div class="card" style="margin-top:var(--space-4)">
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.iso.global"></div><div class="sdesc" data-i18n-html="ps.iso.global.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" id="iso-global" checked></label></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.iso.fs"></div><div class="sdesc" data-i18n-html="ps.iso.fs.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" id="iso-fs" checked></label></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.iso.sess"></div><div class="sdesc" data-i18n-html="ps.iso.sess.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked disabled></label></div></div>
           </div>
           <div class="card" style="margin-top:var(--space-4)">
             <div class="srow stack"><div class="sinfo"><div class="slabel" data-i18n="ps.env"></div><div class="sdesc" data-i18n="ps.env.d"></div></div>
@@ -324,10 +342,19 @@
         'ps.ai.use': 'Use app default', 'ps.ai.default': 'Claude Code · claude-opus-5-5', 'ps.ai.over': 'Override for this project', 'ps.ai.over.d': 'Pick a different CLI tool or model. Saved only in this project’s settings.json.',
         'ps.ai.cli': 'CLI tool', 'ps.ai.model': 'Model',
         'ps.prompts': 'System prompt templates per phase', 'ps.prompts.h': 'Use <code>{project}</code>, <code>{client}</code> and <code>{phase}</code> as placeholders.', 'ps.prompt.reset': 'Template reset',
-        'ps.iso.d': 'Each CLI tool runs with its own HOME inside the project, so credentials, config and history never leak between projects.',
-        'ps.iso.note': 'The CLI is authenticated once in the app (<code>%LOCALAPPDATA%\\Procheck\\cli\\</code>); Procheck copies only what is needed into the isolated HOME.',
-        'ps.home.ready': 'Ready', 'ps.home.reset': 'Reset HOME', 'ps.home.reset.t': 'Reset isolated HOME?', 'ps.home.reset.d': 'Deletes <code>{p}</code> and recreates it empty. Chat history and artifacts are not affected.', 'ps.home.done': 'HOME reset',
-        'ps.env': 'Environment variable allowlist', 'ps.env.d': 'Only these variables are passed from your system into the CLI. Everything else is dropped.', 'ps.env.prev': 'Resolved environment for', 'ps.env.inh': 'inherited', 'ps.env.nopass': 'not passed',
+        'ps.iso.d': 'Sign in to each CLI once and every project reuses it. What is isolated per project is the context the CLI sees: working directory, profile, instructions, tools and sessions.',
+        'ps.iso.l1': 'Sign-in', 'ps.iso.l1.d': 'The CLI’s own sign-in (<code>claude login</code>, <code>codex login</code>). Procheck never changes <code>HOME</code>, so you never sign in again per project.',
+        'ps.iso.l2': 'Context', 'ps.iso.l2.d': 'Working directory, settings, MCP servers and instructions come from this project’s CLI profile — nothing from other projects.',
+        'ps.iso.l3': 'Sessions', 'ps.iso.l3.d': 'Chats and agent runs only resume CLI sessions recorded in this project (<code>.procheck\\chats</code>, <code>.procheck\\runs</code>).',
+        'ps.iso.shared': 'Shared', 'ps.iso.per': 'Per project',
+        'ps.iso.note': 'Sign-in belongs to the CLI and is shown in App settings. Signing in or out there applies to every project. The project profile holds no credentials, so it is safe to keep next to the project.',
+        'ps.prof.signed': 'Signed in · shared', 'ps.prof.sub': 'Subscription', 'ps.prof.key': 'API key',
+        'ps.home.ready': 'Ready', 'ps.home.reset': 'Reset profile', 'ps.home.reset.t': 'Reset CLI profile?', 'ps.home.reset.d': 'Regenerates <code>{p}</code> from the app defaults and this project’s settings. Your CLI sign-in, chat history and artifacts are not affected.', 'ps.home.done': 'CLI profile regenerated',
+        'ps.iso.global': 'Ignore my global CLI config', 'ps.iso.global.d': 'Your personal <code>CLAUDE.md</code> / <code>AGENTS.md</code>, memory, MCP servers and plugins are not loaded. Only this project’s profile applies.',
+        'ps.iso.fs': 'Limit file access to the project', 'ps.iso.fs.d': 'The CLI can only read and write the project directory, the linked repository and agent worktrees.',
+        'ps.iso.sess': 'Project-scoped sessions', 'ps.iso.sess.d': 'Always on. <code>--resume</code> only offers session ids saved in this project.',
+        'ps.env': 'Environment variable allowlist', 'ps.env.d': 'Only these variables are passed from your system into the CLI, plus what the CLI needs to find its sign-in. Everything else is dropped.', 'ps.env.prev': 'Resolved launch for', 'ps.env.inh': 'inherited', 'ps.env.nopass': 'not passed', 'ps.env.signin': 'inherited · shared sign-in',
+        'ps.env.c.cwd': 'working directory', 'ps.env.c.cmd': 'command', 'ps.env.c.env': 'environment',
         'ps.harness.d': 'How agents implement tasks in this project. Overrides the app defaults.',
         'ps.h.par': 'Max parallel worktrees', 'ps.h.par.d': 'How many agents can work at the same time.',
         'ps.h.root': 'Worktree root', 'ps.h.root.d': 'Relative to the project directory. Resolves to', 'ps.h.e2e': 'e2e command', 'ps.h.e2e.d': 'Run by the agent in the worktree to verify its work.',
@@ -336,7 +363,7 @@
         'ps.export.d': 'Defaults when you export artifacts from this project.', 'ps.fmt.docx': 'Editable, best for sharing with clients.', 'ps.fmt.pdf': 'Fixed layout for sign-off and archiving.', 'ps.fmt.md': 'Plain text that lives well in git.',
         'ps.ex.dest': 'Export folder', 'ps.ex.dest.d': 'Where exported files are written.', 'ps.ex.cover': 'Include cover page', 'ps.ex.cover.d': 'Add project name, client and version on the first page.', 'ps.ex.ver': 'Add version to file name', 'ps.ex.ver.d': 'e.g. Merchant-BRD-v3.docx',
         'ps.storage.d': 'What this project currently stores in its directory.', 'ps.st.in': 'in',
-        'ps.t.0': 'Project manifest', 'ps.t.1': 'Uploaded documents (inputs)', 'ps.t.2': 'Generated & edited artifacts with versions', 'ps.t.3': 'Tasks, plans, review evidence', 'ps.t.4': 'Assistant chat history', 'ps.t.5': 'Agent run logs & evidence', 'ps.t.6': 'Isolated HOME for each CLI tool', 'ps.t.7': 'Git worktrees created by agents', 'ps.t.8': 'Project-level overrides',
+        'ps.t.0': 'Project manifest', 'ps.t.1': 'Uploaded documents (inputs)', 'ps.t.2': 'Generated & edited artifacts with versions', 'ps.t.3': 'Tasks, plans, review evidence', 'ps.t.4': 'Assistant chat history', 'ps.t.5': 'Agent run logs & evidence', 'ps.t.6': 'CLI profile per tool: settings, MCP, instructions', 'ps.t.7': 'Git worktrees created by agents', 'ps.t.8': 'Project-level overrides',
         'ps.st.chat': 'Chat history', 'ps.st.chat.d': 'Assistant conversations saved in .procheck\\chats.', 'ps.st.chat.clear': 'Clear history', 'ps.st.chat.t': 'Clear all chat history?', 'ps.st.chat.td': 'Deletes every saved Assistant conversation for this project. Artifacts are not affected.', 'ps.st.chat.done': 'Chat history cleared',
         'ps.st.runs': 'Agent run logs', 'ps.st.runs.d': 'Free space by deleting old run logs and evidence from .procheck\\runs.', 'ps.st.older': 'Older than', 'ps.st.days': 'days', 'ps.st.runs.clear': 'Clear logs', 'ps.st.runs.done': 'Cleared run logs older than {n} days · freed 96 MB',
         'ps.danger.d': 'These actions affect how the project is registered or stored on disk.',
@@ -369,9 +396,18 @@
         'ps.ai.use': 'Dùng mặc định của ứng dụng', 'ps.ai.default': 'Claude Code · claude-opus-5-5', 'ps.ai.over': 'Ghi đè cho dự án này', 'ps.ai.over.d': 'Chọn công cụ CLI hoặc model khác. Chỉ lưu trong settings.json của dự án.',
         'ps.ai.cli': 'Công cụ CLI', 'ps.ai.model': 'Model',
         'ps.prompts': 'Mẫu system prompt theo giai đoạn', 'ps.prompts.h': 'Dùng <code>{project}</code>, <code>{client}</code> và <code>{phase}</code> làm biến thay thế.', 'ps.prompt.reset': 'Đã đặt lại mẫu',
-        'ps.iso.d': 'Mỗi công cụ CLI chạy với HOME riêng trong dự án, nên thông tin xác thực, cấu hình và lịch sử không bị lẫn giữa các dự án.',
-        'ps.iso.note': 'CLI được xác thực một lần trong ứng dụng (<code>%LOCALAPPDATA%\\Procheck\\cli\\</code>); Procheck chỉ sao chép phần cần thiết vào HOME cô lập.',
-        'ps.home.ready': 'Sẵn sàng', 'ps.home.reset': 'Đặt lại HOME', 'ps.home.reset.t': 'Đặt lại HOME cô lập?', 'ps.home.reset.d': 'Xoá <code>{p}</code> và tạo lại thư mục trống. Lịch sử chat và tài liệu không bị ảnh hưởng.', 'ps.home.done': 'Đã đặt lại HOME',
+        'ps.iso.d': 'Đăng nhập mỗi CLI một lần, mọi dự án dùng chung. Phần được cô lập theo dự án là ngữ cảnh mà CLI nhìn thấy: thư mục làm việc, profile, chỉ dẫn, công cụ và phiên làm việc.',
+        'ps.iso.l1': 'Đăng nhập', 'ps.iso.l1.d': 'Dùng chính phiên đăng nhập của CLI (<code>claude login</code>, <code>codex login</code>). Procheck không đổi <code>HOME</code>, nên không phải đăng nhập lại cho từng dự án.',
+        'ps.iso.l2': 'Ngữ cảnh', 'ps.iso.l2.d': 'Thư mục làm việc, settings, MCP server và chỉ dẫn lấy từ CLI profile của dự án này — không lẫn từ dự án khác.',
+        'ps.iso.l3': 'Phiên làm việc', 'ps.iso.l3.d': 'Chat và lượt chạy agent chỉ tiếp tục các phiên CLI được ghi trong dự án này (<code>.procheck\\chats</code>, <code>.procheck\\runs</code>).',
+        'ps.iso.shared': 'Dùng chung', 'ps.iso.per': 'Theo dự án',
+        'ps.iso.global': 'Bỏ qua cấu hình CLI toàn cục của tôi', 'ps.iso.global.d': '<code>CLAUDE.md</code> / <code>AGENTS.md</code> cá nhân, memory, MCP server và plugin không được nạp. Chỉ áp dụng profile của dự án.',
+        'ps.iso.fs': 'Giới hạn truy cập tệp trong dự án', 'ps.iso.fs.d': 'CLI chỉ được đọc/ghi thư mục dự án, repository liên kết và worktree của agent.',
+        'ps.iso.sess': 'Phiên làm việc theo dự án', 'ps.iso.sess.d': 'Luôn bật. <code>--resume</code> chỉ đưa ra các session id đã lưu trong dự án này.',
+        'ps.prof.signed': 'Đã đăng nhập · dùng chung', 'ps.prof.sub': 'Gói thuê bao', 'ps.prof.key': 'API key',
+        'ps.env.signin': 'kế thừa · đăng nhập dùng chung', 'ps.env.c.cwd': 'thư mục làm việc', 'ps.env.c.cmd': 'lệnh', 'ps.env.c.env': 'môi trường',
+        'ps.iso.note': 'Đăng nhập thuộc về CLI và hiển thị trong Cài đặt ứng dụng. Đăng nhập hoặc đăng xuất ở đó áp dụng cho mọi dự án. Profile của dự án không chứa thông tin xác thực nên có thể lưu cạnh dự án.',
+        'ps.home.ready': 'Sẵn sàng', 'ps.home.reset': 'Tạo lại profile', 'ps.home.reset.t': 'Tạo lại CLI profile?', 'ps.home.reset.d': 'Tạo lại <code>{p}</code> từ mặc định của ứng dụng và cài đặt dự án. Đăng nhập CLI, lịch sử chat và tài liệu không bị ảnh hưởng.', 'ps.home.done': 'Đã tạo lại CLI profile',
         'ps.env': 'Danh sách biến môi trường được phép', 'ps.env.d': 'Chỉ các biến này được chuyển từ hệ thống vào CLI. Mọi biến khác bị loại bỏ.', 'ps.env.prev': 'Môi trường sau khi áp dụng cho', 'ps.env.inh': 'kế thừa', 'ps.env.nopass': 'không chuyển',
         'ps.harness.d': 'Cách agent thực hiện task trong dự án này. Ghi đè mặc định của ứng dụng.',
         'ps.h.par': 'Số worktree song song tối đa', 'ps.h.par.d': 'Số agent có thể làm việc cùng lúc.',
@@ -381,7 +417,7 @@
         'ps.export.d': 'Mặc định khi xuất tài liệu của dự án này.', 'ps.fmt.docx': 'Chỉnh sửa được, hợp để gửi khách hàng.', 'ps.fmt.pdf': 'Bố cục cố định để ký duyệt và lưu trữ.', 'ps.fmt.md': 'Văn bản thuần, phù hợp lưu trong git.',
         'ps.ex.dest': 'Thư mục xuất', 'ps.ex.dest.d': 'Nơi ghi các tệp đã xuất.', 'ps.ex.cover': 'Thêm trang bìa', 'ps.ex.cover.d': 'Thêm tên dự án, khách hàng và phiên bản ở trang đầu.', 'ps.ex.ver': 'Thêm phiên bản vào tên tệp', 'ps.ex.ver.d': 'VD: Merchant-BRD-v3.docx',
         'ps.storage.d': 'Những gì dự án này đang lưu trong thư mục của nó.', 'ps.st.in': 'trong',
-        'ps.t.0': 'Tệp mô tả dự án', 'ps.t.1': 'Tài liệu tải lên (đầu vào)', 'ps.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ps.t.3': 'Task, kế hoạch, bằng chứng review', 'ps.t.4': 'Lịch sử chat với Trợ lý', 'ps.t.5': 'Log và bằng chứng các lượt chạy agent', 'ps.t.6': 'HOME cô lập cho từng công cụ CLI', 'ps.t.7': 'Git worktree do agent tạo', 'ps.t.8': 'Ghi đè cấp dự án',
+        'ps.t.0': 'Tệp mô tả dự án', 'ps.t.1': 'Tài liệu tải lên (đầu vào)', 'ps.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ps.t.3': 'Task, kế hoạch, bằng chứng review', 'ps.t.4': 'Lịch sử chat với Trợ lý', 'ps.t.5': 'Log và bằng chứng các lượt chạy agent', 'ps.t.6': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ps.t.7': 'Git worktree do agent tạo', 'ps.t.8': 'Ghi đè cấp dự án',
         'ps.st.chat': 'Lịch sử chat', 'ps.st.chat.d': 'Các cuộc trò chuyện với Trợ lý lưu trong .procheck\\chats.', 'ps.st.chat.clear': 'Xoá lịch sử', 'ps.st.chat.t': 'Xoá toàn bộ lịch sử chat?', 'ps.st.chat.td': 'Xoá mọi cuộc trò chuyện với Trợ lý đã lưu của dự án này. Tài liệu không bị ảnh hưởng.', 'ps.st.chat.done': 'Đã xoá lịch sử chat',
         'ps.st.runs': 'Log lượt chạy agent', 'ps.st.runs.d': 'Giải phóng dung lượng bằng cách xoá log và bằng chứng cũ trong .procheck\\runs.', 'ps.st.older': 'Cũ hơn', 'ps.st.days': 'ngày', 'ps.st.runs.clear': 'Xoá log', 'ps.st.runs.done': 'Đã xoá log cũ hơn {n} ngày · giải phóng 96 MB',
         'ps.danger.d': 'Các thao tác này ảnh hưởng đến cách dự án được đăng ký hoặc lưu trên ổ đĩa.',
@@ -406,7 +442,7 @@
         release: 'You are the architecture assistant for {project} ({client}).\nWork in the Scaffolding phase: propose the architecture, repository structure,\ninfrastructure and CI/CD pipeline, then generate the scaffold in the linked repo.\nFollow existing conventions; never overwrite files without a diff.',
         sdlc: 'You are an implementation agent on {project} ({client}).\nWork in the SDLC phase: for each task, plan the solution, implement it in an\nisolated git worktree, run the e2e command and attach evidence.\nStop at review. Never push or open a pull request without approval.'
       };
-      const S = { aiMode: 'default', promptTab: 'sdlc', prompts: Object.assign({}, PROMPTS), env: ['PATH', 'TEMP', 'TMP', 'SystemRoot', 'NODE_OPTIONS'], envCli: 'claude', phase: null, fmt: 'docx', dirty: false, chatsCleared: false };
+      const S = { aiMode: 'default', promptTab: 'sdlc', prompts: Object.assign({}, PROMPTS), env: ['PATH', 'TEMP', 'TMP', 'SystemRoot', 'NODE_OPTIONS'], envCli: 'claude', isoGlobal: true, isoFs: true, phase: null, fmt: 'docx', dirty: false, chatsCleared: false };
       const LS = { get(k, d) { try { return localStorage.getItem('pc.' + k) || d; } catch (e) { return d; } } };
       const join = (a, b) => a.replace(/\\+$/, '') + '\\' + b;
       const code = p => p.short;
@@ -461,11 +497,16 @@
         $('prompt').value = S.prompts[S.promptTab];
       }
 
+      const AUTH = { claude: 'sub', codex: 'key' };
       function renderHomes() {
         $('homes').innerHTML = D.cli.map(c => {
-          const path = PC.projectHome(c.id);
-          return `<div class="home-row"><span class="cli-logo"><i data-lucide="${CLI_ICON[c.id] || 'terminal'}"></i></span>
-            <div class="grow"><div style="font-size:var(--text-sm);font-weight:600;color:var(--fg-strong)">${PC.esc(c.name)}</div><div class="ro wide" style="margin-top:6px;height:32px"><i data-lucide="folder-lock"></i><span title="${PC.esc(path)}">${PC.esc(path)}</span></div></div>
+          const path = PC.projectCli(c.id);
+          const files = PC.cliProfileFiles(c.id).map(x => `<code>${PC.esc(x)}</code>`).join('');
+          return `<div class="home-row" style="align-items:flex-start"><span class="cli-logo"><i data-lucide="${CLI_ICON[c.id] || 'terminal'}"></i></span>
+            <div class="grow" style="min-width:0"><div style="font-size:var(--text-sm);font-weight:600;color:var(--fg-strong)">${PC.esc(c.name)}</div>
+              <div class="signin"><span class="dot dot-success"></span>${tx('ps.prof.signed')}<span>·</span>${tx(AUTH[c.id] === 'key' ? 'ps.prof.key' : 'ps.prof.sub')}</div>
+              <div class="ro wide" style="margin-top:8px;height:32px"><i data-lucide="folder-cog"></i><span title="${PC.esc(path)}">${PC.esc(path)}</span></div>
+              <div class="prof-files">${files}</div></div>
             <span class="badge badge-success"><i data-lucide="check"></i>${tx('ps.home.ready')}</span>
             <button class="btn btn-ghost btn-sm" data-act="reset-home" data-id="${c.id}"><i data-lucide="rotate-ccw"></i>${tx('ps.home.reset')}</button></div>`;
         }).join('');
@@ -474,12 +515,19 @@
       function renderEnv() {
         $('envchips').innerHTML = S.env.map(v => `<span class="chip">${PC.esc(v)}<button type="button" data-rm="${PC.esc(v)}" aria-label="remove"><i data-lucide="x" class="icon-sm"></i></button></span>`).join('');
         $('env-cli').innerHTML = D.cli.map(c => `<button class="${S.envCli === c.id ? 'is-active' : ''}" data-cli="${c.id}">${PC.esc(c.name)}</button>`).join('');
-        const home = PC.projectHome(S.envCli, P());
+        const p = P(), cli = S.envCli;
         const L = (k, v, cls) => `<span class="c-k">${k}</span>=<span class="${cls || ''}">${PC.esc(v)}</span>`;
+        const C = t => `<span class="c-d"># ${PC.esc(t)}</span>`;
+        const bin = cli === 'codex' ? 'codex' : 'claude';
+        const flags = PC.cliFlags(cli, p, { global: !S.isoGlobal }).split(' --').map((x, i) => (i ? '  --' : '') + x);
+        if (S.isoFs && p.repo) flags.push('  --add-dir ' + p.repo);
         const lines = [
-          L('HOME', home), L('USERPROFILE', home), L('APPDATA', home + '\\AppData\\Roaming'), L('LOCALAPPDATA', home + '\\AppData\\Local'),
+          C(tx('ps.env.c.cwd')), PC.esc(p.dir), '',
+          C(tx('ps.env.c.cmd')), PC.esc(bin + ' ' + flags.join(' \\\n')), '',
+          C(tx('ps.env.c.env')),
+          L('HOME', '<' + tx('ps.env.signin') + '>', 'c-ok'), L('USERPROFILE', '<' + tx('ps.env.signin') + '>', 'c-ok'), L('APPDATA', '<' + tx('ps.env.inh') + '>', 'c-d'),
           ...S.env.map(v => L(v, '<' + tx('ps.env.inh') + '>', 'c-d')),
-          L(S.envCli === 'claude' ? 'ANTHROPIC_API_KEY' : 'OPENAI_API_KEY', '<' + tx('ps.env.nopass') + '>', 'c-no')
+          L(cli === 'claude' ? 'ANTHROPIC_API_KEY' : 'OPENAI_API_KEY', '<' + tx('ps.env.nopass') + '>', 'c-no')
         ];
         $('envprev').innerHTML = lines.join('\n');
         PC.refresh($('envchips'));
@@ -541,7 +589,7 @@
           else if (act === 'remove') dlgRemove();
           else if (act === 'delete') dlgDelete();
           else if (act === 'reset-prompt') { S.prompts[S.promptTab] = PROMPTS[S.promptTab]; $('prompt').value = PROMPTS[S.promptTab]; PC.toast(tx('ps.prompt.reset')); }
-          else if (act === 'reset-home') { const c = D.cli.find(x => x.id === a.dataset.id); dlgConfirm(tx('ps.home.reset.t'), tx('ps.home.reset.d').replace('{p}', PC.esc(PC.projectHome(c.id))), tx('ps.home.reset'), 'rotate-ccw', () => PC.toast(tx('ps.home.done'), { icon: 'rotate-ccw' })); }
+          else if (act === 'reset-home') { const c = D.cli.find(x => x.id === a.dataset.id); dlgConfirm(tx('ps.home.reset.t'), tx('ps.home.reset.d').replace('{p}', PC.esc(PC.projectCli(c.id))), tx('ps.home.reset'), 'rotate-ccw', () => PC.toast(tx('ps.home.done'), { icon: 'rotate-ccw' })); }
           else if (act === 'env-add') { const v = $('env-in').value.trim().toUpperCase().replace(/[^A-Z0-9_]/g, ''); if (v && !S.env.includes(v)) { S.env.push(v); renderEnv(); setDirty(true); } $('env-in').value = ''; }
           else if (act === 'clear-chats') dlgConfirm(tx('ps.st.chat.t'), tx('ps.st.chat.td'), tx('ps.st.chat.clear'), 'trash-2', () => { S.chatsCleared = true; renderStorage(); PC.refresh($('st-tree')); PC.toast(tx('ps.st.chat.done')); });
           else if (act === 'clear-runs') PC.toast(tx('ps.st.runs.done').replace('{n}', $('runs-days').value || 30), { icon: 'eraser' });
@@ -559,6 +607,8 @@
         $('ov-cli').addEventListener('change', () => { const cli = $('ov-cli').value; $('ov-model').innerHTML = (MODELS[cli] || []).map(m => `<option>${m}</option>`).join(''); });
         $('envchips').addEventListener('click', e => { const b = e.target.closest('[data-rm]'); if (!b) return; S.env = S.env.filter(v => v !== b.dataset.rm); renderEnv(); setDirty(true); });
         $('env-cli').addEventListener('click', e => { const b = e.target.closest('[data-cli]'); if (!b) return; S.envCli = b.dataset.cli; renderEnv(); });
+        $('iso-global').addEventListener('change', e => { S.isoGlobal = e.target.checked; renderEnv(); });
+        $('iso-fs').addEventListener('change', e => { S.isoFs = e.target.checked; renderEnv(); });
         $('env-in').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); document.querySelector('[data-act="env-add"]').click(); } });
         $('par').addEventListener('input', e => { $('par-v').textContent = e.target.value; });
         $('sprint').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; document.querySelectorAll('#sprint button').forEach(x => x.classList.toggle('is-active', x === b)); setDirty(true); });
@@ -568,7 +618,6 @@
       }
 
       PC.onReady(() => {
-        document.documentElement.setAttribute('data-density', LS.get('density', 'comfortable'));
         $('branch').value = 'agent/<id>-<slug>';
         fillForm(); wire(); renderAll(); spy();
         if (location.hash) { const el = document.getElementById(location.hash.slice(1)); if (el && el.classList.contains('sec')) setTimeout(() => el.scrollIntoView(), 60); }
