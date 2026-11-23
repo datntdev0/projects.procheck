@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Artifacts · Procheck</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <script src="assets/app.js"></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ===== Artifacts — 3-pane manager. Page-only styles, semantic tokens only ===== */
+    .ar-wrap { container-type: inline-size; container-name: ar; height: 100%; }
+    .ar { height: 100%; display: grid; grid-template-columns: 276px minmax(0, 1fr); position: relative; overflow: hidden; }
+    .ar.meta-open { grid-template-columns: 276px minmax(0, 1fr) 300px; }
+    .ph-c-initial { --ph: var(--phase-initial); --ph-fg: var(--brand-fg); }
+    .ph-c-release { --ph: var(--phase-release); --ph-fg: var(--accent-purple); }
+    .ph-c-sdlc { --ph: var(--phase-sdlc); --ph-fg: var(--accent-teal-fg); }
+
+    /* ---- left list pane ---- */
+    .lp { display: flex; flex-direction: column; min-width: 0; min-height: 0; border-right: 1px solid var(--border-default); background: var(--bg-surface-2); }
+    .lp-top { padding: var(--space-3) var(--space-3) 0; display: flex; flex-direction: column; gap: var(--space-3); background: var(--bg-surface); border-bottom: 1px solid var(--border-default); }
+    .lp-actions { display: flex; gap: var(--space-2); }
+    .lp-actions .btn { flex: 1; padding: 0 var(--space-2); }
+    .lp .tabs { border-bottom: 0; gap: 0; margin: 0 -4px; }
+    .lp .tab { flex: 1; justify-content: center; padding: 0 4px; font-size: 11.5px; white-space: nowrap; }
+    .lp .tab .count { display: none; }
+    .lp-list { flex: 1; overflow: auto; padding: var(--space-2) var(--space-2) var(--space-6); }
+    .grp { margin-top: var(--space-2); }
+    .grp-h { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; cursor: pointer; padding: 8px 8px 6px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-subtle); }
+    .grp-h .pdot { width: 8px; height: 8px; border-radius: 50%; background: var(--ph); }
+    .grp-h .chev { margin-left: auto; transition: transform var(--dur-fast); }
+    .grp.is-closed .chev { transform: rotate(-90deg); } .grp.is-closed .grp-items { display: none; }
+    .grp-h .count { font-weight: var(--weight-medium); color: var(--fg-faint); }
+    .it { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 1px solid transparent; background: none; cursor: pointer; padding: 8px; border-radius: var(--radius-md); }
+    .it:hover { background: var(--bg-hover); }
+    .it.is-active { background: var(--bg-surface); border-color: var(--border-default); box-shadow: var(--shadow-xs); }
+    .it .file-tile { width: 28px; height: 28px; }
+    .it .t { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); line-height: 1.3; }
+    .it .s { font-size: var(--text-2xs); color: var(--fg-subtle); display: flex; align-items: center; gap: 6px; margin-top: 1px; }
+    .it.is-active .t { color: var(--brand-fg); }
+    .it .new { margin-left: auto; }
+    .st-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-faint); flex-shrink: 0; }
+    .st-dot.approved { background: var(--success); } .st-dot.review { background: var(--warning); } .st-dot.draft { background: var(--fg-faint); }
+    .src-it .file-tile { width: 34px; height: 34px; }
+    .lp-sub { display: flex; align-items: center; gap: 8px; padding: 10px 8px 4px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-subtle); }
+    .lp-sub span { font-weight: var(--weight-medium); color: var(--fg-faint); }
+    .ar-empty { height: 100%; display: flex; align-items: center; justify-content: center; padding: var(--space-8); }
+    .ar-empty .box { max-width: 460px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+    .ar-empty .rec { display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); font-size: var(--text-sm); width: 100%; }
+    .lp-empty { padding: var(--space-8) var(--space-4); text-align: center; color: var(--fg-subtle); font-size: var(--text-sm); }
+
+    /* ---- center ---- */
+    .cp { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--bg-canvas); }
+    .cp-head { padding: var(--space-3) var(--space-5) 0; border-bottom: 1px solid var(--border-default); background: var(--bg-surface); }
+    .cp-title { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+    .cp-title .file-tile { width: 36px; height: 36px; }
+    .cp-title h3 { font-size: var(--text-lg); line-height: 1.3; }
+    .cp-sub { font-size: var(--text-xs); color: var(--fg-subtle); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .cp-tools { display: flex; align-items: center; gap: var(--space-2); padding: 10px 0; flex-wrap: wrap; }
+    .cp-tools .sp { flex: 1; }
+    .vbtn { gap: 6px; }
+    .vbtn .by { color: var(--fg-subtle); font-weight: var(--weight-regular); }
+    .ai-mark { color: var(--accent-purple); font-weight: var(--weight-semibold); }
+    .cp-body { flex: 1; overflow: auto; min-height: 0; position: relative; }
+    .banner { display: flex; align-items: center; gap: var(--space-3); padding: 8px var(--space-5); font-size: var(--text-xs); background: var(--warning-soft); border-bottom: 1px solid var(--border-subtle); color: var(--fg-default); }
+    .banner.ai { background: var(--accent-purple-soft); }
+    .banner .sp { flex: 1; }
+
+    /* rendered document */
+    .adoc { max-width: 780px; margin: 0 auto; padding: var(--space-8) var(--space-10) var(--space-16); font-size: 14px; line-height: 1.7; color: var(--fg-default); }
+    .adoc h1 { font-size: 30px; margin-bottom: 6px; letter-spacing: -.02em; }
+    .adoc h2 { font-size: 20px; margin: 32px 0 10px; padding-top: 4px; font-weight: var(--weight-semibold); }
+    .adoc h3 { margin: 22px 0 6px; }
+    .adoc p { margin: 0 0 12px; } .adoc ul, .adoc ol { margin: 0 0 14px; padding-left: 22px; } .adoc li { margin: 3px 0; }
+    .adoc li::marker { color: var(--fg-faint); }
+    .adoc code { font-size: 12px; padding: 1px 6px; border-radius: var(--radius-xs); background: var(--bg-surface-3); color: var(--fg-default); }
+    .adoc .code { margin: 0 0 14px; }
+    .adoc hr { margin: 24px 0; }
+    .adoc .tbl { margin: 8px 0 18px; }
+    .adoc table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); line-height: 1.5; }
+    .adoc th { text-align: left; font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-subtle); background: var(--bg-surface-2); padding: 9px 12px; border-bottom: 1px solid var(--border-default); white-space: nowrap; }
+    .adoc td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+    .adoc tr:last-child td { border-bottom: 0; }
+    .adoc td code { font-weight: var(--weight-medium); color: var(--brand-fg); background: var(--brand-soft); }
+    .adoc .callout { display: flex; gap: 12px; padding: 12px 16px; margin: 0 0 16px; border-radius: var(--radius-md); border: 1px solid; font-size: var(--text-sm); line-height: 1.6; }
+    .adoc .callout svg { margin-top: 2px; }
+    .adoc .callout.note { background: var(--info-soft); border-color: color-mix(in srgb, var(--info) 25%, transparent); } .adoc .callout.note svg { color: var(--info-fg); }
+    .adoc .callout.warning { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 30%, transparent); } .adoc .callout.warning svg { color: var(--warning-fg); }
+    .adoc .callout.ai { background: linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box, var(--gradient-ai) border-box; border-color: transparent; } .adoc .callout.ai svg { color: var(--accent-purple); }
+    .adoc [data-src] { border-radius: var(--radius-xs); transition: background var(--dur-fast); cursor: text; }
+    .adoc [data-src]:hover { background: var(--bg-hover); }
+    .adoc .is-picked { background: var(--brand-soft) !important; box-shadow: 0 0 0 2px var(--brand-soft-2); }
+    .adoc .ai-busy { background: linear-gradient(90deg, var(--accent-purple-soft), var(--brand-soft), var(--accent-purple-soft)); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+    .adoc .doc-lead { color: var(--fg-muted); }
+    .c-mark { display: inline-flex; align-items: center; justify-content: center; gap: 3px; margin-left: 8px; height: 20px; min-width: 20px; padding: 0 6px; border-radius: 10px; border: 0; cursor: pointer; vertical-align: middle; font-size: 10px; font-weight: 600; background: var(--warning-soft); color: var(--warning-fg); }
+    .c-mark svg { width: 11px; height: 11px; }
+    .c-mark.done { background: var(--bg-surface-3); color: var(--fg-subtle); }
+    .ai-suggest { margin: 4px 0 14px; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid transparent; font-size: var(--text-sm); line-height: 1.6;
+      background: linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box, var(--gradient-ai) border-box; box-shadow: var(--shadow-md); }
+    .ai-suggest .k { display: flex; align-items: center; gap: 6px; font-size: var(--text-2xs); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-purple); margin-bottom: 6px; }
+    .ai-suggest .old { color: var(--fg-subtle); text-decoration: line-through; margin-bottom: 4px; font-size: var(--text-xs); }
+    .ai-suggest .new { color: var(--fg-strong); }
+    .ai-suggest .acts { display: flex; gap: 6px; margin-top: 10px; }
+
+    /* floating AI mini-toolbar */
+    .ai-bar { position: fixed; z-index: var(--z-dropdown); display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: var(--radius-lg); background: var(--bg-inverse); color: var(--fg-inverse); box-shadow: var(--shadow-lg); animation: popIn var(--dur-fast) var(--ease-out); }
+    .ai-bar button { height: 28px; padding: 0 9px; border: 0; border-radius: var(--radius-sm); background: transparent; color: inherit; font-size: var(--text-xs); font-weight: var(--weight-medium); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+    .ai-bar button:hover { background: color-mix(in srgb, var(--fg-inverse) 14%, transparent); }
+    .ai-bar button.ask { background: var(--gradient-ai); color: #fff; }
+    .ai-bar .sep { width: 1px; height: 16px; background: color-mix(in srgb, var(--fg-inverse) 22%, transparent); margin: 0 3px; }
+    .ai-bar svg { width: 13px; height: 13px; }
+
+    /* editor + diff */
+    .md-edit { display: block; width: 100%; height: 100%; min-height: 100%; border: 0; resize: none; outline: none; padding: var(--space-6) var(--space-8); background: var(--bg-canvas); color: var(--fg-default); font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75; tab-size: 2; }
+    .dv { padding: var(--space-5); max-width: 980px; margin: 0 auto; }
+    .dv .diff { margin-top: var(--space-3); }
+    .dv .diff-line { white-space: pre-wrap; word-break: break-word; }
+    .dv .diff-line > span:nth-child(-n+2) { white-space: nowrap; }
+    .dv .fold { padding: 4px 12px; color: var(--fg-subtle); background: var(--bg-surface-2); font-size: var(--text-xs); font-family: var(--font-sans); border-top: 1px dashed var(--border-subtle); border-bottom: 1px dashed var(--border-subtle); cursor: pointer; }
+    .dv .fold:hover { color: var(--brand-fg); }
+    .dv .sum { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-sm); }
+    .dv .sum .add { color: var(--success-fg); font-weight: 600; } .dv .sum .del { color: var(--danger-fg); font-weight: 600; }
+
+    /* sources viewer */
+    .sv { max-width: 820px; margin: 0 auto; padding: var(--space-6) var(--space-8) var(--space-12); }
+    .sv-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
+    .sv-meta > div { padding: 10px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface-2); }
+    .sv-meta .l { font-size: var(--text-2xs); color: var(--fg-subtle); } .sv-meta .v { font-size: var(--text-sm); font-weight: 500; color: var(--fg-strong); }
+    .page { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-8); font-size: var(--text-sm); line-height: 1.7; color: var(--fg-default); }
+    .page h4 { margin-bottom: 8px; }
+    .tx { display: grid; grid-template-columns: 52px 92px minmax(0, 1fr); gap: 4px 12px; font-size: var(--text-sm); }
+    .tx .ts { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-subtle); padding-top: 2px; } .tx .sp { font-weight: 600; color: var(--fg-strong); }
+    .wave { display: flex; align-items: center; gap: 2px; height: 56px; padding: 0 var(--space-4); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); }
+    .wave i { flex: 1; background: var(--accent-magenta); border-radius: 2px; opacity: .75; min-width: 2px; }
+    .wave i.p { background: var(--border-strong); }
+
+    /* meta pane */
+    .meta { display: none; flex-direction: column; min-height: 0; border-left: 1px solid var(--border-default); background: var(--bg-surface); overflow: auto; }
+    .ar.meta-open .meta { display: flex; }
+    .m-sec { padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); }
+    .m-h { display: flex; align-items: center; justify-content: space-between; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-subtle); margin-bottom: var(--space-2); }
+    .m-row { display: flex; align-items: center; gap: 10px; padding: 6px 8px; margin: 0 -8px; border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--fg-default); text-decoration: none !important; cursor: pointer; border: 0; background: none; width: calc(100% + 16px); text-align: left; }
+    .m-row:hover { background: var(--bg-hover); }
+    .m-row .file-tile { width: 26px; height: 26px; }
+    .m-row .s { font-size: var(--text-2xs); color: var(--fg-subtle); }
+    .m-empty { font-size: var(--text-xs); color: var(--fg-faint); padding: 4px 0; }
+    .hist { list-style: none; padding: 0; margin: 0; }
+    .hist li { position: relative; padding: 0 0 14px 22px; cursor: pointer; }
+    .hist li::before { content: ""; position: absolute; left: 4px; top: 6px; bottom: -6px; width: 2px; background: var(--border-default); }
+    .hist li:last-child::before { display: none; }
+    .hist li::after { content: ""; position: absolute; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg-surface); border: 2px solid var(--border-strong); }
+    .hist li.cur::after { border-color: var(--brand); background: var(--brand); }
+    .hist li.ai::after { border-color: var(--accent-purple); }
+    .hist li.ai.cur::after { background: var(--accent-purple); }
+    .hist .t { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
+    .hist .s { font-size: var(--text-xs); color: var(--fg-subtle); }
+    .cm { padding: 8px 10px; border-radius: var(--radius-md); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); font-size: var(--text-xs); margin-bottom: 6px; }
+    .cm b { color: var(--fg-strong); } .cm q { display: block; margin-top: 2px; color: var(--fg-muted); quotes: none; }
+    .tone-1 { background: var(--gradient-brand); } .tone-2 { background: var(--accent-purple); } .tone-3 { background: var(--accent-magenta); } .tone-4 { background: var(--accent-teal); color: var(--gray-900); } .tone-ai { background: var(--gradient-ai); }
+    .avatar.xs { width: 22px; height: 22px; font-size: 9px; border-width: 1.5px; }
+
+    /* modals */
+    .tpl-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); }
+    .tpl { text-align: left; padding: 10px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+    .tpl:hover { border-color: var(--border-strong); background: var(--bg-surface-2); }
+    .tpl.is-on { border-color: var(--brand); background: var(--brand-soft); box-shadow: var(--shadow-focus); }
+    .tpl .n { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
+    .tpl .d { font-size: var(--text-2xs); color: var(--fg-subtle); line-height: 1.4; }
+    .tpl .file-tile { width: 26px; height: 26px; }
+    .chk-list { display: flex; flex-direction: column; border: 1px solid var(--border-default); border-radius: var(--radius-md); max-height: 150px; overflow: auto; }
+    .chk-list label { display: flex; align-items: center; gap: 10px; padding: 7px 12px; font-size: var(--text-sm); cursor: pointer; border-bottom: 1px solid var(--border-subtle); }
+    .chk-list label:last-child { border-bottom: 0; } .chk-list label:hover { background: var(--bg-hover); }
+    .gen-steps { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: flex; flex-direction: column; gap: 10px; }
+    .gen-steps li { display: flex; align-items: center; gap: 10px; font-size: var(--text-sm); color: var(--fg-subtle); }
+    .gen-steps li.done { color: var(--fg-default); } .gen-steps li.done svg { color: var(--success); } .gen-steps li.cur { color: var(--fg-strong); font-weight: 500; }
+    .gen-steps .ic { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; }
+    .up-file { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface-2); font-size: var(--text-sm); margin-top: 8px; }
+
+    /* container-driven responsiveness: assistant panel is open by default so canvas is often < 1100px */
+    @container ar (max-width: 1100px) {
+      .ar.meta-open { grid-template-columns: 276px minmax(0, 1fr); }
+      .meta { position: absolute; right: 0; top: 0; bottom: 0; width: 300px; z-index: 5; box-shadow: var(--shadow-lg); }
+    }
+    @container ar (max-width: 820px) {
+      .ar, .ar.meta-open { grid-template-columns: 236px minmax(0, 1fr); }
+      .adoc { padding: var(--space-6) var(--space-5) var(--space-12); }
+      .btn-lbl { display: none; }
+      .sv-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) { .tpl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  </style>
+</head>
+<body data-page="artifacts" data-shell="project" data-crumb="nav.artifacts">
+  <main class="canvas"><div class="canvas-inner flush">
+    <div class="ar-wrap"><div class="ar meta-open" id="ar">
+      <aside class="lp">
+        <div class="lp-top">
+          <div class="lp-actions">
+            <button class="btn btn-secondary btn-sm" id="btn-upload"><i data-lucide="upload"></i><span data-i18n="ar.upload"></span></button>
+            <button class="btn btn-ai btn-sm" id="btn-gen"><i data-lucide="sparkles"></i><span data-i18n="ar.generate"></span></button>
+          </div>
+          <div class="input-group"><i data-lucide="search"></i><input class="input" id="lp-q" data-i18n-placeholder="ar.search" style="height:32px"></div>
+          <div class="tabs" role="tablist">
+            <button class="tab is-active" data-tab="artifacts"><span data-i18n="ar.tab.gen"></span><span class="count" id="cnt-art"></span></button>
+            <button class="tab" data-tab="sources"><span data-i18n="ar.tab.src"></span><span class="count" id="cnt-src"></span></button>
+          </div>
+        </div>
+        <div class="lp-list" id="lp-list"></div>
+      </aside>
+      <section class="cp" id="cp"></section>
+      <aside class="meta" id="meta"></aside>
+    </div></div>
+  </div></main>
+
+  <script>
+    PC.i18n.extend({
+      en: {
+        'ar.empty.t': 'No generated artifacts yet', 'ar.empty.d': 'Artifacts are documents the Assistant drafts from your sources: meeting notes, BRD, scope, estimation. Nothing has been generated for this project yet.', 'ar.empty.list': 'Generated documents will appear here.', 'ar.empty.cta': 'Generate first artifact',
+        'ar.empty.rec': 'Recommended first: Meeting notes', 'ar.empty.rec.d': 'Built from the intro call transcript. Every later artifact builds on it.', 'ar.empty.meta': 'Select an artifact to see its sources, linked tasks, comments and history.', 'ar.empty.ctx': '{n} sources',
+        'ar.sg.first1': 'Summarize the intro call', 'ar.sg.first2': 'Draft discovery questions', 'ar.grp.docs': 'Documents', 'ar.grp.meet': 'Meeting recordings & transcripts',
+        'ar.tpl.notes': 'Meeting notes', 'ar.tpl.notes.d': 'Attendees, decisions, actions',
+        'ar.upload': 'Upload', 'ar.generate': 'Generate', 'ar.search': 'Search artifacts…', 'ar.search.src': 'Search sources…',
+        'ar.tab.gen': 'Generated artifacts', 'ar.tab.src': 'Sources (uploaded)', 'ar.none': 'No results for this search.',
+        'ar.new': 'New', 'ar.indexing': 'Indexing…', 'ar.indexed': 'Indexed', 'ar.used': 'Used in {n}',
+        'ar.st.draft': 'Draft', 'ar.st.review': 'In review', 'ar.st.approved': 'Approved', 'ar.status': 'Status',
+        'ar.mode.preview': 'Preview', 'ar.mode.edit': 'Edit markdown', 'ar.mode.diff': 'Diff vs previous',
+        'ar.version': 'Version', 'ar.versions': 'Version history', 'ar.latest': 'latest', 'ar.by': 'by', 'ar.assistant': 'Assistant',
+        'ar.export': 'Export', 'ar.export.docx': 'Word (.docx)', 'ar.export.pdf': 'PDF (.pdf)', 'ar.export.md': 'Markdown (.md)', 'ar.export.pptx': 'PowerPoint (.pptx)', 'ar.export.html': 'HTML (.html)',
+        'ar.export.start': 'Exporting “{t}” as {f}…', 'ar.export.done': 'Saved to Downloads/{n}',
+        'ar.details': 'Details', 'ar.ask': 'Ask AI', 'ar.words': '{n} words', 'ar.updated': 'Updated {t}',
+        'ar.t.today': 'today', 'ar.t.now': 'just now', 'ar.t.day': '{n} d ago', 'ar.t.week': '{n} w ago', 'ar.t.month': '{n} mo ago',
+        'ar.unsaved': 'Unsaved changes', 'ar.save': 'Save as v{n}', 'ar.discard': 'Discard', 'ar.saved': 'Saved as v{n}', 'ar.discarded': 'Changes discarded',
+        'ar.viewing.old': 'You are viewing v{v} (read-only).', 'ar.restore': 'Restore this version', 'ar.back.latest': 'Back to latest', 'ar.restored': 'v{v} restored as v{n}',
+        'ar.diff.title': 'Changes in v{b} → v{a}', 'ar.diff.none': 'This is the first version — there is nothing to compare yet.', 'ar.diff.fold': '{n} unchanged lines', 'ar.diff.same': 'No differences between these versions.',
+        'ar.ai.ask': 'Ask AI', 'ar.ai.rewrite': 'Rewrite', 'ar.ai.expand': 'Expand', 'ar.ai.comment': 'Comment',
+        'ar.ai.suggest.rewrite': 'AI rewrite', 'ar.ai.suggest.expand': 'AI expansion', 'ar.ai.accept': 'Accept', 'ar.ai.discard': 'Discard', 'ar.ai.retry': 'Try again',
+        'ar.ai.applied': 'Change applied to the draft', 'ar.ai.quote': 'About this passage: “{q}”', 'ar.ai.reply': 'I looked at that passage together with the linked sources. Suggested direction: make it measurable, name an owner and cite the source requirement. Want me to apply this as a tracked edit?',
+        'ar.ai.comment.added': 'Comment added', 'ar.comment.resolve': 'Resolve', 'ar.comment.resolved': 'Comment resolved', 'ar.comment.reply': 'Reply sent',
+        'ar.meta.from': 'Derived from', 'ar.meta.tasks': 'Linked tasks', 'ar.meta.history': 'History', 'ar.meta.comments': 'Comments', 'ar.meta.none.src': 'No source documents linked.', 'ar.meta.none.tasks': 'No linked tasks yet.', 'ar.meta.none.comments': 'No open comments.',
+        'ar.meta.type': 'Details', 'ar.meta.used': 'Used by artifacts', 'ar.meta.generated': 'Generated by',
+        'ar.src.type': 'Type', 'ar.src.size': 'Size', 'ar.src.uploaded': 'Uploaded', 'ar.src.status': 'Status', 'ar.src.download': 'Download', 'ar.src.reindex': 'Re-index', 'ar.src.genfrom': 'Generate from this', 'ar.src.reindexing': 'Re-indexing {n}…',
+        'ar.src.extracted': 'Extracted text', 'ar.src.transcript': 'Transcript', 'ar.src.pages': '{n} pages', 'ar.src.min': '{n} min', 'ar.src.sheet': 'Sheet preview',
+        'ar.up.title': 'Upload source documents', 'ar.up.drop': 'Drop files here or click to browse', 'ar.up.hint': 'PDF, DOCX, XLSX, MD, TXT, audio (m4a, mp3) — up to 200 MB each', 'ar.up.go': 'Upload & index', 'ar.up.none': 'Choose at least one file', 'ar.up.done': '{n} file(s) uploaded — indexing for the Assistant…', 'ar.up.note': 'Files are copied into the project and indexed locally; audio is transcribed by the connected CLI.',
+        'ar.gen.title': 'Generate artifact', 'ar.gen.tpl': 'Template', 'ar.gen.name': 'Title', 'ar.gen.sources': 'Sources & context', 'ar.gen.cli': 'CLI & model', 'ar.gen.instr': 'Extra instructions (optional)', 'ar.gen.instr.ph': 'e.g. focus on merchant-facing requirements, keep it under 4 pages…', 'ar.gen.go': 'Generate', 'ar.gen.lang': 'Language',
+        'ar.gen.s1': 'Reading {n} sources', 'ar.gen.s2': 'Outlining sections', 'ar.gen.s3': 'Drafting content', 'ar.gen.s4': 'Self-review & consistency check', 'ar.gen.s5': 'Saving artifact as Draft',
+        'ar.gen.running': 'Running {cli} in isolated HOME…', 'ar.gen.done': '“{t}” created as Draft', 'ar.gen.note': 'Generated by {cli} · {model} from {n} sources. Review before approving.',
+        'ar.tpl.brd': 'BRD', 'ar.tpl.brd.d': 'Business requirements & objectives', 'ar.tpl.srs': 'SRS', 'ar.tpl.srs.d': 'Software requirements spec', 'ar.tpl.stories': 'User stories', 'ar.tpl.stories.d': 'Stories with acceptance criteria',
+        'ar.tpl.est': 'Estimation', 'ar.tpl.est.d': 'Effort & timeline breakdown', 'ar.tpl.sow': 'SOW', 'ar.tpl.sow.d': 'Statement of work', 'ar.tpl.arch': 'Architecture', 'ar.tpl.arch.d': 'C4 views & quality attributes',
+        'ar.tpl.adr': 'ADR', 'ar.tpl.adr.d': 'Architecture decision record', 'ar.tpl.test': 'Test plan', 'ar.tpl.test.d': 'Scope, strategy, exit criteria',
+        'ar.sg.tighten': 'Tighten NFRs', 'ar.sg.ac': 'Add acceptance criteria', 'ar.sg.vi': 'Translate to Vietnamese', 'ar.sg.summ': 'Summarize for the client', 'ar.sg.trace': 'Check traceability to the BRD',
+        'ar.as.reply.sg': 'Working on it with the current document as context. I will propose changes as a tracked edit so you can accept them in the editor.',
+      },
+      vi: {
+        'ar.empty.t': 'Chưa có tài liệu nào được tạo', 'ar.empty.d': 'Tài liệu là các bản Trợ lý soạn từ nguồn của bạn: biên bản họp, BRD, phạm vi, ước tính. Dự án này chưa có tài liệu nào được tạo.', 'ar.empty.list': 'Các tài liệu được tạo sẽ hiện ở đây.', 'ar.empty.cta': 'Tạo tài liệu đầu tiên',
+        'ar.empty.rec': 'Nên làm trước: Biên bản họp', 'ar.empty.rec.d': 'Tạo từ transcript cuộc gọi giới thiệu. Mọi tài liệu sau đều dựa trên nó.', 'ar.empty.meta': 'Chọn một tài liệu để xem nguồn, task liên quan, bình luận và lịch sử.', 'ar.empty.ctx': '{n} nguồn',
+        'ar.sg.first1': 'Tóm tắt cuộc gọi giới thiệu', 'ar.sg.first2': 'Soạn câu hỏi discovery', 'ar.grp.docs': 'Tài liệu', 'ar.grp.meet': 'Bản ghi & transcript cuộc họp',
+        'ar.tpl.notes': 'Biên bản họp', 'ar.tpl.notes.d': 'Người dự, quyết định, việc cần làm',
+        'ar.upload': 'Tải lên', 'ar.generate': 'Tạo mới', 'ar.search': 'Tìm tài liệu…', 'ar.search.src': 'Tìm nguồn…',
+        'ar.tab.gen': 'Tài liệu đã tạo', 'ar.tab.src': 'Nguồn (đã tải lên)', 'ar.none': 'Không có kết quả phù hợp.',
+        'ar.new': 'Mới', 'ar.indexing': 'Đang lập chỉ mục…', 'ar.indexed': 'Đã lập chỉ mục', 'ar.used': 'Dùng trong {n}',
+        'ar.st.draft': 'Bản nháp', 'ar.st.review': 'Đang review', 'ar.st.approved': 'Đã duyệt', 'ar.status': 'Trạng thái',
+        'ar.mode.preview': 'Xem trước', 'ar.mode.edit': 'Sửa markdown', 'ar.mode.diff': 'So với bản trước',
+        'ar.version': 'Phiên bản', 'ar.versions': 'Lịch sử phiên bản', 'ar.latest': 'mới nhất', 'ar.by': 'bởi', 'ar.assistant': 'Trợ lý',
+        'ar.export': 'Xuất file', 'ar.export.docx': 'Word (.docx)', 'ar.export.pdf': 'PDF (.pdf)', 'ar.export.md': 'Markdown (.md)', 'ar.export.pptx': 'PowerPoint (.pptx)', 'ar.export.html': 'HTML (.html)',
+        'ar.export.start': 'Đang xuất “{t}” sang {f}…', 'ar.export.done': 'Đã lưu vào Downloads/{n}',
+        'ar.details': 'Chi tiết', 'ar.ask': 'Hỏi AI', 'ar.words': '{n} từ', 'ar.updated': 'Cập nhật {t}',
+        'ar.t.today': 'hôm nay', 'ar.t.now': 'vừa xong', 'ar.t.day': '{n} ngày trước', 'ar.t.week': '{n} tuần trước', 'ar.t.month': '{n} tháng trước',
+        'ar.unsaved': 'Có thay đổi chưa lưu', 'ar.save': 'Lưu thành v{n}', 'ar.discard': 'Bỏ thay đổi', 'ar.saved': 'Đã lưu thành v{n}', 'ar.discarded': 'Đã bỏ các thay đổi',
+        'ar.viewing.old': 'Bạn đang xem v{v} (chỉ đọc).', 'ar.restore': 'Khôi phục phiên bản này', 'ar.back.latest': 'Về bản mới nhất', 'ar.restored': 'Đã khôi phục v{v} thành v{n}',
+        'ar.diff.title': 'Thay đổi từ v{b} → v{a}', 'ar.diff.none': 'Đây là phiên bản đầu tiên — chưa có gì để so sánh.', 'ar.diff.fold': '{n} dòng không đổi', 'ar.diff.same': 'Hai phiên bản không có khác biệt.',
+        'ar.ai.ask': 'Hỏi AI', 'ar.ai.rewrite': 'Viết lại', 'ar.ai.expand': 'Mở rộng', 'ar.ai.comment': 'Bình luận',
+        'ar.ai.suggest.rewrite': 'AI viết lại', 'ar.ai.suggest.expand': 'AI mở rộng', 'ar.ai.accept': 'Chấp nhận', 'ar.ai.discard': 'Bỏ qua', 'ar.ai.retry': 'Thử lại',
+        'ar.ai.applied': 'Đã áp dụng thay đổi vào bản nháp', 'ar.ai.quote': 'Về đoạn này: “{q}”', 'ar.ai.reply': 'Mình đã xem đoạn này cùng các nguồn liên quan. Hướng đề xuất: làm cho đo lường được, chỉ định người phụ trách và dẫn nguồn yêu cầu gốc. Bạn muốn mình áp dụng thành một chỉnh sửa có theo dõi không?',
+        'ar.ai.comment.added': 'Đã thêm bình luận', 'ar.comment.resolve': 'Đã xử lý', 'ar.comment.resolved': 'Đã đánh dấu xử lý bình luận', 'ar.comment.reply': 'Đã gửi phản hồi',
+        'ar.meta.from': 'Được tạo từ', 'ar.meta.tasks': 'Task liên quan', 'ar.meta.history': 'Lịch sử', 'ar.meta.comments': 'Bình luận', 'ar.meta.none.src': 'Chưa liên kết tài liệu nguồn.', 'ar.meta.none.tasks': 'Chưa có task liên quan.', 'ar.meta.none.comments': 'Không có bình luận đang mở.',
+        'ar.meta.type': 'Chi tiết', 'ar.meta.used': 'Được dùng bởi tài liệu', 'ar.meta.generated': 'Tạo bởi',
+        'ar.src.type': 'Loại', 'ar.src.size': 'Dung lượng', 'ar.src.uploaded': 'Tải lên', 'ar.src.status': 'Trạng thái', 'ar.src.download': 'Tải xuống', 'ar.src.reindex': 'Lập chỉ mục lại', 'ar.src.genfrom': 'Tạo tài liệu từ nguồn này', 'ar.src.reindexing': 'Đang lập chỉ mục lại {n}…',
+        'ar.src.extracted': 'Văn bản trích xuất', 'ar.src.transcript': 'Bản ghi lời thoại', 'ar.src.pages': '{n} trang', 'ar.src.min': '{n} phút', 'ar.src.sheet': 'Xem trước bảng tính',
+        'ar.up.title': 'Tải lên tài liệu nguồn', 'ar.up.drop': 'Kéo thả file vào đây hoặc bấm để chọn', 'ar.up.hint': 'PDF, DOCX, XLSX, MD, TXT, âm thanh (m4a, mp3) — tối đa 200 MB mỗi file', 'ar.up.go': 'Tải lên & lập chỉ mục', 'ar.up.none': 'Hãy chọn ít nhất một file', 'ar.up.done': 'Đã tải lên {n} file — đang lập chỉ mục cho Trợ lý…', 'ar.up.note': 'File được sao chép vào dự án và lập chỉ mục cục bộ; âm thanh được CLI đã kết nối chuyển thành văn bản.',
+        'ar.gen.title': 'Tạo tài liệu', 'ar.gen.tpl': 'Mẫu', 'ar.gen.name': 'Tiêu đề', 'ar.gen.sources': 'Nguồn & ngữ cảnh', 'ar.gen.cli': 'CLI & model', 'ar.gen.instr': 'Hướng dẫn thêm (tuỳ chọn)', 'ar.gen.instr.ph': 'VD: tập trung vào yêu cầu phía merchant, giữ dưới 4 trang…', 'ar.gen.go': 'Tạo', 'ar.gen.lang': 'Ngôn ngữ',
+        'ar.gen.s1': 'Đọc {n} nguồn', 'ar.gen.s2': 'Lập dàn ý các phần', 'ar.gen.s3': 'Soạn nội dung', 'ar.gen.s4': 'Tự rà soát & kiểm tra nhất quán', 'ar.gen.s5': 'Lưu tài liệu ở trạng thái Draft',
+        'ar.gen.running': 'Đang chạy {cli} trong HOME cô lập…', 'ar.gen.done': 'Đã tạo “{t}” ở trạng thái Draft', 'ar.gen.note': 'Tạo bởi {cli} · {model} từ {n} nguồn. Hãy xem lại trước khi duyệt.',
+        'ar.tpl.brd': 'BRD', 'ar.tpl.brd.d': 'Yêu cầu & mục tiêu nghiệp vụ', 'ar.tpl.srs': 'SRS', 'ar.tpl.srs.d': 'Đặc tả yêu cầu phần mềm', 'ar.tpl.stories': 'User stories', 'ar.tpl.stories.d': 'Story kèm tiêu chí chấp nhận',
+        'ar.tpl.est': 'Ước lượng', 'ar.tpl.est.d': 'Phân rã effort & timeline', 'ar.tpl.sow': 'SOW', 'ar.tpl.sow.d': 'Bản mô tả công việc', 'ar.tpl.arch': 'Kiến trúc', 'ar.tpl.arch.d': 'Góc nhìn C4 & thuộc tính chất lượng',
+        'ar.tpl.adr': 'ADR', 'ar.tpl.adr.d': 'Bản ghi quyết định kiến trúc', 'ar.tpl.test': 'Kế hoạch kiểm thử', 'ar.tpl.test.d': 'Phạm vi, chiến lược, tiêu chí hoàn tất',
+        'ar.sg.tighten': 'Siết chặt NFR', 'ar.sg.ac': 'Thêm tiêu chí chấp nhận', 'ar.sg.vi': 'Dịch sang tiếng Việt', 'ar.sg.summ': 'Tóm tắt cho khách hàng', 'ar.sg.trace': 'Kiểm tra truy vết tới BRD',
+        'ar.as.reply.sg': 'Mình đang xử lý với tài liệu hiện tại làm ngữ cảnh. Mình sẽ đề xuất thay đổi dạng chỉnh sửa có theo dõi để bạn chấp nhận trong trình soạn thảo.',
+      }
+    });
+
+    (function () {
+      const $ = (s, r) => (r || document).querySelector(s);
+      const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+      const esc = PC.esc;
+      const L = (en, vi) => ({ en, vi });
+      const T = o => (o && typeof o === 'object') ? (o[PC.lang] || o.en) : o;
+      const NOW = new Date('2026-11-23T10:00:00');
+      const MEM = { ME: ['You', 1], CC: ['Claude Code', 'ai'], CX: ['Codex', 'ai'], AI: ['Assistant', 'ai'] };
+      const who = c => c === 'AI' ? PC.t('ar.assistant') : c === 'ME' ? PC.t('as.you') : MEM[c][0];
+      const av = (c, cls) => `<span class="avatar ${cls || ''} tone-${MEM[c][1]}" title="${esc(who(c))}">${c === 'AI' ? '<i data-lucide="sparkles" style="width:11px;height:11px"></i>' : c}</span>`;
+      const byLine = c => c === 'AI' ? `<span class="ai-mark">✦ ${PC.t('ar.assistant')}</span>` : esc(who(c));
+      const daysAgo = iso => Math.round((NOW - new Date(iso + 'T10:00:00')) / 864e5);
+      const rel = iso => { if (iso === 'now') return PC.t('ar.t.now'); const d = daysAgo(iso); if (d <= 0) return PC.t('ar.t.today'); if (d < 7) return PC.t('ar.t.day', { n: d }); if (d < 30) return PC.t('ar.t.week', { n: Math.round(d / 7) }); return PC.t('ar.t.month', { n: Math.round(d / 30) }); };
+      const longDate = iso => iso === 'now' ? PC.t('ar.t.now') : new Intl.DateTimeFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(iso + 'T10:00:00'));
+
+      /* ================= content authoring ================= */
+      const S = (h, ...items) => ({ h, items });
+      const bullets = it => it.filter(x => x.startsWith('- '));
+      function buildMd(title, lead, sections, drop) {
+        // drop = number of trailing bullets to remove from the last bullet-ending section (used to derive older versions)
+        const secs = sections.map(s => ({ h: s.h, items: s.items.slice() }));
+        let k = drop || 0;
+        for (let i = secs.length - 1; i >= 0 && k > 0; i--) {
+          const it = secs[i].items;
+          while (k > 0 && it.length && it[it.length - 1].startsWith('- ') && bullets(it).length > 1) { it.pop(); k--; }
+          if (k > 0) break;
+        }
+        let md = '# ' + title + '\n' + lead + '\n';
+        secs.forEach(s => { md += '\n## ' + s.h + '\n' + s.items.join('\n') + '\n'; });
+        return md;
+      }
+      const adr = (n, title, date, status, ctx, dec, alts, cons) => ({ title: 'ADR-00' + n + ' · ' + title, lead: '**Status:** ' + status + ' · **Date:** ' + date + ' · **Deciders:** You, Claude Code',
+        sections: [S('Context', ctx), S('Decision', dec), S('Alternatives considered', ...alts), S('Consequences', ...cons)] });
+
+      const BRD_V3 = `# Business Requirements Document
+**Lotus Pay — Merchant Portal** · Client: Lotus Financial Group · Version 3.0 · Status: Approved
+
+> [!NOTE] Baseline agreed in the SOW signed on 29 Aug 2026. Changes after sign-off follow the change-request process (CR-01, CR-02).
+
+## 1. Executive summary
+Lotus Financial Group wants a self-service portal so that merchants can onboard, upload KYC documents and reconcile settlements in order to reduce average onboarding time from 9 days to 2 days. The portal replaces the current email-and-spreadsheet process handled by 14 operations staff.
+Release 1 targets 1,200 existing merchants and must be live before the January 2027 peak season. The solution should be very easy to use for non-technical merchant owners.
+
+## 2. Business objectives
+- Cut merchant onboarding time from 9 days to 2 days (BO-1)
+- Reduce manual settlement reconciliation effort by 60% (BO-2)
+- Meet State Bank e-KYC requirements for remote merchant identification (BO-3)
+- Give finance operations a real-time view of payouts and disputes (BO-4)
+
+## 3. Stakeholders
+| Role | Party | Responsibility |
+|---|---|---|
+| Executive sponsor | Lotus Financial Group | Budget and SOW sign-off |
+| Product owner | You (KMS) | Backlog and priorities |
+| Finance operations lead | Lotus Finance Operations | Settlement rules and UAT |
+| Compliance officer | Lotus Compliance | KYC and audit requirements |
+
+## 4. Functional requirements
+| ID | Requirement | Priority | Source |
+|---|---|---|---|
+| BRD-FR-01 | Merchants can self-register with business license and tax ID | Must | Kickoff §2 |
+| BRD-FR-02 | The system should be able to verify the business license against the national registry | Must | RFP §4.1 |
+| BRD-FR-03 | Merchants upload KYC documents (ID, license, bank letter) as PDF or JPG up to 10 MB each | Must | e-KYC circular |
+| BRD-FR-04 | Operations staff review KYC submissions with approve, reject and request-info actions | Must | Kickoff §3 |
+| BRD-FR-05 | Merchants view settlement statements by day, week and month | Must | Finance interview |
+| BRD-FR-06 | Merchants export settlement reports to CSV and XLSX | Should | Finance interview |
+| BRD-FR-07 | Webhook notifications for payout and dispute events with automatic retry | Should | RFP §6 |
+| BRD-FR-08 | Role-based access for owner, finance and developer roles | Must | RFP §5 |
+| BRD-FR-09 | Merchants download an audit log of KYC decisions (added by CR-02) | Could | CR-02 |
+
+## 5. Non-functional requirements
+| ID | Category | Requirement | Target |
+|---|---|---|---|
+| NFR-01 | Security | All PII is encrypted at rest (AES-256) and in transit (TLS 1.3) | 100% |
+| NFR-02 | Availability | 99.9% monthly uptime for merchant-facing APIs, excluding planned maintenance | 99.9% |
+| NFR-03 | Performance | p95 API latency stays below 400 ms at 500 concurrent merchants | < 400 ms |
+| NFR-04 | Auditability | Every KYC decision is retained for 7 years with actor and timestamp | 7 years |
+| NFR-05 | Localization | Vietnamese and English user interface | 2 languages |
+
+## 6. Assumptions & constraints
+- Lotus Identity (Keycloak) is the only identity provider.
+- The VNPT eKYC sandbox is available from 1 Oct 2026.
+- Client UAT is completed within 3 working days per sprint.
+
+> [!WARNING] The e-KYC provider caps sandbox calls at 100 per minute, which affects automated e2e testing. Tracked as risk R-01.
+
+## 7. Out of scope
+- Native mobile applications
+- Multi-currency settlement
+- Merchant lending products
+
+## 8. Acceptance & sign-off
+Each Must requirement needs at least one passing e2e scenario and sign-off from the product owner. Approval of this document by Lotus Financial Group is recorded in the Statement of Work.
+`;
+      const BRD_BACK = [
+        [ // v2 -> v1
+          ['Version 2.0', 'Version 1.0'],
+          ['| Compliance officer | Lotus Compliance | KYC and audit requirements |\n', ''],
+          ['| BRD-FR-06 | Merchants export settlement reports to CSV and XLSX | Should |', '| BRD-FR-06 | Merchants export settlement reports to CSV and XLSX | Could |'],
+          ['- Give finance operations a real-time view of payouts and disputes (BO-4)\n', ''],
+        ],
+        [ // v3 -> v2
+          ['Version 3.0', 'Version 2.0'],
+          ['| NFR-02 | Availability | 99.9% monthly uptime for merchant-facing APIs, excluding planned maintenance | 99.9% |', '| NFR-02 | Availability | The system should be highly available | 99.9% |'],
+          ['| NFR-03 | Performance | p95 API latency stays below 400 ms at 500 concurrent merchants | < 400 ms |', '| NFR-03 | Performance | The portal should respond quickly | fast |'],
+          ['| BRD-FR-09 | Merchants download an audit log of KYC decisions (added by CR-02) | Could | CR-02 |\n', ''],
+        ],
+      ];
+
+      /* artifacts: [id, phase, icon, status, title, sources, tasks, versions[[who,date,note]], generator] */
+      const ART_LOTUS = [
+        { id: 'meeting-kickoff', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff 2026-08-14', src: ['rec-kickoff', 'interview-fin'], tasks: [],
+          vers: [['AI', '2026-08-15', 'Generated from the kickoff recording transcript'], ['ME', '2026-08-16', 'Added action-item owners']],
+          doc: { lead: '**Date:** 14 Aug 2026 · **Location:** Lotus HQ, District 1 · **Recorded:** 48 min', sections: [
+            S('Attendees', '- Lotus Financial Group (executive sponsor, Finance Ops, Compliance)', '- You (KMS)'),
+            S('Key discussion points', 'Merchants currently onboard by email with a 9-day average turnaround. Settlement reconciliation is done in spreadsheets by 14 operations staff.', '- Pain: duplicated data entry across three systems', '- Pain: merchants cannot see their KYC status', '- Constraint: go-live before the January peak season'),
+            S('Decisions', '- Build a self-service merchant portal as Release 1', '- Use Lotus Identity (Keycloak) for authentication'),
+            S('Action items', '- You: draft BRD from the kickoff recording by 19 Aug', '- Lotus Finance Ops: share the merchant volume forecast by 16 Aug', '- Lotus Compliance: send the e-KYC circular and audit requirements')] } },
+        { id: 'brd', ph: 'initial', icon: 'file-text', st: 'approved', title: 'Business Requirements Doc', src: ['rfp', 'rec-kickoff', 'process-doc', 'ekyc-circular', 'interview-fin'], tasks: [['LP-142', 'Merchant KYC document upload'], ['LP-151', 'Settlement report export']],
+          vers: [['AI', '2026-08-17', 'Generated from RFP and kickoff transcript'], ['ME', '2026-08-19', 'Added settlement requirements and stakeholder table'], ['AI', '2026-11-16', 'Tightened NFR-02/03, added BRD-FR-09 per CR-02']],
+          md3: BRD_V3, back: BRD_BACK,
+          comments: [{ at: 'NFR-03', who: 'CX', t: 'Can we confirm the load profile with Lotus infra before we lock 500 concurrent merchants?' }, { at: 'BRD-FR-09', who: 'ME', t: 'Client confirmed this in the 10 Nov call. Priority stays Could for release 1.' }] },
+        { id: 'scope', ph: 'initial', icon: 'target', st: 'approved', title: 'Scope Definition – Release 1', src: ['rfp', 'rec-kickoff'], tasks: [],
+          vers: [['AI', '2026-08-21', 'Generated from BRD v2'], ['ME', '2026-08-22', 'Confirmed MoSCoW with the client']],
+          doc: { lead: '**Release:** Release 1 (MVP) · **Linked:** BRD v3, SOW', sections: [
+            S('Goal', 'Release 1 delivers merchant onboarding, KYC review, settlement statements and exports for 1,200 existing merchants.'),
+            S('In scope (Must)', '- Self-registration and KYC document upload', '- Operations KYC review workflow', '- Settlement statements and CSV/XLSX export', '- Role-based access', '- Webhook notifications'),
+            S('Release 1 boundary', 'The release ends when all Must requirements pass e2e and UAT is signed. Should and Could items move to release 2 unless capacity remains.'),
+            S('Change control', '- Changes up to 10% of baseline effort are handled in-sprint', '- Larger changes require a signed change request')] } },
+        { id: 'estimation', ph: 'initial', icon: 'calculator', st: 'approved', title: 'Effort Estimation', src: ['volume-forecast'], tasks: [],
+          vers: [['AI', '2026-08-25', 'Generated from scope definition'], ['CC', '2026-08-26', 'Adjusted QA effort after review']],
+          doc: { lead: '**Total:** 2,140 hours · **Team:** 6 · **Duration:** 4 sprints to MVP', sections: [
+            S('Effort by area', '| Area | Hours | Share |', '|---|---|---|', '| Merchant onboarding & KYC | 620 | 29% |', '| Settlement & reporting | 540 | 25% |', '| Platform, auth & infrastructure | 480 | 22% |', '| QA & e2e automation | 320 | 15% |', '| PM & documentation | 180 | 9% |', ''),
+            S('Assumptions', '- Team of 6: 1 tech lead, 3 engineers, 1 QA, 1 product owner', '- Agents implement tasks under human review; velocity 38–44 points per sprint', '- Client UAT within 3 working days')] } },
+        { id: 'sow', ph: 'initial', icon: 'file-signature', st: 'approved', title: 'Statement of Work', src: ['rfp'], tasks: [],
+          vers: [['AI', '2026-08-27', 'Generated from scope and estimation'], ['ME', '2026-08-29', 'Legal review applied; signed']],
+          doc: { lead: '**Contract ref:** LFG-KMS-2026-014 · **Signed:** 29 Aug 2026', sections: [
+            S('Parties', 'Lotus Financial Group (Client) and KMS Technology (Vendor).'),
+            S('Deliverables', '- Merchant Portal Release 1 (web)', '- Source code, CI/CD and infrastructure as code', '- Technical and user documentation', '- Release notes per sprint'),
+            S('Commercials', 'Time-and-materials with a not-to-exceed cap of 2,140 hours for Release 1.'),
+            S('Signatures', '- Signed by Lotus Financial Group on 29 Aug 2026', '- Signed by KMS Technology on 29 Aug 2026')] } },
+        { id: 'c4', ph: 'release', icon: 'network', st: 'approved', title: 'Solution Architecture (C4)', src: ['legacy-api', 'rfp'], tasks: [],
+          vers: [['AI', '2026-09-03', 'Generated from BRD and tech constraints'], ['CC', '2026-09-04', 'Added worker container'], ['CC', '2026-09-05', 'Aligned with ADR-001..003']],
+          doc: { lead: '**Level:** Context + Container · **Notation:** C4 model', sections: [
+            S('System context', 'Merchants and operations staff use the portal. It integrates with Lotus Identity for sign-in, VNPT eKYC for identity verification and the core settlement ledger.', '```\n[Merchant] --> [Portal SPA] --> [API (NestJS)] --> [PostgreSQL]\n                                     |--> [Keycloak]\n                                     |--> [VNPT eKYC]\n```'),
+            S('Containers', '- Portal SPA (Angular 19)', '- API (NestJS modular monolith)', '- Worker (settlement jobs and webhooks)', '- PostgreSQL 16 with transactional outbox', '- Keycloak (Lotus Identity)')] } },
+        { id: 'adr-001', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-001 · Modular monolith', src: [], tasks: [], vers: [['CC', '2026-09-02', 'Accepted']],
+          adr: adr(1, 'Modular monolith over microservices', '2 Sep 2026', 'Accepted', 'The MVP team has six people and one deployable target. Operational overhead of microservices would slow delivery.', 'Build a modular monolith with enforced module boundaries (Nx), extracting services only when a module needs independent scaling.', ['- Microservices from day one — rejected: operational cost', '- Single unstructured monolith — rejected: coupling risk'], ['- Faster delivery and simpler debugging', '- Module boundaries are checked in CI to keep extraction possible']) },
+        { id: 'adr-002', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-002 · PostgreSQL + outbox', src: [], tasks: [], vers: [['CC', '2026-09-05', 'Accepted']],
+          adr: adr(2, 'PostgreSQL with transactional outbox', '5 Sep 2026', 'Accepted', 'Settlement events must be published reliably without distributed transactions.', 'Use PostgreSQL 16 and a transactional outbox table consumed by the worker.', ['- Kafka as primary store — rejected: complexity', '- Dual writes — rejected: inconsistency risk'], ['- Exactly-once effect through idempotent consumers', '- Outbox lag must be monitored']) },
+        { id: 'adr-003', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-003 · Angular + Nx monorepo', src: [], tasks: [], vers: [['ME', '2026-09-11', 'Accepted']],
+          adr: adr(3, 'Angular + Nx monorepo', '11 Sep 2026', 'Accepted', 'Front end and API share types and need consistent tooling and CI caching.', 'Use an Nx monorepo with Angular 19 for the portal and NestJS for the API, sharing a typed contracts library.', ['- Separate repositories — rejected: contract drift', '- React — rejected: team Angular expertise'], ['- Single toolchain and affected-only CI', '- Larger repo; needs code-owner rules']) },
+        { id: 'adr-004', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-004 · OIDC via Keycloak', src: ['legacy-api'], tasks: [], vers: [['AI', '2026-09-17', 'Drafted from identity constraints'], ['ME', '2026-09-18', 'Accepted']],
+          adr: adr(4, 'OIDC via Lotus Identity (Keycloak)', '18 Sep 2026', 'Accepted', 'Lotus mandates single sign-on through its existing Keycloak realm for all merchant-facing apps.', 'Authenticate with OIDC authorization code + PKCE against Lotus Identity; map realm roles to portal roles.', ['- Custom auth — rejected: audit exposure', '- Social login — rejected: not allowed by compliance', '- Short-lived access tokens with refresh rotation'], ['- No password storage in the portal', '- Dependency on Lotus Identity availability', '- Role mapping documented in the spec']) },
+        { id: 'tech-stack', ph: 'release', icon: 'layers', st: 'approved', title: 'Tech Stack Decision', src: [], tasks: [], vers: [['AI', '2026-09-08', 'Generated from ADR-001..003'], ['CC', '2026-09-09', 'Added hosting decision']],
+          doc: { lead: '**Owner:** You · **Linked:** ADR-001, ADR-003', sections: [
+            S('Stack summary', '| Layer | Choice | Why |', '|---|---|---|', '| Front end | Angular 19, Nx | Team expertise, shared contracts |', '| API | NestJS (Node 22) | Typed modules, ecosystem |', '| Data | PostgreSQL 16 | Transactions and outbox |', '| Identity | Keycloak (OIDC) | Mandated by client |', '| Hosting | Azure Container Apps | Managed scale-to-zero |', ''),
+            S('Rejected options', '- Java Spring — higher onboarding cost for the team', '- MongoDB — weak fit for ledger-style data')] } },
+        { id: 'repo-structure', ph: 'release', icon: 'folder-tree', st: 'approved', title: 'Repository Structure', src: [], tasks: [], vers: [['AI', '2026-09-17', 'Generated scaffolding plan'], ['CC', '2026-09-18', 'Approved after scaffolding run']],
+          doc: { lead: '**Repository:** ' + PC.project('lotus-pay').repo + ' · **Layout:** Nx monorepo', sections: [
+            S('Layout', '```\napps/\n  portal/        Angular SPA\n  api/           NestJS API\n  worker/        settlement + webhooks\nlibs/\n  contracts/     shared DTOs and OpenAPI types\n  ui/            design-system components\ninfra/           Terraform modules\n.github/         workflows\n```'),
+            S('Conventions', '- Conventional commits; squash merge', '- One CODEOWNERS entry per app and library', '- Feature work happens in git worktrees created by agents')] } },
+        { id: 'cicd', ph: 'release', icon: 'workflow', st: 'approved', title: 'CI/CD Pipeline Spec', src: [], tasks: [], vers: [['AI', '2026-09-22', 'Generated from repo structure'], ['CC', '2026-09-24', 'Added preview environments']],
+          doc: { lead: '**Platform:** GitHub Actions · **Environments:** preview, staging, production', sections: [
+            S('Pipeline stages', '```\nlint -> unit -> build -> e2e (preview env) -> publish image -> deploy\n```'),
+            S('Quality gates', '- Unit coverage at least 80% on changed projects', '- e2e smoke suite must pass on the preview environment', '- Dependency and secret scanning must be clean')] } },
+        { id: 'infra', ph: 'release', icon: 'cloud', st: 'approved', title: 'Infra plan', src: [], tasks: [], vers: [['AI', '2026-09-30', 'Generated from CI/CD spec'], ['CC', '2026-10-02', 'Added observability baseline']],
+          doc: { lead: '**IaC:** Terraform · **Cloud:** Azure (Southeast Asia)', sections: [
+            S('Environments', 'Staging mirrors production at one-third capacity; preview environments are created per pull request and removed on merge.'),
+            S('Terraform modules', '- network (VNet, private endpoints)', '- container-apps (API, worker, portal)', '- postgres (flexible server, backups)', '- observability (Log Analytics, alerts)')] } },
+        { id: 'spec-kyc', ph: 'sdlc', icon: 'file-text', st: 'approved', title: 'Feature spec – Merchant KYC', src: ['ekyc-circular', 'process-doc'], tasks: [['LP-142', 'Merchant KYC document upload'], ['LP-149', 'Merchant onboarding e2e flows']],
+          vers: [['AI', '2026-10-06', 'Generated from BRD FR-01..04'], ['ME', '2026-10-09', 'Added reject reasons'], ['AI', '2026-10-21', 'Updated for VNPT eKYC provider decision']],
+          doc: { lead: '**Epic:** Merchant onboarding · **BRD:** FR-01, FR-02, FR-03, FR-04, FR-09', sections: [
+            S('Overview', 'Merchants submit identity and business documents; operations staff review and decide. Verification is delegated to the VNPT eKYC API.'),
+            S('Acceptance criteria', '- Upload accepts PDF and JPG up to 10 MB and rejects other types with a clear message', '- Each submission shows status: submitted, in review, approved, rejected', '- Rejected submissions show the reason and allow re-upload', '- Every decision stores actor, timestamp and reason for 7 years')] } },
+        { id: 'spec-settlement', ph: 'sdlc', icon: 'file-text', st: 'review', title: 'Feature spec – Settlement Report', src: ['volume-forecast', 'interview-fin'], tasks: [['LP-151', 'Settlement report export']],
+          vers: [['AI', '2026-10-27', 'Generated from BRD FR-05, FR-06'], ['ME', '2026-11-05', 'Added streaming export requirement']],
+          doc: { lead: '**Epic:** Settlement · **BRD:** FR-05, FR-06', sections: [
+            S('Overview', 'Merchants view and export settlement statements by day, week and month.'),
+            S('Acceptance criteria', '- Statement loads in under 2 seconds for 10,000 rows', '- Export streams CSV and XLSX without loading all rows in memory', '- Exports above 100,000 rows are delivered by e-mail link')] } },
+        { id: 'test-strategy', ph: 'sdlc', icon: 'flask-conical', st: 'review', title: 'Test strategy', src: ['legacy-api'], tasks: [['LP-149', 'Merchant onboarding e2e flows'], ['LP-157', 'Webhook retry with backoff']],
+          vers: [['AI', '2026-10-12', 'Generated from CI/CD spec and BRD'], ['CX', '2026-11-18', 'Added e2e evidence rules for agent runs']],
+          doc: { lead: '**Owner:** You · **Applies to:** all agent-implemented tasks', sections: [
+            S('Scope', 'Unit, API contract and browser e2e tests. Every task run by an agent must attach e2e evidence (video, trace, report) for human review.'),
+            S('Exit criteria', '- All Must requirements have a passing e2e scenario', '- No open severity-1 or severity-2 defects', '- e2e pass rate of at least 95% over the last 5 runs')] } },
+        { id: 'release-notes', ph: 'sdlc', icon: 'megaphone', st: 'draft', title: 'Release notes 1.3', src: [], tasks: [['LP-142', 'Merchant KYC document upload']],
+          vers: [['AI', '2026-11-23', 'Draft generated from merged PRs']],
+          doc: { lead: '**Version:** 1.3 · **Sprint:** 4 · **Status:** Draft', sections: [
+            S('Highlights', '- Merchants can upload KYC documents and track review status', '- Settlement statements now stream large exports', '- Webhook delivery retries with exponential backoff')] } },
+      ];
+      const PH = ['initial', 'release', 'sdlc'];
+
+      // finalise: compute md for each version
+      function finalize(list) { list.forEach(a => {
+        const n = a.vers.length;
+        if (a.md3) {
+          const mds = [a.md3];
+          for (let i = a.back.length - 1; i >= 0; i--) { let m = mds[0]; a.back[i].forEach(([nw, old]) => { m = m.replace(nw, old); }); mds.unshift(m); }
+          a.mds = mds;
+        } else if (a.adr) {
+          const d = a.adr; a.mds = [];
+          for (let k = 0; k < n; k++) a.mds.push(buildMd(d.title, d.lead, d.sections, n - 1 - k));
+        } else {
+          a.mds = [];
+          for (let k = 0; k < n; k++) a.mds.push(buildMd(a.title, a.doc.lead, a.doc.sections, n - 1 - k));
+        }
+        a.vers = a.vers.map((v, i) => ({ v: i + 1, who: v[0], date: v[1], note: v[2], md: a.mds[i] }));
+        delete a.mds;
+        a.cm = (a.comments || []).map(c => Object.assign({ done: false }, c));
+      }); }
+
+      /* sources */
+      const SRC_LOTUS = [
+        { id: 'rfp', kind: 'pdf', icon: 'file-text', name: 'RFP – Lotus Merchant Portal.pdf', size: '2.4 MB', meta: 38, date: '2026-08-12', by: 'ME', used: ['brd', 'scope', 'sow', 'c4'], pv: { type: 'text', paras: ['Lotus Financial Group invites proposals for a self-service Merchant Portal supporting onboarding, KYC submission, settlement statements and API webhooks.', '4.1 The portal shall validate merchant business licenses against the national registry before an application can be approved.', '5.0 Access shall be role-based. At minimum the roles Owner, Finance and Developer must be supported.', '6.0 Payout and dispute events shall be delivered to merchant endpoints with automatic retry.'] } },
+        { id: 'rec-kickoff', kind: 'audio', icon: 'audio-lines', name: 'Kickoff recording 2026-08-14.m4a', size: '46 MB', meta: 48, date: '2026-08-14', by: 'ME', used: ['meeting-kickoff', 'brd', 'scope'], pv: { type: 'audio', lines: [['00:41', 'Sponsor', 'Today onboarding a merchant takes nine days on average, mostly waiting on documents.'], ['03:12', 'Finance Ops', 'Finance reconciles settlements in spreadsheets every Monday. Fourteen people are involved.'], ['07:55', 'Compliance', 'For KYC we must keep every decision for seven years, with who decided and when.'], ['12:30', 'You', 'Understood. We propose a self-service portal; Release 1 before the January peak.'], ['21:04', 'You', 'Let us separate must-haves from nice-to-haves so we can fix the first-release boundary.']] } },
+        { id: 'process-doc', kind: 'doc', icon: 'file-type-2', name: 'Current merchant onboarding process.docx', size: '312 KB', meta: 9, date: '2026-08-13', by: 'ME', used: ['brd', 'spec-kyc'], pv: { type: 'text', paras: ['Step 1. Merchant e-mails the sales representative with business license and tax ID.', 'Step 2. Operations re-types the data into the core system and the CRM.', 'Step 3. Compliance reviews the documents offline and replies by e-mail within 3–5 days.'] } },
+        { id: 'volume-forecast', kind: 'sheet', icon: 'sheet', name: 'Merchant volume forecast 2026.xlsx', size: '88 KB', meta: 3, date: '2026-08-16', by: 'ME', used: ['estimation', 'spec-settlement'], pv: { type: 'sheet', head: ['Quarter', 'Merchants', 'Tx / day', 'Settlement rows'], rows: [['Q3 2026', '1,020', '41,000', '310,000'], ['Q4 2026', '1,200', '58,000', '440,000'], ['Q1 2027', '1,480', '71,000', '520,000'], ['Q2 2027', '1,760', '89,000', '655,000']] } },
+        { id: 'ekyc-circular', kind: 'pdf', icon: 'file-text', name: 'State Bank e-KYC circular.pdf', size: '1.1 MB', meta: 22, date: '2026-08-15', by: 'ME', used: ['brd', 'spec-kyc'], pv: { type: 'text', paras: ['Article 7. Remote identification of corporate customers requires a verified legal representative and a valid business registration.', 'Article 11. Records of identification decisions shall be retained for no less than seven years.'] } },
+        { id: 'legacy-api', kind: 'pdf', icon: 'file-text', name: 'Legacy settlement API reference.pdf', size: '960 KB', meta: 41, date: '2026-08-20', by: 'ME', used: ['c4', 'adr-004', 'test-strategy'], pv: { type: 'text', paras: ['GET /v2/settlements?merchantId=&from=&to= returns paginated settlement batches (max 500 rows).', 'Authentication is by OAuth2 client credentials issued per partner. Rate limit: 60 requests per minute.'] } },
+        { id: 'interview-fin', kind: 'audio', icon: 'audio-lines', name: 'Finance Ops interview.m4a', size: '31 MB', meta: 32, date: '2026-08-18', by: 'ME', used: ['meeting-kickoff', 'brd', 'spec-settlement'], pv: { type: 'audio', lines: [['01:20', 'Finance Ops', 'The weekly reconciliation takes two analysts almost a full day.'], ['09:48', 'Finance Ops', 'Disputes arrive by phone; we have no single list of open disputes.'], ['17:05', 'You', 'If merchants could export statements themselves, would that remove most requests?'], ['17:21', 'Finance Ops', 'Yes, CSV and Excel would cover almost everything.']] } },
+      ];
+
+      /* ================= per-project datasets (lifecycle states) ================= */
+      const mkSrc = (id, kind, name, size, meta, date, grp, paras, used) => ({ id, kind, icon: { pdf: 'file-text', doc: 'file-type-2', sheet: 'sheet', audio: 'audio-lines', transcript: 'captions', md: 'notebook-pen', image: 'image' }[kind], name, size, meta, date, by: 'ME', used: used || [], grp,
+        pv: kind === 'sheet' ? { type: 'sheet', head: paras[0], rows: paras.slice(1) } : (kind === 'audio' || kind === 'transcript') ? { type: 'audio', lines: paras } : { type: 'text', paras } });
+      const lines = (...a) => a;
+
+      /* ---------- Saigon Logistics TMS: Initial just started — sources only, nothing generated ---------- */
+      const SRC_SAIGON = [
+        mkSrc('rfp', 'pdf', 'RFP – Transport Management System.pdf', '1.8 MB', 26, '2026-11-17', 'docs', ['Saigon Logistics Co. invites proposals for a Transport Management System covering order intake, dispatch, trip tracking and proof of delivery.', 'Scope of the pilot: 140 trucks across three depots (Ho Chi Minh City, Da Nang, Hanoi). Integration with the existing ERP is expected.', 'Timeline: pilot decision by Q1 2027.']),
+        mkSrc('dispatch-xlsx', 'sheet', 'Current dispatch process.xlsx', '214 KB', 4, '2026-11-18', 'docs', [['Depot', 'Trucks', 'Trips / day', 'Dispatchers'], ['Ho Chi Minh City', '78', '112', '6'], ['Da Nang', '31', '38', '2'], ['Hanoi', '31', '44', '3']]),
+        mkSrc('intro-call', 'transcript', 'Intro call transcript.vtt', '58 KB', 42, '2026-11-19', 'meet', lines(['00:35', 'Ops Director', 'We assign trucks by phone and Excel. Double-bookings happen several times a week.'], ['06:10', 'Ops Director', 'Customers call the dispatch desk all day to ask where their goods are.'], ['14:22', 'You', 'How many trucks and depots are we talking about for Release 1?'], ['14:40', 'Ops Director', 'About 140 trucks across three depots: Ho Chi Minh City, Da Nang and Hanoi.'], ['29:05', 'You', 'Let us schedule a workshop with the dispatch team to walk through a real day.'])),
+      ];
+
+      /* ---------- VietHealth Telemedicine: scoping ---------- */
+      const SRC_VH = [
+        mkSrc('ops-overview', 'pdf', 'Clinic operations overview.pdf', '3.1 MB', 18, '2026-10-26', 'docs', ['VietHealth operates 12 clinics in Ho Chi Minh City with about 85 doctors and 1,900 consultations per day in clinic.', 'Front-desk registration and waiting are the main sources of patient complaints (average wait: 25 minutes).'], ['brd']),
+        mkSrc('journey-map', 'image', 'Patient journey map.png', '1.2 MB', 1, '2026-10-27', 'docs', ['Journey map (summary): book appointment, receive reminder, check in, wait, consult, receive prescription, pay, follow-up.', 'Pain points marked: waiting time, prescription collection, missed follow-ups for chronic patients.'], ['brd', 'meeting-notes']),
+        mkSrc('his-spec', 'doc', 'Current HIS integration spec.docx', '640 KB', 24, '2026-10-30', 'docs', ['The HIS exposes a REST read API for patient demographics, visit history and lab results (OAuth2 client credentials).', 'Write access for visit notes is not documented. Vendor contact for integration: HIS support desk.'], ['brd', 'scope']),
+        mkSrc('kickoff-vtt', 'transcript', 'Kickoff transcript.vtt', '71 KB', 52, '2026-10-28', 'meet', lines(['02:10', 'Sponsor', 'We want patients to see a doctor without travelling to the clinic for follow-ups.'], ['11:45', 'Medical director', 'Chronic-care follow-ups are where we lose patients; 30% skip them.'], ['23:20', 'You', 'Patient data must stay in Vietnam, correct?'], ['23:31', 'IT lead', 'Yes, Decree 13 applies, and our HIS is on premises.']), ['meeting-notes']),
+        mkSrc('workshop-m4a', 'audio', 'Clinical workflow workshop.m4a', '88 MB', 95, '2026-11-04', 'meet', lines(['05:12', 'Medical director', 'First visits stay in the clinic. Video is for follow-ups.'], ['31:40', 'Clinic ops lead', 'Doctors need the patient history in front of them during the call.'], ['58:03', 'Medical director', 'A doctor must sign every prescription. We need a paper fallback.']), ['meeting-notes', 'brd']),
+        mkSrc('itsec-notes', 'md', 'IT security session notes.md', '9 KB', 2, '2026-11-18', 'meet', ['Attendees: IT security & compliance lead, clinic operations lead.', 'Records stay in Vietnam and every access is logged. MFA for doctors and staff. Security review of the video provider before signing.', 'Insights not extracted yet.'], []),
+      ];
+      const ART_VH = [
+        { id: 'meeting-notes', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff & clinical workshop', src: ['kickoff-vtt', 'workshop-m4a', 'journey-map'], tasks: [],
+          vers: [['AI', '2026-10-30', 'Generated from the kickoff transcript'], ['AI', '2026-11-05', 'Added the clinical workflow workshop'], ['ME', '2026-11-12', 'Confirmed action items with the client']],
+          doc: { lead: '**Meetings:** 28 Oct 2026 (kickoff), 4 Nov 2026 (clinical workflow workshop)', sections: [
+            S('Attendees', '- VietHealth Clinics: client sponsor, medical director, clinic operations lead', '- You (KMS)'),
+            S('Key discussion points', 'Patients wait 25 minutes on average at the front desk; 30% of chronic-care patients skip follow-up visits.', '- Video consultations cover follow-up visits only; first visits stay in the clinic', '- Doctors need the full patient history from the HIS during the call', '- Prescriptions must be signed by the doctor; paper fallback until the legal scope is clear'),
+            S('Decisions', '- Build a telemedicine platform for 12 clinics: booking, video visits, e-prescription, payments', '- Integrate with the existing HIS for patient records'),
+            S('Action items', '- You: draft BRD v1 by 17 Nov', '- Clinic operations lead: share the HIS integration spec', '- Medical director: confirm the legal basis for e-prescription')] } },
+        { id: 'brd', ph: 'initial', icon: 'file-text', st: 'review', title: 'Business Requirements Doc', src: ['ops-overview', 'journey-map', 'his-spec', 'workshop-m4a'], tasks: [],
+          vers: [['AI', '2026-11-17', 'Generated from meeting notes, HIS spec and operations overview']],
+          comments: [{ at: 'issue and sign e-prescriptions', who: 'CX', t: 'Blocked by Q-03: the legal scope of e-prescription is unconfirmed. Keep it Must until the client answers?' }, { at: 'write consultation notes back to the HIS', who: 'ME', t: 'Depends on Q-04 (who owns the HIS integration). Do not freeze scope before this is answered.' }],
+          doc: { lead: '**VietHealth Telemedicine** · Client: VietHealth Clinics · Version 1.0 · Status: In review', sections: [
+            S('1. Executive summary', 'VietHealth Clinics wants a telemedicine platform so that patients can book appointments, attend follow-up consultations by video and receive prescriptions without travelling to one of its 12 clinics. The platform reduces front-desk waiting and the 30% no-show rate of chronic-care follow-ups.', 'Release 1 covers the 12 clinics in Ho Chi Minh City and about 250 consultations per day.', '> [!WARNING] Two open questions block the scope freeze: the legal scope of e-prescription (Q-03) and the ownership of the HIS integration (Q-04).'),
+            S('2. Business objectives', '- Cut average front-desk waiting from 25 minutes to under 10 (BO-1)', '- Raise chronic-care follow-up attendance from 70% to 85% (BO-2)', '- Keep all patient data in Vietnam and comply with Decree 13/2023 (BO-3)'),
+            S('3. Stakeholders', '| Role | Party | Responsibility |', '|---|---|---|', '| Executive sponsor | VietHealth Clinics | Budget and sign-off |', '| Medical director | VietHealth Clinics | Clinical workflow and prescription policy |', '| Clinic operations lead | VietHealth Clinics | Scheduling and front desk |', '| IT security & compliance lead | VietHealth Clinics | Hosting, access and audit |', '| Product owner | You (KMS) | Backlog and priorities |', ''),
+            S('4. Functional requirements (excerpt, 22 in total)', '| ID | Requirement | Priority | Source |', '|---|---|---|---|', '| BRD-FR-01 | Patients register and choose one of the 12 clinics | Must | Kickoff |', '| BRD-FR-03 | Patients book, reschedule and cancel appointments with SMS reminders | Must | Journey map |', '| BRD-FR-06 | Doctors and patients join a one-to-one video consultation from the browser | Must | Workshop |', '| BRD-FR-09 | Doctors can write consultation notes back to the HIS | Should | HIS spec |', '| BRD-FR-11 | Doctors see the read-only patient history from the HIS during the call | Must | Workshop |', '| BRD-FR-14 | Doctors issue and sign e-prescriptions inside the platform | Must | Workshop |', '| BRD-FR-18 | Patients pay for consultations online | Should | Kickoff |', ''),
+            S('5. Non-functional requirements (excerpt, 9 in total)', '| ID | Category | Requirement | Target |', '|---|---|---|---|', '| NFR-01 | Privacy | Patient data is stored only on Vietnam-region infrastructure | 100% |', '| NFR-02 | Availability | Video consultation uptime during clinic hours | 99.5% |', '| NFR-03 | Performance | p95 time to join a video consultation | < 5 s |', '| NFR-04 | Auditability | Every access to a medical record is logged and retained | 10 years |', ''),
+            S('6. Open questions', '- Q-03 (blocking): is e-prescription legally valid for chronic-disease refills, and which drug categories are excluded?', '- Q-04 (blocking): who owns the HIS integration and is a write API available?', '- Q-05, Q-06, Q-07: doctor devices, photo upload and payment methods')] } },
+        { id: 'scope', ph: 'initial', icon: 'target', st: 'draft', title: 'Scope Definition – Release 1', src: ['his-spec', 'workshop-m4a'], tasks: [],
+          vers: [['AI', '2026-11-20', 'Generated from BRD v1 and the workshop notes']],
+          doc: { lead: '**Release:** Release 1 (MVP) · **Linked:** BRD v1 · **Status:** Draft, 3 items undecided', sections: [
+            S('In scope (so far)', '- Patient registration and clinic selection', '- Appointment booking with reminders', '- One-to-one video consultation for follow-up visits', '- Read-only patient history for doctors'),
+            S('Undecided', '- E-prescription issued and signed inside the platform (waiting on Q-03)', '- Two-way HIS integration (waiting on Q-04)', '- Photo upload before a consultation (waiting on Q-06)'),
+            S('Out of scope', '- Insurance claim processing', '- Pharmacy delivery logistics')] } },
+      ];
+
+      /* ---------- Mekong Retail: Initial done, Scaffolding in progress ---------- */
+      const SRC_MK = [
+        mkSrc('rfp', 'pdf', 'RFP – Mekong Omnichannel.pdf', '2.9 MB', 34, '2026-07-15', 'docs', ['Mekong Retail JSC seeks to unify stock, orders and loyalty across 60 stores, the web shop and the mobile app.', 'The existing Spring Boot platform must be extended, not replaced.'], ['brd', 'scope', 'sow']),
+        mkSrc('arch-overview', 'pdf', 'Current architecture overview.pdf', '1.4 MB', 29, '2026-08-19', 'docs', ['Order and inventory services run as a Java 21 / Spring Boot monolith on Azure. Stock sync with stores is a nightly batch.', 'The POS is vendor-managed and exposes REST endpoints for stock decrements and loyalty lookup. No push events.'], ['c4', 'adr-001', 'adr-004']),
+        mkSrc('pos-erp-spec', 'doc', 'POS and ERP integration spec.docx', '780 KB', 18, '2026-08-20', 'docs', ['POST /stock/decrement and GET /loyalty/{customerId} are the only supported POS endpoints. Rate limit: 50 requests per second.', 'ERP posts purchase orders nightly through SFTP.'], ['brd', 'adr-004']),
+        mkSrc('store-process', 'doc', 'Store operations process.docx', '420 KB', 11, '2026-08-05', 'docs', ['Click-and-collect orders are printed at 08:00 and 14:00, picked by store staff and held for three days.'], ['brd', 'scope']),
+        mkSrc('stock-sheet', 'sheet', 'Stock sync volumes 2026.xlsx', '96 KB', 3, '2026-08-21', 'docs', [['Month', 'SKUs', 'Stock events / day', 'Peak factor'], ['Aug 2026', '48,000', '420,000', '1.4x'], ['Oct 2026', '52,000', '510,000', '1.6x'], ['Nov 2026 (forecast)', '55,000', '1,500,000', '3.0x']], ['adr-004', 'estimation']),
+        mkSrc('kickoff-m4a', 'audio', 'Kickoff recording 2026-07-21.m4a', '52 MB', 55, '2026-07-21', 'meet', lines(['03:10', 'Head of omnichannel', 'Eight percent of our online orders are cancelled because the stock was wrong.'], ['19:44', 'Store ops lead', 'Store staff cannot see online reservations when they serve walk-in customers.'], ['41:12', 'You', 'So we extend the platform instead of rebuilding it, correct?'], ['41:25', 'Head of omnichannel', 'Correct. Phase 1 must be live before the mid-year sale.']), ['meeting-notes', 'brd']),
+        mkSrc('store-interview', 'audio', 'Store operations interview.m4a', '36 MB', 40, '2026-08-05', 'meet', lines(['02:30', 'Store ops lead', 'We pick click-and-collect orders from printed lists twice a day.'], ['17:05', 'Store ops lead', 'A tablet with a pick list and a two-hour pickup promise would change our day.']), ['brd']),
+      ];
+      const ART_MK = [
+        { id: 'meeting-notes', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff 2026-07-21', src: ['kickoff-m4a', 'store-interview'], tasks: [],
+          vers: [['AI', '2026-07-23', 'Generated from the kickoff recording'], ['ME', '2026-07-30', 'Added store operations interview and action owners']],
+          doc: { lead: '**Date:** 21 Jul 2026 · **Location:** Mekong Retail HQ, Tan Binh · **Recorded:** 55 min', sections: [
+            S('Key discussion points', '- Pain: online and in-store stock differ; 8% of online orders are cancelled for stock errors', '- Pain: store staff cannot see online reservations while serving walk-in customers', '- Constraint: phase 1 must go live before the mid-year sale 2027'),
+            S('Decisions', '- Extend the existing platform instead of rebuilding it', '- 60 stores and the web shop are in scope for release 1')] } },
+        { id: 'brd', ph: 'initial', icon: 'file-text', st: 'approved', title: 'Business Requirements Doc', src: ['rfp', 'arch-overview', 'pos-erp-spec', 'store-process', 'kickoff-m4a'], tasks: [],
+          vers: [['AI', '2026-08-28', 'Generated from RFP and kickoff notes'], ['ME', '2026-09-12', 'Added ship-from-store and promotion requirements']],
+          doc: { lead: '**Mekong Retail — Omnichannel** · Version 2.0 · Status: Approved', sections: [
+            S('Objectives', '- Show one reliable stock figure across web, app and stores (BO-1)', '- Cut online order cancellations caused by stock errors from 8% to 2% (BO-2)', '- One customer profile and loyalty balance across all channels (BO-3)'),
+            S('Key requirements', '| ID | Category | Requirement | Target |', '|---|---|---|---|', '| NFR-01 | Performance | p95 latency of the stock availability API | < 200 ms |', '| NFR-02 | Freshness | Stock change visible across all channels | < 60 s |', '| NFR-03 | Availability | Click-and-collect ordering uptime | 99.9% |', '')] } },
+        { id: 'scope', ph: 'initial', icon: 'target', st: 'approved', title: 'Scope Definition – Release 1', src: ['rfp', 'store-process'], tasks: [],
+          vers: [['AI', '2026-09-08', 'Generated from BRD v1'], ['ME', '2026-09-10', 'Confirmed MoSCoW with the client']],
+          doc: { lead: '**Release:** Release 1 · **Linked:** BRD v2, SOW', sections: [
+            S('In scope', '- Unified stock availability across web, app and stores', '- Click-and-collect with store pick lists', '- Order orchestration with ship-from-store', '- One customer profile and loyalty balance', '- POS integration for stock and loyalty', '- Promotion engine shared by web and POS'),
+            S('Out of scope', '- Third-party marketplace integration (release 2)', '- POS hardware and ERP replacement')] } },
+        { id: 'estimation', ph: 'initial', icon: 'calculator', st: 'approved', title: 'Effort Estimation', src: ['stock-sheet'], tasks: [],
+          vers: [['AI', '2026-09-29', 'Generated from scope definition']],
+          doc: { lead: '**Total:** 3,480 hours · **Team:** 8 · **Duration:** 6 sprints to MVP', sections: [
+            S('Effort by area', '| Area | Hours | Share |', '|---|---|---|', '| Stock and event pipeline | 940 | 27% |', '| Click-and-collect and store apps | 820 | 24% |', '| Order orchestration | 720 | 21% |', '| POS and loyalty integration | 560 | 16% |', '| QA, performance and PM | 440 | 12% |', '')] } },
+        { id: 'sow', ph: 'initial', icon: 'file-signature', st: 'approved', title: 'Statement of Work', src: ['rfp'], tasks: [],
+          vers: [['AI', '2026-10-05', 'Generated from scope and estimation'], ['ME', '2026-10-10', 'Legal review applied; signed']],
+          doc: { lead: '**Contract ref:** MR-KMS-2026-021 · **Signed:** 10 Oct 2026', sections: [
+            S('Parties', 'Mekong Retail JSC (Client) and KMS Technology (Vendor).'),
+            S('Commercials', 'Time-and-materials with a not-to-exceed cap of 3,480 hours for Release 1.')] } },
+        { id: 'c4', ph: 'release', icon: 'network', st: 'approved', title: 'Solution Architecture (C4)', src: ['arch-overview', 'pos-erp-spec'], tasks: [],
+          vers: [['AI', '2026-10-14', 'Generated from the existing architecture overview'], ['CC', '2026-10-16', 'Added the stock event pipeline container'], ['ME', '2026-10-18', 'Approved']],
+          doc: { lead: '**Level:** Context + Container · **Mode:** Brownfield extension of the existing platform', sections: [
+            S('System context', 'Customers use the web shop and mobile app; store staff use tablets and the vendor POS. The new services wrap the existing order and inventory monolith.', '```\n[Web / App] --> [API gateway] --> [Order service (existing)] --> [PostgreSQL]\n[Store tablets] -----^        |--> [Stock service (new)] --> [Event bus]\n[POS (vendor)] <--- poll/decrement ---+\n```'),
+            S('Containers', '- Order service (existing Spring Boot, wrapped by a strangler facade)', '- Stock service (new, event-sourced availability)', '- Event bus (decision pending: ADR-004)', '- Store pick-list app (React 18)')] } },
+        { id: 'adr-001', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-001 · Strangler facade around the order service', src: [], tasks: [], vers: [['CC', '2026-10-13', 'Accepted']],
+          adr: adr(1, 'Strangler facade around the order service', '13 Oct 2026', 'Accepted', 'The existing Spring Boot order service works and carries business rules we do not want to rewrite.', 'Add a facade in front of the order service and move capabilities behind it one at a time.', ['- Rewrite the order service — rejected: schedule and risk', '- Leave it untouched — rejected: cannot expose stock events'], ['- Incremental delivery with no big-bang cut-over', '- Characterisation tests are needed before each move']) },
+        { id: 'adr-002', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-002 · Change-data-capture for stock events', src: ['arch-overview'], tasks: [], vers: [['CC', '2026-10-15', 'Accepted']],
+          adr: adr(2, 'Change-data-capture for stock events', '15 Oct 2026', 'Accepted', 'The POS offers no push events, and the nightly batch leaves stock up to 24 hours stale.', 'Capture changes on the stock tables with logical replication and publish them as events.', ['- Dual writes from the application — rejected: inconsistency risk', '- More frequent batches — rejected: still minutes of delay'], ['- Near-real-time stock without touching the POS', '- Replication lag must be monitored']) },
+        { id: 'adr-003', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-003 · Keep Azure DevOps and Azure Container Apps', src: [], tasks: [], vers: [['ME', '2026-10-17', 'Accepted']],
+          adr: adr(3, 'Keep Azure DevOps and Azure Container Apps', '17 Oct 2026', 'Accepted', 'The client already runs pipelines and hosting on Azure and has operations staff for it.', 'Keep Azure DevOps pipelines and host new services on Azure Container Apps in Southeast Asia.', ['- GitHub Actions — rejected: second toolchain for the client', '- AKS — rejected: operational overhead for 8 engineers'], ['- No new tooling for the client IT team', '- Region is fixed to Southeast Asia (data residency)']) },
+        { id: 'adr-004', ph: 'release', icon: 'git-pull-request-arrow', st: 'review', title: 'ADR-004 · Event bus: Azure Service Bus vs Kafka', src: ['stock-sheet', 'arch-overview', 'pos-erp-spec'], tasks: [],
+          vers: [['AI', '2026-11-20', 'Drafted from the stock sync requirements (NFR-02)'], ['CC', '2026-11-23', 'Added throughput comparison and operating cost estimate']],
+          comments: [{ at: 'operating cost', who: 'CC', t: 'The cost model assumes 1.5M events per day at peak (Q-05). Kafka needs about two more operations hours per sprint.' }],
+          adr: adr(4, 'Event bus: Azure Service Bus vs Kafka', '23 Nov 2026', 'Proposed — awaiting your approval', 'Stock changes must reach every channel within 60 seconds (NFR-02). The stock service publishes about 1.5 million events per day at peak (3x normal at Black Friday). The client already runs on Azure and has no Kafka experience.', 'Use Azure Service Bus (Premium tier) with topics per domain event. Revisit Kafka only if sustained throughput exceeds 10 million events per day.', ['- Kafka on Confluent Cloud — rejected for now: roughly 2.3x the operating cost and two more operations hours per sprint', '- Self-hosted Kafka on AKS — rejected: operational overhead for a team of 8', '- Azure Event Hubs — rejected: weaker per-message ordering and dead-lettering'], ['- Managed service, no new operations skills for the client', '- Ordering guaranteed per session key (store id), which is enough for stock', '- Lock-in to Azure messaging; an outbox keeps producers portable', '- The dev-container and CI/CD steps wait for this decision']) },
+        { id: 'tech-stack', ph: 'release', icon: 'layers', st: 'approved', title: 'Tech Stack Decision', src: [], tasks: [], vers: [['AI', '2026-10-19', 'Generated from ADR-001..003'], ['ME', '2026-10-20', 'Approved']],
+          doc: { lead: '**Owner:** You · **Linked:** ADR-001, ADR-002, ADR-003', sections: [
+            S('Stack summary', '| Layer | Choice | Why |', '|---|---|---|', '| Existing services | Java 21, Spring Boot | Already in production |', '| Store and web UI | React 18 | Existing front-end skills |', '| Data | PostgreSQL | Existing; supports logical replication |', '| Messaging | Azure Service Bus (pending ADR-004) | Managed, fits Azure estate |', '| Delivery | Azure DevOps, Azure Container Apps | Client standard |', '')] } },
+        { id: 'repo-structure', ph: 'release', icon: 'folder-tree', st: 'approved', title: 'Repository Structure', src: [], tasks: [], vers: [['AI', '2026-10-21', 'Generated scaffolding plan for the existing repository'], ['CC', '2026-10-22', 'Approved after the structure step']],
+          doc: { lead: '**Repository:** ' + PC.project('mekong').repo + ' · **Mode:** existing (brownfield), branch main', sections: [
+            S('New modules', '```\nservices/\n  order/         existing Spring Boot (unchanged)\n  stock/         new stock service\n  facade/        strangler facade\napps/\n  pickup-tablet/ React 18 store pick-list app\ninfra/           IaC for Container Apps\n```'),
+            S('Conventions', '- Trunk-based development with short-lived branches', '- Agents work in git worktrees under .procheck\\worktrees')] } },
+      ];
+
+      /* ---------- Atlas HR Suite: full lifecycle incl. SDLC ---------- */
+      const SRC_AT = [
+        mkSrc('process-map', 'pdf', 'Atlas HR process map.pdf', '2.2 MB', 21, '2026-01-13', 'docs', ['Core HR, leave, attendance, payroll and onboarding processes as run today, with owners and handoffs.', 'Employee data is split across three spreadsheets and the legacy HR tool.'], ['brd', 'scope']),
+        mkSrc('data-dict', 'sheet', 'Legacy HR tool data dictionary.xlsx', '180 KB', 6, '2026-01-27', 'docs', [['Entity', 'Fields', 'Records', 'Quality'], ['Employee', '64', '2,412', 'Good'], ['Contract', '28', '3,106', 'Fair'], ['Leave balance', '12', '2,412', 'Fair'], ['Payroll history', '41', '28,900', 'Good']], ['brd', 'repo-structure']),
+        mkSrc('napas', 'pdf', 'NAPAS bank file format v3.pdf', '740 KB', 16, '2026-02-16', 'docs', ['Header, detail and trailer records; amounts in VND without decimals; maximum 5,000 detail lines per file.', 'Files are rejected if the trailer checksum does not match the sum of detail amounts.'], ['brd', 'spec-payroll']),
+        mkSrc('closing', 'doc', 'Payroll closing checklist.docx', '210 KB', 5, '2026-02-17', 'docs', ['Days 1 to 3: collect attendance and leave. Days 4 to 6: calculate and review. Day 7: bank file and payment.'], ['estimation', 'spec-payroll']),
+        mkSrc('kickoff-m4a', 'audio', 'Kickoff recording 2026-01-12.m4a', '41 MB', 45, '2026-01-12', 'meet', lines(['02:15', 'HR director', 'Payroll errors reach about three percent of employees every month.'], ['15:40', 'IT lead', 'Salary and identity data must not leave the Atlas Group network.']), ['meeting-notes', 'brd']),
+        mkSrc('payroll-ws', 'audio', 'Leave and attendance interview.m4a', '28 MB', 35, '2026-02-02', 'meet', lines(['04:22', 'HR director', 'When an approver is on leave the whole chain stops.']), ['spec-leave']),
+      ];
+      const ART_AT = [
+        { id: 'meeting-notes', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff 2026-01-12', src: ['kickoff-m4a'], tasks: [],
+          vers: [['AI', '2026-01-14', 'Generated from the kickoff recording'], ['ME', '2026-01-16', 'Added action owners']],
+          doc: { lead: '**Date:** 12 Jan 2026 · **Location:** Atlas Group HQ · **Recorded:** 45 min', sections: [S('Decisions', '- Build one HR suite for about 2,400 employees: core HR, leave, payroll and self-service', '- Salary and ID data stay inside the Atlas Group network')] } },
+        { id: 'brd', ph: 'initial', icon: 'file-text', st: 'approved', title: 'Business Requirements Doc', src: ['process-map', 'data-dict', 'napas', 'kickoff-m4a'], tasks: [['AH-298', 'Leave approval delegation'], ['AH-311', 'Payroll export to bank file (NAPAS)']],
+          vers: [['AI', '2026-02-10', 'Generated from process map and interviews'], ['ME', '2026-02-20', 'Added payroll and bank file requirements'], ['AI', '2026-03-02', 'Tightened NFRs and added delegation rules']],
+          doc: { lead: '**Atlas HR Suite** · Internal project · Version 3.0 · Status: Approved', sections: [
+            S('Objectives', '- Cut payroll closing from 4 days to 2 (BO-1)', '- Reduce payroll errors from about 3% of employees to below 0.5% (BO-2)', '- Retire the legacy HR tool before its licence ends on 30 Jun 2026 (BO-3)'),
+            S('Key requirements', '| ID | Category | Requirement | Target |', '|---|---|---|---|', '| NFR-01 | Security | Salary and ID data encrypted; access by role with audit | 100% |', '| NFR-02 | Compliance | Payroll rules versioned; any past period reproducible | 5 years |', '| NFR-03 | Performance | Monthly payroll run completes within the closing window | < 2 h |', '| NFR-04 | Integration | Bank file passes the NAPAS validator | 100% |', '')] } },
+        { id: 'scope', ph: 'initial', icon: 'target', st: 'approved', title: 'Scope Definition – Release 1', src: ['process-map'], tasks: [],
+          vers: [['AI', '2026-02-24', 'Generated from BRD v2'], ['ME', '2026-02-25', 'Confirmed MoSCoW with the HR steering committee']],
+          doc: { lead: '**Release:** Release 1 · **Linked:** BRD v3, SOW', sections: [S('In scope', '- Employee master data and organisation chart', '- Leave and attendance with approval delegation', '- Payroll calculation and the NAPAS bank file', '- Employee self-service (web)', '- Onboarding checklists'), S('Out of scope', '- Recruiting and applicant tracking', '- Time-clock hardware integration')] } },
+        { id: 'estimation', ph: 'initial', icon: 'calculator', st: 'approved', title: 'Effort Estimation', src: ['closing'], tasks: [],
+          vers: [['AI', '2026-03-04', 'Generated from scope definition'], ['CC', '2026-03-06', 'Adjusted payroll testing effort']],
+          doc: { lead: '**Total:** 5,600 hours · **Team:** 7 · **Duration:** 9 sprints to Release 1', sections: [S('Effort by area', '| Area | Hours | Share |', '|---|---|---|', '| Core HR and migration | 1,300 | 23% |', '| Leave and attendance | 980 | 18% |', '| Payroll and bank file | 1,760 | 31% |', '| Self-service portal | 760 | 14% |', '| QA and PM | 800 | 14% |', '')] } },
+        { id: 'sow', ph: 'initial', icon: 'file-signature', st: 'approved', title: 'Statement of Work (internal)', src: [], tasks: [],
+          vers: [['ME', '2026-03-14', 'Signed by HR and IT']],
+          doc: { lead: '**Contract ref:** ATL-INT-2026-003 · **Signed:** 14 Mar 2026', sections: [S('Parties', 'Atlas Group HR (Sponsor) and Atlas Group IT with KMS Technology (Delivery).'), S('Commercials', 'Capped at 5,600 hours for Release 1; scope changes go through the HR steering committee.')] } },
+        { id: 'c4', ph: 'release', icon: 'network', st: 'approved', title: 'Solution Architecture (C4)', src: ['data-dict'], tasks: [],
+          vers: [['AI', '2026-03-24', 'Generated from BRD and hosting constraints'], ['CC', '2026-03-26', 'Added payroll engine container']],
+          doc: { lead: '**Level:** Context + Container · **Hosting:** Atlas Group internal network', sections: [S('Containers', '- Employee portal (Angular 19)', '- HR API (.NET 8 modular monolith)', '- Payroll engine (versioned rule sets)', '- SQL Server 2022 with row-level security', '- Entra ID single sign-on')] } },
+        { id: 'adr-001', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-001 · Modular monolith on .NET 8', src: [], tasks: [], vers: [['CC', '2026-03-25', 'Accepted']],
+          adr: adr(1, 'Modular monolith on .NET 8', '25 Mar 2026', 'Accepted', 'The internal IT team runs .NET and has no capacity for many deployables.', 'Build one modular .NET 8 application with enforced module boundaries.', ['- Microservices — rejected: operations capacity', '- Low-code HR platform — rejected: payroll rules'], ['- Simple deployment on the internal cluster', '- Module boundaries tested in CI']) },
+        { id: 'adr-002', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-002 · SQL Server with row-level security', src: [], tasks: [], vers: [['CC', '2026-03-27', 'Accepted']],
+          adr: adr(2, 'SQL Server with row-level security', '27 Mar 2026', 'Accepted', 'Salary data must only be visible to payroll staff and the employee concerned.', 'Use SQL Server 2022 with row-level security policies and always-encrypted columns for salary.', ['- Application-level filtering only — rejected: audit exposure'], ['- Defence in depth for salary data', '- Reporting needs a dedicated view layer']) },
+        { id: 'adr-003', ph: 'release', icon: 'git-pull-request-arrow', st: 'approved', title: 'ADR-003 · Internal Kubernetes hosting', src: [], tasks: [], vers: [['ME', '2026-03-30', 'Accepted']],
+          adr: adr(3, 'Internal Kubernetes hosting', '30 Mar 2026', 'Accepted', 'Salary and ID data must not leave the Atlas Group network.', 'Host on the internal Kubernetes cluster with GitLab CI pipelines.', ['- Public cloud — rejected: data residency policy'], ['- Full control of data location', '- Capacity planning is owned by Atlas IT']) },
+        { id: 'tech-stack', ph: 'release', icon: 'layers', st: 'approved', title: 'Tech Stack Decision', src: [], tasks: [], vers: [['AI', '2026-03-31', 'Generated from ADR-001..003'], ['ME', '2026-04-02', 'Approved']],
+          doc: { lead: '**Owner:** You · **Linked:** ADR-001..003', sections: [S('Stack summary', '| Layer | Choice | Why |', '|---|---|---|', '| UI | Angular 19 | Internal skills |', '| API | .NET 8 | Internal skills |', '| Data | SQL Server 2022 | RLS and encryption |', '| Identity | Entra ID | Group standard |', '')] } },
+        { id: 'repo-structure', ph: 'release', icon: 'folder-tree', st: 'approved', title: 'Repository Structure', src: ['data-dict'], tasks: [], vers: [['AI', '2026-04-08', 'Generated scaffolding plan'], ['CC', '2026-04-10', 'Approved after scaffolding run']],
+          doc: { lead: '**Repository:** ' + PC.project('atlas-hr').repo + ' · **Layout:** modular monolith', sections: [S('Layout', '```\nsrc/\n  Atlas.Api/        HTTP API\n  Atlas.Core/       employee, org chart\n  Atlas.Leave/      leave and attendance\n  Atlas.Payroll/    rules, calculation, bank file\nweb/portal/         Angular 19\n```')] } },
+        { id: 'cicd', ph: 'release', icon: 'workflow', st: 'approved', title: 'CI/CD Pipeline Spec', src: [], tasks: [], vers: [['AI', '2026-04-14', 'Generated from repo structure'], ['CC', '2026-04-16', 'Added payroll regression gate']],
+          doc: { lead: '**Platform:** GitLab CI · **Environments:** test, staging, production', sections: [S('Quality gates', '- Payroll regression suite must reproduce the last 3 closed periods', '- NAPAS validator passes on the generated sample file')] } },
+        { id: 'spec-leave', ph: 'sdlc', icon: 'file-text', st: 'review', title: 'Feature spec – Leave approval delegation', src: ['payroll-ws'], tasks: [['AH-298', 'Leave approval delegation']],
+          vers: [['AI', '2026-10-20', 'Generated from BRD FR-12, FR-13'], ['ME', '2026-11-12', 'Updated after changes requested on AH-298']],
+          doc: { lead: '**Epic:** Leave & attendance · **BRD:** FR-12, FR-13', sections: [S('Acceptance criteria', '- An approver can delegate approval to one person for a date range', '- The delegate cannot re-delegate', '- Delegated approvals are labelled in the audit log', '- Delegation ends automatically at the end date')] } },
+        { id: 'spec-payroll', ph: 'sdlc', icon: 'file-text', st: 'approved', title: 'Feature spec – Payroll export to bank file (NAPAS)', src: ['napas', 'closing'], tasks: [['AH-311', 'Payroll export to bank file (NAPAS)']],
+          vers: [['AI', '2026-09-30', 'Generated from BRD FR-24 and the NAPAS format'], ['ME', '2026-10-08', 'Added two-person approval']],
+          doc: { lead: '**Epic:** Payroll · **BRD:** FR-24, NFR-04', sections: [S('Acceptance criteria', '- File follows NAPAS v3 with header, detail and trailer records', '- Payroll lead prepares and HR director approves the file', '- Trailer checksum equals the sum of detail amounts', '- Files above 5,000 lines are split automatically')] } },
+        { id: 'test-strategy', ph: 'sdlc', icon: 'flask-conical', st: 'review', title: 'Test strategy', src: ['closing'], tasks: [['AH-311', 'Payroll export to bank file (NAPAS)']],
+          vers: [['AI', '2026-09-12', 'Generated from CI/CD spec and BRD'], ['CX', '2026-11-18', 'Added e2e evidence rules after the AH-311 failure']],
+          doc: { lead: '**Owner:** You · **Applies to:** all agent-implemented tasks', sections: [S('Scope', 'Unit, API contract, payroll regression and browser e2e tests. Every agent task attaches e2e evidence for human review.'), S('Exit criteria for v2.0', '- All Must requirements have a passing e2e scenario', '- Payroll regression reproduces the last 3 closed periods', '- e2e pass rate of at least 95% over the last 5 runs')] } },
+        { id: 'release-notes', ph: 'sdlc', icon: 'megaphone', st: 'draft', title: 'Release notes 2.0', src: [], tasks: [['AH-298', 'Leave approval delegation'], ['AH-311', 'Payroll export to bank file (NAPAS)']],
+          vers: [['AI', '2026-11-22', 'Draft generated from merged pull requests'], ['AI', '2026-11-23', 'Marked AH-311 as blocked by failing e2e']],
+          doc: { lead: '**Version:** 2.0 · **Sprint:** 9 · **Status:** Draft, release readiness 82%', sections: [
+            S('Highlights', '- Leave approval delegation for managers who are away (AH-298, changes requested)', '- Payroll export to the NAPAS bank file with two-person approval (AH-311, blocked)', '- Versioned payroll rule sets for Vietnamese PIT and social insurance'),
+            S('Known issues', '- AH-311: 3 of 9 e2e tests fail on trailer checksum for files split above 5,000 lines', '- AH-298: delegation end date is not shown in the audit log yet'),
+            S('Upgrade notes', '- Run the payroll regression suite on the last 3 closed periods before enabling the new export')] } },
+      ];
+
+      /* ---------- selection per project ---------- */
+      const PID = PC.project().id;
+      const SETS = {
+        'saigon-tms': { art: [], src: SRC_SAIGON, sel: null },
+        'viethealth': { art: ART_VH, src: SRC_VH, sel: 'brd' },
+        'mekong': { art: ART_MK, src: SRC_MK, sel: 'adr-004' },
+        'lotus-pay': { art: ART_LOTUS, src: SRC_LOTUS, sel: 'spec-settlement' },
+        'atlas-hr': { art: ART_AT, src: SRC_AT, sel: 'release-notes' },
+      };
+      const SET = SETS[PID] || SETS['lotus-pay'];
+      const ART = SET.art, SRC = SET.src;
+      SRC_LOTUS.forEach(s => { s.grp = (s.kind === 'audio') ? 'meet' : 'docs'; });
+      finalize(ART);
+      const byId = id => ART.find(a => a.id === id);
+
+      const KIND_TILE = { pdf: 'pdf', doc: 'doc', sheet: 'sheet', audio: 'audio', md: 'md', transcript: 'md' };
+      const srcById = id => SRC.find(s => s.id === id);
+
+      const TPL = [
+        { id: 'notes', icon: 'mic', ph: 'initial', name: 'Meeting notes', secs: ['Attendees', 'Key discussion points', 'Decisions', 'Action items'] },
+        { id: 'brd', icon: 'file-text', ph: 'initial', name: 'Business Requirements Doc', secs: ['Executive summary', 'Business objectives', 'Stakeholders', 'Functional requirements', 'Non-functional requirements', 'Assumptions & constraints'] },
+        { id: 'srs', icon: 'file-code-2', ph: 'initial', name: 'Software Requirements Spec', secs: ['Purpose', 'System overview', 'Functional requirements', 'Interfaces', 'Quality attributes'] },
+        { id: 'stories', icon: 'list-checks', ph: 'sdlc', name: 'User stories', secs: ['Epics', 'Stories', 'Acceptance criteria', 'Open questions'] },
+        { id: 'est', icon: 'calculator', ph: 'initial', name: 'Effort Estimation', secs: ['Summary', 'Breakdown', 'Assumptions', 'Risks'] },
+        { id: 'sow', icon: 'file-signature', ph: 'initial', name: 'Statement of Work', secs: ['Parties', 'Deliverables', 'Commercials', 'Terms'] },
+        { id: 'arch', icon: 'network', ph: 'release', name: 'Architecture overview', secs: ['Context', 'Containers', 'Quality attributes', 'Risks'] },
+        { id: 'adr', icon: 'git-pull-request-arrow', ph: 'release', name: 'ADR', secs: ['Context', 'Decision', 'Alternatives considered', 'Consequences'] },
+        { id: 'test', icon: 'flask-conical', ph: 'sdlc', name: 'Test plan', secs: ['Scope', 'Strategy', 'Environments', 'Exit criteria'] },
+      ];
+
+      /* ================= state ================= */
+      const state = { tab: 'artifacts', sel: SET.sel, ver: null, mode: 'preview', q: '', srcSel: SRC[0].id, closed: {}, draft: {}, meta: true, genSeq: 0 };
+      const cur = () => byId(state.sel);
+      const PNAME = PC.project().name.split(' — ')[0];
+      const verIdx = a => state.ver == null ? a.vers.length - 1 : state.ver;
+      const mdOf = a => (state.draft[a.id] != null && verIdx(a) === a.vers.length - 1) ? state.draft[a.id] : a.vers[verIdx(a)].md;
+      const words = md => (md.replace(/[#>*|`\-\[\]!]/g, ' ').match(/\S+/g) || []).length;
+
+      /* ================= markdown ================= */
+      const inl = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>');
+      const CALL = { NOTE: 'info', WARNING: 'triangle-alert', AI: 'sparkles' };
+      function cell(c) {
+        const t = c.trim();
+        if (/^(Must|Should|Could|Won't)$/.test(t)) return `<span class="badge ${t === 'Must' ? 'badge-danger' : t === 'Should' ? 'badge-warning' : ''}">${t}</span>`;
+        if (/^(BRD-FR|NFR|BO)-\d+$/.test(t)) return `<code>${esc(t)}</code>`;
+        return inl(t);
+      }
+      function renderMd(md) {
+        const lines = md.replace(/\r/g, '').split('\n'); let out = '', i = 0;
+        const src = s => ` data-src="${esc(s)}"`;
+        while (i < lines.length) {
+          const ln = lines[i];
+          if (!ln.trim()) { i++; continue; }
+          if (ln.startsWith('```')) { let j = i + 1, buf = []; while (j < lines.length && !lines[j].startsWith('```')) buf.push(lines[j++]); out += `<pre class="code">${esc(buf.join('\n'))}</pre>`; i = j + 1; continue; }
+          let m;
+          if ((m = ln.match(/^(#{1,3}) (.*)$/))) { out += `<h${m[1].length}${m[1].length > 1 ? src(m[2]) : ''}>${inl(m[2])}</h${m[1].length}>`; i++; continue; }
+          if (/^---+$/.test(ln.trim())) { out += '<hr>'; i++; continue; }
+          if (ln.startsWith('>')) { let j = i, buf = []; while (j < lines.length && lines[j].startsWith('>')) buf.push(lines[j++].replace(/^>\s?/, '')); let txt = buf.join(' '), kind = 'note'; const t = txt.match(/^\[!(\w+)\]\s*/); if (t) { kind = t[1].toLowerCase(); txt = txt.slice(t[0].length); } out += `<div class="callout ${kind}"><i data-lucide="${CALL[kind.toUpperCase()] || 'info'}"></i><div data-src="${esc(txt)}">${inl(txt)}</div></div>`; i = j; continue; }
+          if (ln.startsWith('|')) {
+            let j = i, rows = []; while (j < lines.length && lines[j].startsWith('|')) rows.push(lines[j++]);
+            const split = r => r.replace(/^\||\|$/g, '').split('|');
+            const head = split(rows[0]), body = rows.slice(2).map(split);
+            out += `<div class="tbl table-wrap"><table><thead><tr>${head.map(c => `<th>${esc(c.trim())}</th>`).join('')}</tr></thead><tbody>${body.map(r => `<tr>${r.map(c => `<td${c.trim().length > 14 ? src(c.trim()) : ''}>${cell(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; i = j; continue;
+          }
+          if (/^- /.test(ln)) { let j = i, it = []; while (j < lines.length && /^- /.test(lines[j])) it.push(lines[j++].slice(2)); out += '<ul>' + it.map(t => `<li${src(t)}>${inl(t)}</li>`).join('') + '</ul>'; i = j; continue; }
+          let j = i, buf = []; while (j < lines.length && lines[j].trim() && !/^(#{1,3} |>|\||- |```)/.test(lines[j])) buf.push(lines[j++]); if (!buf.length) buf.push(lines[j++]);
+          // first paragraph right after the H1 is the lead
+          const lead = out.startsWith('<h1') && out.indexOf('<p') < 0;
+          buf.forEach(t => { out += `<p${lead ? ' class="doc-lead"' : ''}${src(t)}>${inl(t)}</p>`; }); i = j;
+        }
+        return out;
+      }
+
+      /* ================= diff ================= */
+      function lineDiff(a, b) {
+        const x = a.split('\n'), y = b.split('\n'), n = x.length, m = y.length;
+        const dp = Array.from({ length: n + 1 }, () => new Int16Array(m + 1));
+        for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = x[i] === y[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+        const out = []; let i = 0, j = 0;
+        while (i < n && j < m) { if (x[i] === y[j]) { out.push({ t: ' ', s: x[i], a: i + 1, b: j + 1 }); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) { out.push({ t: '-', s: x[i], a: i + 1 }); i++; } else { out.push({ t: '+', s: y[j], b: j + 1 }); j++; } }
+        while (i < n) { out.push({ t: '-', s: x[i], a: i + 1 }); i++; } while (j < m) { out.push({ t: '+', s: y[j], b: j + 1 }); j++; }
+        return out;
+      }
+      function renderDiff(a) {
+        const vi = verIdx(a); if (vi === 0) return `<div class="empty"><div class="empty-icon"><i data-lucide="git-compare"></i></div><div>${PC.t('ar.diff.none')}</div></div>`;
+        const d = lineDiff(a.vers[vi - 1].md, mdOf(a)); const add = d.filter(l => l.t === '+').length, del = d.filter(l => l.t === '-').length;
+        if (!add && !del) return `<div class="empty"><div class="empty-icon"><i data-lucide="equal"></i></div><div>${PC.t('ar.diff.same')}</div></div>`;
+        let html = '', k = 0;
+        while (k < d.length) {
+          if (d[k].t === ' ') { let e = k; while (e < d.length && d[e].t === ' ') e++; const run = d.slice(k, e), first = k === 0, last = e === d.length;
+            const keepHead = first ? 0 : 2, keepTail = last ? 0 : 2;
+            if (run.length > keepHead + keepTail + 3) { run.slice(0, keepHead).forEach(l => html += dl(l)); html += `<div class="fold" data-fold="${esc(JSON.stringify(run.slice(keepHead, run.length - keepTail).map(l => [l.a, l.b, l.s])))}"><i data-lucide="unfold-vertical" class="icon-sm" style="display:inline;vertical-align:-3px"></i> ${PC.t('ar.diff.fold', { n: run.length - keepHead - keepTail })}</div>`; run.slice(run.length - keepTail).forEach(l => html += dl(l)); }
+            else run.forEach(l => html += dl(l));
+            k = e; } else { html += dl(d[k]); k++; }
+        }
+        function dl(l) { return `<div class="diff-line ${l.t === '+' ? 'add' : l.t === '-' ? 'del' : ''}"><span>${l.a || ''}</span><span>${l.b || ''}</span><span>${l.t === ' ' ? '  ' : l.t + ' '}${esc(l.s)}</span></div>`; }
+        return `<div class="dv"><div class="sum"><b>${PC.t('ar.diff.title', { b: vi, a: vi + 1 })}</b><span class="add">+${add}</span><span class="del">−${del}</span><span class="text-subtle">· ${byLine(a.vers[vi].who)}</span></div><div class="diff">${html}</div></div>`;
+      }
+
+      /* ================= LEFT LIST ================= */
+      function stBadge(st) { return `<span class="st-dot ${st}"></span>${PC.t('ar.st.' + st)}`; }
+      function renderList() {
+        const el = $('#lp-list'), q = state.q.trim().toLowerCase();
+        $('#cnt-art').textContent = ART.length; $('#cnt-src').textContent = SRC.length;
+        $$('.lp .tab').forEach(t => t.classList.toggle('is-active', t.dataset.tab === state.tab));
+        $('#lp-q').placeholder = PC.t(state.tab === 'artifacts' ? 'ar.search' : 'ar.search.src');
+        if (state.tab === 'artifacts') {
+          let html = '';
+          PH.forEach(ph => {
+            const items = ART.filter(a => a.ph === ph && (!q || a.title.toLowerCase().includes(q)));
+            if (!items.length) return;
+            html += `<div class="grp ph-c-${ph} ${state.closed[ph] && !q ? 'is-closed' : ''}"><button class="grp-h" data-grp="${ph}"><span class="pdot"></span>${PC.t('phase.' + ph)}<span class="count">${items.length}</span><i data-lucide="chevron-down" class="icon-sm chev"></i></button><div class="grp-items">
+              ${items.map(a => `<button class="it ${state.sel === a.id ? 'is-active' : ''}" data-id="${a.id}"><span class="file-tile ${a.icon === 'mic' ? 'audio' : ''}"><i data-lucide="${a.icon}" class="icon-sm"></i></span><span class="grow"><span class="t truncate" style="display:block">${esc(a.title)}</span><span class="s">v${a.vers.length}<span class="text-faint">·</span>${stBadge(a.st)}</span></span>${a.fresh ? `<span class="badge badge-purple new">${PC.t('ar.new')}</span>` : ''}</button>`).join('')}</div></div>`;
+          });
+          el.innerHTML = html || (!ART.length ? `<div class="lp-empty"><div class="empty-icon" style="margin:0 auto var(--space-3)"><i data-lucide="sparkles"></i></div><b style="display:block;color:var(--fg-strong);margin-bottom:4px">${PC.t('ar.empty.t')}</b>${PC.t('ar.empty.list')}<div style="margin-top:var(--space-3)"><button class="btn btn-ai btn-sm" data-first="1"><i data-lucide="sparkles"></i>${PC.t('ar.empty.cta')}</button></div></div>` : `<div class="lp-empty">${PC.t('ar.none')}</div>`);
+        } else {
+          const items = SRC.filter(s => !q || s.name.toLowerCase().includes(q));
+          const srcIt = s => `<button class="it src-it ${state.srcSel === s.id ? 'is-active' : ''}" data-src-id="${s.id}"><span class="file-tile ${KIND_TILE[s.kind] || ''}"><i data-lucide="${s.icon}"></i></span><span class="grow"><span class="t truncate" style="display:block">${esc(s.name)}</span><span class="s">${s.size}<span class="text-faint">·</span>${s.indexing ? `<span class="spinner" style="width:10px;height:10px;border-width:1.5px"></span>${PC.t('ar.indexing')}` : PC.t('ar.used', { n: s.used.length })}</span></span></button>`;
+          el.innerHTML = items.length ? [['docs', 'ar.grp.docs'], ['meet', 'ar.grp.meet']].map(([g, k]) => { const its = items.filter(x => (x.grp || 'docs') === g); return its.length ? `<div class="lp-sub">${PC.t(k)}<span>${its.length}</span></div>` + its.map(srcIt).join('') : ''; }).join('') : `<div class="lp-empty">${PC.t('ar.none')}</div>`;
+        }
+        PC.refresh(el);
+      }
+
+      /* ================= CENTER ================= */
+      function modeSeg() {
+        return `<div class="segmented" id="seg">${[['preview', 'eye'], ['edit', 'file-pen-line'], ['diff', 'git-compare']].map(([m, ic]) => `<button data-mode="${m}" title="${PC.t('ar.mode.' + m)}" class="${state.mode === m ? 'is-active' : ''}"><i data-lucide="${ic}" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.mode.' + m)}</span></button>`).join('')}</div>`;
+      }
+      function renderCenter() {
+        if (state.tab === 'sources') return renderSource();
+        if (!cur()) {
+          const cp0 = $('#cp');
+          cp0.innerHTML = `<div class="cp-body"><div class="ar-empty"><div class="box"><span class="empty-icon"><i data-lucide="sparkles"></i></span><h3>${PC.t('ar.empty.t')}</h3><p class="text-muted" style="margin:0">${PC.t('ar.empty.d')}</p>
+            <div class="row gap-2 wrap" style="justify-content:center"><button class="btn btn-ai" id="btn-first"><i data-lucide="sparkles"></i>${PC.t('ar.empty.cta')}</button><button class="btn btn-secondary" id="btn-up-empty"><i data-lucide="upload"></i>${PC.t('ar.upload')}</button></div>
+            <div class="rec"><span class="file-tile audio"><i data-lucide="mic" class="icon-sm"></i></span><span class="grow"><b>${PC.t('ar.empty.rec')}</b><span class="text-xs text-subtle" style="display:block">${PC.t('ar.empty.rec.d')}</span></span></div></div></div></div>`;
+          PC.refresh(cp0); $('#btn-first').onclick = () => openGenerate(SRC.length ? SRC[SRC.length - 1].id : null, 'notes'); $('#btn-up-empty').onclick = openUpload; return;
+        }
+        const a = cur(), vi = verIdx(a), v = a.vers[vi], latest = vi === a.vers.length - 1, dirty = latest && state.draft[a.id] != null && state.draft[a.id] !== a.vers[a.vers.length - 1].md;
+        const cp = $('#cp');
+        cp.innerHTML = `<div class="cp-head">
+          <div class="row between gap-3">
+            <div class="cp-title"><span class="file-tile"><i data-lucide="${a.icon}"></i></span><div class="grow" style="min-width:0"><h3 class="truncate">${esc(a.title)}</h3>
+              <div class="cp-sub"><span class="phase-chip phase-${a.ph}">${PC.t('phase.' + a.ph)}</span><span>${PC.t('ar.updated', { t: rel(v.date) })}</span><span class="text-faint">·</span><span>${PC.t('ar.by')} ${byLine(v.who)}</span><span class="text-faint">·</span><span>${PC.t('ar.words', { n: words(mdOf(a)) })}</span></div></div></div>
+            <div class="row gap-2">
+              <button class="btn btn-ghost btn-icon" id="btn-meta" data-i18n-tip="ar.details"><i data-lucide="panel-right"></i></button>
+              <button class="btn btn-secondary" id="btn-export"><i data-lucide="download"></i><span class="btn-lbl">${PC.t('ar.export')}</span><i data-lucide="chevron-down" class="icon-sm"></i></button>
+            </div>
+          </div>
+          <div class="cp-tools">${modeSeg()}
+            <button class="btn btn-secondary btn-sm vbtn" id="btn-ver"><i data-lucide="history" class="icon-sm"></i>v${v.version || v.v}${latest ? ` <span class="by">· ${PC.t('ar.latest')}</span>` : ''}<i data-lucide="chevron-down" class="icon-sm"></i></button>
+            <button class="btn btn-secondary btn-sm" id="btn-status"><span class="st-dot ${a.st}"></span>${PC.t('ar.st.' + a.st)}<i data-lucide="chevron-down" class="icon-sm"></i></button>
+            <span class="sp"></span>
+            ${dirty ? `<span class="badge badge-warning"><i data-lucide="circle-dot"></i>${PC.t('ar.unsaved')}</span><button class="btn btn-ghost btn-sm" id="btn-discard">${PC.t('ar.discard')}</button><button class="btn btn-primary btn-sm" id="btn-save"><i data-lucide="save" class="icon-sm"></i>${PC.t('ar.save', { n: a.vers.length + 1 })}</button>` : ''}
+            <button class="btn btn-soft btn-sm" id="btn-ask-doc"><i data-lucide="sparkles" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.ask')}</span></button>
+          </div></div>
+          ${!latest ? `<div class="banner"><i data-lucide="lock" class="icon-sm"></i><span>${PC.t('ar.viewing.old', { v: v.v })}</span><span class="sp"></span><button class="btn btn-secondary btn-sm" id="btn-restore">${PC.t('ar.restore')}</button><button class="btn btn-ghost btn-sm" id="btn-latest">${PC.t('ar.back.latest')}</button></div>` : ''}
+          <div class="cp-body" id="cp-body"></div>`;
+        const body = $('#cp-body');
+        if (state.mode === 'preview') { body.innerHTML = `<article class="adoc" id="doc">${renderMd(mdOf(a))}</article>`; decorateComments(a); }
+        else if (state.mode === 'edit') { body.innerHTML = `<textarea class="md-edit" id="md-edit" spellcheck="false" ${latest ? '' : 'readonly'}></textarea>`; $('#md-edit').value = mdOf(a); }
+        else body.innerHTML = renderDiff(a);
+        PC.refresh(cp);
+        bindCenter(a);
+      }
+
+      function decorateComments(a) {
+        const doc = $('#doc'); if (!doc || verIdx(a) !== a.vers.length - 1) return;
+        a.cm.forEach((c, i) => {
+          const hit = $$('[data-src]', doc).find(e => e.textContent.includes(c.at)); if (!hit) return;
+          let host = hit.closest('tr') ? hit.closest('tr').lastElementChild : hit;
+          host.insertAdjacentHTML('beforeend', `<button class="c-mark ${c.done ? 'done' : ''}" data-cm="${i}"><i data-lucide="message-square"></i>1</button>`);
+        });
+      }
+
+      function bindCenter(a) {
+        const on = (id, fn) => { const e = $(id); if (e) e.onclick = fn; };
+        $$('#seg [data-mode]').forEach(b => b.onclick = () => { if (state.mode === 'edit') captureEdit(a); state.mode = b.dataset.mode; renderCenter(); });
+        on('#btn-meta', toggleMeta);
+        on('#btn-export', e => PC.popover(e.currentTarget, [['docx', 'file-type-2', 'DOCX'], ['pdf', 'file-text', 'PDF'], ['md', 'file-code-2', 'MD'], ['pptx', 'presentation', 'PPTX'], ['html', 'globe', 'HTML']].map(x => `<button class="menu-item" data-v="${x[0]}"><i data-lucide="${x[1]}"></i><span>${PC.t('ar.export.' + x[0])}</span></button>`).join(''), f => exportAs(a, f)));
+        on('#btn-ver', e => PC.popover(e.currentTarget, `<div class="menu-label">${PC.t('ar.versions')}</div>` + a.vers.slice().reverse().map(v => `<button class="menu-item" data-v="${v.v - 1}" style="min-width:250px"><span class="grow"><b>v${v.v}</b> ${v.v === a.vers.length ? `<span class="text-subtle">· ${PC.t('ar.latest')}</span>` : ''}<span class="text-subtle" style="display:block;font-size:11px">${byLine(v.who)} · ${longDate(v.date)}</span></span>${verIdx(a) === v.v - 1 ? '<i data-lucide="check"></i>' : ''}</button>`).join(''), i => { if (state.mode === 'edit') captureEdit(a); state.ver = +i === a.vers.length - 1 ? null : +i; renderAll(); }));
+        on('#btn-status', e => PC.popover(e.currentTarget, ['draft', 'review', 'approved'].map(s => `<button class="menu-item" data-v="${s}"><span class="st-dot ${s}"></span>${PC.t('ar.st.' + s)}${a.st === s ? '<i data-lucide="check" style="margin-left:auto"></i>' : ''}</button>`).join(''), s => { a.st = s; PC.toast(PC.t('ar.status') + ': ' + PC.t('ar.st.' + s)); renderAll(); }));
+        on('#btn-save', () => { captureEdit(a); const md = state.draft[a.id]; a.vers.push({ v: a.vers.length + 1, who: 'ME', date: 'now', note: 'Manual edit', md }); delete state.draft[a.id]; state.ver = null; a.st = a.st === 'approved' ? 'review' : a.st; PC.toast(PC.t('ar.saved', { n: a.vers.length })); renderAll(); });
+        on('#btn-discard', () => { delete state.draft[a.id]; PC.toast(PC.t('ar.discarded'), { icon: 'undo-2' }); renderAll(); });
+        on('#btn-restore', () => { const v = a.vers[verIdx(a)]; a.vers.push({ v: a.vers.length + 1, who: 'ME', date: 'now', note: 'Restored v' + v.v, md: v.md }); PC.toast(PC.t('ar.restored', { v: v.v, n: a.vers.length })); state.ver = null; renderAll(); });
+        on('#btn-latest', () => { state.ver = null; renderAll(); });
+        on('#btn-ask-doc', () => askAI(PC.t('ar.sg.tighten') + ' — ' + a.title, null));
+        const ed = $('#md-edit'); if (ed) ed.oninput = () => { state.draft[a.id] = ed.value; const dirtyNow = ed.value !== a.vers[a.vers.length - 1].md; if (dirtyNow !== !!$('#btn-save')) { const pos = ed.selectionStart; renderCenter(); const e2 = $('#md-edit'); if (e2) { e2.focus(); e2.setSelectionRange(pos, pos); } } };
+        $$('.fold', $('#cp-body')).forEach(f => f.onclick = () => { const rows = JSON.parse(f.dataset.fold); f.outerHTML = rows.map(r => `<div class="diff-line"><span>${r[0] || ''}</span><span>${r[1] || ''}</span><span>  ${esc(r[2])}</span></div>`).join(''); });
+        const doc = $('#doc'); if (doc) bindDoc(a, doc);
+      }
+      function captureEdit(a) { const ed = $('#md-edit'); if (ed && verIdx(a) === a.vers.length - 1) { if (ed.value !== a.vers[a.vers.length - 1].md) state.draft[a.id] = ed.value; else delete state.draft[a.id]; } }
+
+      /* ---- inline AI affordances ---- */
+      let bar = null, picked = null;
+      function closeBar() { if (bar) { bar.remove(); bar = null; } if (picked) { picked.classList.remove('is-picked'); picked = null; } }
+      function showBar(rect, target, text) {
+        closeBar(); picked = target; if (target) target.classList.add('is-picked');
+        bar = PC.h(`<div class="ai-bar"><button class="ask" data-a="ask"><i data-lucide="sparkles"></i>${PC.t('ar.ai.ask')}</button><button data-a="rewrite"><i data-lucide="pen-line"></i>${PC.t('ar.ai.rewrite')}</button><button data-a="expand"><i data-lucide="maximize-2"></i>${PC.t('ar.ai.expand')}</button><span class="sep"></span><button data-a="comment"><i data-lucide="message-square-plus"></i>${PC.t('ar.ai.comment')}</button></div>`);
+        document.body.appendChild(bar); PC.refresh(bar);
+        const w = bar.offsetWidth; bar.style.left = Math.max(8, Math.min(innerWidth - w - 8, rect.left + rect.width / 2 - w / 2)) + 'px'; bar.style.top = Math.max(52, rect.top - 44) + 'px';
+        bar.onmousedown = e => e.preventDefault();
+        bar.onclick = e => { const b = e.target.closest('[data-a]'); if (!b) return; const act = b.dataset.a, tg = target, tx = text; closeBar(); aiAction(act, tg, tx); };
+      }
+      function bindDoc(a, doc) {
+        const latest = verIdx(a) === a.vers.length - 1;
+        doc.addEventListener('mouseup', e => {
+          if (e.target.closest('.c-mark, .ai-suggest, button')) return;
+          setTimeout(() => {
+            const sel = getSelection(); const blk = e.target.closest('[data-src]');
+            if (sel && !sel.isCollapsed && doc.contains(sel.anchorNode) && sel.toString().trim().length > 2) { const r = sel.getRangeAt(0).getBoundingClientRect(); showBar(r, blk, sel.toString()); }
+            else if (blk && latest) showBar(blk.getBoundingClientRect(), blk, blk.textContent);
+            else closeBar();
+          }, 0);
+        });
+        doc.addEventListener('click', e => { const m = e.target.closest('[data-cm]'); if (m) openComment(a, m); });
+        $('#cp-body').addEventListener('scroll', closeBar, { passive: true });
+      }
+      document.addEventListener('mousedown', e => { if (bar && !bar.contains(e.target) && !e.target.closest('#doc')) closeBar(); });
+
+      const REWRITES = [[/\bshould be able to\b/gi, 'must be able to'], [/\bshould\b/g, 'must'], [/\bvery easy to use\b/gi, 'usable by a first-time merchant owner without training'], [/\bvery\b ?/gi, ''], [/\bin order to\b/gi, 'to'], [/\bquickly\b/gi, 'within the agreed latency target'], [/\bhighly available\b/gi, 'available 99.9% of the time'], [/\bstay(s)? below\b/gi, 'is kept under']];
+      function fakeRewrite(s) { let o = s; REWRITES.forEach(([r, t]) => { o = o.replace(r, t); }); if (o === s) o = s.replace(/^(The |A )/, '').replace(/^./, c => c.toUpperCase()).replace(/\.$/, '') + ', with an accountable owner and a measurable target.'; return o; }
+      function fakeExpand(s) { return s.replace(/\.$/, '') + '. This applies to every merchant tier, is traceable to a test scenario in the test strategy, and any exception needs product-owner approval.'; }
+      function aiAction(act, target, text) {
+        const a = cur(); const q = (text || '').trim();
+        if (act === 'ask') return askAI(PC.t('ar.ai.quote', { q: q.length > 90 ? q.slice(0, 90) + '…' : q }), '<p>' + PC.t('ar.ai.reply') + '</p>');
+        if (act === 'comment') { PC.toast(PC.t('ar.ai.comment.added'), { icon: 'message-square-plus' }); return; }
+        if (!target) return; const raw = target.dataset.src;
+        target.classList.add('ai-busy');
+        setTimeout(() => {
+          target.classList.remove('ai-busy');
+          const nw = act === 'rewrite' ? fakeRewrite(raw) : fakeExpand(raw);
+          const box = PC.h(`<div class="ai-suggest"><div class="k"><i data-lucide="sparkles" class="icon-sm"></i>${PC.t('ar.ai.suggest.' + act)}</div><div class="old">${inl(raw)}</div><div class="new">${inl(nw)}</div>
+            <div class="acts"><button class="btn btn-primary btn-sm" data-s="ok"><i data-lucide="check" class="icon-sm"></i>${PC.t('ar.ai.accept')}</button><button class="btn btn-ghost btn-sm" data-s="no">${PC.t('ar.ai.discard')}</button><button class="btn btn-ghost btn-sm" data-s="again"><i data-lucide="rotate-ccw" class="icon-sm"></i>${PC.t('ar.ai.retry')}</button></div></div>`);
+          const anchor = target.closest('tr') ? target.closest('.tbl') : (target.closest('li') ? target.closest('ul') : (target.closest('.callout') || target));
+          anchor.insertAdjacentElement('afterend', box); PC.refresh(box);
+          box.onclick = e => { const b = e.target.closest('[data-s]'); if (!b) return; if (b.dataset.s === 'again') { box.remove(); aiAction(act, target, text); return; }
+            box.remove(); if (b.dataset.s === 'ok') { const md = mdOf(a); if (md.includes(raw)) { state.draft[a.id] = md.replace(raw, () => nw); PC.toast(PC.t('ar.ai.applied'), { icon: 'sparkles' }); renderCenter(); } } };
+        }, 1100);
+      }
+      function openComment(a, btn) {
+        const c = a.cm[+btn.dataset.cm];
+        const pop = PC.popover(btn, `<div style="width:270px;padding:6px 8px 8px"><div class="row gap-2" style="margin-bottom:6px">${av(c.who, 'xs')}<b class="text-sm">${who(c.who)}</b></div><div class="text-sm" style="line-height:1.55">${esc(c.t)}</div>
+          <div class="row gap-2" style="margin-top:10px"><button class="btn btn-secondary btn-sm" data-v="reply"><i data-lucide="reply" class="icon-sm"></i>${PC.t('ar.ai.ask')}</button><button class="btn btn-soft btn-sm" data-v="resolve"><i data-lucide="check" class="icon-sm"></i>${PC.t('ar.comment.resolve')}</button></div></div>`, v => {
+          if (v === 'resolve') { c.done = true; PC.toast(PC.t('ar.comment.resolved')); renderAll(); }
+          else askAI(c.t, '<p>' + PC.t('ar.ai.reply') + '</p>');
+        });
+      }
+
+      function askAI(userText, replyHtml) {
+        const AS = PC.assistant, d = new Date(), time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        AS.open(); AS.msgsLocked = true; if (!AS.msgs) AS.msgs = [];
+        AS.push({ role: 'user', time, text: esc(userText) });
+        AS.reply(replyHtml || '<p>' + PC.t('ar.as.reply.sg') + '</p>', { time, tool: 'claude -p --cwd ' + PC.projectHome('claude') });
+      }
+      function exportAs(a, f) {
+        const name = a.title.replace(/[^\w\-]+/g, '_') + '.' + f;
+        PC.toast(PC.t('ar.export.start', { t: esc(a.title), f: f.toUpperCase() }), { icon: 'loader-circle' });
+        setTimeout(() => PC.toast(PC.t('ar.export.done', { n: esc(name) }), { tone: 'success' }), 1400);
+      }
+
+      /* ---- sources viewer ---- */
+      function renderSource() {
+        const s = srcById(state.srcSel), cp = $('#cp');
+        const kindLabel = { pdf: 'PDF', doc: 'DOCX', sheet: 'XLSX', audio: 'Audio (m4a)', md: 'Markdown', transcript: 'Transcript (VTT)', image: 'Image (PNG)' }[s.kind] || s.kind;
+        let pv = '';
+        if (s.pv.type === 'text') pv = `<div class="page"><h4>${PC.t('ar.src.extracted')}</h4>${s.pv.paras.map(p => `<p>${esc(p)}</p>`).join('')}</div>`;
+        else if (s.pv.type === 'sheet') pv = `<div class="page"><h4>${PC.t('ar.src.sheet')}</h4><div class="table-wrap"><table class="table"><thead><tr>${s.pv.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${s.pv.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+        else pv = `${s.kind === 'audio' ? `<div class="wave">${Array.from({ length: 84 }, (_, i) => `<i class="${i < 22 ? '' : 'p'}" style="height:${12 + Math.abs(Math.sin(i * 1.7) * 30 + Math.cos(i * .6) * 12)}px"></i>`).join('')}</div>` : ''}<div class="page"><h4>${PC.t('ar.src.transcript')}</h4><div class="tx">${s.pv.lines.map(l => `<span class="ts">${l[0]}</span><span class="sp">${l[1]}</span><span>${esc(l[2])}</span>`).join('')}</div></div>`;
+        cp.innerHTML = `<div class="cp-head" style="padding-bottom:var(--space-3)"><div class="row between gap-3"><div class="cp-title"><span class="file-tile ${KIND_TILE[s.kind] || ''}"><i data-lucide="${s.icon}"></i></span><div class="grow" style="min-width:0"><h3 class="truncate">${esc(s.name)}</h3><div class="cp-sub"><span>${kindLabel}</span><span class="text-faint">·</span><span>${s.kind === 'audio' || s.kind === 'transcript' ? PC.t('ar.src.min', { n: s.meta }) : s.kind === 'image' ? '—' : PC.t('ar.src.pages', { n: s.meta })}</span></div></div></div>
+          <div class="row gap-2"><button class="btn btn-secondary btn-sm" id="s-dl"><i data-lucide="download" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.src.download')}</span></button><button class="btn btn-secondary btn-sm" id="s-re"><i data-lucide="refresh-cw" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.src.reindex')}</span></button><button class="btn btn-ai btn-sm" id="s-gen"><i data-lucide="sparkles" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.src.genfrom')}</span></button></div></div></div>
+          <div class="cp-body"><div class="sv"><div class="sv-meta"><div><div class="l">${PC.t('ar.src.type')}</div><div class="v">${kindLabel}</div></div><div><div class="l">${PC.t('ar.src.size')}</div><div class="v">${s.size}</div></div><div><div class="l">${PC.t('ar.src.uploaded')}</div><div class="v">${longDate(s.date)} · ${esc(who(s.by))}</div></div><div><div class="l">${PC.t('ar.src.status')}</div><div class="v">${s.indexing ? PC.t('ar.indexing') : '<span class="text-success">● ' + PC.t('ar.indexed') + '</span>'}</div></div></div>
+          ${pv}<div class="m-h" style="margin-top:var(--space-5)">${PC.t('ar.meta.used')}</div><div class="row wrap gap-2">${s.used.map(id => byId(id)).filter(Boolean).map(a => `<button class="btn btn-secondary btn-sm" data-open="${a.id}"><i data-lucide="${a.icon}" class="icon-sm"></i>${esc(a.title)}</button>`).join('') || `<span class="m-empty">—</span>`}</div></div></div>`;
+        PC.refresh(cp);
+        $('#s-dl').onclick = () => PC.toast(PC.t('ar.export.done', { n: esc(s.name) }), { tone: 'success' });
+        $('#s-re').onclick = () => { PC.toast(PC.t('ar.src.reindexing', { n: esc(s.name) }), { icon: 'refresh-cw' }); };
+        $('#s-gen').onclick = () => openGenerate(s.id);
+        $$('[data-open]', cp).forEach(b => b.onclick = () => selectArt(b.dataset.open));
+      }
+
+      /* ================= META PANE ================= */
+      function renderMeta() {
+        const el = $('#meta');
+        if (state.tab === 'sources') {
+          const s = srcById(state.srcSel);
+          el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.used')}</div>${s.used.map(id => byId(id)).filter(Boolean).map(a => `<button class="m-row" data-open="${a.id}"><span class="file-tile"><i data-lucide="${a.icon}" class="icon-sm"></i></span><span class="grow"><span class="truncate" style="display:block">${esc(a.title)}</span><span class="s">${PC.t('phase.' + a.ph)} · v${a.vers.length}</span></span></button>`).join('')}</div>`;
+        } else {
+          const a = cur();
+          if (!a) { el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.type')}</div><div class="m-empty">${PC.t('ar.empty.meta')}</div></div>`; PC.refresh(el); return; }
+          const vi = verIdx(a);
+          const open = a.cm.filter(c => !c.done);
+          el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.from')}<span class="badge">${a.src.length}</span></div>${a.src.length ? a.src.map(id => srcById(id)).map(s => `<button class="m-row" data-src-open="${s.id}"><span class="file-tile ${KIND_TILE[s.kind] || ''}"><i data-lucide="${s.icon}" class="icon-sm"></i></span><span class="grow"><span class="truncate" style="display:block">${esc(s.name)}</span><span class="s">${s.size}</span></span></button>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.src')}</div>`}</div>
+            <div class="m-sec"><div class="m-h">${PC.t('ar.meta.tasks')}<span class="badge">${a.tasks.length}</span></div>${a.tasks.length ? a.tasks.map(t => `<a class="m-row" href="task.html"><span class="file-tile" style="background:var(--accent-teal-soft);color:var(--accent-teal-fg)"><i data-lucide="square-check-big" class="icon-sm"></i></span><span class="grow"><span class="truncate" style="display:block">${esc(t[1])}</span><span class="s mono">${t[0]}</span></span></a>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.tasks')}</div>`}</div>
+            <div class="m-sec"><div class="m-h">${PC.t('ar.meta.comments')}<span class="badge">${open.length}</span></div>${open.length ? open.map(c => `<div class="cm"><b>${who(c.who)}</b><q>${esc(c.t)}</q></div>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.comments')}</div>`}</div>
+            <div class="m-sec" style="border-bottom:0"><div class="m-h">${PC.t('ar.meta.history')}</div><ul class="hist">${a.vers.slice().reverse().map(v => `<li class="${v.who === 'AI' ? 'ai' : ''} ${v.v - 1 === vi ? 'cur' : ''}" data-hv="${v.v - 1}"><div class="t">v${v.v} <span class="text-subtle" style="font-weight:400">· ${byLine(v.who)}</span></div><div class="s">${esc(v.note)}</div><div class="s">${longDate(v.date)}</div></li>`).join('')}</ul></div>`;
+        }
+        PC.refresh(el);
+        $$('[data-open]', el).forEach(b => b.onclick = () => selectArt(b.dataset.open));
+        $$('[data-src-open]', el).forEach(b => b.onclick = () => selectSource(b.dataset.srcOpen));
+        $$('[data-hv]', el).forEach(b => b.onclick = () => { const a = cur(), i = +b.dataset.hv; state.ver = i === a.vers.length - 1 ? null : i; renderAll(); });
+      }
+
+      /* ================= selection & assistant context ================= */
+      function setAssistant() {
+        const ph = PC.project().name.split(' — ')[0];
+        if (state.tab === 'artifacts') {
+          const a = cur();
+          if (!a) { PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: 'paperclip', label: PC.t('ar.empty.ctx', { n: SRC.length }) }, { icon: 'cpu', label: 'claude-opus-5-5' }]); PC.assistant.setSuggestions([PC.t('ar.sg.first1'), PC.t('ar.sg.first2')]); return; }
+          PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: a.icon, label: a.title + ' · v' + a.vers.length }, { icon: 'cpu', label: 'claude-opus-5-5' }]);
+          PC.assistant.setSuggestions([PC.t('ar.sg.tighten'), PC.t('ar.sg.ac'), PC.t('ar.sg.vi'), PC.t(a.id === 'brd' ? 'ar.sg.trace' : 'ar.sg.summ')]);
+        } else {
+          const s = srcById(state.srcSel);
+          PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: s.icon, label: s.name }, { icon: 'cpu', label: 'claude-opus-5-5' }]);
+          PC.assistant.setSuggestions([PC.t('ar.src.genfrom'), PC.t('ar.sg.summ')]);
+        }
+      }
+      function renderAll() { renderList(); renderCenter(); renderMeta(); setAssistant(); }
+      function selectArt(id, fromUrl) { if (!byId(id)) return; if (state.mode === 'edit') captureEdit(cur()); state.tab = 'artifacts'; state.sel = id; state.ver = null; state.q = ''; $('#lp-q').value = ''; state.closed[byId(id).ph] = false; if (!fromUrl) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ } } renderAll(); }
+      function selectSource(id) { state.tab = 'sources'; state.srcSel = id; state.q = ''; $('#lp-q').value = ''; renderAll(); }
+      function toggleMeta() { state.meta = !state.meta; $('#ar').classList.toggle('meta-open', state.meta); }
+
+      /* ================= UPLOAD modal ================= */
+      function openUpload() {
+        let files = [];
+        const m = PC.modal({ title: PC.t('ar.up.title'), width: 560,
+          body: `<div class="dropzone" id="dz"><i data-lucide="cloud-upload" class="icon-lg"></i><b style="color:var(--fg-default);font-weight:500">${PC.t('ar.up.drop')}</b><span class="hint">${PC.t('ar.up.hint')}</span></div><input type="file" id="up-in" multiple hidden><div id="up-list"></div><p class="hint" style="margin-top:12px">${PC.t('ar.up.note')}</p>`,
+          actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('ar.up.go'), kind: 'primary', icon: 'upload', onClick: () => {
+            if (!files.length) { PC.toast(PC.t('ar.up.none'), { tone: 'warning', icon: 'triangle-alert' }); return false; }
+            files.forEach(f => SRC.unshift(f)); state.tab = 'sources'; state.srcSel = files[0].id; renderAll(); PC.toast(PC.t('ar.up.done', { n: files.length }), { icon: 'upload' });
+            setTimeout(() => { files.forEach(f => { f.indexing = false; }); renderList(); if (state.tab === 'sources') renderCenter(); }, 2200);
+          } }] });
+        const dz = $('#dz', m.el), inp = $('#up-in', m.el), list = $('#up-list', m.el);
+        const kindOf = n => /\.pdf$/i.test(n) ? 'pdf' : /\.docx?$/i.test(n) ? 'doc' : /\.xlsx?$/i.test(n) ? 'sheet' : /\.(m4a|mp3|wav)$/i.test(n) ? 'audio' : 'doc';
+        const add = names => { names.forEach(n => { const k = kindOf(n); files.push({ id: 'up-' + Date.now() + Math.random().toString(16).slice(2, 6), kind: k, icon: k === 'audio' ? 'audio-lines' : k === 'sheet' ? 'sheet' : 'file-text', name: n, size: (Math.random() * 3 + .2).toFixed(1) + ' MB', meta: k === 'audio' ? 12 : 8, date: '2026-11-23', by: 'ME', used: [], grp: k === 'audio' ? 'meet' : 'docs', indexing: true, pv: k === 'audio' ? { type: 'audio', lines: [['00:05', 'Speaker 1', 'Transcribing…']] } : k === 'sheet' ? { type: 'sheet', head: ['A', 'B'], rows: [['…', '…']] } : { type: 'text', paras: ['Extracting text…'] } }); });
+          list.innerHTML = files.map(f => `<div class="up-file"><span class="file-tile ${KIND_TILE[f.kind] || ''}" style="width:28px;height:28px"><i data-lucide="${f.icon}" class="icon-sm"></i></span><span class="grow truncate">${esc(f.name)}</span><span class="text-xs text-subtle">${f.size}</span></div>`).join(''); PC.refresh(list); };
+        dz.onclick = () => inp.click();
+        inp.onchange = () => add(Array.from(inp.files).map(f => f.name));
+        ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('is-over'); }));
+        ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('is-over'); }));
+        dz.addEventListener('drop', e => add(Array.from(e.dataTransfer.files).map(f => f.name)));
+      }
+
+      /* ================= GENERATE modal ================= */
+      function openGenerate(srcPreset, tplId) {
+        let tpl = TPL.find(t => t.id === (tplId || (ART.length ? 'brd' : 'notes')));
+        const cli = PC.data.cli;
+        const m = PC.modal({ title: PC.t('ar.gen.title'), width: 760,
+          body: `<div id="g-setup">
+            <div class="label" style="margin-bottom:8px">${PC.t('ar.gen.tpl')}</div>
+            <div class="tpl-grid" id="g-tpls">${TPL.map(t => `<button type="button" class="tpl ${t.id === tpl.id ? 'is-on' : ''}" data-t="${t.id}"><span class="file-tile"><i data-lucide="${t.icon}" class="icon-sm"></i></span><span class="n">${PC.t('ar.tpl.' + t.id)}</span><span class="d">${PC.t('ar.tpl.' + t.id + '.d')}</span></button>`).join('')}</div>
+            <div class="grid grid-2" style="margin-top:16px;gap:16px">
+              <div class="field"><label class="label">${PC.t('ar.gen.name')}</label><input class="input" id="g-title" value=""><div class="hint">${PC.t('ar.gen.lang')}: ${PC.lang === 'vi' ? 'Tiếng Việt' : 'English'}</div></div>
+              <div class="field"><label class="label">${PC.t('ar.gen.cli')}</label><select class="select" id="g-cli">${cli.map(c => `<option value="${c.id}">${c.name} · ${c.model}</option>`).join('')}</select></div>
+            </div>
+            <div class="field" style="margin-top:16px"><label class="label">${PC.t('ar.gen.sources')}</label><div class="chk-list" id="g-src">${SRC.map(s => `<label><input type="checkbox" value="${s.id}" ${(srcPreset ? s.id === srcPreset : SRC.slice(0, 3).some(x => x.id === s.id)) ? 'checked' : ''} style="accent-color:var(--brand)"><span class="file-tile ${KIND_TILE[s.kind] || ''}" style="width:22px;height:22px"><i data-lucide="${s.icon}" class="icon-sm"></i></span><span class="grow truncate">${esc(s.name)}</span><span class="text-xs text-subtle">${s.size}</span></label>`).join('')}</div></div>
+            <div class="field" style="margin-top:16px"><label class="label">${PC.t('ar.gen.instr')}</label><textarea class="textarea" id="g-ins" style="min-height:60px" placeholder="${esc(PC.t('ar.gen.instr.ph'))}"></textarea></div>
+          </div>
+          <div id="g-run" class="hidden"><div class="row gap-3"><span class="spinner" id="g-spin"></span><b id="g-run-t"></b></div><div class="progress progress-ai" style="margin-top:14px"><span id="g-bar" style="width:4%"></span></div><ul class="gen-steps" id="g-steps"></ul></div>`,
+          actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('ar.gen.go'), kind: 'ai', icon: 'sparkles', onClick: ov => { run(ov); return false; } }] });
+        const ov = m.el, title = $('#g-title', ov);
+        const setTitle = () => { title.value = PC.t('ar.tpl.' + tpl.id) + ' – ' + PNAME; };
+        setTitle();
+        $('#g-tpls', ov).onclick = e => { const b = e.target.closest('[data-t]'); if (!b) return; tpl = TPL.find(t => t.id === b.dataset.t); $$('.tpl', ov).forEach(x => x.classList.toggle('is-on', x === b)); setTitle(); };
+        function run(ov) {
+          const picked = $$('#g-src input:checked', ov).map(i => i.value), cliId = $('#g-cli', ov).value, c = cli.find(x => x.id === cliId), name = title.value.trim() || tpl.name;
+          $('#g-setup', ov).classList.add('hidden'); $('#g-run', ov).classList.remove('hidden'); $$('.modal-footer .btn', ov).forEach(b => b.disabled = true);
+          $('#g-run-t', ov).textContent = PC.t('ar.gen.running', { cli: c.name });
+          const steps = [PC.t('ar.gen.s1', { n: picked.length }), PC.t('ar.gen.s2'), PC.t('ar.gen.s3'), PC.t('ar.gen.s4'), PC.t('ar.gen.s5')];
+          const ul = $('#g-steps', ov); let i = 0;
+          const draw = () => { ul.innerHTML = steps.map((s, k) => `<li class="${k < i ? 'done' : k === i ? 'cur' : ''}"><span class="ic">${k < i ? '<i data-lucide="check-circle-2"></i>' : k === i ? '<span class="spinner" style="width:14px;height:14px"></span>' : '<i data-lucide="circle" style="color:var(--fg-faint)"></i>'}</span>${s}</li>`).join(''); PC.refresh(ul); $('#g-bar', ov).style.width = Math.round((i + .4) / steps.length * 100) + '%'; };
+          draw();
+          const t = setInterval(() => { i++; if (i >= steps.length) { clearInterval(t); $('#g-bar', ov).style.width = '100%'; finish(); } else draw(); }, 850);
+          function finish() {
+            const id = 'gen-' + (++state.genSeq);
+            const secs = tpl.secs.map((h, k) => S(h, k === tpl.secs.length - 1 ? '- ' + (PC.lang === 'vi' ? 'Cần người phụ trách xác nhận nội dung này' : 'To be confirmed by the document owner') + '\n- ' + (PC.lang === 'vi' ? 'Bổ sung số liệu từ nguồn đã chọn' : 'Add figures from the selected sources') : (PC.lang === 'vi' ? 'Nội dung phần “' + h + '” được soạn từ ' + picked.length + ' nguồn đã chọn; vui lòng rà soát.' : 'Draft content for “' + h + '” compiled from ' + picked.length + ' selected sources. Please review.')));
+            const flat = secs.map(s => ({ h: s.h, items: s.items.join('\n').split('\n') }));
+            const md = buildMd(name, `> [!AI] ${PC.t('ar.gen.note', { cli: c.name, model: c.model, n: picked.length })}`, flat, 0);
+            const a = { id, ph: tpl.ph, icon: tpl.icon, st: 'draft', title: name, src: picked.filter(x => srcById(x)), tasks: [], fresh: true, cm: [], vers: [{ v: 1, who: 'AI', date: 'now', note: 'Generated with ' + c.name + ' (' + c.model + ')', md }] };
+            ART.push(a); picked.forEach(sid => { const s = srcById(sid); if (s) s.used.push(id); });
+            setTimeout(() => { m.close(); state.tab = 'artifacts'; state.q = ''; $('#lp-q').value = ''; state.closed[a.ph] = false; state.sel = id; state.ver = null; state.mode = 'preview'; renderAll(); PC.toast(PC.t('ar.gen.done', { t: esc(name) }), { icon: 'sparkles', tone: 'success' }); try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ } }, 500);
+          }
+        }
+      }
+
+      /* ================= boot ================= */
+      PC.onReady(() => {
+        const h = location.hash.slice(1); if (h && byId(h)) state.sel = h;
+        $('#lp-list').onclick = e => {
+          const g = e.target.closest('[data-grp]'); if (g) { state.closed[g.dataset.grp] = !state.closed[g.dataset.grp]; renderList(); return; }
+          const it = e.target.closest('[data-id]'); if (it) return selectArt(it.dataset.id);
+          const fb = e.target.closest('[data-first]'); if (fb) return openGenerate(SRC.length ? SRC[SRC.length - 1].id : null, 'notes');
+          const sr = e.target.closest('[data-src-id]'); if (sr) selectSource(sr.dataset.srcId);
+        };
+        $$('.lp .tab').forEach(t => t.onclick = () => { if (state.mode === 'edit' && state.tab === 'artifacts') captureEdit(cur()); state.tab = t.dataset.tab; state.q = ''; $('#lp-q').value = ''; renderAll(); });
+        $('#lp-q').oninput = e => { state.q = e.target.value; renderList(); };
+        $('#btn-upload').onclick = openUpload; $('#btn-gen').onclick = () => openGenerate();
+        // wide canvas: meta pane open by default; narrow: drawer starts closed
+        const wrap = $('.ar-wrap'); let wasNarrow = null;
+        const fit = () => { const narrow = wrap.clientWidth <= 1100; if (narrow !== wasNarrow) { wasNarrow = narrow; state.meta = !narrow; $('#ar').classList.toggle('meta-open', state.meta); } };
+        fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(wrap);
+        renderAll();
+      });
+      window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h && byId(h) && h !== state.sel) selectArt(h, true); });
+      document.addEventListener('pc:lang', () => { closeBar(); renderAll(); });
+    })();
+  </script>
+</body>
+</html>

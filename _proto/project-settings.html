@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project settings · Procheck</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <script src="assets/app.js"></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    .canvas { container-type: inline-size; scroll-behavior: smooth; }
+    html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { scroll-behavior: auto !important; }
+    code { font-size: .92em; background: var(--code-bg); padding: 1px 6px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); font-family: var(--font-mono); }
+
+    /* ---------- Header ---------- */
+    .ps-head { max-width: 1120px; margin: 0 auto var(--space-6); padding: var(--space-5) var(--space-6); display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; background: var(--gradient-hero), var(--bg-surface); }
+    .ps-head .project-avatar { width: 56px; height: 56px; border-radius: 14px; font-size: 18px; }
+    .ps-head .kicker { display: block; margin-bottom: 2px; }
+    .ps-head h1 { font-size: var(--text-2xl); letter-spacing: -0.015em; }
+    .ps-paths { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; font-size: var(--text-xs); color: var(--fg-muted); }
+    .ps-path { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+    .ps-path .k { color: var(--fg-subtle); min-width: 130px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .ps-path code { overflow-wrap: anywhere; }
+    .ps-path code { color: var(--fg-strong); }
+    .ps-acts { display: flex; gap: var(--space-2); margin-left: auto; align-self: flex-start; }
+    .ap-link { max-width: 1120px; margin: -8px auto var(--space-6); font-size: var(--text-xs); color: var(--fg-subtle); display: flex; align-items: center; gap: 6px; }
+
+    /* ---------- Layout ---------- */
+    .set-wrap { display: grid; grid-template-columns: 208px minmax(0, 1fr); gap: var(--space-8); align-items: start; max-width: 1120px; margin: 0 auto; }
+    .set-nav { position: sticky; top: var(--space-4); }
+    .set-nav a { display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: var(--radius-md); color: var(--fg-muted); font-size: var(--text-sm); font-weight: var(--weight-medium); text-decoration: none !important; }
+    .set-nav a svg { width: 15px; height: 15px; color: var(--fg-subtle); }
+    .set-nav a:hover { background: var(--bg-hover); color: var(--fg-default); }
+    .set-nav a.is-active { background: var(--bg-active); color: var(--brand-fg); }
+    .set-nav a.is-active svg { color: var(--brand-fg); }
+    .set-nav a.danger, .set-nav a.danger svg { color: var(--danger-fg); }
+    .set-nav .sp { height: 1px; background: var(--border-subtle); margin: 8px 6px; }
+    .sec { scroll-margin-top: var(--space-4); margin-bottom: var(--space-12); }
+    .sec-head { margin-bottom: var(--space-4); }
+    .sec-head h2 { font-size: var(--text-xl); font-weight: var(--weight-semibold); letter-spacing: -0.01em; }
+    .sec-head p { margin: 4px 0 0; color: var(--fg-muted); font-size: var(--text-sm); max-width: 640px; }
+
+    .srow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); }
+    .srow:last-child { border-bottom: 0; }
+    .srow.stack { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+    .sinfo { min-width: 0; }
+    .slabel { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
+    .sdesc { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 2px; max-width: 470px; line-height: 1.55; }
+    .sctl { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
+    .sctl .input, .sctl .select { width: 300px; }
+    .sctl .select.sm { width: 200px; }
+    .sctl .input.sm { width: 90px; }
+    .note-row { display: flex; align-items: flex-start; gap: var(--space-3); padding: 12px 20px; background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.55; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .note-row svg { margin-top: 1px; color: var(--brand-fg); }
+    .ro { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface-2); font-family: var(--font-mono); font-size: 12px; color: var(--fg-muted); min-width: 0; width: 360px; }
+    .ro span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ro svg { color: var(--fg-faint); width: 14px; height: 14px; }
+    .ro.wide { width: 100%; }
+    input[type="range"] { accent-color: var(--brand); width: 180px; }
+    .range-val { min-width: 24px; text-align: right; font-weight: var(--weight-semibold); color: var(--fg-strong); font-variant-numeric: tabular-nums; }
+    html[data-density="compact"] .srow { padding: 9px 20px; }
+
+    /* radio cards */
+    .opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); padding: var(--space-4) 20px; }
+    .opt { position: relative; display: flex; flex-direction: column; gap: 6px; padding: var(--space-4); border: 1.5px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); cursor: pointer; text-align: left; transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast); }
+    .opt:hover { border-color: var(--border-strong); }
+    .opt:focus-visible { box-shadow: var(--shadow-focus); border-radius: var(--radius-lg); }
+    .opt.is-selected { border-color: var(--brand); background: var(--brand-soft); box-shadow: var(--shadow-focus); }
+    .opt .tick { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; color: transparent; background: var(--bg-surface); }
+    .opt .tick svg { width: 11px; height: 11px; stroke-width: 3; }
+    .opt.is-selected .tick { background: var(--brand); border-color: var(--brand); color: var(--fg-on-brand); }
+    .opt b { font-size: var(--text-sm); color: var(--fg-strong); font-weight: var(--weight-semibold); padding-right: 24px; }
+    .opt .d { font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.5; }
+    .opt .d code { font-size: 11px; }
+    .override { padding: 0 20px var(--space-4); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+    .override.is-off { display: none; }
+
+    /* phase picker */
+    .phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); padding: var(--space-4) 20px; }
+    .ph { cursor: pointer; border: 1.5px solid var(--border-default); border-radius: var(--radius-lg); padding: 14px; background: var(--bg-surface); display: flex; flex-direction: column; gap: 8px; text-align: left; transition: border-color var(--dur-fast), background var(--dur-fast); }
+    .ph:hover { border-color: var(--border-strong); }
+    .ph.is-selected { border-color: var(--_c); background: color-mix(in srgb, var(--_c) 8%, var(--bg-surface)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--_c) 20%, transparent); }
+    .ph .h { display: flex; align-items: center; gap: 8px; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
+    .ph .h svg { color: var(--_c); }
+    .ph .bar { height: 4px; border-radius: 4px; background: var(--border-default); overflow: hidden; }
+    .ph .bar i { display: block; height: 100%; background: var(--_c); }
+    .ph .m { font-size: var(--text-2xs); color: var(--fg-subtle); display: flex; justify-content: space-between; }
+
+    /* prompts */
+    .ptabs { display: flex; gap: var(--space-1); padding: 0 20px; border-bottom: 1px solid var(--border-subtle); }
+    .ptabs .tab { height: 40px; }
+    .textarea.prompt { font-family: var(--font-mono); font-size: 12px; line-height: 1.65; min-height: 190px; }
+
+    /* isolation */
+    .home-row { display: flex; align-items: center; gap: var(--space-3); padding: 14px 20px; border-bottom: 1px solid var(--border-subtle); }
+    .home-row:last-of-type { border-bottom: 0; }
+    .cli-logo { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface-3); color: var(--fg-default); flex-shrink: 0; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 4px 0 10px; border-radius: var(--radius-sm); background: var(--bg-surface-2); border: 1px solid var(--border-default); font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-default); }
+    .chip button { border: 0; background: transparent; color: var(--fg-subtle); width: 18px; height: 18px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+    .chip button:hover { background: var(--bg-hover); color: var(--danger-fg); }
+    .inline-add { display: flex; gap: var(--space-2); max-width: 360px; }
+    .env-wrap { padding: 0 20px var(--space-4); }
+    .env-wrap .code { line-height: 1.75; }
+    .env-wrap .c-k { color: var(--brand-fg); } .env-wrap .c-d { color: var(--fg-faint); } .env-wrap .c-ok { color: var(--success-fg); } .env-wrap .c-no { color: var(--danger-fg); }
+
+    /* export */
+    .opts.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    /* storage */
+    .st-total { display: flex; align-items: baseline; gap: 10px; padding: 18px 20px 0; }
+    .st-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--bg-surface-3); gap: 2px; margin: 12px 20px 0; }
+    .st-bar i { display: block; height: 100%; }
+    .st-tree { margin: 14px 20px 8px 30px; border-left: 1px solid var(--border-strong); }
+    .znode { position: relative; display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 2px 10px; align-items: start; padding: 7px 14px 7px 18px; }
+    .znode::before { content: ""; position: absolute; left: 0; top: 17px; width: 10px; border-top: 1px solid var(--border-strong); }
+    .znode > svg { width: 14px; height: 14px; color: var(--fg-subtle); margin-top: 2px; }
+    .znode .zp { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-default); display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .znode .zp i { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .znode .zd { grid-column: 2; font-size: var(--text-xs); color: var(--fg-subtle); }
+    .znode .zs { font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+    .znode:hover { background: var(--bg-hover); }
+
+    /* danger */
+    .danger-card { border-color: color-mix(in srgb, var(--danger) 35%, var(--border-default)); }
+    .danger-card .srow { border-bottom-color: color-mix(in srgb, var(--danger) 15%, var(--border-subtle)); }
+
+    /* save bar */
+    .savebar { position: sticky; bottom: 16px; z-index: 15; max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-3); padding: 10px 12px 10px 16px; border-radius: var(--radius-lg); background: var(--bg-inverse); color: var(--fg-inverse); box-shadow: var(--shadow-lg); font-size: var(--text-sm); transition: opacity var(--dur-base), transform var(--dur-base) var(--ease-out); }
+    .savebar.is-off { opacity: 0; transform: translateY(12px); pointer-events: none; }
+    .savebar .grow { display: flex; align-items: center; gap: 8px; }
+    .savebar .btn-ghost { color: var(--fg-inverse); opacity: .8; } .savebar .btn-ghost:hover { background: rgba(127,127,127,.2); opacity: 1; }
+
+    @container (max-width: 980px) { .override, .opts, .opts.three, .phases { grid-template-columns: minmax(0, 1fr); } }
+    @container (max-width: 860px) {
+      .set-wrap { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+      .set-nav { position: static; display: flex; flex-wrap: wrap; gap: 2px; } .set-nav .sp { display: none; }
+      .set-nav a { white-space: nowrap; }
+      .srow { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+      .sctl { flex-wrap: wrap; } .sctl .input, .sctl .select, .sctl .select.sm, .ro { width: 100%; }
+      .ps-acts { margin-left: 0; }
+    }
+  </style>
+</head>
+<body data-page="project-settings" data-shell="project" data-crumb="nav.project_settings" data-assistant="closed">
+  <main class="canvas" id="canvas"><div class="canvas-inner">
+
+    <!-- ============ Header ============ -->
+    <header class="card ps-head" id="head"></header>
+    <div class="ap-link"><i data-lucide="settings" class="icon-sm"></i><span data-i18n="ps.defaults"></span> <a href="settings.html" data-i18n="nav.app_settings"></a></div>
+
+    <div class="set-wrap">
+      <nav class="set-nav" aria-label="Project settings" id="setnav">
+        <a href="#general" data-sec="general"><i data-lucide="sliders-horizontal"></i><span data-i18n="ps.n.general"></span></a>
+        <a href="#workflow" data-sec="workflow"><i data-lucide="route"></i><span data-i18n="ps.n.workflow"></span></a>
+        <a href="#ai" data-sec="ai"><i data-lucide="sparkles"></i><span data-i18n="ps.n.ai"></span></a>
+        <a href="#isolation" data-sec="isolation"><i data-lucide="shield-check"></i><span data-i18n="ps.n.isolation"></span></a>
+        <a href="#harness" data-sec="harness"><i data-lucide="bot"></i><span data-i18n="ps.n.harness"></span></a>
+        <a href="#export" data-sec="export"><i data-lucide="download"></i><span data-i18n="ps.n.export"></span></a>
+        <a href="#storage" data-sec="storage"><i data-lucide="hard-drive"></i><span data-i18n="ps.n.storage"></span></a>
+        <div class="sp"></div>
+        <a href="#danger" data-sec="danger" class="danger"><i data-lucide="triangle-alert"></i><span data-i18n="ps.n.danger"></span></a>
+      </nav>
+
+      <div id="content">
+
+        <!-- General -->
+        <section class="sec" id="general" data-sec="general">
+          <div class="sec-head"><h2 data-i18n="ps.n.general"></h2><p data-i18n="ps.general.d"></p></div>
+          <div class="card">
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.g.name"></div></div><div class="sctl"><input class="input" id="f-name"></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.g.client"></div></div><div class="sctl"><input class="input" id="f-client"></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.g.code"></div><div class="sdesc" data-i18n="ps.g.code.d"></div></div><div class="sctl"><input class="input mono sm" id="f-code" maxlength="6" style="text-transform:uppercase"></div></div>
+            <div class="srow stack"><div class="sinfo"><div class="slabel" data-i18n="ps.g.desc"></div><div class="sdesc" data-i18n="ps.g.desc.d"></div></div><textarea class="textarea" id="f-desc" data-i18n-placeholder="ps.g.desc.ph"></textarea></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.g.dir"></div><div class="sdesc" data-i18n="ps.g.dir.d"></div></div>
+              <div class="sctl"><div class="ro"><i data-lucide="lock"></i><span data-bind="dir"></span></div><button class="btn btn-secondary" data-act="move"><i data-lucide="folder-output"></i><span data-i18n="ps.g.move"></span></button></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.g.repo"></div><div class="sdesc" data-i18n="ps.g.repo.d"></div></div>
+              <div class="sctl"><div class="ro"><i data-lucide="folder-git-2"></i><span data-bind="repo"></span></div><button class="btn btn-secondary" data-act="repo"><i data-lucide="folder-open"></i><span data-i18n="ps.change"></span></button></div></div>
+          </div>
+        </section>
+
+        <!-- Workflow -->
+        <section class="sec" id="workflow" data-sec="workflow">
+          <div class="sec-head"><h2 data-i18n="ps.n.workflow"></h2><p data-i18n="ps.workflow.d"></p></div>
+          <div class="card">
+            <div class="srow stack" style="padding-bottom:0"><div class="sinfo"><div class="slabel" data-i18n="ps.w.phase"></div><div class="sdesc" data-i18n="ps.w.phase.d"></div></div></div>
+            <div class="phases" id="phases"></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.w.method"></div><div class="sdesc" data-i18n="ps.w.method.d"></div></div>
+              <div class="sctl"><select class="select sm"><option data-i18n="ps.m.scrum"></option><option data-i18n="ps.m.kanban"></option><option data-i18n="ps.m.hybrid"></option></select></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.w.sprint"></div><div class="sdesc" data-i18n="ps.w.sprint.d"></div></div>
+              <div class="sctl"><div class="segmented" id="sprint"><button data-v="1" data-i18n="ps.w.1"></button><button data-v="2" class="is-active" data-i18n="ps.w.2"></button><button data-v="3" data-i18n="ps.w.3"></button><button data-v="4" data-i18n="ps.w.4"></button></div></div></div>
+          </div>
+          <div class="reg-t" style="margin:var(--space-5) 0 var(--space-2);font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-subtle)" data-i18n="ps.gates"></div>
+          <div class="card">
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.gate1"></div><div class="sdesc" data-i18n="ps.gate1.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.gate2"></div><div class="sdesc" data-i18n="ps.gate2.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.gate3"></div><div class="sdesc" data-i18n="ps.gate3.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
+          </div>
+        </section>
+
+        <!-- AI overrides -->
+        <section class="sec" id="ai" data-sec="ai">
+          <div class="sec-head"><h2 data-i18n="ps.n.ai"></h2><p data-i18n="ps.ai.d"></p></div>
+          <div class="card" style="overflow:hidden">
+            <div class="opts" id="ai-mode" role="radiogroup">
+              <div class="opt is-selected" role="radio" tabindex="0" aria-checked="true" data-v="default"><span class="tick"><i data-lucide="check"></i></span><b data-i18n="ps.ai.use"></b><span class="d" id="ai-default-d"></span></div>
+              <div class="opt" role="radio" tabindex="0" aria-checked="false" data-v="override"><span class="tick"><i data-lucide="check"></i></span><b data-i18n="ps.ai.over"></b><span class="d" data-i18n="ps.ai.over.d"></span></div>
+            </div>
+            <div class="override is-off" id="ai-over">
+              <div class="field"><label class="label" data-i18n="ps.ai.cli"></label><select class="select" id="ov-cli"></select></div>
+              <div class="field"><label class="label" data-i18n="ps.ai.model"></label><select class="select" id="ov-model"></select></div>
+            </div>
+          </div>
+          <div class="reg-t" style="margin:var(--space-5) 0 var(--space-2);font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-subtle)" data-i18n="ps.prompts"></div>
+          <div class="card" style="overflow:hidden">
+            <div class="ptabs" id="ptabs"></div>
+            <div style="padding:var(--space-4) 20px">
+              <textarea class="textarea prompt" id="prompt" spellcheck="false"></textarea>
+              <div class="row between" style="margin-top:10px"><span class="text-xs text-subtle" data-i18n-html="ps.prompts.h"></span><button class="btn btn-ghost btn-sm" data-act="reset-prompt"><i data-lucide="rotate-ccw"></i><span data-i18n="ps.reset"></span></button></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Isolation -->
+        <section class="sec" id="isolation" data-sec="isolation">
+          <div class="sec-head"><h2 data-i18n="ps.n.isolation"></h2><p data-i18n="ps.iso.d"></p></div>
+          <div class="card" style="overflow:hidden">
+            <div id="homes"></div>
+            <div class="note-row"><i data-lucide="shield-check" class="icon-sm"></i><span data-i18n-html="ps.iso.note"></span></div>
+          </div>
+          <div class="card" style="margin-top:var(--space-4)">
+            <div class="srow stack"><div class="sinfo"><div class="slabel" data-i18n="ps.env"></div><div class="sdesc" data-i18n="ps.env.d"></div></div>
+              <div class="chips" id="envchips"></div>
+              <div class="inline-add"><input class="input mono" id="env-in" placeholder="VARIABLE_NAME" style="text-transform:uppercase"><button class="btn btn-secondary" data-act="env-add"><i data-lucide="plus"></i><span data-i18n="ps.add"></span></button></div></div>
+            <div class="srow stack" style="border-bottom:0;padding-bottom:10px"><div class="row between"><div class="sinfo"><div class="slabel" data-i18n="ps.env.prev"></div></div><div class="segmented" id="env-cli"></div></div></div>
+            <div class="env-wrap"><div class="code" id="envprev"></div></div>
+          </div>
+        </section>
+
+        <!-- Agent harness -->
+        <section class="sec" id="harness" data-sec="harness">
+          <div class="sec-head"><h2 data-i18n="ps.n.harness"></h2><p data-i18n="ps.harness.d"></p></div>
+          <div class="card">
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.h.par"></div><div class="sdesc" data-i18n="ps.h.par.d"></div></div><div class="sctl"><input type="range" min="1" max="6" value="3" id="par"><span class="range-val" id="par-v">3</span></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.h.root"></div><div class="sdesc"><span data-i18n="ps.h.root.d"></span> <code data-bind="worktrees"></code></div></div><div class="sctl"><input class="input mono" id="wt-root" value=".procheck\worktrees"></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.h.e2e"></div><div class="sdesc" data-i18n="ps.h.e2e.d"></div></div><div class="sctl"><input class="input mono" value="npm run e2e"></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.h.appr"></div><div class="sdesc" data-i18n="ps.h.appr.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.h.target"></div><div class="sdesc" data-i18n="ps.h.target.d"></div></div><div class="sctl"><input class="input mono sm" value="main"></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.h.branch"></div><div class="sdesc"><span data-i18n="ps.h.branch.d"></span> <code id="branch-ex">agent/LP-142-merchant-kyc-upload</code></div></div><div class="sctl"><input class="input mono" id="branch" value="agent/&lt;id&gt;-&lt;slug&gt;"></div></div>
+          </div>
+        </section>
+
+        <!-- Export defaults -->
+        <section class="sec" id="export" data-sec="export">
+          <div class="sec-head"><h2 data-i18n="ps.n.export"></h2><p data-i18n="ps.export.d"></p></div>
+          <div class="card" style="overflow:hidden">
+            <div class="opts three" id="fmt" role="radiogroup">
+              <div class="opt is-selected" role="radio" tabindex="0" data-v="docx"><span class="tick"><i data-lucide="check"></i></span><b>Word (.docx)</b><span class="d" data-i18n="ps.fmt.docx"></span></div>
+              <div class="opt" role="radio" tabindex="0" data-v="pdf"><span class="tick"><i data-lucide="check"></i></span><b>PDF</b><span class="d" data-i18n="ps.fmt.pdf"></span></div>
+              <div class="opt" role="radio" tabindex="0" data-v="md"><span class="tick"><i data-lucide="check"></i></span><b>Markdown</b><span class="d" data-i18n="ps.fmt.md"></span></div>
+            </div>
+            <div class="srow" style="border-top:1px solid var(--border-subtle)"><div class="sinfo"><div class="slabel" data-i18n="ps.ex.dest"></div><div class="sdesc" data-i18n="ps.ex.dest.d"></div></div><div class="sctl"><div class="ro"><i data-lucide="folder-output"></i><span data-bind="export"></span></div><button class="btn btn-secondary" data-act="browse"><i data-lucide="folder-open"></i><span data-i18n="ps.change"></span></button></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.ex.cover"></div><div class="sdesc" data-i18n="ps.ex.cover.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.ex.ver"></div><div class="sdesc" data-i18n="ps.ex.ver.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
+          </div>
+        </section>
+
+        <!-- Storage -->
+        <section class="sec" id="storage" data-sec="storage">
+          <div class="sec-head"><h2 data-i18n="ps.n.storage"></h2><p data-i18n="ps.storage.d"></p></div>
+          <div class="card" style="overflow:hidden">
+            <div class="st-total"><span class="stat-value" id="st-total">412 MB</span><span class="text-xs text-subtle"><span data-i18n="ps.st.in"></span> <code data-bind="dir"></code></span></div>
+            <div class="st-bar" id="st-bar"></div>
+            <div class="st-tree" id="st-tree"></div>
+            <div class="srow" style="border-top:1px solid var(--border-subtle)"><div class="sinfo"><div class="slabel" data-i18n="ps.st.chat"></div><div class="sdesc" data-i18n="ps.st.chat.d"></div></div><div class="sctl"><span class="badge" id="chat-size">6 MB · 38 chats</span><button class="btn btn-secondary btn-sm" data-act="clear-chats"><i data-lucide="trash-2"></i><span data-i18n="ps.st.chat.clear"></span></button></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.st.runs"></div><div class="sdesc" data-i18n="ps.st.runs.d"></div></div><div class="sctl"><span class="text-sm text-muted" data-i18n="ps.st.older"></span><input class="input sm" type="number" min="1" value="30" id="runs-days" style="width:78px"><span class="text-sm text-muted" data-i18n="ps.st.days"></span><button class="btn btn-secondary btn-sm" data-act="clear-runs"><i data-lucide="eraser"></i><span data-i18n="ps.st.runs.clear"></span></button></div></div>
+          </div>
+        </section>
+
+        <!-- Danger zone -->
+        <section class="sec" id="danger" data-sec="danger">
+          <div class="sec-head"><h2 style="color:var(--danger-fg)" data-i18n="ps.n.danger"></h2><p data-i18n="ps.danger.d"></p></div>
+          <div class="card danger-card">
+            <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.d.remove"></div><div class="sdesc" data-i18n-html="ps.d.remove.d"></div></div><div class="sctl"><button class="btn btn-secondary" data-act="remove"><i data-lucide="list-x"></i><span data-i18n="ps.d.remove.btn"></span></button></div></div>
+            <div class="srow"><div class="sinfo"><div class="slabel" style="color:var(--danger-fg)" data-i18n="ps.d.delete"></div><div class="sdesc" data-i18n-html="ps.d.delete.d"></div></div><div class="sctl"><button class="btn btn-danger" data-act="delete"><i data-lucide="trash-2"></i><span data-i18n="ps.d.delete.btn"></span></button></div></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="savebar is-off" id="savebar">
+      <span class="grow"><i data-lucide="circle-dot" class="icon-sm" style="color:var(--warning)"></i><span data-i18n="ps.unsaved"></span></span>
+      <button class="btn btn-ghost btn-sm" data-act="discard" data-i18n="ps.discard"></button>
+      <button class="btn btn-primary btn-sm" data-act="save" data-i18n="common.save"></button>
+    </div>
+
+  </div></main>
+
+  <script>
+    PC.i18n.extend({
+      en: {
+        'ps.kicker': 'Project settings', 'ps.stored': 'Stored in', 'ps.pdir': 'Project directory', 'ps.reveal': 'Reveal', 'ps.copy': 'Copy path', 'ps.copied': 'Path copied',
+        'ps.defaults': 'Defaults for every project come from', 'ps.unsaved': 'Unsaved changes', 'ps.discard': 'Discard', 'ps.saved': 'Saved to .procheck\\settings.json', 'ps.discarded': 'Changes discarded',
+        'ps.n.general': 'General', 'ps.n.workflow': 'Workflow', 'ps.n.ai': 'AI overrides', 'ps.n.isolation': 'Isolation', 'ps.n.harness': 'Agent harness', 'ps.n.export': 'Export defaults', 'ps.n.storage': 'Storage', 'ps.n.danger': 'Danger zone',
+        'ps.change': 'Change', 'ps.add': 'Add', 'ps.reset': 'Reset to default', 'ps.nonerepo': 'Not linked',
+        'ps.general.d': 'Identity of the project and where it lives on disk.',
+        'ps.g.name': 'Project name', 'ps.g.client': 'Client', 'ps.g.code': 'Project code', 'ps.g.code.d': 'Prefix for task keys, e.g. LP-142.', 'ps.g.desc': 'Description', 'ps.g.desc.d': 'The Assistant reads this as context in every chat.', 'ps.g.desc.ph': 'What problem does this project solve? Who are the users?',
+        'ps.g.dir': 'Project directory', 'ps.g.dir.d': 'Where all project data is stored. Read-only here — use Move to relocate it.', 'ps.g.move': 'Move…',
+        'ps.g.repo': 'Linked repository', 'ps.g.repo.d': 'The git repository agents work in. It can be inside the project directory or anywhere else.',
+        'ps.move.t': 'Move project directory', 'ps.move.d': 'Procheck moves the whole directory, then updates <code>procheck.json</code> and the entry in <code>%LOCALAPPDATA%\\Procheck\\projects.json</code>. Close any agent runs first.', 'ps.move.to': 'New location', 'ps.move.btn': 'Move project', 'ps.moved': 'Project moved. Registry updated.',
+        'ps.repo.picked': 'Repository linked',
+        'ps.workflow.d': 'Where the project is in its lifecycle and how delivery is run.',
+        'ps.w.phase': 'Current phase', 'ps.w.phase.d': 'Moving the phase changes which screen is your main working view — earlier work is kept.',
+        'ps.w.method': 'Methodology', 'ps.w.method.d': 'Controls the board columns in the SDLC phase.', 'ps.m.scrum': 'Scrum', 'ps.m.kanban': 'Kanban', 'ps.m.hybrid': 'Waterfall hybrid',
+        'ps.w.sprint': 'Sprint length', 'ps.w.sprint.d': 'Used by Scrum and hybrid projects.', 'ps.w.1': '1 week', 'ps.w.2': '2 weeks', 'ps.w.3': '3 weeks', 'ps.w.4': '4 weeks',
+        'ps.ph.done': 'Done', 'ps.ph.prog': 'In progress', 'ps.ph.todo': 'Not started', 'ps.ph.cur': 'Current',
+        'ps.gates': 'Phase gates',
+        'ps.gate1': 'Scope sign-off before Scaffolding', 'ps.gate1.d': 'Requires the approved scope and estimate artifacts before the phase can advance.',
+        'ps.gate2': 'Architecture approval before SDLC', 'ps.gate2.d': 'The scaffolding plan must be reviewed and marked approved.',
+        'ps.gate3': 'Green e2e before a task can reach review', 'ps.gate3.d': 'Agents must pass the e2e command before handing a task over.',
+        'ps.ai.d': 'Follow the app-wide default, or pin a CLI and model for this project only.',
+        'ps.ai.use': 'Use app default', 'ps.ai.default': 'Claude Code · claude-opus-5-5', 'ps.ai.over': 'Override for this project', 'ps.ai.over.d': 'Pick a different CLI tool or model. Saved only in this project’s settings.json.',
+        'ps.ai.cli': 'CLI tool', 'ps.ai.model': 'Model',
+        'ps.prompts': 'System prompt templates per phase', 'ps.prompts.h': 'Use <code>{project}</code>, <code>{client}</code> and <code>{phase}</code> as placeholders.', 'ps.prompt.reset': 'Template reset',
+        'ps.iso.d': 'Each CLI tool runs with its own HOME inside the project, so credentials, config and history never leak between projects.',
+        'ps.iso.note': 'The CLI is authenticated once in the app (<code>%LOCALAPPDATA%\\Procheck\\cli\\</code>); Procheck copies only what is needed into the isolated HOME.',
+        'ps.home.ready': 'Ready', 'ps.home.reset': 'Reset HOME', 'ps.home.reset.t': 'Reset isolated HOME?', 'ps.home.reset.d': 'Deletes <code>{p}</code> and recreates it empty. Chat history and artifacts are not affected.', 'ps.home.done': 'HOME reset',
+        'ps.env': 'Environment variable allowlist', 'ps.env.d': 'Only these variables are passed from your system into the CLI. Everything else is dropped.', 'ps.env.prev': 'Resolved environment for', 'ps.env.inh': 'inherited', 'ps.env.nopass': 'not passed',
+        'ps.harness.d': 'How agents implement tasks in this project. Overrides the app defaults.',
+        'ps.h.par': 'Max parallel worktrees', 'ps.h.par.d': 'How many agents can work at the same time.',
+        'ps.h.root': 'Worktree root', 'ps.h.root.d': 'Relative to the project directory. Resolves to', 'ps.h.e2e': 'e2e command', 'ps.h.e2e.d': 'Run by the agent in the worktree to verify its work.',
+        'ps.h.appr': 'Require approval before PR', 'ps.h.appr.d': 'Agents stop at review; only you can promote a task to a pull request.',
+        'ps.h.target': 'PR target branch', 'ps.h.target.d': 'Pull requests are opened against this branch.', 'ps.h.branch': 'Branch naming', 'ps.h.branch.d': 'Pattern for agent branches. Example:',
+        'ps.export.d': 'Defaults when you export artifacts from this project.', 'ps.fmt.docx': 'Editable, best for sharing with clients.', 'ps.fmt.pdf': 'Fixed layout for sign-off and archiving.', 'ps.fmt.md': 'Plain text that lives well in git.',
+        'ps.ex.dest': 'Export folder', 'ps.ex.dest.d': 'Where exported files are written.', 'ps.ex.cover': 'Include cover page', 'ps.ex.cover.d': 'Add project name, client and version on the first page.', 'ps.ex.ver': 'Add version to file name', 'ps.ex.ver.d': 'e.g. Merchant-BRD-v3.docx',
+        'ps.storage.d': 'What this project currently stores in its directory.', 'ps.st.in': 'in',
+        'ps.t.0': 'Project manifest', 'ps.t.1': 'Uploaded documents (inputs)', 'ps.t.2': 'Generated & edited artifacts with versions', 'ps.t.3': 'Tasks, plans, review evidence', 'ps.t.4': 'Assistant chat history', 'ps.t.5': 'Agent run logs & evidence', 'ps.t.6': 'Isolated HOME for each CLI tool', 'ps.t.7': 'Git worktrees created by agents', 'ps.t.8': 'Project-level overrides',
+        'ps.st.chat': 'Chat history', 'ps.st.chat.d': 'Assistant conversations saved in .procheck\\chats.', 'ps.st.chat.clear': 'Clear history', 'ps.st.chat.t': 'Clear all chat history?', 'ps.st.chat.td': 'Deletes every saved Assistant conversation for this project. Artifacts are not affected.', 'ps.st.chat.done': 'Chat history cleared',
+        'ps.st.runs': 'Agent run logs', 'ps.st.runs.d': 'Free space by deleting old run logs and evidence from .procheck\\runs.', 'ps.st.older': 'Older than', 'ps.st.days': 'days', 'ps.st.runs.clear': 'Clear logs', 'ps.st.runs.done': 'Cleared run logs older than {n} days · freed 96 MB',
+        'ps.danger.d': 'These actions affect how the project is registered or stored on disk.',
+        'ps.d.remove': 'Remove from Procheck', 'ps.d.remove.d': 'Keeps every file. Only deletes this project’s entry from <code>%LOCALAPPDATA%\\Procheck\\projects.json</code>. You can open the directory again later.', 'ps.d.remove.btn': 'Remove from list',
+        'ps.d.remove.t': 'Remove “{n}” from Procheck?', 'ps.d.remove.td': 'The directory <code>{p}</code> stays exactly as it is. Only the registry entry is removed.', 'ps.d.removed': 'Removed from projects.json',
+        'ps.d.delete': 'Delete project directory', 'ps.d.delete.d': 'Permanently deletes the directory and everything in it — sources, artifacts, board, chats and runs. This cannot be undone.', 'ps.d.delete.btn': 'Delete directory…',
+        'ps.d.delete.t': 'Delete project directory?', 'ps.d.delete.td': 'This permanently deletes <code>{p}</code> and all of its contents. Type the project id <b>{id}</b> to confirm.', 'ps.d.delete.confirm': 'Delete permanently', 'ps.d.deleted': 'Project directory deleted (prototype)'
+      },
+      vi: {
+        'ps.kicker': 'Cài đặt dự án', 'ps.stored': 'Lưu tại', 'ps.pdir': 'Thư mục dự án', 'ps.reveal': 'Mở thư mục', 'ps.copy': 'Sao chép đường dẫn', 'ps.copied': 'Đã sao chép đường dẫn',
+        'ps.defaults': 'Giá trị mặc định cho mọi dự án nằm ở', 'ps.unsaved': 'Có thay đổi chưa lưu', 'ps.discard': 'Bỏ thay đổi', 'ps.saved': 'Đã lưu vào .procheck\\settings.json', 'ps.discarded': 'Đã bỏ các thay đổi',
+        'ps.n.general': 'Chung', 'ps.n.workflow': 'Quy trình', 'ps.n.ai': 'Ghi đè AI', 'ps.n.isolation': 'Cô lập', 'ps.n.harness': 'Agent harness', 'ps.n.export': 'Mặc định xuất tệp', 'ps.n.storage': 'Lưu trữ', 'ps.n.danger': 'Vùng nguy hiểm',
+        'ps.change': 'Đổi', 'ps.add': 'Thêm', 'ps.reset': 'Về mặc định', 'ps.nonerepo': 'Chưa liên kết',
+        'ps.general.d': 'Thông tin nhận diện dự án và vị trí lưu trên ổ đĩa.',
+        'ps.g.name': 'Tên dự án', 'ps.g.client': 'Khách hàng', 'ps.g.code': 'Mã dự án', 'ps.g.code.d': 'Tiền tố của mã task, ví dụ LP-142.', 'ps.g.desc': 'Mô tả', 'ps.g.desc.d': 'Trợ lý đọc phần này làm ngữ cảnh trong mọi cuộc chat.', 'ps.g.desc.ph': 'Dự án giải quyết vấn đề gì? Người dùng là ai?',
+        'ps.g.dir': 'Thư mục dự án', 'ps.g.dir.d': 'Nơi lưu toàn bộ dữ liệu dự án. Chỉ đọc ở đây — dùng Di chuyển để đổi vị trí.', 'ps.g.move': 'Di chuyển…',
+        'ps.g.repo': 'Repository liên kết', 'ps.g.repo.d': 'Git repository mà agent làm việc trong đó. Có thể nằm trong thư mục dự án hoặc ở nơi khác.',
+        'ps.move.t': 'Di chuyển thư mục dự án', 'ps.move.d': 'Procheck di chuyển toàn bộ thư mục, sau đó cập nhật <code>procheck.json</code> và mục trong <code>%LOCALAPPDATA%\\Procheck\\projects.json</code>. Hãy dừng các lượt chạy agent trước.', 'ps.move.to': 'Vị trí mới', 'ps.move.btn': 'Di chuyển dự án', 'ps.moved': 'Đã di chuyển dự án. Đã cập nhật danh sách.',
+        'ps.repo.picked': 'Đã liên kết repository',
+        'ps.workflow.d': 'Dự án đang ở đâu trong vòng đời và cách vận hành việc triển khai.',
+        'ps.w.phase': 'Giai đoạn hiện tại', 'ps.w.phase.d': 'Đổi giai đoạn sẽ đổi màn hình làm việc chính — công việc trước đó vẫn được giữ.',
+        'ps.w.method': 'Phương pháp', 'ps.w.method.d': 'Quyết định các cột của bảng ở giai đoạn SDLC.', 'ps.m.scrum': 'Scrum', 'ps.m.kanban': 'Kanban', 'ps.m.hybrid': 'Waterfall kết hợp',
+        'ps.w.sprint': 'Độ dài sprint', 'ps.w.sprint.d': 'Áp dụng cho dự án Scrum và kết hợp.', 'ps.w.1': '1 tuần', 'ps.w.2': '2 tuần', 'ps.w.3': '3 tuần', 'ps.w.4': '4 tuần',
+        'ps.ph.done': 'Hoàn tất', 'ps.ph.prog': 'Đang thực hiện', 'ps.ph.todo': 'Chưa bắt đầu', 'ps.ph.cur': 'Hiện tại',
+        'ps.gates': 'Cổng giữa các giai đoạn',
+        'ps.gate1': 'Chốt phạm vi trước khi sang Scaffolding', 'ps.gate1.d': 'Cần có tài liệu phạm vi và ước lượng đã duyệt thì mới chuyển giai đoạn.',
+        'ps.gate2': 'Duyệt kiến trúc trước khi sang SDLC', 'ps.gate2.d': 'Kế hoạch scaffolding phải được review và đánh dấu đã duyệt.',
+        'ps.gate3': 'e2e đạt trước khi task sang review', 'ps.gate3.d': 'Agent phải chạy đạt lệnh e2e trước khi bàn giao task.',
+        'ps.ai.d': 'Dùng mặc định chung của ứng dụng, hoặc cố định CLI và model riêng cho dự án này.',
+        'ps.ai.use': 'Dùng mặc định của ứng dụng', 'ps.ai.default': 'Claude Code · claude-opus-5-5', 'ps.ai.over': 'Ghi đè cho dự án này', 'ps.ai.over.d': 'Chọn công cụ CLI hoặc model khác. Chỉ lưu trong settings.json của dự án.',
+        'ps.ai.cli': 'Công cụ CLI', 'ps.ai.model': 'Model',
+        'ps.prompts': 'Mẫu system prompt theo giai đoạn', 'ps.prompts.h': 'Dùng <code>{project}</code>, <code>{client}</code> và <code>{phase}</code> làm biến thay thế.', 'ps.prompt.reset': 'Đã đặt lại mẫu',
+        'ps.iso.d': 'Mỗi công cụ CLI chạy với HOME riêng trong dự án, nên thông tin xác thực, cấu hình và lịch sử không bị lẫn giữa các dự án.',
+        'ps.iso.note': 'CLI được xác thực một lần trong ứng dụng (<code>%LOCALAPPDATA%\\Procheck\\cli\\</code>); Procheck chỉ sao chép phần cần thiết vào HOME cô lập.',
+        'ps.home.ready': 'Sẵn sàng', 'ps.home.reset': 'Đặt lại HOME', 'ps.home.reset.t': 'Đặt lại HOME cô lập?', 'ps.home.reset.d': 'Xoá <code>{p}</code> và tạo lại thư mục trống. Lịch sử chat và tài liệu không bị ảnh hưởng.', 'ps.home.done': 'Đã đặt lại HOME',
+        'ps.env': 'Danh sách biến môi trường được phép', 'ps.env.d': 'Chỉ các biến này được chuyển từ hệ thống vào CLI. Mọi biến khác bị loại bỏ.', 'ps.env.prev': 'Môi trường sau khi áp dụng cho', 'ps.env.inh': 'kế thừa', 'ps.env.nopass': 'không chuyển',
+        'ps.harness.d': 'Cách agent thực hiện task trong dự án này. Ghi đè mặc định của ứng dụng.',
+        'ps.h.par': 'Số worktree song song tối đa', 'ps.h.par.d': 'Số agent có thể làm việc cùng lúc.',
+        'ps.h.root': 'Thư mục gốc của worktree', 'ps.h.root.d': 'Tính từ thư mục dự án. Đường dẫn thực tế:', 'ps.h.e2e': 'Lệnh e2e', 'ps.h.e2e.d': 'Agent chạy trong worktree để tự kiểm chứng.',
+        'ps.h.appr': 'Yêu cầu duyệt trước khi tạo PR', 'ps.h.appr.d': 'Agent dừng ở bước review; chỉ bạn mới đưa task lên pull request.',
+        'ps.h.target': 'Nhánh đích của PR', 'ps.h.target.d': 'Pull request được mở vào nhánh này.', 'ps.h.branch': 'Quy tắc đặt tên nhánh', 'ps.h.branch.d': 'Mẫu tên nhánh của agent. Ví dụ:',
+        'ps.export.d': 'Mặc định khi xuất tài liệu của dự án này.', 'ps.fmt.docx': 'Chỉnh sửa được, hợp để gửi khách hàng.', 'ps.fmt.pdf': 'Bố cục cố định để ký duyệt và lưu trữ.', 'ps.fmt.md': 'Văn bản thuần, phù hợp lưu trong git.',
+        'ps.ex.dest': 'Thư mục xuất', 'ps.ex.dest.d': 'Nơi ghi các tệp đã xuất.', 'ps.ex.cover': 'Thêm trang bìa', 'ps.ex.cover.d': 'Thêm tên dự án, khách hàng và phiên bản ở trang đầu.', 'ps.ex.ver': 'Thêm phiên bản vào tên tệp', 'ps.ex.ver.d': 'VD: Merchant-BRD-v3.docx',
+        'ps.storage.d': 'Những gì dự án này đang lưu trong thư mục của nó.', 'ps.st.in': 'trong',
+        'ps.t.0': 'Tệp mô tả dự án', 'ps.t.1': 'Tài liệu tải lên (đầu vào)', 'ps.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ps.t.3': 'Task, kế hoạch, bằng chứng review', 'ps.t.4': 'Lịch sử chat với Trợ lý', 'ps.t.5': 'Log và bằng chứng các lượt chạy agent', 'ps.t.6': 'HOME cô lập cho từng công cụ CLI', 'ps.t.7': 'Git worktree do agent tạo', 'ps.t.8': 'Ghi đè cấp dự án',
+        'ps.st.chat': 'Lịch sử chat', 'ps.st.chat.d': 'Các cuộc trò chuyện với Trợ lý lưu trong .procheck\\chats.', 'ps.st.chat.clear': 'Xoá lịch sử', 'ps.st.chat.t': 'Xoá toàn bộ lịch sử chat?', 'ps.st.chat.td': 'Xoá mọi cuộc trò chuyện với Trợ lý đã lưu của dự án này. Tài liệu không bị ảnh hưởng.', 'ps.st.chat.done': 'Đã xoá lịch sử chat',
+        'ps.st.runs': 'Log lượt chạy agent', 'ps.st.runs.d': 'Giải phóng dung lượng bằng cách xoá log và bằng chứng cũ trong .procheck\\runs.', 'ps.st.older': 'Cũ hơn', 'ps.st.days': 'ngày', 'ps.st.runs.clear': 'Xoá log', 'ps.st.runs.done': 'Đã xoá log cũ hơn {n} ngày · giải phóng 96 MB',
+        'ps.danger.d': 'Các thao tác này ảnh hưởng đến cách dự án được đăng ký hoặc lưu trên ổ đĩa.',
+        'ps.d.remove': 'Gỡ khỏi Procheck', 'ps.d.remove.d': 'Giữ nguyên mọi tệp. Chỉ xoá mục của dự án này trong <code>%LOCALAPPDATA%\\Procheck\\projects.json</code>. Bạn có thể mở lại thư mục sau.', 'ps.d.remove.btn': 'Gỡ khỏi danh sách',
+        'ps.d.remove.t': 'Gỡ “{n}” khỏi Procheck?', 'ps.d.remove.td': 'Thư mục <code>{p}</code> được giữ nguyên. Chỉ mục đăng ký bị gỡ.', 'ps.d.removed': 'Đã gỡ khỏi projects.json',
+        'ps.d.delete': 'Xoá thư mục dự án', 'ps.d.delete.d': 'Xoá vĩnh viễn thư mục và mọi thứ bên trong — nguồn, tài liệu, bảng, chat và lượt chạy. Không thể hoàn tác.', 'ps.d.delete.btn': 'Xoá thư mục…',
+        'ps.d.delete.t': 'Xoá thư mục dự án?', 'ps.d.delete.td': 'Thao tác này xoá vĩnh viễn <code>{p}</code> cùng toàn bộ nội dung. Nhập mã dự án <b>{id}</b> để xác nhận.', 'ps.d.delete.confirm': 'Xoá vĩnh viễn', 'ps.d.deleted': 'Đã xoá thư mục dự án (bản mẫu)'
+      }
+    });
+
+    (function () {
+      const D = PC.data;
+      const $ = id => document.getElementById(id);
+      const tx = k => PC.t(k);
+      const P = () => PC.project();
+      const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
+      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-4-5'], codex: ['gpt-5-codex', 'gpt-5-codex-mini'] };
+      const PROJ_SIZES = [[0.003, '3 KB'], [86, '86 MB'], [41, '41 MB'], [12, '12 MB'], [6, '6 MB'], [148, '148 MB'], [22, '22 MB'], [94, '94 MB'], [0.001, '1 KB']];
+      const TREE_COL = ['var(--fg-faint)', 'var(--brand)', 'var(--accent-purple)', 'var(--accent-teal)', 'var(--accent-sky)', 'var(--warning)', 'var(--accent-magenta)', 'var(--success)', 'var(--fg-faint)'];
+      const PROMPTS = {
+        initial: 'You are the discovery assistant for {project} ({client}).\nWork in the Initial phase: turn meeting notes and source documents into\nclarifying questions, a BRD, scope and estimates.\nAlways cite the source document and flag assumptions explicitly.',
+        release: 'You are the architecture assistant for {project} ({client}).\nWork in the Scaffolding phase: propose the architecture, repository structure,\ninfrastructure and CI/CD pipeline, then generate the scaffold in the linked repo.\nFollow existing conventions; never overwrite files without a diff.',
+        sdlc: 'You are an implementation agent on {project} ({client}).\nWork in the SDLC phase: for each task, plan the solution, implement it in an\nisolated git worktree, run the e2e command and attach evidence.\nStop at review. Never push or open a pull request without approval.'
+      };
+      const S = { aiMode: 'default', promptTab: 'sdlc', prompts: Object.assign({}, PROMPTS), env: ['PATH', 'TEMP', 'TMP', 'SystemRoot', 'NODE_OPTIONS'], envCli: 'claude', phase: null, fmt: 'docx', dirty: false, chatsCleared: false };
+      const LS = { get(k, d) { try { return localStorage.getItem('pc.' + k) || d; } catch (e) { return d; } } };
+      const join = (a, b) => a.replace(/\\+$/, '') + '\\' + b;
+      const code = p => p.short;
+
+      function renderHead() {
+        const p = P(), settings = join(p.dir, '.procheck\\settings.json');
+        $('head').innerHTML = `<div class="project-avatar" style="background:${p.color}">${PC.esc(p.short)}</div>
+          <div class="grow" style="min-width:260px"><span class="kicker">${tx('ps.kicker')}</span><h1>${PC.esc(p.name)}</h1>
+            <div class="ps-paths">
+              <div class="ps-path"><span class="k"><i data-lucide="file-json" class="icon-sm"></i>${tx('ps.stored')}</span><code>${PC.esc(settings)}</code></div>
+              <div class="ps-path"><span class="k"><i data-lucide="folder" class="icon-sm"></i>${tx('ps.pdir')}</span><code>${PC.esc(p.dir)}</code></div>
+            </div></div>
+          <div class="ps-acts"><button class="btn btn-secondary btn-sm" data-act="reveal"><i data-lucide="folder-search"></i>${tx('ps.reveal')}</button><button class="btn btn-secondary btn-sm" data-act="copy"><i data-lucide="copy"></i>${tx('ps.copy')}</button></div>`;
+      }
+
+      function bind() {
+        const p = P();
+        document.querySelectorAll('[data-bind]').forEach(el => {
+          const k = el.dataset.bind;
+          el.textContent = k === 'dir' ? p.dir : k === 'repo' ? (p.repo || tx('ps.nonerepo')) : k === 'worktrees' ? join(p.dir, ($('wt-root') ? $('wt-root').value : '.procheck\\worktrees')) : k === 'export' ? join(p.dir, 'artifacts\\export') : '';
+        });
+        $('ai-default-d').textContent = tx('ps.ai.default');
+      }
+
+      function fillForm() {
+        const p = P();
+        $('f-name').value = p.name; $('f-client').value = p.client; $('f-code').value = code(p);
+        $('f-desc').value = p.id === 'lotus-pay' ? 'Self-service portal for merchants of Lotus Financial Group: onboarding with KYC, settlement reports, dispute handling and API keys.' : '';
+      }
+
+      function renderPhases() {
+        const p = P(); if (!S.phase) S.phase = p.phase;
+        const cols = { initial: 'var(--phase-initial)', release: 'var(--phase-release)', sdlc: 'var(--phase-sdlc)' };
+        $('phases').innerHTML = D.phases.map(ph => {
+          const v = p.progress[ph.id], st = v >= 100 ? 'done' : v <= 0 ? 'todo' : 'prog';
+          return `<button type="button" class="ph ${S.phase === ph.id ? 'is-selected' : ''}" style="--_c:${cols[ph.id]}" data-phase="${ph.id}">
+            <span class="h"><i data-lucide="${ph.icon}"></i>${tx('phase.' + ph.id)}${S.phase === ph.id ? `<span class="badge badge-brand" style="margin-left:auto">${tx('ps.ph.cur')}</span>` : ''}</span>
+            <span class="bar"><i style="width:${v}%"></i></span><span class="m"><span>${tx('ps.ph.' + st)}</span><b>${v}%</b></span></button>`;
+        }).join('');
+      }
+
+      function renderOverride() {
+        $('ai-over').classList.toggle('is-off', S.aiMode !== 'override');
+        document.querySelectorAll('#ai-mode .opt').forEach(o => { const on = o.dataset.v === S.aiMode; o.classList.toggle('is-selected', on); o.setAttribute('aria-checked', on); });
+        const cli = $('ov-cli').value || 'claude';
+        $('ov-cli').innerHTML = D.cli.map(c => `<option value="${c.id}" ${c.id === cli ? 'selected' : ''}>${PC.esc(c.name)}</option>`).join('');
+        $('ov-model').innerHTML = (MODELS[cli] || []).map(m => `<option>${m}</option>`).join('');
+      }
+
+      function renderPrompts() {
+        $('ptabs').innerHTML = D.phases.map(ph => `<button type="button" class="tab ${S.promptTab === ph.id ? 'is-active' : ''}" data-tab="${ph.id}"><i data-lucide="${ph.icon}" class="icon-sm"></i>${tx('phase.' + ph.id)}</button>`).join('');
+        $('prompt').value = S.prompts[S.promptTab];
+      }
+
+      function renderHomes() {
+        $('homes').innerHTML = D.cli.map(c => {
+          const path = PC.projectHome(c.id);
+          return `<div class="home-row"><span class="cli-logo"><i data-lucide="${CLI_ICON[c.id] || 'terminal'}"></i></span>
+            <div class="grow"><div style="font-size:var(--text-sm);font-weight:600;color:var(--fg-strong)">${PC.esc(c.name)}</div><div class="ro wide" style="margin-top:6px;height:32px"><i data-lucide="folder-lock"></i><span title="${PC.esc(path)}">${PC.esc(path)}</span></div></div>
+            <span class="badge badge-success"><i data-lucide="check"></i>${tx('ps.home.ready')}</span>
+            <button class="btn btn-ghost btn-sm" data-act="reset-home" data-id="${c.id}"><i data-lucide="rotate-ccw"></i>${tx('ps.home.reset')}</button></div>`;
+        }).join('');
+      }
+
+      function renderEnv() {
+        $('envchips').innerHTML = S.env.map(v => `<span class="chip">${PC.esc(v)}<button type="button" data-rm="${PC.esc(v)}" aria-label="remove"><i data-lucide="x" class="icon-sm"></i></button></span>`).join('');
+        $('env-cli').innerHTML = D.cli.map(c => `<button class="${S.envCli === c.id ? 'is-active' : ''}" data-cli="${c.id}">${PC.esc(c.name)}</button>`).join('');
+        const home = PC.projectHome(S.envCli, P());
+        const L = (k, v, cls) => `<span class="c-k">${k}</span>=<span class="${cls || ''}">${PC.esc(v)}</span>`;
+        const lines = [
+          L('HOME', home), L('USERPROFILE', home), L('APPDATA', home + '\\AppData\\Roaming'), L('LOCALAPPDATA', home + '\\AppData\\Local'),
+          ...S.env.map(v => L(v, '<' + tx('ps.env.inh') + '>', 'c-d')),
+          L(S.envCli === 'claude' ? 'ANTHROPIC_API_KEY' : 'OPENAI_API_KEY', '<' + tx('ps.env.nopass') + '>', 'c-no')
+        ];
+        $('envprev').innerHTML = lines.join('\n');
+        PC.refresh($('envchips'));
+      }
+
+      function renderStorage() {
+        const total = PROJ_SIZES.reduce((a, x) => a + x[0], 0);
+        $('st-total').textContent = Math.round(total) + ' MB';
+        $('st-bar').innerHTML = PROJ_SIZES.map((x, i) => x[0] > 1 ? `<i style="width:${(x[0] / total) * 100}%;background:${TREE_COL[i]}"></i>` : '').join('');
+        $('st-tree').innerHTML = D.storage.project.items.map((it, i) => {
+          const folder = /\\$/.test(it.path);
+          const size = S.chatsCleared && i === 4 ? '0 KB' : PROJ_SIZES[i][1];
+          return `<div class="znode"><i data-lucide="${folder ? 'folder' : 'file-json'}"></i><span class="zp"><i style="background:${TREE_COL[i]}"></i>${PC.esc(it.path.replace('<cli>', '*'))}</span><span class="zs">${size}</span><span class="zd">${tx('ps.t.' + i)}</span></div>`;
+        }).join('');
+        $('chat-size').textContent = S.chatsCleared ? '0 KB · 0' : '6 MB · 38 chats';
+      }
+
+      function renderAll() { renderHead(); bind(); renderPhases(); renderOverride(); renderPrompts(); renderHomes(); renderEnv(); renderStorage(); PC.refresh(document.querySelector('.canvas')); }
+
+      function setDirty(v) { S.dirty = v; $('savebar').classList.toggle('is-off', !v); }
+      function spy() {
+        const cv = $('canvas'), top = cv.getBoundingClientRect().top + 90; let cur = 'general';
+        document.querySelectorAll('.sec').forEach(s => { if (s.getBoundingClientRect().top <= top) cur = s.id; });
+        if (cv.scrollTop + cv.clientHeight >= cv.scrollHeight - 4) cur = 'danger';
+        document.querySelectorAll('#setnav a').forEach(a => a.classList.toggle('is-active', a.dataset.sec === cur));
+      }
+
+      function dlgMove() {
+        const p = P();
+        PC.modal({ title: tx('ps.move.t'), width: 520,
+          body: `<p class="text-sm text-muted">${tx('ps.move.d')}</p><div class="field" style="margin-top:12px"><label class="label">${tx('ps.move.to')}</label><div class="row"><input class="input mono" value="${PC.esc(p.dir.replace(/[^\\]+$/, '') + 'archive\\' + p.dir.split('\\').pop())}"><button class="btn btn-secondary" type="button"><i data-lucide="folder-open"></i></button></div></div>`,
+          actions: [{ label: tx('common.cancel'), kind: 'ghost' }, { label: tx('ps.move.btn'), kind: 'primary', icon: 'folder-output', onClick: () => PC.toast(tx('ps.moved'), { icon: 'folder-output' }) }] });
+      }
+      function dlgRemove() {
+        const p = P();
+        PC.modal({ title: tx('ps.d.remove.t').replace('{n}', PC.esc(p.name.split(' — ')[0])), width: 480, body: `<p class="text-sm text-muted">${tx('ps.d.remove.td').replace('{p}', PC.esc(p.dir))}</p>`,
+          actions: [{ label: tx('common.cancel'), kind: 'ghost' }, { label: tx('ps.d.remove.btn'), kind: 'danger', icon: 'list-x', onClick: () => { PC.toast(tx('ps.d.removed'), { icon: 'list-x' }); setTimeout(() => { location.href = 'index.html'; }, 900); } }] });
+      }
+      function dlgDelete() {
+        const p = P();
+        const m = PC.modal({ title: tx('ps.d.delete.t'), width: 500,
+          body: `<div class="alert alert-danger" style="margin-bottom:12px"><i data-lucide="triangle-alert"></i><div class="text-sm">${tx('ps.d.delete.td').replace('{p}', PC.esc(p.dir)).replace('{id}', PC.esc(p.id))}</div></div><input class="input mono" id="del-in" autocomplete="off" placeholder="${PC.esc(p.id)}">`,
+          actions: [{ label: tx('common.cancel'), kind: 'ghost' }, { label: tx('ps.d.delete.confirm'), kind: 'danger', icon: 'trash-2', onClick: ov => { if (ov.querySelector('#del-in').value.trim() !== p.id) return false; PC.toast(tx('ps.d.deleted'), { icon: 'trash-2', tone: 'danger' }); setTimeout(() => { location.href = 'index.html'; }, 900); } }] });
+        const btn = m.el.querySelector('.modal-footer .btn-danger'), inp = m.el.querySelector('#del-in');
+        btn.disabled = true; inp.addEventListener('input', () => { btn.disabled = inp.value.trim() !== p.id; }); inp.focus();
+      }
+      function dlgConfirm(title, body, label, icon, fn) {
+        PC.modal({ title, width: 460, body: `<p class="text-sm text-muted">${body}</p>`, actions: [{ label: tx('common.cancel'), kind: 'ghost' }, { label, kind: 'danger', icon, onClick: fn }] });
+      }
+
+      function wire() {
+        document.addEventListener('click', e => {
+          const a = e.target.closest('[data-act]'); if (!a) return;
+          const act = a.dataset.act, p = P();
+          if (act === 'reveal') PC.toast(PC.esc(p.dir), { icon: 'folder-search' });
+          else if (act === 'copy') { try { navigator.clipboard.writeText(p.dir); } catch (er) {} PC.toast(tx('ps.copied'), { icon: 'copy' }); }
+          else if (act === 'move') dlgMove();
+          else if (act === 'repo' || act === 'browse') { PC.toast(tx('ps.repo.picked'), { icon: 'folder-open' }); setDirty(true); }
+          else if (act === 'remove') dlgRemove();
+          else if (act === 'delete') dlgDelete();
+          else if (act === 'reset-prompt') { S.prompts[S.promptTab] = PROMPTS[S.promptTab]; $('prompt').value = PROMPTS[S.promptTab]; PC.toast(tx('ps.prompt.reset')); }
+          else if (act === 'reset-home') { const c = D.cli.find(x => x.id === a.dataset.id); dlgConfirm(tx('ps.home.reset.t'), tx('ps.home.reset.d').replace('{p}', PC.esc(PC.projectHome(c.id))), tx('ps.home.reset'), 'rotate-ccw', () => PC.toast(tx('ps.home.done'), { icon: 'rotate-ccw' })); }
+          else if (act === 'env-add') { const v = $('env-in').value.trim().toUpperCase().replace(/[^A-Z0-9_]/g, ''); if (v && !S.env.includes(v)) { S.env.push(v); renderEnv(); setDirty(true); } $('env-in').value = ''; }
+          else if (act === 'clear-chats') dlgConfirm(tx('ps.st.chat.t'), tx('ps.st.chat.td'), tx('ps.st.chat.clear'), 'trash-2', () => { S.chatsCleared = true; renderStorage(); PC.refresh($('st-tree')); PC.toast(tx('ps.st.chat.done')); });
+          else if (act === 'clear-runs') PC.toast(tx('ps.st.runs.done').replace('{n}', $('runs-days').value || 30), { icon: 'eraser' });
+          else if (act === 'save') { setDirty(false); PC.toast(tx('ps.saved')); }
+          else if (act === 'discard') { fillForm(); setDirty(false); PC.toast(tx('ps.discarded'), { icon: 'undo-2' }); }
+        });
+        $('content').addEventListener('input', e => { if (e.target.closest('.card')) setDirty(true); if (e.target.id === 'wt-root') bind(); });
+        $('content').addEventListener('change', e => { if (e.target.closest('.card')) setDirty(true); });
+        $('prompt').addEventListener('input', e => { S.prompts[S.promptTab] = e.target.value; });
+        $('ptabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; S.promptTab = b.dataset.tab; renderPrompts(); PC.refresh($('ptabs')); });
+        $('phases').addEventListener('click', e => { const b = e.target.closest('[data-phase]'); if (!b) return; S.phase = b.dataset.phase; renderPhases(); PC.refresh($('phases')); setDirty(true); });
+        const pick = (el, fn) => { el.addEventListener('click', e => { const o = e.target.closest('.opt'); if (o && el.contains(o)) fn(o); }); el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('opt')) { e.preventDefault(); fn(e.target); } }); };
+        pick($('ai-mode'), o => { S.aiMode = o.dataset.v; renderOverride(); setDirty(true); });
+        pick($('fmt'), o => { S.fmt = o.dataset.v; document.querySelectorAll('#fmt .opt').forEach(x => x.classList.toggle('is-selected', x === o)); setDirty(true); });
+        $('ov-cli').addEventListener('change', () => { const cli = $('ov-cli').value; $('ov-model').innerHTML = (MODELS[cli] || []).map(m => `<option>${m}</option>`).join(''); });
+        $('envchips').addEventListener('click', e => { const b = e.target.closest('[data-rm]'); if (!b) return; S.env = S.env.filter(v => v !== b.dataset.rm); renderEnv(); setDirty(true); });
+        $('env-cli').addEventListener('click', e => { const b = e.target.closest('[data-cli]'); if (!b) return; S.envCli = b.dataset.cli; renderEnv(); });
+        $('env-in').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); document.querySelector('[data-act="env-add"]').click(); } });
+        $('par').addEventListener('input', e => { $('par-v').textContent = e.target.value; });
+        $('sprint').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; document.querySelectorAll('#sprint button').forEach(x => x.classList.toggle('is-active', x === b)); setDirty(true); });
+        $('branch').addEventListener('input', e => { const v = e.target.value.replace(/&lt;/g, '<').replace(/&gt;/g, '>'); $('branch-ex').textContent = v.replace('<id>', 'LP-142').replace('<slug>', 'merchant-kyc-upload'); });
+        $('setnav').addEventListener('click', e => { const a = e.target.closest('a[data-sec]'); if (!a) return; e.preventDefault(); document.getElementById(a.dataset.sec).scrollIntoView({ behavior: 'smooth', block: 'start' }); history.replaceState(null, '', '#' + a.dataset.sec); });
+        $('canvas').addEventListener('scroll', spy, { passive: true });
+      }
+
+      PC.onReady(() => {
+        document.documentElement.setAttribute('data-density', LS.get('density', 'comfortable'));
+        $('branch').value = 'agent/<id>-<slug>';
+        fillForm(); wire(); renderAll(); spy();
+        if (location.hash) { const el = document.getElementById(location.hash.slice(1)); if (el && el.classList.contains('sec')) setTimeout(() => el.scrollIntoView(), 60); }
+        PC.assistant.setContext([{ icon: 'sliders-horizontal', label: PC.t('nav.project_settings') }, { icon: 'folder', label: P().dir }]);
+      });
+      document.addEventListener('pc:lang', renderAll);
+    })();
+  </script>
+</body>
+</html>

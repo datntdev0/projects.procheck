@@ -1,0 +1,1022 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview · Procheck</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <script src="assets/app.js"></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ===== Project overview — page-only styles, tokens only ===== */
+    .ph-c-initial { --ph: var(--phase-initial); --ph-fg: var(--brand-fg); --ph-soft: var(--brand-soft); --ph-on: var(--fg-on-brand); }
+    .ph-c-release { --ph: var(--phase-release); --ph-fg: var(--accent-purple); --ph-soft: var(--accent-purple-soft); --ph-on: var(--fg-on-brand); }
+    .ph-c-sdlc { --ph: var(--phase-sdlc); --ph-fg: var(--accent-teal-fg); --ph-soft: var(--accent-teal-soft); --ph-on: var(--gray-950); }
+
+    /* Hero */
+    .ws-hero { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap;
+      padding: var(--space-6); margin-bottom: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-xl);
+      background: var(--gradient-hero), var(--bg-surface); overflow: hidden; }
+    .ws-hero-main { display: flex; gap: var(--space-4); min-width: 0; flex: 1 1 520px; }
+    .ws-av { width: 56px; height: 56px; border-radius: 14px; font-size: 18px; box-shadow: var(--shadow-md); }
+    .ws-hero h1 { margin: 2px 0 8px; }
+    .ws-meta { display: flex; align-items: center; gap: var(--space-2) var(--space-4); flex-wrap: wrap; font-size: var(--text-sm); color: var(--fg-muted); }
+    .ws-meta > span { display: inline-flex; align-items: center; gap: 6px; }
+    .ws-meta svg { color: var(--fg-subtle); width: 14px; height: 14px; }
+    .ws-meta .state-l { font-weight: var(--weight-medium); color: var(--fg-default); }
+    .ws-paths { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+    .ws-path { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; padding: 3px 4px 3px 10px; border-radius: var(--radius-md); background: var(--bg-surface-3); border: 1px solid var(--border-subtle); }
+    .ws-path > svg { color: var(--fg-subtle); width: 14px; height: 14px; }
+    .ws-path .k { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); white-space: nowrap; }
+    .ws-path code { font-size: 11.5px; color: var(--fg-default); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .ws-path .btn { --_h: 24px; padding: 0 8px; font-size: var(--text-xs); }
+    .ws-path .btn.btn-icon { width: 24px; padding: 0; }
+    .ws-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
+
+    /* Current focus callout */
+    .focus { --ft: var(--info); --ft-soft: var(--info-soft); --ft-fg: var(--info-fg);
+      display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; padding: var(--space-4) var(--space-5); margin-bottom: var(--space-5);
+      border: 1px solid color-mix(in srgb, var(--ft) 30%, var(--border-default)); border-left: 4px solid var(--ft); border-radius: var(--radius-lg);
+      background: linear-gradient(90deg, var(--ft-soft), var(--bg-surface) 65%); }
+    .focus.tone-warning { --ft: var(--warning); --ft-soft: var(--warning-soft); --ft-fg: var(--warning-fg); }
+    .focus.tone-danger { --ft: var(--danger); --ft-soft: var(--danger-soft); --ft-fg: var(--danger-fg); }
+    .focus.tone-success { --ft: var(--success); --ft-soft: var(--success-soft); --ft-fg: var(--success-fg); }
+    .focus-ic { width: 40px; height: 40px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: var(--ft-soft); color: var(--ft-fg); flex-shrink: 0; border: 1px solid color-mix(in srgb, var(--ft) 25%, transparent); }
+    .focus-main { flex: 1 1 360px; min-width: 0; }
+    .focus-k { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: var(--tracking-kicker); color: var(--ft-fg); }
+    .focus h3 { margin: 2px 0 2px; font-size: var(--text-lg); }
+    .focus p { margin: 0; font-size: var(--text-sm); color: var(--fg-muted); max-width: 760px; }
+    .focus-chips { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-2); }
+    .focus-act { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .focus-act .btn { text-decoration: none !important; }
+
+    /* KPI */
+    .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6); }
+    .kpi { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); color: inherit; text-decoration: none !important; }
+    .kpi-top { display: flex; align-items: center; justify-content: space-between; min-height: 30px; }
+    .kpi-ic { width: 30px; height: 30px; border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; background: var(--brand-soft); color: var(--brand-fg); flex-shrink: 0; }
+    .kpi-ic.teal { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
+    .kpi-ic.success { background: var(--success-soft); color: var(--success-fg); }
+    .kpi-ic.purple { background: var(--accent-purple-soft); color: var(--accent-purple); }
+    .kpi-ic.warning { background: var(--warning-soft); color: var(--warning-fg); }
+    .kpi-ic.danger { background: var(--danger-soft); color: var(--danger-fg); }
+    .kpi-ic.muted { background: var(--bg-surface-3); color: var(--fg-subtle); }
+    .kpi-spark { width: 64px; height: 24px; color: var(--brand); }
+    .kpi-spark polyline { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .kpi .stat-value { font-size: 26px; }
+    .kpi .stat-value small { font-size: var(--text-sm); font-weight: var(--weight-regular); color: var(--fg-subtle); letter-spacing: 0; }
+    .kpi .sub { font-size: var(--text-xs); color: var(--fg-subtle); }
+    .kpi .sub b { color: var(--fg-default); font-weight: var(--weight-semibold); }
+    .kpi.is-warn .sub b { color: var(--warning-fg); } .kpi.is-bad .sub b { color: var(--danger-fg); } .kpi.is-ok .sub b { color: var(--success-fg); }
+
+    /* Phase cards */
+    .flow { display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr) 36px minmax(0, 1fr); align-items: stretch; margin-bottom: var(--space-8); }
+    .ph-card { box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-5); position: relative; overflow: hidden; min-width: 0;
+      background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-xl); box-shadow: var(--shadow-xs); }
+    .ph-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--ph); opacity: .55; }
+    .ph-card.is-current { border-color: var(--ph); background: linear-gradient(180deg, var(--ph-soft), var(--bg-surface) 60%); box-shadow: var(--shadow-md); }
+    .ph-card.is-current::before { opacity: 1; }
+    .ph-card.is-locked { background: var(--bg-surface-2); border-style: dashed; box-shadow: none; }
+    .ph-card.is-locked::before { opacity: .2; }
+    .ph-top { display: flex; align-items: center; gap: var(--space-3); }
+    .ph-ic { width: 40px; height: 40px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: var(--ph-soft); color: var(--ph-fg); flex-shrink: 0; }
+    .ph-ic svg { width: 20px; height: 20px; }
+    .ph-card.is-current .ph-ic, .ph-card.is-done .ph-ic { background: var(--ph); color: var(--ph-on); }
+    .ph-card.is-locked .ph-ic { background: var(--bg-surface-3); color: var(--fg-faint); }
+    .ph-kicker { display: block; font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-kicker); text-transform: uppercase; color: var(--fg-subtle); }
+    .ph-top .grow { min-width: 0; } .ph-top .badge { flex-shrink: 0; } .ph-name { display: block; font-size: var(--text-lg); font-weight: var(--weight-semibold); color: var(--fg-strong); line-height: 1.25; }
+    .ph-card.is-locked .ph-name { color: var(--fg-muted); }
+    .ph-desc { font-size: var(--text-sm); color: var(--fg-muted); line-height: 1.5; }
+    .ph-card.is-locked .ph-desc { color: var(--fg-subtle); }
+    .ph-prog { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-xs); color: var(--fg-subtle); }
+    .ph-prog .progress { flex: 1; height: 6px; } .ph-prog .progress > span { background: var(--ph); }
+    .ph-prog b { color: var(--fg-default); font-variant-numeric: tabular-nums; font-weight: var(--weight-semibold); white-space: nowrap; }
+    .pcs { list-style: none; margin: 0; padding: var(--space-2) 0 0; display: flex; flex-direction: column; border-top: 1px solid var(--border-subtle); }
+    .pcs li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 5px 0; font-size: var(--text-sm); }
+    .pcs .n { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border-strong); display: inline-flex; align-items: center; justify-content: center; color: var(--fg-faint); background: var(--bg-surface); }
+    .pcs .n svg { width: 11px; height: 11px; stroke-width: 2.6; }
+    .pcs .lb { color: var(--fg-muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pcs .sx { font-size: var(--text-2xs); color: var(--fg-subtle); white-space: nowrap; }
+    .pcs li.done .n { background: var(--ph); border-color: var(--ph); color: var(--ph-on); }
+    .pcs li.done .lb { color: var(--fg-default); }
+    .pcs li.active .n { border-color: var(--ph); color: var(--ph-fg); box-shadow: 0 0 0 3px var(--ph-soft); }
+    .pcs li.active .lb { color: var(--fg-strong); font-weight: var(--weight-semibold); }
+    .pcs li.active .sx { color: var(--ph-fg); font-weight: var(--weight-medium); }
+    .pcs li.review .n { border-color: var(--warning); color: var(--warning-fg); background: var(--warning-soft); }
+    .pcs li.review .lb { color: var(--fg-strong); font-weight: var(--weight-semibold); }
+    .pcs li.review .sx { color: var(--warning-fg); font-weight: var(--weight-medium); }
+    .ph-card.is-locked .pcs li .lb { color: var(--fg-subtle); }
+    .pcs .spin-i { animation: spin 1.4s linear infinite; }
+    .ph-note { display: flex; gap: var(--space-2); padding: 10px 12px; border-radius: var(--radius-md); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.5; }
+    .ph-card.is-current .ph-note { background: var(--bg-surface); }
+    .ph-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; color: var(--ph-fg); }
+    .ph-note b { color: var(--fg-default); font-weight: var(--weight-semibold); }
+    .ph-note.gate svg { color: var(--fg-subtle); }
+    .ph-note.warn { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 30%, transparent); }
+    .ph-note.warn svg { color: var(--warning-fg); }
+    .ph-foot { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); font-size: var(--text-xs); color: var(--fg-subtle); flex-wrap: wrap; }
+    .ph-foot b { color: var(--fg-default); font-weight: var(--weight-semibold); }
+    .ph-cta { display: block; padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); margin-top: auto; }
+    .ph-cta .btn { text-decoration: none !important; }
+    .ph-link { display: flex; align-items: center; justify-content: center; color: var(--fg-faint); position: relative; }
+    .ph-link::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: var(--border-default); }
+    .ph-link.done::before { background: var(--brand); }
+    .ph-link span { position: relative; z-index: 1; width: 24px; height: 24px; border-radius: 50%; background: var(--bg-canvas); border: 1.5px solid var(--border-default); display: inline-flex; align-items: center; justify-content: center; }
+    .ph-link.done span { border-color: var(--brand); color: var(--brand-fg); }
+    .ph-link svg { width: 14px; height: 14px; }
+
+    /* Metrics */
+    .metrics { scroll-margin-top: var(--space-4); margin-bottom: var(--space-8); }
+    .metrics-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); flex-wrap: wrap; }
+    .metrics-head .row h3 { font-size: var(--text-xl); }
+    .metrics-head .btn { text-decoration: none !important; }
+    .mgrid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-3); }
+    .mt { grid-column: span 3; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+    .mt-wide { grid-column: span 8; padding: 0; gap: 0; }
+    .mt-side { grid-column: span 4; padding: 0; gap: 0; }
+    .mt-head { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-subtle); }
+    .mt-head .kpi-ic { width: 26px; height: 26px; }
+    .mt-body { display: flex; align-items: center; gap: var(--space-4); }
+    .mt .stat-value { font-size: var(--text-3xl); line-height: 1.1; }
+    .mt .stat-value small { font-size: var(--text-sm); font-weight: var(--weight-regular); color: var(--fg-subtle); letter-spacing: 0; }
+    .mt .note { font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.5; }
+    .mt .note b { color: var(--fg-default); font-weight: var(--weight-semibold); }
+    .mt .delta-ok { color: var(--success-fg); font-weight: var(--weight-medium); display: inline-flex; align-items: center; gap: 4px; }
+    .mt .delta-warn { color: var(--warning-fg); font-weight: var(--weight-medium); display: inline-flex; align-items: center; gap: 4px; }
+    .mt .mini-empty { font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.5; }
+    .mt .mini-empty a { font-weight: var(--weight-medium); }
+    .ring { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .ring svg { width: 72px; height: 72px; transform: rotate(-90deg); }
+    .ring b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: var(--text-md); color: var(--fg-strong); font-variant-numeric: tabular-nums; }
+    .vbars { display: flex; align-items: flex-end; gap: 8px; height: 48px; }
+    .vbars div { flex: 1; border-radius: 3px 3px 0 0; background: var(--brand-soft-2); min-height: 4px; }
+    .vbars div.is-cur { background: var(--brand); }
+    .vbars-l { display: flex; gap: 8px; font-size: 9.5px; color: var(--fg-faint); margin-top: 4px; }
+    .vbars-l span { flex: 1; text-align: center; }
+    .mt-spark { width: 100%; height: 36px; color: var(--accent-teal); }
+    .mt-spark polyline { vector-effect: non-scaling-stroke; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .mt-spark circle { fill: var(--bg-surface); stroke: currentColor; stroke-width: 2; }
+    .split { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--bg-surface-3); gap: 2px; }
+    .split i { display: block; height: 100%; }
+    .split .c-claude { background: var(--accent-purple); }
+    .split .c-codex { background: var(--accent-teal); }
+    .split .c-ok { background: var(--success); } .split .c-open { background: var(--warning); } .split .c-block { background: var(--danger); }
+    .legend-d { display: flex; gap: var(--space-3); flex-wrap: wrap; font-size: var(--text-2xs); color: var(--fg-subtle); }
+    .legend-d span { display: inline-flex; align-items: center; gap: 5px; }
+    .legend-d i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .split-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--space-3); align-items: center; font-size: var(--text-sm); padding: 8px 0; }
+    .split-row + .split-row { border-top: 1px solid var(--border-subtle); }
+    .split-row .amt { font-weight: var(--weight-semibold); color: var(--fg-strong); font-variant-numeric: tabular-nums; }
+    .split-row .runs { font-size: var(--text-xs); color: var(--fg-subtle); min-width: 56px; text-align: right; }
+    .mt-locked { grid-column: span 12; display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); border: 1px dashed var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface-2); font-size: var(--text-sm); color: var(--fg-subtle); }
+    .mt-locked svg { width: 16px; height: 16px; color: var(--fg-faint); flex-shrink: 0; }
+    .mt-locked b { color: var(--fg-muted); font-weight: var(--weight-semibold); }
+    .mt-locked .gate { margin-left: auto; font-size: var(--text-xs); color: var(--fg-faint); text-align: right; }
+    .chk { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .chk li { display: flex; gap: 8px; align-items: flex-start; font-size: var(--text-sm); color: var(--fg-default); }
+    .chk svg { width: 15px; height: 15px; margin-top: 2px; flex-shrink: 0; }
+    .chk .ok svg { color: var(--success-fg); } .chk .bad svg { color: var(--danger-fg); }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--radius-sm); background: var(--bg-surface-3); border: 1px solid var(--border-subtle); font-size: var(--text-xs); color: var(--fg-default); font-weight: var(--weight-medium); }
+
+    /* Lower grid */
+    .cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+    .cols > div { display: flex; flex-direction: column; gap: var(--space-5); min-width: 0; }
+    .card-title { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--fg-strong); }
+    .card-title svg { color: var(--fg-subtle); }
+    .link-more { font-size: var(--text-xs); font-weight: var(--weight-medium); display: inline-flex; align-items: center; gap: 4px; }
+    .rows { display: flex; flex-direction: column; padding: var(--space-2); }
+    .rrow { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-3); border-radius: var(--radius-md); color: inherit; text-decoration: none !important; }
+    a.rrow:hover { background: var(--bg-hover); }
+    .rrow .ttl { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
+    .rrow .sub { font-size: var(--text-xs); color: var(--fg-subtle); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .r-ic { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--bg-surface-3); color: var(--fg-muted); }
+    .r-ic svg { width: 14px; height: 14px; }
+    .r-ic.running { background: var(--brand-soft); color: var(--brand-fg); }
+    .r-ic.review { background: var(--warning-soft); color: var(--warning-fg); }
+    .r-ic.failed { background: var(--danger-soft); color: var(--danger-fg); }
+    .r-ic.ok { background: var(--success-soft); color: var(--success-fg); }
+    .r-ic.info { background: var(--info-soft); color: var(--info-fg); }
+    .r-ic .spin-i { animation: spin 1.2s linear infinite; }
+    .run .bar { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .run .bar .progress { flex: 1; height: 5px; }
+    .run .bar b { font-size: var(--text-xs); font-variant-numeric: tabular-nums; color: var(--fg-default); width: 34px; text-align: right; }
+    .progress.teal > span { background: var(--accent-teal); }
+    .progress.purple > span { background: var(--accent-purple); }
+    .run-id { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--fg-subtle); }
+    .cli-b { height: 20px; padding: 0 6px; border-radius: var(--radius-xs); font-size: var(--text-2xs); font-weight: var(--weight-semibold); display: inline-flex; align-items: center; gap: 4px; background: var(--accent-purple-soft); color: var(--accent-purple); }
+    .cli-b.codex { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
+    .ph-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: var(--ph); }
+    .art-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 22px; padding: 0 10px 0 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-default); background: var(--bg-surface); font-size: var(--text-xs); color: var(--fg-default); text-decoration: none !important; font-weight: var(--weight-medium); }
+    .art-chip:hover { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-fg); }
+    .art-chip svg { width: 13px; height: 13px; color: var(--fg-subtle); }
+    .card .empty { padding: var(--space-8) var(--space-6); }
+    .card .empty h4 { color: var(--fg-strong); margin: 0; }
+    .card .empty .text-sm { max-width: 380px; }
+    .act-l { display: flex; flex-direction: column; padding: var(--space-3) var(--space-4); }
+    .act { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; padding: 8px 0; position: relative; color: inherit; text-decoration: none !important; }
+    .act + .act { border-top: 1px solid var(--border-subtle); }
+    .act .r-ic { width: 22px; height: 22px; } .act .r-ic svg { width: 12px; height: 12px; }
+    .act .t { font-size: var(--text-sm); color: var(--fg-default); line-height: 1.4; }
+    .act .t b { color: var(--fg-strong); font-weight: var(--weight-semibold); }
+    .act .w { font-size: var(--text-xs); color: var(--fg-faint); white-space: nowrap; }
+
+    /* Burndown */
+    .bd { padding: var(--space-4) var(--space-5) var(--space-5); }
+    .bd svg { width: 100%; height: auto; overflow: visible; }
+    .bd .grid-l { stroke: var(--border-subtle); stroke-width: 1; }
+    .bd .axis-t { fill: var(--fg-subtle); font-size: 10px; font-family: var(--font-sans); }
+    .bd .ideal { stroke: var(--fg-faint); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+    .bd .actual { stroke: var(--brand); stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .bd .area { fill: var(--brand-soft); }
+    .bd .proj { stroke: var(--accent-teal); stroke-width: 1.8; stroke-dasharray: 2 4; fill: none; stroke-linecap: round; }
+    .bd .pt { fill: var(--bg-surface); stroke: var(--brand); stroke-width: 2; }
+    .bd .today-l { stroke: var(--accent-purple); stroke-width: 1; stroke-dasharray: 3 3; }
+    .bd .today-t { fill: var(--accent-purple); font-size: 10px; font-weight: 600; }
+    .legend { display: flex; gap: var(--space-4); flex-wrap: wrap; font-size: var(--text-xs); color: var(--fg-muted); margin-top: var(--space-2); }
+    .legend i { display: inline-block; width: 14px; height: 0; border-top: 2px solid; margin-right: 6px; vertical-align: middle; }
+    .legend .l-a { border-color: var(--brand); } .legend .l-i { border-color: var(--fg-faint); border-top-style: dashed; } .legend .l-p { border-color: var(--accent-teal); border-top-style: dotted; }
+    .bd-head { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-2); }
+    .bd-head .big { font-size: var(--text-2xl); font-weight: var(--weight-semibold); color: var(--fg-strong); }
+
+    .dec { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; padding: 12px var(--space-3); border-radius: var(--radius-md); }
+    .dec + .dec { border-top: 1px solid var(--border-subtle); border-radius: 0; }
+    .dec-date { text-align: center; padding: 4px 0; border-radius: var(--radius-md); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); line-height: 1.1; }
+    .dec-date b { display: block; font-size: var(--text-md); color: var(--fg-strong); }
+    .dec-date span { font-size: var(--text-2xs); color: var(--fg-subtle); text-transform: uppercase; letter-spacing: .05em; }
+    .dec.is-pending .dec-date { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 30%, transparent); }
+    .dec .ttl { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
+    .dec .sub { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 2px; }
+    .risk { padding: 12px var(--space-3); display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; }
+    .risk + .risk { border-top: 1px solid var(--border-subtle); }
+    .risk-ic { width: 22px; height: 22px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; }
+    .risk-ic svg { width: 13px; height: 13px; }
+    .risk-ic.high { background: var(--danger-soft); color: var(--danger-fg); }
+    .risk-ic.med { background: var(--warning-soft); color: var(--warning-fg); }
+    .risk-ic.low { background: var(--bg-surface-3); color: var(--fg-muted); }
+    .risk .ttl { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
+    .risk .sub { font-size: var(--text-xs); color: var(--fg-muted); margin-top: 2px; }
+    .risk .sub b { color: var(--fg-subtle); font-weight: var(--weight-medium); }
+
+    /* canvas width depends on whether the Assistant panel is open, so respond to the container, not the viewport */
+    .canvas-inner { container-type: inline-size; container-name: pg; }
+    @container pg (max-width: 780px) { .kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); } .kpis > * { grid-column: span 2; } .kpis > :nth-child(n+4) { grid-column: span 3; } .cols { grid-template-columns: minmax(0, 1fr); } .mt { grid-column: span 6; } .mt-wide, .mt-side { grid-column: span 12; } }
+    @container pg (max-width: 700px) { .flow { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); } .ph-link { display: none; } }
+    @container pg (max-width: 560px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpis > *, .kpis > :nth-child(n+4) { grid-column: auto; } .mt { grid-column: span 12; } }
+  </style>
+</head>
+<body data-page="overview" data-shell="project" data-crumb="nav.overview">
+  <main class="canvas"><div class="canvas-inner">
+
+    <!-- Project header -->
+    <section class="ws-hero">
+      <div class="ws-hero-main">
+        <div class="project-avatar ws-av" id="ws-av"></div>
+        <div class="grow">
+          <span class="kicker" data-i18n="ws.kicker"></span>
+          <h1 id="ws-name"></h1>
+          <div class="ws-meta">
+            <span><i data-lucide="building-2"></i><span id="ws-client"></span></span>
+            <span id="ws-phase"></span>
+          </div>
+          <div class="ws-paths">
+            <span class="ws-path"><i data-lucide="folder"></i><span class="k" data-i18n="ws.dir"></span><code id="ws-dir"></code>
+              <button class="btn btn-ghost btn-icon btn-sm" id="ws-copy" data-i18n-tip="ws.copy"><i data-lucide="copy" class="icon-sm"></i></button>
+              <button class="btn btn-secondary btn-sm" id="ws-reveal"><i data-lucide="folder-open" class="icon-sm"></i><span data-i18n="ws.reveal"></span></button></span>
+            <span class="ws-path" id="ws-repo-wrap"><i data-lucide="folder-git-2"></i><span class="k" data-i18n="ws.repo"></span><code id="ws-repo"></code>
+              <button class="btn btn-ghost btn-icon btn-sm" id="ws-copy-repo" data-i18n-tip="ws.copy"><i data-lucide="copy" class="icon-sm"></i></button></span>
+          </div>
+        </div>
+      </div>
+      <div class="ws-actions">
+        <button class="btn btn-secondary" id="btn-export"><i data-lucide="package-open"></i><span data-i18n="ws.export"></span><i data-lucide="chevron-down" class="icon-sm"></i></button>
+        <button class="btn btn-secondary" id="btn-vscode"><i data-lucide="code-2"></i><span data-i18n="ws.vscode"></span></button>
+        <button class="btn btn-ai" id="btn-ask"><i data-lucide="sparkles"></i><span data-i18n="ws.ask"></span></button>
+      </div>
+    </section>
+
+    <!-- Current focus -->
+    <section class="focus" id="ws-focus"></section>
+
+    <!-- KPIs (phase-aware) -->
+    <section class="kpis" id="ws-kpis"></section>
+
+    <!-- Workflow -->
+    <div class="section-title"><h3 data-i18n="ws.flow.title"></h3><span class="text-xs text-subtle" data-i18n="ws.flow.hint"></span></div>
+    <section class="flow" id="ws-timeline"></section>
+
+    <!-- Phase metrics -->
+    <section class="metrics" id="metrics">
+      <div class="metrics-head">
+        <div class="row gap-3"><span class="file-tile" style="background:var(--accent-teal-soft);color:var(--accent-teal-fg)"><i data-lucide="chart-no-axes-combined"></i></span>
+          <div><h3 data-i18n="ws.metrics.title"></h3><div class="text-xs text-subtle" id="ws-metrics-sub"></div></div></div>
+        <a class="btn btn-secondary btn-sm" id="ws-metrics-cta" href="board.html"></a>
+      </div>
+      <div class="mgrid" id="ws-metrics"></div>
+    </section>
+
+    <!-- Lower panels -->
+    <section class="cols">
+      <div>
+        <div class="card" id="ws-runs"></div>
+        <div class="card" id="ws-arts"></div>
+        <div class="card" id="ws-act"></div>
+      </div>
+      <div>
+        <div class="card" id="ws-risks"></div>
+        <div class="card" id="ws-decisions"></div>
+      </div>
+    </section>
+
+  </div></main>
+
+  <script>
+    PC.i18n.extend({
+      en: {
+        'ws.kicker': 'Project overview', 'ws.export': 'Export pack', 'ws.vscode': 'Open in VS Code', 'ws.ask': 'Ask assistant',
+        'ws.dir': 'Project directory', 'ws.repo': 'Repository', 'ws.copy': 'Copy path', 'ws.copied': 'Path copied to clipboard',
+        'ws.reveal': 'Reveal in Explorer', 'ws.reveal.toast': 'Revealing {path} in Explorer…',
+        'ws.export.pdf': 'Full pack (PDF)', 'ws.export.docx': 'Client pack (DOCX)', 'ws.export.zip': 'All artifacts (Markdown .zip)',
+        'ws.export.start': 'Exporting {n} artifacts…', 'ws.export.done': 'Export pack is ready in Downloads',
+        'ws.vscode.toast': 'Opening {path} in VS Code…',
+        'ws.focus.k': 'Current focus',
+        'ws.flow.title': 'Project workflow', 'ws.flow.hint': 'Each phase has its own screen',
+        'ws.phase.n': 'Phase {n}', 'ws.state.done': 'Completed', 'ws.state.active': 'In progress', 'ws.state.locked': 'Locked',
+        'ws.steps.count': '{done}/{total} steps', 'ws.pct': '{n}%',
+        'ws.step.done': 'Done', 'ws.step.active': 'In progress', 'ws.step.review': 'In review', 'ws.step.todo': 'Planned',
+        'ws.phase.initial.desc': 'Discover the client\'s needs, define scope, estimate and get the SOW signed.',
+        'ws.phase.release.desc': 'Design the architecture, link the repo and let the agent generate scaffolding, pipelines and infra.',
+        'ws.phase.sdlc.desc': 'Deliver in sprints: agents implement tasks in worktrees, you review the evidence and promote PRs.',
+        'ws.cur': 'Current step', 'ws.next': 'Next action', 'ws.done.on': 'Completed {d}', 'ws.gate': 'Gate', 'ws.prev.prog': '{x} · {n}% complete', 'ws.prev.locked': '{x} · locked',
+        'ws.cta.done': 'Review phase', 'ws.cta.go': 'Continue phase', 'ws.cta.locked': 'See what unlocks it', 'ws.cta.start': 'Open phase',
+        'ws.arch': 'Architecture', 'ws.arch.sum': '{a}/{b} decisions approved', 'ws.arch.wait': '{n} awaiting your approval',
+        'ws.metrics.title': 'Phase metrics',
+        'ws.metrics.sub.initial': 'Initial phase · discovery & scoping', 'ws.metrics.sub.release': 'Scaffolding phase · architecture & generation', 'ws.metrics.sub.sdlc': 'SDLC · sprint {n} · day {d} of {t}',
+        'ws.metrics.open.initial': 'Open Initial phase', 'ws.metrics.open.release': 'Open Scaffolding', 'ws.metrics.open.sdlc': 'Open SDLC board',
+        'ws.locked.m': '{x} metrics appear when this phase starts',
+        'ws.m.disc': 'Discovery', 'ws.m.disc.sub': '{a} of {b} meetings analysed', 'ws.m.disc.note': '{m} meetings · {s} sources',
+        'ws.m.q': 'Questions', 'ws.m.q.open': 'open', 'ws.m.q.ans': 'Answered', 'ws.m.q.nb': 'Open', 'ws.m.q.bl': 'Blocking', 'ws.m.q.empty': 'No questions yet. Questions are raised when insights are extracted from meetings and sources.', 'ws.m.q.go': 'Extract insights',
+        'ws.m.req': 'Requirements', 'ws.m.req.empty': 'No requirements yet — they are captured once insights are extracted and the BRD is drafted.', 'ws.m.req.sub': 'captured · BRD {s}',
+        'ws.m.appr': 'Artifacts approved', 'ws.m.appr.sub': 'of 5 in the Initial pipeline',
+        'ws.pipe.title': 'Initial artifact pipeline', 'ws.pipe.hint': 'Approve all five to unlock Scaffolding',
+        'ws.meet.title': 'Meetings', 'ws.meet.ins': 'Insights extracted', 'ws.meet.none': 'Not analysed', 'ws.meet.add': 'Add meeting',
+        'ws.m.adr': 'Architecture decisions', 'ws.m.adr.note': '{n} awaiting your approval', 'ws.m.steps': 'Scaffolding steps', 'ws.m.steps.note': 'Step {a} of {b} running',
+        'ws.m.live': 'Live agent run', 'ws.m.live.note': '{id} · {step} · {cli}', 'ws.m.live.note2': 'branch {b} · {m} min',
+        'ws.m.wait': 'Waiting on you', 'ws.m.wait.sub': 'approval blocks the dev-container step',
+        'ws.adr.title': 'Architecture decisions', 'ws.repo.title': 'Repository', 'ws.repo.existing': 'Existing repository', 'ws.repo.branch': 'branch {b} · {c}', 'ws.repo.clean': 'clean',
+        'ws.m.progress': 'Sprint progress', 'ws.m.points': '{a} of {b} pts done', 'ws.sprint.day': 'Sprint {n} · day {d} of {t}',
+        'ws.m.velocity': 'Velocity', 'ws.m.velocity.sub': 'pts per sprint · avg of last 3',
+        'ws.m.success': 'Agent success rate', 'ws.m.review': 'Avg review time',
+        'ws.m.cost': 'Agent spend', 'ws.m.cost.sub': 'this sprint · {n} runs', 'ws.m.runs': '{n} runs',
+        'ws.rel.title': 'Release {v} readiness', 'ws.rel.sub': 'Blocking items before the release candidate can be cut',
+        'ws.health.title': 'Agent run health', 'ws.health.failed': 'Failed', 'ws.health.running': 'Running', 'ws.health.review': 'Awaiting review', 'ws.health.go': 'Open agent runs',
+        'ws.runs.title': 'Active work', 'ws.runs.all': 'All runs', 'ws.runs.agent': 'Agent', 'ws.runby': 'Run by',
+        'ws.b.running': 'Running', 'ws.b.review': 'Ready for review', 'ws.b.failed': 'Failed', 'ws.b.blocking': 'Blocking', 'ws.b.todo': 'Waiting', 'ws.b.ready': 'Ready', 'ws.b.draft': 'Draft', 'ws.b.notanalysed': 'Not analysed', 'ws.b.changes': 'Changes requested', 'ws.b.approval': 'Needs approval', 'ws.b.inreview': 'In review',
+        'ws.arts.title': 'Recent artifacts', 'ws.arts.all': 'View all', 'ws.st.approved': 'Approved', 'ws.st.review': 'In review', 'ws.st.draft': 'Draft', 'ws.st.in_review': 'In review', 'ws.st.not_started': 'Not started', 'ws.st.awaiting': 'Awaiting approval',
+        'ws.by.assistant': 'Assistant', 'ws.you': 'You',
+        'ws.arts.empty.t': 'No artifacts yet', 'ws.arts.empty.d': 'Nothing has been generated. Start with meeting notes from your intro call — the Assistant drafts them from the transcript.', 'ws.arts.empty.cta': 'Generate meeting notes', 'ws.src.title': 'Sources in this project',
+        'ws.act.title': 'Recent activity',
+        'ws.burn.title': 'Sprint {n} burndown', 'ws.burn.remaining': 'pts remaining', 'ws.burn.behind': '{n} pts behind ideal', 'ws.burn.ontrack': 'On track',
+        'ws.burn.ideal': 'Ideal', 'ws.burn.actual': 'Actual', 'ws.burn.proj': 'Projection', 'ws.burn.today': 'Today', 'ws.burn.axis': 'Sprint day',
+        'ws.dec.title': 'Decisions log', 'ws.dec.all': 'All decisions', 'ws.dec.pending': 'Pending',
+        'ws.dec.empty.t': 'No decisions logged yet', 'ws.dec.empty.d': 'Decisions are captured from meeting insights and architecture records. Extract insights from your intro call to log the first ones.',
+        'ws.risk.title': 'Risks', 'ws.risk.high': 'High', 'ws.risk.med': 'Medium', 'ws.risk.low': 'Low', 'ws.risk.add': 'Add risk', 'ws.risk.mit': 'Mitigation',
+        'ws.risk.toast': 'Risk register entry drafted by the Assistant',
+        'ws.risk.empty.t': 'No risks recorded', 'ws.risk.empty.d': 'The risk register fills in as discovery progresses. Ask the Assistant to propose early risks from the RFP.',
+        'ws.t.now': 'just now', 'ws.t.min': '{n} min ago', 'ws.t.hour': '{n} h ago', 'ws.t.day': '{n} d ago', 'ws.t.week': '{n} w ago',
+        'ws.greet': 'Hi, I have the {name} overview in context. How can I help?',
+      },
+      vi: {
+        'ws.kicker': 'Tổng quan dự án', 'ws.export': 'Xuất gói tài liệu', 'ws.vscode': 'Mở bằng VS Code', 'ws.ask': 'Hỏi trợ lý',
+        'ws.dir': 'Thư mục dự án', 'ws.repo': 'Repository', 'ws.copy': 'Sao chép đường dẫn', 'ws.copied': 'Đã sao chép đường dẫn',
+        'ws.reveal': 'Mở trong Explorer', 'ws.reveal.toast': 'Đang mở {path} trong Explorer…',
+        'ws.export.pdf': 'Gói đầy đủ (PDF)', 'ws.export.docx': 'Gói gửi khách hàng (DOCX)', 'ws.export.zip': 'Toàn bộ tài liệu (Markdown .zip)',
+        'ws.export.start': 'Đang xuất {n} tài liệu…', 'ws.export.done': 'Gói tài liệu đã sẵn sàng trong Downloads',
+        'ws.vscode.toast': 'Đang mở {path} trong VS Code…',
+        'ws.focus.k': 'Trọng tâm hiện tại',
+        'ws.flow.title': 'Quy trình dự án', 'ws.flow.hint': 'Mỗi giai đoạn có màn hình riêng',
+        'ws.phase.n': 'Giai đoạn {n}', 'ws.state.done': 'Hoàn thành', 'ws.state.active': 'Đang thực hiện', 'ws.state.locked': 'Đang khoá',
+        'ws.steps.count': '{done}/{total} bước', 'ws.pct': '{n}%',
+        'ws.step.done': 'Xong', 'ws.step.active': 'Đang làm', 'ws.step.review': 'Đang review', 'ws.step.todo': 'Dự kiến',
+        'ws.phase.initial.desc': 'Khảo sát nhu cầu khách hàng, chốt phạm vi, ước lượng và ký SOW.',
+        'ws.phase.release.desc': 'Thiết kế kiến trúc, liên kết repo và để agent sinh scaffolding, pipeline, hạ tầng.',
+        'ws.phase.sdlc.desc': 'Giao theo sprint: agent triển khai task trong worktree, bạn xem bằng chứng và đưa PR.',
+        'ws.cur': 'Bước hiện tại', 'ws.next': 'Việc tiếp theo', 'ws.done.on': 'Hoàn thành {d}', 'ws.gate': 'Điều kiện mở', 'ws.prev.prog': '{x} · hoàn thành {n}%', 'ws.prev.locked': '{x} · đang khoá',
+        'ws.cta.done': 'Xem lại giai đoạn', 'ws.cta.go': 'Tiếp tục giai đoạn', 'ws.cta.locked': 'Xem điều kiện mở khoá', 'ws.cta.start': 'Mở giai đoạn',
+        'ws.arch': 'Kiến trúc', 'ws.arch.sum': 'Đã duyệt {a}/{b} quyết định', 'ws.arch.wait': '{n} đang chờ bạn duyệt',
+        'ws.metrics.title': 'Chỉ số theo giai đoạn',
+        'ws.metrics.sub.initial': 'Giai đoạn Khởi tạo · khảo sát & chốt phạm vi', 'ws.metrics.sub.release': 'Giai đoạn Scaffolding · kiến trúc & sinh mã', 'ws.metrics.sub.sdlc': 'SDLC · sprint {n} · ngày {d} / {t}',
+        'ws.metrics.open.initial': 'Mở giai đoạn Khởi tạo', 'ws.metrics.open.release': 'Mở Scaffolding', 'ws.metrics.open.sdlc': 'Mở bảng SDLC',
+        'ws.locked.m': 'Chỉ số {x} sẽ xuất hiện khi giai đoạn này bắt đầu',
+        'ws.m.disc': 'Khảo sát', 'ws.m.disc.sub': 'Đã phân tích {a}/{b} cuộc họp', 'ws.m.disc.note': '{m} cuộc họp · {s} tài liệu nguồn',
+        'ws.m.q': 'Câu hỏi', 'ws.m.q.open': 'đang mở', 'ws.m.q.ans': 'Đã trả lời', 'ws.m.q.nb': 'Đang mở', 'ws.m.q.bl': 'Blocking', 'ws.m.q.empty': 'Chưa có câu hỏi. Câu hỏi được tạo khi trích ý chính từ cuộc họp và tài liệu nguồn.', 'ws.m.q.go': 'Trích ý chính',
+        'ws.m.req': 'Yêu cầu', 'ws.m.req.empty': 'Chưa có yêu cầu — sẽ được ghi nhận sau khi trích ý chính và soạn BRD.', 'ws.m.req.sub': 'đã ghi nhận · BRD {s}',
+        'ws.m.appr': 'Tài liệu đã duyệt', 'ws.m.appr.sub': 'trên 5 tài liệu của giai đoạn Khởi tạo',
+        'ws.pipe.title': 'Chuỗi tài liệu giai đoạn Khởi tạo', 'ws.pipe.hint': 'Duyệt đủ 5 tài liệu để mở khoá Scaffolding',
+        'ws.meet.title': 'Cuộc họp', 'ws.meet.ins': 'Đã trích ý chính', 'ws.meet.none': 'Chưa phân tích', 'ws.meet.add': 'Thêm cuộc họp',
+        'ws.m.adr': 'Quyết định kiến trúc', 'ws.m.adr.note': '{n} đang chờ bạn duyệt', 'ws.m.steps': 'Các bước scaffolding', 'ws.m.steps.note': 'Đang chạy bước {a}/{b}',
+        'ws.m.live': 'Agent đang chạy', 'ws.m.live.note': '{id} · {step} · {cli}', 'ws.m.live.note2': 'nhánh {b} · {m} phút',
+        'ws.m.wait': 'Đang chờ bạn', 'ws.m.wait.sub': 'việc duyệt này đang chặn bước dev container',
+        'ws.adr.title': 'Quyết định kiến trúc', 'ws.repo.title': 'Repository', 'ws.repo.existing': 'Repository có sẵn', 'ws.repo.branch': 'nhánh {b} · {c}', 'ws.repo.clean': 'sạch',
+        'ws.m.progress': 'Tiến độ sprint', 'ws.m.points': 'Hoàn thành {a}/{b} điểm', 'ws.sprint.day': 'Sprint {n} · ngày {d} / {t}',
+        'ws.m.velocity': 'Velocity', 'ws.m.velocity.sub': 'điểm mỗi sprint · TB 3 sprint gần nhất',
+        'ws.m.success': 'Tỷ lệ agent thành công', 'ws.m.review': 'Thời gian review trung bình',
+        'ws.m.cost': 'Chi phí agent', 'ws.m.cost.sub': 'sprint này · {n} lượt chạy', 'ws.m.runs': '{n} lượt chạy',
+        'ws.rel.title': 'Mức sẵn sàng của release {v}', 'ws.rel.sub': 'Các mục chặn trước khi cắt release candidate',
+        'ws.health.title': 'Sức khoẻ lượt chạy agent', 'ws.health.failed': 'Thất bại', 'ws.health.running': 'Đang chạy', 'ws.health.review': 'Chờ review', 'ws.health.go': 'Mở lượt chạy agent',
+        'ws.runs.title': 'Việc đang thực hiện', 'ws.runs.all': 'Tất cả lượt chạy', 'ws.runs.agent': 'Agent', 'ws.runby': 'Chạy bởi',
+        'ws.b.running': 'Đang chạy', 'ws.b.review': 'Chờ review', 'ws.b.failed': 'Thất bại', 'ws.b.blocking': 'Blocking', 'ws.b.todo': 'Đang chờ', 'ws.b.ready': 'Sẵn sàng', 'ws.b.draft': 'Bản nháp', 'ws.b.notanalysed': 'Chưa phân tích', 'ws.b.changes': 'Cần chỉnh sửa', 'ws.b.approval': 'Cần duyệt', 'ws.b.inreview': 'Đang review',
+        'ws.arts.title': 'Tài liệu gần đây', 'ws.arts.all': 'Xem tất cả', 'ws.st.approved': 'Đã duyệt', 'ws.st.review': 'Đang review', 'ws.st.draft': 'Bản nháp', 'ws.st.in_review': 'Đang review', 'ws.st.not_started': 'Chưa bắt đầu', 'ws.st.awaiting': 'Chờ duyệt',
+        'ws.by.assistant': 'Trợ lý', 'ws.you': 'Bạn',
+        'ws.arts.empty.t': 'Chưa có tài liệu nào', 'ws.arts.empty.d': 'Chưa có gì được tạo. Hãy bắt đầu bằng biên bản họp từ intro call — Trợ lý soạn từ transcript.', 'ws.arts.empty.cta': 'Tạo biên bản họp', 'ws.src.title': 'Tài liệu nguồn của dự án',
+        'ws.act.title': 'Hoạt động gần đây',
+        'ws.burn.title': 'Burndown Sprint {n}', 'ws.burn.remaining': 'điểm còn lại', 'ws.burn.behind': 'Chậm {n} điểm so với lý tưởng', 'ws.burn.ontrack': 'Đúng tiến độ',
+        'ws.burn.ideal': 'Lý tưởng', 'ws.burn.actual': 'Thực tế', 'ws.burn.proj': 'Dự báo', 'ws.burn.today': 'Hôm nay', 'ws.burn.axis': 'Ngày sprint',
+        'ws.dec.title': 'Nhật ký quyết định', 'ws.dec.all': 'Tất cả quyết định', 'ws.dec.pending': 'Chờ duyệt',
+        'ws.dec.empty.t': 'Chưa có quyết định nào', 'ws.dec.empty.d': 'Quyết định được ghi lại từ ý chính cuộc họp và các bản ghi kiến trúc. Hãy trích ý chính từ intro call để ghi quyết định đầu tiên.',
+        'ws.risk.title': 'Rủi ro', 'ws.risk.high': 'Cao', 'ws.risk.med': 'Trung bình', 'ws.risk.low': 'Thấp', 'ws.risk.add': 'Thêm rủi ro', 'ws.risk.mit': 'Giảm thiểu',
+        'ws.risk.toast': 'Trợ lý đã soạn mục mới cho sổ rủi ro',
+        'ws.risk.empty.t': 'Chưa ghi nhận rủi ro', 'ws.risk.empty.d': 'Sổ rủi ro sẽ đầy dần khi khảo sát tiến triển. Hãy nhờ Trợ lý đề xuất các rủi ro sớm từ RFP.',
+        'ws.t.now': 'vừa xong', 'ws.t.min': '{n} phút trước', 'ws.t.hour': '{n} giờ trước', 'ws.t.day': '{n} ngày trước', 'ws.t.week': '{n} tuần trước',
+        'ws.greet': 'Chào bạn, mình đang nắm tổng quan dự án {name}. Mình giúp gì được cho bạn?',
+      }
+    });
+
+    (function () {
+      const $ = (s, r) => (r || document).querySelector(s);
+      const L = (en, vi) => ({ en, vi });
+      const T = o => (o && typeof o === 'object') ? (o[PC.lang] || o.en) : o;
+      const esc = PC.esc;
+      const p = PC.project();
+      const S = p.state;
+      const ORDER = ['initial', 'release', 'sdlc'];
+      const PHASE_PAGE = { initial: 'initial.html', release: 'scaffolding.html', sdlc: 'board.html' };
+      const PHASE_ICON = { initial: 'compass', release: 'blocks', sdlc: 'infinity' };
+      const SK = { initial: 'initial', release: 'scaffolding', sdlc: 'sdlc' };
+      const fmtDate = (iso, yr) => new Intl.DateTimeFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-GB', yr ? { day: '2-digit', month: 'short', year: 'numeric' } : { day: '2-digit', month: 'short' }).format(new Date(iso));
+      const rel = (unit, n) => PC.t('ws.t.' + unit, { n });
+      const shortName = () => p.name.split(' — ')[0];
+      const U = (page, hash) => page + '?p=' + p.id + (hash || '');
+      const cliB = c => `<span class="cli-b ${c === 'codex' ? 'codex' : ''}"><i data-lucide="terminal" class="icon-sm"></i>${c === 'codex' ? 'Codex' : 'Claude Code'}</span>`;
+
+      /* ====================================================================
+         Per-project mock datasets. Everything here must stay consistent with
+         PC.project().state (assets/app.js STATES) — the phase cards, steps,
+         counts and gates are derived from state; this holds the rest.
+         ==================================================================== */
+      const DS = {
+        /* ------------------------------------------------ SAIGON — Initial, just started */
+        'saigon-tms': {
+          focus: { tone: 'info', icon: 'sparkles',
+            title: L('Extract insights from the intro call', 'Trích ý chính từ buổi intro call'),
+            body: L('"Intro call with Ops Director" (19 Nov) is imported but not analysed yet. Extract the key points first — then the Assistant can draft discovery questions for the client.', '"Intro call with Ops Director" (19/11) đã được nhập nhưng chưa phân tích. Hãy trích ý chính trước — sau đó Trợ lý sẽ soạn câu hỏi discovery cho khách hàng.'),
+            chips: [{ icon: 'mic', t: L('1 transcript not analysed', '1 transcript chưa phân tích') }, { icon: 'paperclip', t: L('2 sources uploaded', 'Đã tải lên 2 tài liệu nguồn') }],
+            cta: { t: L('Extract insights', 'Trích ý chính'), icon: 'sparkles', page: 'initial.html', hash: '#meetings' }, cta2: { t: L('Add a meeting or source', 'Thêm cuộc họp hoặc tài liệu'), page: 'initial.html' } },
+          kpis: [
+            { icon: 'mic', tone: 'warning', label: L('Meetings', 'Cuộc họp'), value: 1, sub: L('<b>1</b> not analysed yet', '<b>1</b> chưa phân tích'), href: ['initial.html', '#meetings'], cls: 'is-warn' },
+            { icon: 'paperclip', tone: '', label: L('Sources', 'Tài liệu nguồn'), value: 2, sub: L('RFP · dispatch process', 'RFP · quy trình điều phối'), href: ['artifacts.html'] },
+            { icon: 'circle-help', tone: 'muted', label: L('Open questions', 'Câu hỏi đang mở'), value: 0, sub: L('None raised yet', 'Chưa có câu hỏi'), href: ['initial.html', '#questions'] },
+            { icon: 'list-checks', tone: 'muted', label: L('Requirements', 'Yêu cầu'), value: 0, sub: L('Appear after insights', 'Xuất hiện sau khi trích ý chính'), href: ['initial.html'] },
+            { icon: 'file-check', tone: 'muted', label: L('Artifacts approved', 'Tài liệu đã duyệt'), value: '0<small>/5</small>', sub: L('<b>0</b> generated so far', 'Mới tạo <b>0</b> tài liệu'), href: ['artifacts.html'] },
+          ],
+          work: [
+            { id: 'M-01', ic: 'mic', tone: 'review', title: L('Intro call with Ops Director', 'Intro call với Ops Director'), sub: L('Transcript · 19 Nov · insights not extracted', 'Transcript · 19/11 · chưa trích ý chính'), badge: ['review', 'ws.b.notanalysed'], page: 'initial.html', hash: '#meetings' },
+            { id: 'SRC', ic: 'paperclip', tone: 'info', title: L('2 source documents ready to read', '2 tài liệu nguồn sẵn sàng để đọc'), sub: L('RFP and current dispatch process — not summarised yet', 'RFP và quy trình điều phối hiện tại — chưa được tóm tắt'), badge: ['outline', 'ws.b.ready'], page: 'artifacts.html' },
+          ],
+          arts: [],
+          sources: S.initial.sources,
+          decisions: [],
+          risks: [],
+          activity: [
+            { ic: 'mic', tone: 'info', t: L('Transcript <b>Intro call with Ops Director</b> imported', 'Đã nhập transcript <b>Intro call with Ops Director</b>'), ago: ['day', 4], page: 'initial.html' },
+            { ic: 'paperclip', tone: 'info', t: L('<b>2 sources</b> uploaded (RFP, dispatch process)', 'Đã tải lên <b>2 tài liệu nguồn</b> (RFP, quy trình điều phối)'), ago: ['day', 4], page: 'artifacts.html' },
+            { ic: 'folder-plus', tone: 'ok', t: L('Project created from documents', 'Dự án được tạo từ tài liệu'), ago: ['day', 4], page: 'project-settings.html' },
+          ],
+          suggest: [['Extract insights from the intro call', 'Draft discovery questions', 'What is still missing from the RFP?'], ['Trích ý chính từ intro call', 'Soạn câu hỏi discovery', 'RFP còn thiếu thông tin gì?']],
+        },
+        /* ------------------------------------------------ VIETHEALTH — Initial, scoping */
+        'viethealth': {
+          focus: { tone: 'danger', icon: 'octagon-alert',
+            title: L('2 blocking questions are holding up scope', '2 câu hỏi blocking đang chặn việc chốt scope'),
+            body: L('E-prescription legal scope and HIS integration ownership must be answered before scope can be frozen. BRD v1 is also waiting for your review.', 'Phạm vi pháp lý kê đơn điện tử và trách nhiệm tích hợp HIS cần có câu trả lời trước khi chốt scope. BRD v1 cũng đang chờ bạn review.'),
+            chips: [{ icon: 'circle-help', tone: 'danger', t: L('2 blocking · 5 open', '2 blocking · 5 đang mở') }, { icon: 'file-text', tone: 'warning', t: L('BRD v1 in review', 'BRD v1 đang review') }],
+            cta: { t: L('Resolve blocking questions', 'Xử lý câu hỏi blocking'), icon: 'circle-help', page: 'initial.html', hash: '#questions' }, cta2: { t: L('Review BRD v1', 'Review BRD v1'), page: 'artifacts.html', hash: '#brd' } },
+          kpis: [
+            { icon: 'mic', tone: 'warning', label: L('Meetings', 'Cuộc họp'), value: 3, sub: L('<b>2</b> analysed · 1 pending', 'Đã phân tích <b>2</b> · 1 đang chờ'), href: ['initial.html', '#meetings'] },
+            { icon: 'paperclip', tone: '', label: L('Sources', 'Tài liệu nguồn'), value: 3, sub: L('ops overview · journey map · HIS spec', 'ops · journey map · HIS spec'), href: ['artifacts.html'] },
+            { icon: 'circle-help', tone: 'danger', label: L('Open questions', 'Câu hỏi đang mở'), value: 5, sub: L('<b>2 blocking</b> of 9 total', '<b>2 blocking</b> trên tổng 9'), href: ['initial.html', '#questions'], cls: 'is-bad' },
+            { icon: 'list-checks', tone: 'purple', label: L('Requirements', 'Yêu cầu'), value: 31, sub: L('BRD v1 in review', 'BRD v1 đang review'), href: ['initial.html'] },
+            { icon: 'file-check', tone: 'success', label: L('Artifacts approved', 'Tài liệu đã duyệt'), value: '1<small>/5</small>', sub: L('<b>3</b> generated · 2 not started', 'Đã tạo <b>3</b> · 2 chưa bắt đầu'), href: ['artifacts.html'] },
+          ],
+          work: [
+            { id: 'Q-2', ic: 'octagon-alert', tone: 'failed', title: L('2 blocking questions', '2 câu hỏi blocking'), sub: L('E-prescription legal scope · HIS integration ownership', 'Pháp lý kê đơn điện tử · trách nhiệm tích hợp HIS'), badge: ['danger', 'ws.b.blocking'], page: 'initial.html', hash: '#questions' },
+            { id: 'BRD', ic: 'file-text', tone: 'review', title: L('Business requirements (BRD) v1', 'Yêu cầu nghiệp vụ (BRD) v1'), sub: L('31 requirements · generated by Claude Code · waiting for you', '31 yêu cầu · do Claude Code soạn · đang chờ bạn'), badge: ['warning', 'ws.b.inreview'], page: 'artifacts.html', hash: '#brd' },
+            { id: 'SCP', ic: 'target', tone: 'info', title: L('Scope & MVP boundary', 'Phạm vi & ranh giới MVP'), sub: L('Draft v1 · cannot be frozen until the blocking questions are answered', 'Bản nháp v1 · chưa thể chốt khi câu hỏi blocking chưa có lời đáp'), badge: ['outline', 'ws.b.draft'], page: 'initial.html', hash: '#scope' },
+            { id: 'M-03', ic: 'mic', tone: 'review', title: L('IT security & compliance session', 'Buổi làm việc về bảo mật & tuân thủ'), sub: L('Notes · 18 Nov · insights not extracted', 'Ghi chú · 18/11 · chưa trích ý chính'), badge: ['review', 'ws.b.notanalysed'], page: 'initial.html', hash: '#meetings' },
+          ],
+          arts: [
+            { id: 'scope', title: L('Scope & MVP boundary', 'Phạm vi & ranh giới MVP'), v: 'v1', st: 'draft', ph: 'initial', ai: true, t: ['hour', 5], icon: 'target' },
+            { id: 'brd', title: L('Business requirements (BRD)', 'Yêu cầu nghiệp vụ (BRD)'), v: 'v1', st: 'in_review', ph: 'initial', ai: true, t: ['day', 1], icon: 'file-text' },
+            { id: 'meeting-notes', title: L('Meeting notes – Workshop & kickoff', 'Biên bản họp – Workshop & kickoff'), v: 'v3', st: 'approved', ph: 'initial', ai: true, t: ['day', 3], icon: 'mic' },
+          ],
+          decisions: [
+            { date: '2026-11-04', t: L('MVP covers patient web app + Android; iOS deferred', 'MVP gồm web app cho bệnh nhân + Android; iOS để sau'), note: L('Clinical workflow workshop', 'Workshop quy trình lâm sàng'), art: 'meeting-notes', chip: L('Notes', 'Biên bản') },
+            { date: '2026-10-28', t: L('Insurance claims are out of scope for Release 1', 'Thanh toán bảo hiểm nằm ngoài phạm vi bản phát hành đầu'), note: L('Kickoff', 'Kickoff'), art: 'meeting-notes', chip: L('Notes', 'Biên bản') },
+          ],
+          risks: [
+            { sev: 'high', t: L('E-prescription legal scope not confirmed with the client\'s counsel', 'Phạm vi pháp lý kê đơn điện tử chưa được pháp chế khách hàng xác nhận'), mit: L('Blocking question #1 — schedule a call with the client\'s legal team', 'Câu hỏi blocking #1 — đặt lịch gọi với pháp chế của khách hàng') },
+            { sev: 'high', t: L('HIS integration ownership unclear (vendor vs. clinic IT)', 'Chưa rõ ai chịu trách nhiệm tích hợp HIS (nhà cung cấp hay IT phòng khám)'), mit: L('Blocking question #2 — get a named owner before estimating', 'Câu hỏi blocking #2 — cần người phụ trách cụ thể trước khi ước lượng') },
+            { sev: 'med', t: L('Compliance session notes not analysed yet', 'Ghi chú buổi tuân thủ chưa được phân tích'), mit: L('Extract insights and update the BRD before sign-off', 'Trích ý chính và cập nhật BRD trước khi ký duyệt') },
+          ],
+          activity: [
+            { ic: 'file-text', tone: 'review', t: L('<b>Scope v1</b> drafted by Claude Code', '<b>Scope v1</b> do Claude Code soạn'), ago: ['hour', 5], page: 'artifacts.html' },
+            { ic: 'file-text', tone: 'review', t: L('<b>BRD v1</b> submitted for your review', '<b>BRD v1</b> được gửi để bạn review'), ago: ['day', 1], page: 'artifacts.html' },
+            { ic: 'circle-help', tone: 'failed', t: L('<b>2 blocking questions</b> raised from the IT security session', 'Phát sinh <b>2 câu hỏi blocking</b> từ buổi làm việc về bảo mật'), ago: ['day', 1], page: 'initial.html' },
+            { ic: 'sparkles', tone: 'ok', t: L('Insights extracted from <b>Clinical workflow workshop</b>', 'Đã trích ý chính từ <b>Clinical workflow workshop</b>'), ago: ['day', 3], page: 'initial.html' },
+          ],
+          suggest: [['Draft the client call agenda for the blocking questions', 'Summarize BRD v1 gaps', 'Extract insights from the IT security notes'], ['Soạn agenda cuộc gọi cho các câu hỏi blocking', 'Tóm tắt khoảng trống của BRD v1', 'Trích ý chính từ ghi chú buổi bảo mật']],
+        },
+        /* ------------------------------------------------ MEKONG — Scaffolding in progress */
+        'mekong': {
+          focus: { tone: 'warning', icon: 'git-pull-request-arrow',
+            title: L('ADR-004 is awaiting your approval', 'ADR-004 đang chờ bạn duyệt'),
+            body: L('Event bus: Azure Service Bus vs Kafka. The agent keeps running the CI/CD step in parallel, but the dev-container step cannot start until you approve the decision.', 'Event bus: Azure Service Bus hay Kafka. Agent vẫn đang chạy bước CI/CD song song, nhưng bước dev container chưa thể bắt đầu cho đến khi bạn duyệt quyết định này.'),
+            chips: [{ icon: 'loader-circle', spin: true, tone: 'info', t: L('Agent running CI/CD · 60%', 'Agent đang chạy CI/CD · 60%'), live: 'SC-04' }, { icon: 'blocks', tone: '', t: L('Step 4 of 6', 'Bước 4/6') }],
+            cta: { t: L('Review ADR-004', 'Review ADR-004'), icon: 'scale', page: 'scaffolding.html', hash: '#architecture' }, cta2: { t: L('Watch agent run', 'Xem agent chạy'), page: 'task.html' } },
+          kpis: [
+            { icon: 'scale', tone: 'warning', label: L('Architecture approved', 'Kiến trúc đã duyệt'), value: '4<small>/5</small>', sub: L('<b>ADR-004</b> awaits you', '<b>ADR-004</b> chờ bạn duyệt'), href: ['scaffolding.html', '#architecture'], cls: 'is-warn' },
+            { icon: 'blocks', tone: 'purple', label: L('Scaffolding steps', 'Bước scaffolding'), value: '3<small>/6</small>', sub: L('<b>CI/CD</b> running · 2 pending', '<b>CI/CD</b> đang chạy · 2 đang chờ'), href: ['scaffolding.html'] },
+            { icon: 'bot', tone: 'teal', label: L('Live agent run', 'Agent đang chạy'), value: '<span data-run-pct="SC-04">60</span>%', sub: L('<b>SC-04</b> · CI/CD pipelines', '<b>SC-04</b> · pipeline CI/CD'), href: ['task.html'] },
+            { icon: 'folder-git-2', tone: '', label: L('Repository', 'Repository'), value: L('Existing', 'Có sẵn'), sub: L('Java 21 · Spring Boot · <b>main</b>', 'Java 21 · Spring Boot · <b>main</b>'), href: ['scaffolding.html'], small: true },
+            { icon: 'files', tone: 'success', label: L('Artifacts', 'Tài liệu'), value: 11, sub: L('Initial pack <b>5/5</b> approved', 'Gói Khởi tạo <b>5/5</b> đã duyệt'), href: ['artifacts.html'], cls: 'is-ok' },
+          ],
+          work: [
+            { id: 'SC-04', ic: 'loader-circle', tone: 'running', title: L('Generate CI/CD pipelines', 'Sinh pipeline CI/CD'), sub: L('Step 4 of 6 · Azure DevOps · branch scaffold/ci-pipelines · 7 min', 'Bước 4/6 · Azure DevOps · nhánh scaffold/ci-pipelines · 7 phút'), badge: ['teal', 'ws.b.running'], agent: 'claude', pct: 60, live: true, page: 'task.html' },
+            { id: 'ADR-004', ic: 'scale', tone: 'review', title: L('Event bus: Azure Service Bus vs Kafka', 'Event bus: Azure Service Bus hay Kafka'), sub: L('Architecture decision · drafted by Claude Code · needs your approval', 'Quyết định kiến trúc · do Claude Code soạn · cần bạn duyệt'), badge: ['warning', 'ws.b.approval'], page: 'scaffolding.html', hash: '#architecture' },
+            { id: 'SC-05', ic: 'container', tone: 'todo', title: L('Dev container', 'Dev container'), sub: L('Starts after ADR-004 is approved', 'Bắt đầu sau khi ADR-004 được duyệt'), badge: ['outline', 'ws.b.todo'], page: 'scaffolding.html' },
+          ],
+          arts: [
+            { id: 'adr-004', title: L('ADR-004 · Event bus', 'ADR-004 · Event bus'), v: 'v1', st: 'awaiting', ph: 'release', ai: true, t: ['hour', 2], icon: 'git-pull-request-arrow' },
+            { id: 'infra', title: L('Infra plan (IaC)', 'Kế hoạch hạ tầng (IaC)'), v: 'v1', st: 'approved', ph: 'release', ai: true, t: ['day', 1], icon: 'cloud' },
+            { id: 'adr-003', title: L('ADR-003 · Azure DevOps pipelines', 'ADR-003 · Pipeline Azure DevOps'), v: 'v2', st: 'approved', ph: 'release', ai: true, t: ['day', 3], icon: 'git-pull-request-arrow' },
+            { id: 'c4', title: L('Solution architecture (C4)', 'Kiến trúc giải pháp (C4)'), v: 'v2', st: 'approved', ph: 'release', t: ['day', 6], icon: 'network' },
+            { id: 'sow', title: L('Statement of work', 'Statement of Work'), v: 'v2', st: 'approved', ph: 'initial', t: ['week', 6], icon: 'file-signature' },
+          ],
+          decisions: [
+            { date: '2026-11-23', pending: true, t: L('Event bus: Azure Service Bus vs Kafka', 'Event bus: Azure Service Bus hay Kafka'), note: L('ADR-004 · awaiting your approval', 'ADR-004 · chờ bạn duyệt'), art: 'adr-004', chip: 'ADR-004' },
+            { date: '2026-10-27', t: L('Azure DevOps pipelines with environment promotion', 'Pipeline Azure DevOps với promote theo môi trường'), note: L('ADR-003', 'ADR-003'), art: 'adr-003', chip: 'ADR-003' },
+            { date: '2026-10-20', t: L('PostgreSQL 16 stays the system of record', 'PostgreSQL 16 tiếp tục là nguồn dữ liệu chính'), note: L('ADR-002', 'ADR-002'), art: 'adr-002', chip: 'ADR-002' },
+            { date: '2026-10-16', t: L('Evolve the existing Spring Boot monolith; extract services later', 'Phát triển tiếp monolith Spring Boot hiện có; tách service sau'), note: L('ADR-001 · brownfield repo', 'ADR-001 · repo brownfield'), art: 'adr-001', chip: 'ADR-001' },
+          ],
+          risks: [
+            { sev: 'med', t: L('Existing repo has thin integration tests — the CI step may expose flaky legacy tests', 'Repo hiện có ít integration test — bước CI có thể làm lộ các test cũ không ổn định'), mit: L('Quarantine flaky tests, fix after scaffolding', 'Cô lập test không ổn định, sửa sau khi scaffolding xong') },
+            { sev: 'med', t: L('Event bus choice blocks dev-container and service templates', 'Lựa chọn event bus đang chặn dev container và service template'), mit: L('Approve ADR-004 today to keep the schedule', 'Duyệt ADR-004 hôm nay để giữ tiến độ') },
+            { sev: 'low', t: L('Repository lives outside the project directory (D:\\src)', 'Repository nằm ngoài thư mục dự án (D:\\src)'), mit: L('Keep the link in procheck.json; no copy is made', 'Giữ liên kết trong procheck.json; không sao chép') },
+          ],
+          activity: [
+            { ic: 'loader-circle', spin: true, tone: 'running', t: L('Agent <b>SC-04</b> started generating CI/CD pipelines', 'Agent <b>SC-04</b> bắt đầu sinh pipeline CI/CD'), ago: ['min', 7], page: 'task.html' },
+            { ic: 'git-pull-request-arrow', tone: 'review', t: L('<b>ADR-004</b> drafted — awaiting your approval', '<b>ADR-004</b> đã được soạn — chờ bạn duyệt'), ago: ['hour', 2], page: 'scaffolding.html' },
+            { ic: 'check', tone: 'ok', t: L('Step <b>Infrastructure (IaC)</b> completed', 'Hoàn tất bước <b>Hạ tầng (IaC)</b>'), ago: ['day', 1], page: 'scaffolding.html' },
+            { ic: 'folder-git-2', tone: 'info', t: L('Existing repository <b>D:\\src\\mekong-omni</b> linked', 'Đã liên kết repository có sẵn <b>D:\\src\\mekong-omni</b>'), ago: ['week', 2], page: 'scaffolding.html' },
+          ],
+          suggest: [['Compare Service Bus and Kafka for our load', 'What does the CI/CD run produce?', 'Summarise open scaffolding steps'], ['So sánh Service Bus và Kafka với tải của dự án', 'Lượt chạy CI/CD tạo ra gì?', 'Tóm tắt các bước scaffolding còn lại']],
+        },
+        /* ------------------------------------------------ LOTUS — SDLC healthy sprint */
+        'lotus-pay': {
+          focus: { tone: 'warning', icon: 'eye',
+            title: L('2 tasks are waiting for your review', '2 task đang chờ bạn review'),
+            body: L('LP-142 (Merchant KYC document upload) and LP-151 (Settlement report export) have evidence ready. Reviewing them unblocks 13 points of Sprint 4.', 'LP-142 (Upload tài liệu KYC) và LP-151 (Xuất báo cáo đối soát) đã có bằng chứng. Review xong sẽ giải phóng 13 điểm của Sprint 4.'),
+            chips: [{ icon: 'bot', tone: 'info', t: L('2 agent runs active', '2 lượt chạy agent đang hoạt động') }, { icon: 'gauge', tone: '', t: L('Sprint 4 · day 5 of 10', 'Sprint 4 · ngày 5/10') }],
+            cta: { t: L('Review LP-142', 'Review LP-142'), icon: 'git-pull-request', page: 'task.html' }, cta2: { t: L('Open SDLC board', 'Mở bảng SDLC'), page: 'board.html' } },
+          kpis: [
+            { icon: 'files', tone: '', label: L('Artifacts', 'Tài liệu'), value: 18, href: ['artifacts.html'], spark: [9, 10, 12, 13, 13, 15, 15, 18], sub: L('<b>3</b> added this week', 'Thêm <b>3</b> trong tuần này') },
+            { icon: 'kanban', tone: 'purple', label: L('Open tasks', 'Task đang mở'), value: 20, href: ['board.html'], spark: [34, 34, 31, 29, 27, 25, 22, 20], sub: L('14 done of 34', 'Xong 14 trên 34') },
+            { icon: 'bot', tone: 'teal', label: L('Agent runs', 'Lượt chạy agent'), value: 47, href: ['task.html'], spark: [4, 9, 15, 21, 26, 33, 41, 47], sub: L('2 active · 2 awaiting review', '2 đang chạy · 2 chờ review') },
+            { icon: 'git-merge', tone: '', label: L('PRs merged', 'PR đã merge'), value: 11, href: ['board.html'], spark: [0, 1, 3, 4, 6, 7, 9, 11], sub: L('<b>+4</b> this sprint', '<b>+4</b> trong sprint này') },
+            { icon: 'shield-check', tone: 'success', label: L('e2e pass rate', 'Tỷ lệ e2e đạt'), value: '94.2%', href: ['task.html'], spark: [88, 90, 89, 92, 91, 93, 92, 94], sub: L('<b>▲ 1.8</b> pt vs sprint 3', '<b>▲ 1.8</b> điểm so với sprint 3'), cls: 'is-ok' },
+          ],
+          work: [
+            { id: 'LP-155', ic: 'loader-circle', tone: 'running', title: L('Rate limiting on public API', 'Giới hạn tốc độ cho API công khai'), sub: L('Implementing · step 4/6', 'Đang triển khai · bước 4/6'), badge: ['teal', 'ws.b.running'], agent: 'claude', pct: 62, live: true, page: 'task.html' },
+            { id: 'LP-159', ic: 'loader-circle', tone: 'running', title: L('Fix pagination off-by-one on transactions list', 'Sửa lỗi lệch 1 khi phân trang danh sách giao dịch'), sub: L('Implementing · step 2/6', 'Đang triển khai · bước 2/6'), badge: ['teal', 'ws.b.running'], agent: 'codex', pct: 28, live: true, page: 'task.html', cls: 'teal' },
+            { id: 'LP-142', ic: 'eye', tone: 'review', title: L('Merchant KYC document upload', 'Upload tài liệu KYC của merchant'), sub: L('Evidence ready · 14 files changed · e2e 12/12', 'Đã có bằng chứng · 14 file thay đổi · e2e 12/12'), badge: ['warning', 'ws.b.review'], agent: 'claude', page: 'task.html' },
+            { id: 'LP-151', ic: 'eye', tone: 'review', title: L('Settlement report export (CSV/XLSX)', 'Xuất báo cáo đối soát (CSV/XLSX)'), sub: L('Evidence ready · 6 files changed · e2e 5/5', 'Đã có bằng chứng · 6 file thay đổi · e2e 5/5'), badge: ['warning', 'ws.b.review'], agent: 'codex', page: 'task.html' },
+          ],
+          arts: [
+            { id: 'release-notes', title: L('Release notes 1.3', 'Release notes 1.3'), v: 'v1', st: 'draft', ph: 'sdlc', ai: true, t: ['hour', 2], icon: 'megaphone' },
+            { id: 'test-strategy', title: L('Test strategy', 'Chiến lược kiểm thử'), v: 'v2', st: 'review', ph: 'sdlc', t: ['day', 1], icon: 'flask-conical' },
+            { id: 'spec-kyc', title: L('Feature spec – Merchant KYC', 'Đặc tả tính năng – KYC merchant'), v: 'v3', st: 'approved', ph: 'sdlc', t: ['day', 2], icon: 'file-text' },
+            { id: 'infra', title: L('Infra plan', 'Kế hoạch hạ tầng'), v: 'v2', st: 'approved', ph: 'release', t: ['day', 5], icon: 'cloud' },
+            { id: 'brd', title: L('Business Requirements Doc', 'Yêu cầu nghiệp vụ (BRD)'), v: 'v3', st: 'approved', ph: 'initial', ai: true, t: ['week', 1], icon: 'file-text' },
+          ],
+          decisions: [
+            { date: '2026-10-21', t: L('Use VNPT eKYC as KYC provider', 'Chọn VNPT eKYC làm nhà cung cấp KYC'), note: L('Agreed with client · replaces in-house OCR', 'Thống nhất với khách hàng · thay OCR tự xây'), art: 'spec-kyc', chip: 'Spec' },
+            { date: '2026-09-18', t: L('OIDC via Lotus Identity (Keycloak)', 'OIDC qua Lotus Identity (Keycloak)'), note: L('ADR-004', 'ADR-004'), art: 'adr-004', chip: 'ADR-004' },
+            { date: '2026-09-11', t: L('Angular + Nx monorepo for the portal', 'Angular + Nx monorepo cho portal'), note: L('ADR-003', 'ADR-003'), art: 'adr-003', chip: 'ADR-003' },
+            { date: '2026-09-05', t: L('PostgreSQL with transactional outbox for the ledger', 'PostgreSQL với transactional outbox cho sổ cái'), note: L('ADR-002', 'ADR-002'), art: 'adr-002', chip: 'ADR-002' },
+            { date: '2026-09-02', t: L('Modular monolith over microservices for MVP', 'Modular monolith thay vì microservices cho MVP'), note: L('ADR-001', 'ADR-001'), art: 'adr-001', chip: 'ADR-001' },
+          ],
+          risks: [
+            { sev: 'high', t: L('KYC vendor sandbox rate limits may block e2e runs', 'Giới hạn rate của sandbox KYC có thể chặn các lượt e2e'), mit: L('Record/replay fixtures in CI; request higher quota', 'Dùng fixture record/replay trong CI; xin tăng hạn mức') },
+            { sev: 'med', t: L('Settlement export slow above 1M rows', 'Xuất báo cáo đối soát chậm khi trên 1 triệu dòng'), mit: L('Stream from a read replica; add pagination', 'Stream từ read replica; thêm phân trang') },
+            { sev: 'med', t: L('Client UAT availability in December', 'Khách hàng khó sắp xếp UAT vào tháng 12'), mit: L('Fix UAT slots in sprint 5 planning', 'Chốt lịch UAT ngay khi lập kế hoạch sprint 5') },
+            { sev: 'low', t: L('Test coverage on legacy auth adapter written by agent', 'Độ phủ test của adapter xác thực cũ do agent viết'), mit: L('Add contract tests, review the PR yourself', 'Bổ sung contract test, tự review PR') },
+          ],
+          activity: [
+            { ic: 'loader-circle', spin: true, tone: 'running', t: L('Agent started <b>LP-155</b> Rate limiting', 'Agent bắt đầu <b>LP-155</b> Rate limiting'), ago: ['min', 3], page: 'task.html' },
+            { ic: 'eye', tone: 'review', t: L('<b>LP-142</b> ready for your review · e2e 12/12', '<b>LP-142</b> chờ bạn review · e2e 12/12'), ago: ['min', 12], page: 'task.html' },
+            { ic: 'eye', tone: 'review', t: L('<b>LP-151</b> ready for your review · e2e 5/5', '<b>LP-151</b> chờ bạn review · e2e 5/5'), ago: ['hour', 1], page: 'task.html' },
+            { ic: 'git-merge', tone: 'ok', t: L('PR for <b>LP-139</b> Webhook retry policy merged', 'Đã merge PR của <b>LP-139</b> Webhook retry policy'), ago: ['hour', 6], page: 'board.html' },
+          ],
+          sdlcSteps: [['done', L('Backlog (34 tasks)', 'Backlog (34 task)')], ['active', L('Sprint 4 in progress', 'Sprint 4 đang diễn ra')], ['review', L('Review & promote PRs', 'Review & đưa PR')], ['todo', L('Release 1.3', 'Release 1.3')]],
+          phase: { sdlc: { cur: L('Sprint 4 · day 5 of 10', 'Sprint 4 · ngày 5/10'), next: L('Review LP-142 and LP-151 to unblock 13 pts.', 'Review LP-142 và LP-151 để giải phóng 13 điểm.') } },
+          sdlcM: { velocity: [18, 24, 31], success: { pct: 87, note: L('First-time acceptance · <b>20 of 23</b> runs accepted at first review', 'Được chấp nhận ngay lần đầu · <b>20/23</b> lượt chạy đạt ở lần review đầu') }, review: { v: '2h 18m', tone: 'ok', note: L('34 min faster than Sprint 3', 'Nhanh hơn Sprint 3 là 34 phút'), spark: [250, 185, 172, 138] }, spend: [{ id: 'claude', amt: 29.40, runs: 14 }, { id: 'codex', amt: 12.40, runs: 9 }], burn: { actual: [66, 64, 60, 57, 53, 48], projected: 8 } },
+          suggest: [['Summarize sprint 4 progress', 'Which risk should we tackle first?', 'Draft a client status report'], ['Tóm tắt tiến độ Sprint 4', 'Rủi ro nào cần xử lý trước?', 'Soạn báo cáo cho khách hàng']],
+        },
+        /* ------------------------------------------------ ATLAS — SDLC release hardening, failure */
+        'atlas-hr': {
+          focus: { tone: 'danger', icon: 'circle-x',
+            title: L('AH-311 agent run failed', 'Lượt chạy agent của AH-311 bị lỗi'),
+            body: L('Payroll export to bank file (NAPAS): 6 of 9 e2e tests passed. AH-298 also has changes requested. Release v2.0 readiness is 82%.', 'Xuất bảng lương sang file ngân hàng (NAPAS): 6/9 test e2e đạt. AH-298 cũng đang cần chỉnh sửa. Mức sẵn sàng release v2.0 là 82%.'),
+            chips: [{ icon: 'flask-conical', tone: 'danger', t: L('e2e 6/9 passed', 'e2e đạt 6/9') }, { icon: 'rocket', tone: 'warning', t: L('Release v2.0 · 82% ready', 'Release v2.0 · sẵn sàng 82%') }],
+            cta: { t: L('Analyse failure', 'Phân tích lỗi'), icon: 'sparkles', page: 'task.html' }, cta2: { t: L('Open SDLC board', 'Mở bảng SDLC'), page: 'board.html' } },
+          kpis: [
+            { icon: 'files', tone: '', label: L('Artifacts', 'Tài liệu'), value: 24, href: ['artifacts.html'], spark: [14, 16, 17, 19, 20, 21, 23, 24], sub: L('<b>2</b> added this week', 'Thêm <b>2</b> trong tuần này') },
+            { icon: 'kanban', tone: 'purple', label: L('Open tasks', 'Task đang mở'), value: 17, href: ['board.html'], spark: [41, 38, 35, 31, 27, 24, 20, 17], sub: L('44 done of 61', 'Xong 44 trên 61') },
+            { icon: 'bot', tone: 'danger', label: L('Agent runs', 'Lượt chạy agent'), value: 112, href: ['task.html'], spark: [60, 68, 77, 85, 92, 99, 106, 112], sub: L('1 running · <b>1 failed</b>', '1 đang chạy · <b>1 lỗi</b>'), cls: 'is-bad' },
+            { icon: 'git-merge', tone: '', label: L('PRs merged', 'PR đã merge'), value: 52, href: ['board.html'], spark: [30, 34, 38, 41, 44, 47, 50, 52], sub: L('<b>+6</b> this sprint', '<b>+6</b> trong sprint này') },
+            { icon: 'shield-check', tone: 'warning', label: L('e2e pass rate', 'Tỷ lệ e2e đạt'), value: '91.8%', href: ['task.html'], spark: [95, 94, 95, 93, 94, 93, 94, 92], sub: L('<b>▼ 2.4</b> pt vs sprint 8', '<b>▼ 2.4</b> điểm so với sprint 8'), cls: 'is-warn' },
+          ],
+          work: [
+            { id: 'AH-311', ic: 'circle-x', tone: 'failed', title: L('Payroll export to bank file (NAPAS)', 'Xuất bảng lương sang file ngân hàng (NAPAS)'), sub: L('Run failed · e2e 6/9 passed · 3 failing in file-format checks', 'Lượt chạy lỗi · e2e đạt 6/9 · 3 ca lỗi ở kiểm tra định dạng file'), badge: ['danger', 'ws.b.failed'], agent: 'claude', page: 'task.html' },
+            { id: 'AH-298', ic: 'message-square-warning', tone: 'review', title: L('Leave approval delegation', 'Uỷ quyền duyệt nghỉ phép'), sub: L('You requested changes · agent is waiting for the next iteration', 'Bạn đã yêu cầu chỉnh sửa · agent đang chờ vòng lặp tiếp theo'), badge: ['warning', 'ws.b.changes'], agent: 'codex', page: 'task.html' },
+            { id: 'AH-305', ic: 'loader-circle', tone: 'running', title: L('Tax declaration report', 'Báo cáo quyết toán thuế'), sub: L('Implementing · step 3/6', 'Đang triển khai · bước 3/6'), badge: ['teal', 'ws.b.running'], agent: 'codex', pct: 48, live: true, cls: 'teal', page: 'task.html' },
+            { id: 'AH-306', ic: 'eye', tone: 'review', title: L('Employee self-service profile', 'Hồ sơ nhân viên tự phục vụ'), sub: L('Evidence ready · 9 files changed · e2e 7/7', 'Đã có bằng chứng · 9 file thay đổi · e2e 7/7'), badge: ['warning', 'ws.b.review'], agent: 'claude', page: 'task.html' },
+          ],
+          arts: [
+            { id: 'release-notes', title: L('Release notes v2.0', 'Release notes v2.0'), v: 'v2', st: 'draft', ph: 'sdlc', ai: true, t: ['hour', 4], icon: 'megaphone' },
+            { id: 'uat-plan', title: L('UAT plan – HR operations', 'Kế hoạch UAT – vận hành nhân sự'), v: 'v3', st: 'review', ph: 'sdlc', t: ['day', 1], icon: 'clipboard-check' },
+            { id: 'test-strategy', title: L('Test strategy', 'Chiến lược kiểm thử'), v: 'v4', st: 'approved', ph: 'sdlc', t: ['day', 4], icon: 'flask-conical' },
+            { id: 'infra', title: L('Infra plan', 'Kế hoạch hạ tầng'), v: 'v3', st: 'approved', ph: 'release', t: ['week', 3], icon: 'cloud' },
+            { id: 'brd', title: L('Business Requirements Doc', 'Yêu cầu nghiệp vụ (BRD)'), v: 'v4', st: 'approved', ph: 'initial', t: ['week', 36], icon: 'file-text' },
+          ],
+          decisions: [
+            { date: '2026-11-17', t: L('Freeze v2.0 scope — no new stories after sprint 8', 'Đóng băng scope v2.0 — không thêm story mới sau sprint 8'), note: L('Release hardening kickoff', 'Khởi động giai đoạn hardening release'), art: 'release-notes', chip: 'Release' },
+            { date: '2026-11-05', t: L('Use the NAPAS bank file spec v2.1 for payroll export', 'Dùng đặc tả file ngân hàng NAPAS v2.1 cho xuất bảng lương'), note: L('Agreed with Finance', 'Thống nhất với phòng Tài chính'), art: 'spec-payroll', chip: 'Spec' },
+            { date: '2026-10-22', t: L('Ship leave delegation behind a feature flag in v2.0', 'Phát hành uỷ quyền nghỉ phép sau feature flag trong v2.0'), note: L('Sprint 7 planning', 'Lập kế hoạch Sprint 7'), art: 'spec-leave', chip: 'Spec' },
+          ],
+          risks: [
+            { sev: 'high', t: L('NAPAS export fails 3 e2e checks — blocks the v2.0 release candidate', 'Xuất NAPAS lỗi 3 ca e2e — chặn release candidate v2.0'), mit: L('Analyse the failure with the Assistant and re-run AH-311', 'Phân tích lỗi cùng Trợ lý rồi chạy lại AH-311') },
+            { sev: 'med', t: L('Leave delegation rework (AH-298) may slip the release by 1 day', 'Làm lại uỷ quyền nghỉ phép (AH-298) có thể trễ release 1 ngày'), mit: L('Keep it behind the feature flag if not ready', 'Giữ sau feature flag nếu chưa sẵn sàng') },
+            { sev: 'med', t: L('UAT sign-off from HR operations still pending', 'Chưa có xác nhận UAT từ bộ phận vận hành nhân sự'), mit: L('Share the UAT plan v3 and fix a sign-off date', 'Gửi kế hoạch UAT v3 và chốt ngày ký duyệt') },
+          ],
+          activity: [
+            { ic: 'circle-x', tone: 'failed', t: L('Agent run <b>AH-311</b> failed · e2e 6/9', 'Lượt chạy agent <b>AH-311</b> lỗi · e2e 6/9'), ago: ['min', 40], page: 'task.html' },
+            { ic: 'message-square-warning', tone: 'review', t: L('You requested changes on <b>AH-298</b>', 'Bạn đã yêu cầu chỉnh sửa <b>AH-298</b>'), ago: ['hour', 3], page: 'task.html' },
+            { ic: 'git-merge', tone: 'ok', t: L('PR #482 for <b>AH-310</b> Payroll export to CSV merged', 'Đã merge PR #482 của <b>AH-310</b> Xuất bảng lương ra CSV'), ago: ['hour', 5], page: 'board.html' },
+            { ic: 'loader-circle', spin: true, tone: 'running', t: L('Agent started <b>AH-305</b> Tax declaration report', 'Agent bắt đầu <b>AH-305</b> Báo cáo quyết toán thuế'), ago: ['hour', 6], page: 'task.html' },
+          ],
+          sdlcSteps: [['done', L('Backlog (61 tasks)', 'Backlog (61 task)')], ['active', L('Sprint 9 in progress', 'Sprint 9 đang diễn ra')], ['review', L('Review & promote PRs', 'Review & đưa PR')], ['active', L('Release v2.0', 'Release v2.0')]],
+          phase: { sdlc: { cur: L('Sprint 9 · release hardening', 'Sprint 9 · hardening release'), next: L('Analyse the AH-311 failure and address AH-298 changes.', 'Phân tích lỗi AH-311 và xử lý yêu cầu chỉnh sửa AH-298.') } },
+          sdlcM: { velocity: [38, 41, 44], success: { pct: 81, note: L('First-time acceptance · <b>17 of 21</b> runs accepted · <b>1 failed</b> this sprint', 'Được chấp nhận ngay lần đầu · <b>17/21</b> lượt đạt · <b>1 lỗi</b> trong sprint này') }, review: { v: '1h 42m', tone: 'warn', note: L('12 min slower than Sprint 8', 'Chậm hơn Sprint 8 là 12 phút'), spark: [96, 118, 104, 102] }, spend: [{ id: 'claude', amt: 61.20, runs: 18 }, { id: 'codex', amt: 22.90, runs: 7 }], burn: { actual: [48, 48, 45, 43, 38, 33, 26, 19, 11], projected: 3 },
+            release: { v: 'v2.0', pct: 82, items: [[true, L('e2e pass rate above 90% (91.8%)', 'Tỷ lệ e2e trên 90% (91,8%)')], [false, L('AH-311 NAPAS export — e2e 6/9', 'AH-311 xuất NAPAS — e2e 6/9')], [false, L('AH-298 leave delegation — changes requested', 'AH-298 uỷ quyền nghỉ phép — cần chỉnh sửa')], [true, L('Security scan clean', 'Quét bảo mật sạch')], [true, L('Release notes v2.0 drafted', 'Đã soạn release notes v2.0')]] },
+            health: { failed: 1, running: 1, review: 1 } },
+          suggest: [['Analyse the AH-311 failures', 'What blocks release v2.0?', 'Draft a status update for HR operations'], ['Phân tích các lỗi của AH-311', 'Điều gì đang chặn release v2.0?', 'Soạn cập nhật tiến độ cho vận hành nhân sự']],
+        },
+      };
+      const D = DS[p.id] || DS['lotus-pay'];
+
+      /* ====================================================================
+         Derived phase structure (from state)
+         ==================================================================== */
+      const INIT_STEPS = [['discovery', L('Discovery', 'Khảo sát')], ['requirements', L('Requirements (BRD)', 'Yêu cầu (BRD)')], ['scope', L('Scope & MVP', 'Phạm vi & MVP')], ['estimation', L('Estimation', 'Ước lượng')], ['signoff', L('SOW sign-off', 'Ký duyệt SOW')]];
+      const SC_STEPS = [['structure', L('Repository structure', 'Cấu trúc repository')], ['skeleton', L('Project skeleton', 'Khung dự án')], ['iac', L('Infrastructure (IaC)', 'Hạ tầng (IaC)')], ['cicd', L('CI/CD pipelines', 'Pipeline CI/CD')], ['devcontainer', L('Dev container', 'Dev container')], ['linttest', L('Lint & test config', 'Cấu hình lint & test')]];
+      const SDLC_TODO = [['todo', L('Backlog', 'Backlog')], ['todo', L('Sprints', 'Các sprint')], ['todo', L('Review & promote PRs', 'Review & đưa PR')], ['todo', L('Release', 'Release')]];
+      const STMAP = { done: 'done', in_progress: 'active', running: 'active', in_review: 'review', not_started: 'todo', pending: 'todo' };
+      const status = id => PC.phaseStatus(id);
+      const prevOf = id => id === 'release' ? 'initial' : 'release';
+
+      function stepsOf(id) {
+        const st = status(id);
+        if (id === 'initial') return INIT_STEPS.map(([k, t]) => ({ s: st === 'done' ? 'done' : (STMAP[S.initial.steps && S.initial.steps[k]] || 'todo'), t }));
+        if (id === 'release') return SC_STEPS.map(([k, t]) => ({ s: st === 'done' ? 'done' : (st === 'locked' ? 'todo' : (STMAP[S.scaffolding.steps && S.scaffolding.steps[k]] || 'todo')), t }));
+        const src = st === 'locked' ? SDLC_TODO : (D.sdlcSteps || SDLC_TODO);
+        return src.map(([s, t]) => ({ s, t }));
+      }
+      const doneOf = id => stepsOf(id).filter(s => s.s === 'done').length;
+      function phaseInfo(id) {
+        if (id === 'initial') { const k = S.initial.step; const cur = INIT_STEPS.find(x => x[0] === k); return { cur: cur && cur[1], next: S.initial.next }; }
+        if (id === 'release') { const k = Object.keys(S.scaffolding.steps || {}).find(x => S.scaffolding.steps[x] === 'running'); const cur = SC_STEPS.find(x => x[0] === k); return { cur: cur && L(cur[1].en + ' · ' + S.scaffolding.run.progress + '%', cur[1].vi + ' · ' + S.scaffolding.run.progress + '%'), next: L('Approve ADR-004; the agent then continues with the dev container and lint/test config.', 'Duyệt ADR-004; sau đó agent tiếp tục với dev container và cấu hình lint/test.') }; }
+        return (D.phase && D.phase.sdlc) || {};
+      }
+      const pctOf = id => p.progress[id];
+      const completedOn = id => (S[SK[id]] || {}).completedOn;
+      const archAwaiting = () => ((S.scaffolding.architecture) || []).filter(a => a.status === 'awaiting_approval').length;
+
+      /* ---------- hero ---------- */
+      function renderHero() {
+        const av0 = $('#ws-av'); av0.style.background = p.color; av0.textContent = p.short;
+        $('#ws-name').textContent = p.name;
+        $('#ws-client').textContent = p.client;
+        $('#ws-phase').innerHTML = `<span class="phase-chip phase-${p.phase}">${PC.t('phase.' + p.phase)}</span><span class="state-l">${esc(PC.L(S.label))}</span>`;
+        $('#ws-dir').textContent = p.dir; $('#ws-dir').title = p.dir;
+        $('#ws-repo').textContent = p.repo || '—'; $('#ws-repo').title = p.repo || '';
+        $('#ws-repo-wrap').classList.toggle('hidden', !p.repo);
+      }
+
+      /* ---------- current focus ---------- */
+      function renderFocus() {
+        const f = D.focus, el = $('#ws-focus');
+        el.className = 'focus tone-' + f.tone;
+        el.innerHTML = `<span class="focus-ic"><i data-lucide="${f.icon}"></i></span>
+          <div class="focus-main"><div class="focus-k">${PC.t('ws.focus.k')} · ${PC.t('phase.' + p.phase)}</div><h3>${T(f.title)}</h3><p>${T(f.body)}</p>
+            ${f.chips ? `<div class="focus-chips">${f.chips.map(c => `<span class="badge ${c.tone ? 'badge-' + c.tone : 'badge-outline'}">${c.live ? '<span class="dot dot-pulse"></span>' : `<i data-lucide="${c.icon}" ${c.spin ? 'class="spin-i"' : ''}></i>`}${T(c.t)}</span>`).join('')}</div>` : ''}</div>
+          <div class="focus-act"><a class="btn btn-primary" href="${U(f.cta.page, f.cta.hash)}"><i data-lucide="${f.cta.icon}"></i><span>${T(f.cta.t)}</span></a>
+            ${f.cta2 ? `<a class="btn btn-secondary" href="${U(f.cta2.page, f.cta2.hash)}"><span>${T(f.cta2.t)}</span><i data-lucide="arrow-up-right" class="icon-sm"></i></a>` : ''}</div>`;
+        PC.refresh(el);
+      }
+
+      /* ---------- KPIs ---------- */
+      function spark(d) {
+        const w = 64, h = 24, mn = Math.min(...d), mx = Math.max(...d);
+        const pts = d.map((v, i) => `${(i / (d.length - 1) * (w - 2) + 1).toFixed(1)},${(h - 3 - (v - mn) / (mx - mn || 1) * (h - 6)).toFixed(1)}`).join(' ');
+        return `<svg class="kpi-spark" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${pts}"/></svg>`;
+      }
+      function renderKpis() {
+        $('#ws-kpis').innerHTML = D.kpis.map(k => `<a class="card card-interactive kpi ${k.cls || ''}" href="${U(k.href[0], k.href[1])}">
+          <div class="kpi-top"><span class="kpi-ic ${k.tone}"><i data-lucide="${k.icon}"></i></span>${k.spark ? spark(k.spark) : ''}</div>
+          <div class="stat"><span class="stat-label">${T(k.label)}</span><span class="stat-value" ${k.small ? 'style="font-size:var(--text-xl);line-height:1.5"' : ''}>${typeof k.value === 'object' ? T(k.value) : k.value}</span></div>
+          <div class="sub">${T(k.sub)}</div></a>`).join('');
+        PC.refresh($('#ws-kpis'));
+      }
+
+      /* ---------- phase cards ---------- */
+      const NODE = { done: 'check', active: 'loader-circle', review: 'eye', todo: 'circle' };
+      function renderTimeline() {
+        const el = $('#ws-timeline'); let html = '';
+        ORDER.forEach((id, i) => {
+          const st = status(id), steps = stepsOf(id), info = phaseInfo(id), locked = st === 'locked', done = st === 'done';
+          const badge = done ? `<span class="badge badge-success"><i data-lucide="check"></i>${PC.t('ws.state.done')}</span>`
+            : locked ? `<span class="badge badge-outline"><i data-lucide="lock"></i>${PC.t('ws.state.locked')}</span>`
+            : `<span class="badge badge-teal"><span class="dot dot-pulse"></span>${PC.t('ws.state.active')}</span>`;
+          let mid = '';
+          if (st === 'in_progress') {
+            mid = `<div class="ph-prog"><div class="progress"><span style="width:${pctOf(id)}%"></span></div><b>${PC.t('ws.pct', { n: pctOf(id) })}</b></div>`;
+          }
+          const list = `<ul class="pcs">${steps.map(s => `<li class="${s.s}"><span class="n"><i data-lucide="${NODE[s.s]}" ${s.s === 'active' ? 'class="spin-i"' : ''}></i></span><span class="lb">${T(s.t)}</span><span class="sx">${s.s === 'done' && !locked ? '' : PC.t('ws.step.' + s.s)}</span></li>`).join('')}</ul>`;
+          let extra = '';
+          if (id === 'release' && !locked && S.scaffolding.architecture) {
+            const a = S.scaffolding.architecture, ok = a.filter(x => x.status === 'approved').length, w = archAwaiting();
+            extra += `<div class="ph-note ${w ? 'warn' : ''}"><i data-lucide="scale"></i><span><b>${PC.t('ws.arch')}</b> · ${PC.t('ws.arch.sum', { a: ok, b: a.length })}${w ? ` · ${PC.t('ws.arch.wait', { n: w })}` : ''}</span></div>`;
+          }
+          if (st === 'in_progress') {
+            if (info.cur) extra += `<div class="ph-note"><i data-lucide="crosshair"></i><span><b>${PC.t('ws.cur')}</b> · ${T(info.cur)}</span></div>`;
+            if (info.next) extra += `<div class="ph-note"><i data-lucide="arrow-right-circle"></i><span><b>${PC.t('ws.next')}</b> · ${T(info.next)}</span></div>`;
+          }
+          if (locked) {
+            const pv = prevOf(id), pvLocked = status(pv) === 'locked';
+            extra += `<div class="ph-note gate"><i data-lucide="lock"></i><span><b>${PC.t('ws.gate')}</b> · ${T(S[SK[id]].gate)}<br>${pvLocked ? PC.t('ws.prev.locked', { x: PC.t('phase.' + pv) }) : PC.t('ws.prev.prog', { x: PC.t('phase.' + pv), n: pctOf(pv) })}</span></div>`;
+          }
+          const foot = done ? `<span class="ph-foot"><span>${completedOn(id) ? PC.t('ws.done.on', { d: fmtDate(completedOn(id), true) }) : ''}</span><b>${PC.t('ws.steps.count', { done: doneOf(id), total: steps.length })}</b></span>`
+            : locked ? '' : `<span class="ph-foot"><span></span><b>${PC.t('ws.steps.count', { done: doneOf(id), total: steps.length })}</b></span>`;
+          const cta = done ? PC.t('ws.cta.done') : locked ? PC.t('ws.cta.locked') : PC.t('ws.cta.go');
+          html += `<div class="ph-card ph-c-${id} ${st === 'in_progress' ? 'is-current' : ''} ${locked ? 'is-locked' : ''} ${done ? 'is-done' : ''}" data-phase="${id}" id="phase-${id}">
+            <div class="ph-top"><span class="ph-ic"><i data-lucide="${locked ? 'lock' : PHASE_ICON[id]}"></i></span>
+              <span class="grow"><span class="ph-kicker">${PC.t('ws.phase.n', { n: i + 1 })}</span><span class="ph-name">${PC.t('phase.' + id)}</span></span>${badge}</div>
+            <div class="ph-desc">${PC.t('ws.phase.' + id + '.desc')}</div>
+            ${mid}${list}${extra}${foot}
+            <div class="ph-cta"><a class="btn ${st === 'in_progress' ? 'btn-primary' : 'btn-secondary'} btn-sm btn-block" href="${U(PHASE_PAGE[id])}"><span>${cta}</span><i data-lucide="arrow-right" class="icon-sm"></i></a></div>
+          </div>`;
+          if (i < 2) html += `<div class="ph-link ${done ? 'done' : ''}"><span><i data-lucide="chevron-right"></i></span></div>`;
+        });
+        el.innerHTML = html; PC.refresh(el);
+      }
+
+      /* ---------- metric helpers ---------- */
+      const ring = (pct, col) => { const r = 31, c = 2 * Math.PI * r; return `<div class="ring"><svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="${r}" fill="none" stroke="var(--bg-surface-3)" stroke-width="7"/><circle cx="36" cy="36" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(c * pct / 100).toFixed(1)} ${c.toFixed(1)}"/></svg><b>${Math.round(pct)}%</b></div>`; };
+      const tile = (icon, tone, label, body) => `<div class="card mt"><div class="mt-head"><span class="kpi-ic ${tone}"><i data-lucide="${icon}"></i></span>${label}</div>${body}</div>`;
+      const stBadge = st => { const k = st === 'review' ? 'in_review' : st; return `<span class="badge ${st === 'approved' ? 'badge-success' : (st === 'in_review' || st === 'review' || st === 'awaiting' || st === 'awaiting_approval') ? 'badge-warning' : st === 'draft' ? 'badge-outline' : 'badge-outline'}" style="min-width:76px;justify-content:center">${PC.t('ws.st.' + (st === 'awaiting_approval' ? 'awaiting' : k))}</span>`; };
+      const ART_NAMES = { 'meeting-notes': L('Meeting notes', 'Biên bản họp'), brd: L('Business requirements (BRD)', 'Yêu cầu nghiệp vụ (BRD)'), scope: L('Scope & MVP boundary', 'Phạm vi & ranh giới MVP'), estimation: L('Estimation', 'Ước lượng'), sow: L('Statement of work (SOW)', 'Statement of Work (SOW)') };
+      const ART_ICONS = { 'meeting-notes': 'mic', brd: 'file-text', scope: 'target', estimation: 'calculator', sow: 'file-signature' };
+      const lockedSlim = id => `<div class="mt-locked"><i data-lucide="lock"></i><span>${PC.t('ws.locked.m', { x: '<b>' + PC.t('phase.' + id) + '</b>' })}</span><span class="gate">${T(S[SK[id]].gate)}</span></div>`;
+
+      /* ---------- metrics: Initial ---------- */
+      function metricsInitial() {
+        const I = S.initial, q = I.questions, mt = I.meetings, analysed = mt.filter(m => m.insights).length;
+        const arts = ART_NAMES && ['meeting-notes', 'brd', 'scope', 'estimation', 'sow'].map(id => Object.assign({ id, status: 'not_started' }, (I.artifacts || []).find(a => a.id === id)));
+        const approved = arts.filter(a => a.status === 'approved').length;
+        const brd = arts.find(a => a.id === 'brd');
+        const discPct = mt.length ? Math.round(analysed / mt.length * 100) : 0;
+        const qBody = q.total === 0
+          ? `<div class="mini-empty">${PC.t('ws.m.q.empty')} <a href="${U('initial.html', '#meetings')}">${PC.t('ws.m.q.go')} →</a></div>`
+          : `<div class="stat"><span class="stat-value">${q.open} <small>${PC.t('ws.m.q.open')}</small></span><span class="note"><b>${q.blocking}</b> ${PC.t('ws.m.q.bl').toLowerCase()} · ${q.total} total</span></div>
+             <div class="split"><i class="c-ok" style="width:${(q.total - q.open) / q.total * 100}%"></i><i class="c-open" style="width:${(q.open - q.blocking) / q.total * 100}%"></i><i class="c-block" style="width:${q.blocking / q.total * 100}%"></i></div>
+             <div class="legend-d"><span><i style="background:var(--success)"></i>${PC.t('ws.m.q.ans')} ${q.total - q.open}</span><span><i style="background:var(--warning)"></i>${PC.t('ws.m.q.nb')} ${q.open - q.blocking}</span><span><i style="background:var(--danger)"></i>${PC.t('ws.m.q.bl')} ${q.blocking}</span></div>`;
+        const reqBody = I.requirements === 0
+          ? `<div class="stat"><span class="stat-value" style="color:var(--fg-faint)">0</span></div><div class="mini-empty">${PC.t('ws.m.req.empty')}</div>`
+          : `<div class="stat"><span class="stat-value">${I.requirements}</span><span class="note">${PC.t('ws.m.req.sub', { s: brd ? brd.version : '—' })}${brd && brd.status !== 'approved' ? ' (' + PC.t('ws.st.' + brd.status) + ')' : ''}</span></div>`;
+        const pipe = `<div class="card-header"><span class="card-title"><i data-lucide="workflow"></i>${PC.t('ws.pipe.title')}<span class="badge ${approved ? 'badge-success' : ''}">${approved}/5</span></span><span class="text-xs text-subtle">${PC.t('ws.pipe.hint')}</span></div>
+          <div class="rows">${arts.map(a => `<a class="rrow" href="${U('artifacts.html', '#' + a.id)}"><span class="file-tile"><i data-lucide="${ART_ICONS[a.id]}"></i></span><div class="grow"><div class="ttl">${T(ART_NAMES[a.id])}</div></div>${a.version ? `<span class="badge badge-outline">${a.version}</span>` : ''}${stBadge(a.status)}</a>`).join('')}</div>`;
+        const meet = `<div class="card-header"><span class="card-title"><i data-lucide="mic"></i>${PC.t('ws.meet.title')}<span class="badge">${mt.length}</span></span><a class="link-more" href="${U('initial.html', '#meetings')}">${PC.t('ws.meet.add')}<i data-lucide="plus" class="icon-sm"></i></a></div>
+          <div class="rows">${mt.map(m => `<a class="rrow" href="${U('initial.html', '#meetings')}"><span class="r-ic ${m.insights ? 'ok' : 'review'}"><i data-lucide="${m.insights ? 'check' : 'sparkles'}"></i></span><div class="grow"><div class="ttl">${esc(m.title)}</div><div class="sub">${fmtDate(m.date)} · ${m.kind}</div></div><span class="badge ${m.insights ? 'badge-success' : 'badge-warning'}">${PC.t(m.insights ? 'ws.meet.ins' : 'ws.meet.none')}</span></a>`).join('')}</div>`;
+        return tile('compass', '', PC.t('ws.m.disc'), `<div class="mt-body">${ring(discPct, 'var(--phase-initial)')}<div class="note"><b>${PC.t('ws.m.disc.sub', { a: analysed, b: mt.length })}</b><br>${PC.t('ws.m.disc.note', { m: mt.length, s: I.sources.length })}</div></div>`)
+          + tile('circle-help', q.blocking ? 'danger' : 'muted', PC.t('ws.m.q'), qBody)
+          + tile('list-checks', I.requirements ? 'purple' : 'muted', PC.t('ws.m.req'), reqBody)
+          + tile('file-check', approved ? 'success' : 'muted', PC.t('ws.m.appr'), `<div class="mt-body">${ring(approved / 5 * 100, 'var(--success)')}<div class="note"><b>${approved} / 5</b><br>${PC.t('ws.m.appr.sub')}</div></div>`)
+          + `<div class="card mt-wide">${pipe}</div><div class="card mt-side">${meet}</div>`
+          + lockedSlim('release') + lockedSlim('sdlc');
+      }
+
+      /* ---------- metrics: Scaffolding ---------- */
+      const ARCH_TITLES = { c4: L('Solution architecture (C4)', 'Kiến trúc giải pháp (C4)'), 'adr-001': L('ADR-001 · Evolve the existing Spring Boot monolith', 'ADR-001 · Phát triển tiếp monolith Spring Boot hiện có'), 'adr-002': L('ADR-002 · PostgreSQL 16 as system of record', 'ADR-002 · PostgreSQL 16 là nguồn dữ liệu chính'), 'adr-003': L('ADR-003 · Azure DevOps pipelines with promotion', 'ADR-003 · Pipeline Azure DevOps với promote môi trường') };
+      function metricsScaffolding() {
+        const sc = S.scaffolding, arch = sc.architecture, ok = arch.filter(a => a.status === 'approved').length, w = archAwaiting();
+        const stp = Object.values(sc.steps), sdone = stp.filter(x => x === 'done').length, run = sc.run;
+        const cur = SC_STEPS.find(x => x[0] === run.step);
+        const adr = `<div class="card-header"><span class="card-title"><i data-lucide="scale"></i>${PC.t('ws.adr.title')}<span class="badge ${w ? 'badge-warning' : 'badge-success'}">${ok}/${arch.length}</span></span><a class="link-more" href="${U('scaffolding.html', '#architecture')}">${PC.t('ws.dec.all')}<i data-lucide="arrow-right" class="icon-sm"></i></a></div>
+          <div class="rows">${arch.map(a => `<a class="rrow" href="${U('scaffolding.html', '#architecture')}"><span class="file-tile"><i data-lucide="${a.id === 'c4' ? 'network' : 'git-pull-request-arrow'}"></i></span><div class="grow"><div class="ttl">${a.title ? 'ADR-004 · ' + esc(a.title) : T(ARCH_TITLES[a.id])}</div></div>${stBadge(a.status)}</a>`).join('')}</div>`;
+        const repo = `<div class="card-header"><span class="card-title"><i data-lucide="folder-git-2"></i>${PC.t('ws.repo.title')}</span><span class="badge badge-purple">${PC.t('ws.repo.existing')}</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:var(--space-3)"><code class="text-xs" style="word-break:break-all">${esc(sc.repo.path)}</code>
+            <div class="text-xs text-subtle">${PC.t('ws.repo.branch', { b: '<b>' + esc(sc.repo.branch) + '</b>', c: PC.t('ws.repo.clean') })}</div>
+            <div class="chips">${sc.repo.stack.map(s => `<span class="chip">${esc(s)}</span>`).join('')}</div></div>`;
+        return tile('scale', w ? 'warning' : 'success', PC.t('ws.m.adr'), `<div class="mt-body">${ring(ok / arch.length * 100, 'var(--phase-release)')}<div class="note"><b>${ok} / ${arch.length}</b><br>${PC.t('ws.m.adr.note', { n: w })}</div></div>`)
+          + tile('blocks', 'purple', PC.t('ws.m.steps'), `<div class="mt-body">${ring(sdone / stp.length * 100, 'var(--phase-release)')}<div class="note"><b>${sdone} / ${stp.length}</b><br>${PC.t('ws.m.steps.note', { a: sdone + 1, b: stp.length })}</div></div>`)
+          + tile('bot', 'teal', PC.t('ws.m.live'), `<div class="stat"><span class="stat-value"><span data-run-pct="${run.id}">${run.progress}</span>%</span><span class="note">${PC.t('ws.m.live.note', { id: '<b>' + run.id + '</b>', step: cur ? T(cur[1]) : '', cli: run.agent === 'codex' ? 'Codex' : 'Claude Code' })}</span></div>
+              <div class="progress purple"><span data-run="${run.id}" style="width:${run.progress}%"></span></div><div class="note">${PC.t('ws.m.live.note2', { b: esc(run.branch), m: run.startedMin })}</div>`)
+          + tile('hand', 'warning', PC.t('ws.m.wait'), `<div class="stat"><span class="stat-value">${w}</span><span class="note">${PC.t('ws.m.wait.sub')}</span></div><a class="btn btn-secondary btn-sm" href="${U('scaffolding.html', '#architecture')}" style="align-self:flex-start;text-decoration:none">ADR-004 <i data-lucide="arrow-right" class="icon-sm"></i></a>`)
+          + `<div class="card mt-wide">${adr}</div><div class="card mt-side">${repo}</div>`
+          + lockedSlim('sdlc');
+      }
+
+      /* ---------- metrics: SDLC ---------- */
+      function reviewSpark(d) {
+        const w = 200, h = 36, mn = Math.min(...d) - 10, mx = Math.max(...d) + 10;
+        const pts = d.map((v, i) => [(i / (d.length - 1) * (w - 12) + 6), (h - 5 - (v - mn) / (mx - mn) * (h - 10))]);
+        const l = pts[pts.length - 1];
+        return `<svg class="mt-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ')}"/><circle cx="${l[0].toFixed(1)}" cy="${l[1].toFixed(1)}" r="3.5"/></svg>`;
+      }
+      function burndownCard(sp, B) {
+        const W = 640, H = 210, l = 34, r = 12, t = 18, b = 28, MAX = sp.points, DY = sp.days;
+        const x = d => l + (W - l - r) * d / DY, y = v => t + (H - t - b) * (1 - v / MAX);
+        const act = B.actual.map((v, d) => [x(d), y(v)]);
+        const line = act.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
+        const area = line + ` L${x(sp.day).toFixed(1)} ${y(0)} L${x(0)} ${y(0)} Z`;
+        const grid = [0, 1, 2, 3].map(i => Math.round(MAX * i / 3)).map(v => `<line class="grid-l" x1="${l}" x2="${W - r}" y1="${y(v)}" y2="${y(v)}"/><text class="axis-t" x="${l - 6}" y="${y(v) + 3}" text-anchor="end">${v}</text>`).join('');
+        const xs = [0, 2, 4, 6, 8, 10].map(d => `<text class="axis-t" x="${x(d)}" y="${H - 8}" text-anchor="middle">${d}</text>`).join('');
+        const last = B.actual[sp.day], ideal = MAX * (1 - sp.day / DY), behind = Math.round(last - ideal);
+        const proj = `M${x(sp.day)} ${y(last)} L${x(DY)} ${y(B.projected)}`;
+        return `<div class="card-header"><span class="card-title"><i data-lucide="trending-down"></i>${PC.t('ws.burn.title', { n: sp.n })}</span>${behind > 0 ? `<span class="badge badge-warning"><i data-lucide="clock-alert"></i>${PC.t('ws.burn.behind', { n: behind })}</span>` : `<span class="badge badge-success"><i data-lucide="check"></i>${PC.t('ws.burn.ontrack')}</span>`}</div>
+          <div class="bd"><div class="bd-head"><span class="big">${last}</span><span class="text-sm text-muted">${PC.t('ws.burn.remaining')}</span></div>
+          <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${PC.t('ws.burn.title', { n: sp.n })}">
+            ${grid}${xs}
+            <path class="area" d="${area}" opacity=".7"/>
+            <line class="ideal" x1="${x(0)}" y1="${y(MAX)}" x2="${x(DY)}" y2="${y(0)}"/>
+            <path class="proj" d="${proj}"/>
+            <line class="today-l" x1="${x(sp.day)}" x2="${x(sp.day)}" y1="${t - 2}" y2="${y(0)}"/>
+            <text class="today-t" x="${x(sp.day)}" y="${t - 6}" text-anchor="middle">${PC.t('ws.burn.today')}</text>
+            <path class="actual" d="${line}"/>
+            ${act.map((q, i) => `<circle class="pt" cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${i === sp.day ? 4 : 2.5}"><title>${PC.t('ws.burn.axis')} ${i}: ${B.actual[i]}</title></circle>`).join('')}
+          </svg>
+          <div class="legend"><span><i class="l-a"></i>${PC.t('ws.burn.actual')}</span><span><i class="l-i"></i>${PC.t('ws.burn.ideal')}</span><span><i class="l-p"></i>${PC.t('ws.burn.proj')}</span><span class="text-subtle" style="margin-left:auto">${PC.t('ws.burn.axis')}</span></div></div>`;
+      }
+      function spendCard(SP) {
+        const total = SP.reduce((a, s) => a + s.amt, 0), runs = SP.reduce((a, s) => a + s.runs, 0);
+        return `<div class="card-header"><span class="card-title"><i data-lucide="wallet"></i>${PC.t('ws.m.cost')}</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:var(--space-4)">
+            <div class="stat"><span class="stat-value">$${total.toFixed(2)}</span><span class="note">${PC.t('ws.m.cost.sub', { n: runs })}</span></div>
+            <div class="split">${SP.map(s => `<i class="c-${s.id}" style="width:${(s.amt / total * 100).toFixed(1)}%"></i>`).join('')}</div>
+            <div>${SP.map(s => `<div class="split-row">${cliB(s.id)}<span class="amt">$${s.amt.toFixed(2)}</span><span class="runs">${PC.t('ws.m.runs', { n: s.runs })}</span></div>`).join('')}</div>
+          </div>`;
+      }
+      function metricsSdlc() {
+        const sp = S.sdlc.sprint, M = D.sdlcM, pts = sp.done, pct = Math.round(pts / sp.points * 100);
+        const vel = M.velocity.concat([pts]), mx = Math.max(...vel), avg = Math.round(M.velocity.reduce((a, b) => a + b, 0) / M.velocity.length);
+        const firstS = sp.n - M.velocity.length;
+        let h = tile('gauge', '', PC.t('ws.m.progress'), `<div class="mt-body">${ring(pct, 'var(--brand)')}<div class="note"><b>${PC.t('ws.m.points', { a: pts, b: sp.points })}</b><br>${PC.t('ws.sprint.day', { n: sp.n, d: sp.day, t: sp.days })}</div></div>`)
+          + tile('bar-chart-3', 'purple', PC.t('ws.m.velocity'), `<div class="stat"><span class="stat-value">${avg} <small>pts</small></span><span class="note">${PC.t('ws.m.velocity.sub')}</span></div>
+              <div><div class="vbars">${vel.map((v, i) => `<div class="${i === vel.length - 1 ? 'is-cur' : ''}" style="height:${Math.max(8, v / mx * 100)}%" title="Sprint ${firstS + i}: ${v}"></div>`).join('')}</div>
+              <div class="vbars-l">${vel.map((v, i) => `<span>S${firstS + i}</span>`).join('')}</div></div>`)
+          + tile('bot', M.health ? 'danger' : 'teal', PC.t('ws.m.success'), `<div class="mt-body">${ring(M.success.pct, 'var(--accent-teal)')}<div class="note">${T(M.success.note)}</div></div>`)
+          + tile('timer', 'success', PC.t('ws.m.review'), `<div class="stat"><span class="stat-value">${M.review.v}</span><span class="note"><span class="${M.review.tone === 'ok' ? 'delta-ok' : 'delta-warn'}"><i data-lucide="${M.review.tone === 'ok' ? 'trending-down' : 'trending-up'}" class="icon-sm"></i>${T(M.review.note)}</span></span></div>${reviewSpark(M.review.spark)}`)
+          + `<div class="card mt-wide">${burndownCard(sp, M.burn)}</div><div class="card mt-side">${spendCard(M.spend)}</div>`;
+        if (M.release) {
+          const rl = M.release, hl = M.health;
+          h += `<div class="card mt-wide"><div class="card-header"><span class="card-title"><i data-lucide="rocket"></i>${PC.t('ws.rel.title', { v: rl.v })}</span><span class="badge badge-warning">${rl.pct}%</span></div>
+              <div class="card-body" style="display:flex;gap:var(--space-6);align-items:center;flex-wrap:wrap">${ring(rl.pct, 'var(--warning)')}
+                <div class="grow" style="min-width:240px"><div class="text-xs text-subtle" style="margin-bottom:8px">${PC.t('ws.rel.sub')}</div>
+                <ul class="chk">${rl.items.map(([ok, t]) => `<li class="${ok ? 'ok' : 'bad'}"><i data-lucide="${ok ? 'circle-check' : 'circle-x'}"></i><span>${T(t)}</span></li>`).join('')}</ul></div></div></div>
+            <div class="card mt-side"><div class="card-header"><span class="card-title"><i data-lucide="activity"></i>${PC.t('ws.health.title')}</span></div>
+              <div class="card-body" style="display:flex;flex-direction:column;gap:var(--space-3)">
+                <div class="split-row" style="padding:0"><span class="row gap-2"><span class="r-ic failed"><i data-lucide="circle-x"></i></span>${PC.t('ws.health.failed')}</span><span class="amt" style="color:var(--danger-fg)">${hl.failed}</span><span></span></div>
+                <div class="split-row"><span class="row gap-2"><span class="r-ic running"><i data-lucide="loader-circle"></i></span>${PC.t('ws.health.running')}</span><span class="amt">${hl.running}</span><span></span></div>
+                <div class="split-row"><span class="row gap-2"><span class="r-ic review"><i data-lucide="eye"></i></span>${PC.t('ws.health.review')}</span><span class="amt">${hl.review}</span><span></span></div>
+                <a class="btn btn-secondary btn-sm btn-block" href="${U('task.html')}" style="text-decoration:none"><span>${PC.t('ws.health.go')}</span><i data-lucide="arrow-right" class="icon-sm"></i></a></div></div>`;
+        }
+        return h;
+      }
+
+      function renderMetrics() {
+        const ph = p.phase, sp = S.sdlc && S.sdlc.sprint;
+        $('#ws-metrics-sub').textContent = ph === 'sdlc' ? PC.t('ws.metrics.sub.sdlc', { n: sp.n, d: sp.day, t: sp.days }) : PC.t('ws.metrics.sub.' + ph);
+        const cta = $('#ws-metrics-cta');
+        cta.setAttribute('href', U(PHASE_PAGE[ph]));
+        cta.innerHTML = `<i data-lucide="${ph === 'sdlc' ? 'kanban' : PHASE_ICON[ph]}" class="icon-sm"></i><span>${PC.t('ws.metrics.open.' + ph)}</span><i data-lucide="arrow-up-right" class="icon-sm"></i>`;
+        $('#ws-metrics').innerHTML = ph === 'initial' ? metricsInitial() : ph === 'release' ? metricsScaffolding() : metricsSdlc();
+        PC.refresh($('#metrics'));
+      }
+
+      /* ---------- lower panels ---------- */
+      const BTONE = { review: 'warning', failed: 'danger', teal: 'teal', warning: 'warning', danger: 'danger', outline: 'outline', success: 'success' };
+      function renderRuns() {
+        const running = D.work.filter(w => w.live).length;
+        $('#ws-runs').innerHTML = `<div class="card-header"><span class="card-title"><i data-lucide="bot"></i>${PC.t('ws.runs.title')}${running ? `<span class="badge badge-teal"><span class="dot dot-pulse"></span>${running}</span>` : `<span class="badge">${D.work.length}</span>`}</span><a class="link-more" href="${U('task.html')}">${PC.t('ws.runs.all')}<i data-lucide="arrow-right" class="icon-sm"></i></a></div>
+          <div class="rows">${D.work.map(w => `<a class="rrow ${w.pct != null ? 'run' : ''}" href="${U(w.page, w.hash)}"><span class="r-ic ${w.tone === 'todo' ? '' : w.tone}"><i data-lucide="${w.ic}" ${w.live ? 'class="spin-i"' : ''}></i></span>
+            <div class="grow"><div class="row gap-2"><span class="run-id">${w.id}</span>${w.agent ? `<span class="text-xs text-subtle">${PC.t('ws.runby')}</span>${cliB(w.agent)}` : ''}</div>
+              <div class="ttl" style="margin-top:2px">${T(w.title)}</div><div class="sub">${T(w.sub)}</div>
+              ${w.pct != null ? `<div class="bar"><div class="progress ${w.cls || 'purple'}"><span data-run="${w.id}" style="width:${w.pct}%"></span></div><b data-run-pct="${w.id}">${w.pct}%</b></div>` : ''}</div>
+            <span class="badge badge-${BTONE[w.badge[0]] || 'outline'}">${PC.t(w.badge[1])}</span></a>`).join('')}</div>`;
+        PC.refresh($('#ws-runs'));
+      }
+      function renderArts() {
+        const el = $('#ws-arts');
+        const head = `<div class="card-header"><span class="card-title"><i data-lucide="files"></i>${PC.t('ws.arts.title')}</span><a class="link-more" href="${U('artifacts.html')}">${PC.t('ws.arts.all')}<i data-lucide="arrow-right" class="icon-sm"></i></a></div>`;
+        if (!D.arts.length) {
+          el.innerHTML = head + `<div class="empty"><div class="empty-icon"><i data-lucide="file-plus-2"></i></div><h4>${PC.t('ws.arts.empty.t')}</h4><div class="text-sm">${PC.t('ws.arts.empty.d')}</div>
+              <a class="btn btn-primary btn-sm" href="${U('artifacts.html')}" style="text-decoration:none"><i data-lucide="sparkles"></i>${PC.t('ws.arts.empty.cta')}</a></div>
+            ${D.sources && D.sources.length ? `<div style="padding:0 var(--space-3) var(--space-3)"><div class="kicker" style="padding:var(--space-2) var(--space-3)">${PC.t('ws.src.title')}</div><div class="rows" style="padding:0">${D.sources.map(s => `<a class="rrow" href="${U('artifacts.html')}"><span class="file-tile"><i data-lucide="${/\.xlsx?$/i.test(s) ? 'sheet' : 'file-text'}"></i></span><div class="grow"><div class="ttl truncate">${esc(s)}</div></div><span class="badge badge-outline">${PC.lang === 'vi' ? 'Nguồn' : 'Source'}</span></a>`).join('')}</div></div>` : ''}`;
+        } else {
+          el.innerHTML = head + `<div class="rows">${D.arts.map(a => `<a class="rrow ph-c-${a.ph}" href="${U('artifacts.html', '#' + a.id)}">
+            <span class="file-tile"><i data-lucide="${a.icon}"></i></span>
+            <div class="grow"><div class="ttl truncate">${T(a.title)}</div><div class="sub"><span class="ph-dot"></span>${PC.t('phase.' + a.ph)}<span class="text-faint">·</span>${a.ai ? `<span style="color:var(--accent-purple);font-weight:500">✦ ${PC.t('ws.by.assistant')}</span>` : PC.t('ws.you')}<span class="text-faint">·</span>${rel(a.t[0], a.t[1])}</div></div>
+            <span class="badge badge-outline">${a.v}</span>${stBadge(a.st)}</a>`).join('')}</div>`;
+        }
+        PC.refresh(el);
+      }
+      function renderActivity() {
+        $('#ws-act').innerHTML = `<div class="card-header"><span class="card-title"><i data-lucide="history"></i>${PC.t('ws.act.title')}</span></div>
+          <div class="act-l">${D.activity.map(a => `<a class="act" href="${U(a.page)}"><span class="r-ic ${a.tone}"><i data-lucide="${a.ic}" ${a.spin ? 'class="spin-i"' : ''}></i></span><span class="t">${T(a.t)}</span><span class="w">${rel(a.ago[0], a.ago[1])}</span></a>`).join('')}</div>`;
+        PC.refresh($('#ws-act'));
+      }
+      function renderRisks() {
+        $('#ws-risks').innerHTML = `<div class="card-header"><span class="card-title"><i data-lucide="shield-alert"></i>${PC.t('ws.risk.title')}<span class="badge">${D.risks.length}</span></span><button class="btn btn-ghost btn-sm" id="risk-add"><i data-lucide="plus"></i>${PC.t('ws.risk.add')}</button></div>
+          ${D.risks.length ? `<div class="rows" style="padding:var(--space-2) var(--space-3)">${D.risks.map(r => `<div class="risk"><span class="risk-ic ${r.sev}"><i data-lucide="${r.sev === 'high' ? 'flame' : r.sev === 'med' ? 'triangle-alert' : 'info'}"></i></span>
+            <div class="grow"><div class="ttl">${T(r.t)}</div><div class="sub"><b>${PC.t('ws.risk.mit')}:</b> ${T(r.mit)}</div></div>
+            <span class="badge ${r.sev === 'high' ? 'badge-danger' : r.sev === 'med' ? 'badge-warning' : ''}">${PC.t('ws.risk.' + r.sev)}</span></div>`).join('')}</div>`
+          : `<div class="empty"><div class="empty-icon"><i data-lucide="shield-check"></i></div><h4>${PC.t('ws.risk.empty.t')}</h4><div class="text-sm">${PC.t('ws.risk.empty.d')}</div></div>`}`;
+        PC.refresh($('#ws-risks'));
+        $('#risk-add').onclick = () => PC.toast(PC.t('ws.risk.toast'), { icon: 'sparkles' });
+      }
+      function renderDecisions() {
+        $('#ws-decisions').innerHTML = `<div class="card-header"><span class="card-title"><i data-lucide="scale"></i>${PC.t('ws.dec.title')}</span>${D.decisions.length ? `<a class="link-more" href="${U('artifacts.html')}">${PC.t('ws.dec.all')}<i data-lucide="arrow-right" class="icon-sm"></i></a>` : ''}</div>
+          ${D.decisions.length ? `<div class="rows" style="padding:var(--space-2) var(--space-3)">${D.decisions.map(d => { const dt = new Date(d.date); return `<div class="dec ${d.pending ? 'is-pending' : ''}">
+            <div class="dec-date"><b>${String(dt.getDate()).padStart(2, '0')}</b><span>${new Intl.DateTimeFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-GB', { month: 'short' }).format(dt)}</span></div>
+            <div><div class="ttl">${T(d.t)}</div><div class="sub">${T(d.note)}</div></div>
+            ${d.pending ? `<span class="badge badge-warning">${PC.t('ws.dec.pending')}</span>` : `<a class="art-chip" href="${U('artifacts.html', '#' + d.art)}"><i data-lucide="link-2"></i>${T(d.chip)}</a>`}</div>`; }).join('')}</div>`
+          : `<div class="empty"><div class="empty-icon"><i data-lucide="scale"></i></div><h4>${PC.t('ws.dec.empty.t')}</h4><div class="text-sm">${PC.t('ws.dec.empty.d')}</div>
+              <a class="btn btn-secondary btn-sm" href="${U('initial.html', '#meetings')}" style="text-decoration:none"><i data-lucide="sparkles"></i>${T(DS['saigon-tms'].focus.cta.t)}</a></div>`}`;
+        PC.refresh($('#ws-decisions'));
+      }
+
+      /* ---------- assistant bridge ---------- */
+      function setAssistantContext() {
+        PC.assistant.setContext([{ icon: 'folder', label: shortName() }, { icon: 'layout-dashboard', label: PC.t('nav.overview') }, { icon: 'flag', label: PC.L(S.label) }]);
+        PC.assistant.setSuggestions(D.suggest[PC.lang === 'vi' ? 1 : 0]);
+      }
+
+      function renderAll() { renderHero(); renderFocus(); renderKpis(); renderTimeline(); renderMetrics(); renderRuns(); renderArts(); renderActivity(); renderRisks(); renderDecisions(); setAssistantContext(); }
+
+      /* ---------- simulated live progress (running agent runs only) ---------- */
+      const LIVE = {};
+      D.work.filter(w => w.live).forEach(w => { LIVE[w.id] = w.pct; });
+      setInterval(() => {
+        Object.keys(LIVE).forEach(id => {
+          if (LIVE[id] < 96) LIVE[id] = Math.min(96, LIVE[id] + (Math.random() < .6 ? 1 : 2));
+          document.querySelectorAll(`[data-run="${id}"]`).forEach(s => { s.style.width = LIVE[id] + '%'; });
+          document.querySelectorAll(`[data-run-pct="${id}"]`).forEach(n => { n.textContent = n.tagName === 'B' ? LIVE[id] + '%' : LIVE[id]; });
+        });
+      }, 3500);
+
+      PC.onReady(() => {
+        renderAll();
+        const copy = txt => { try { navigator.clipboard && navigator.clipboard.writeText(txt); } catch (err) { /* ignore */ } PC.toast(PC.t('ws.copied')); };
+        $('#ws-copy').onclick = e => { e.preventDefault(); copy(p.dir); };
+        $('#ws-copy-repo').onclick = e => { e.preventDefault(); copy(p.repo || ''); };
+        $('#ws-reveal').onclick = () => PC.toast(PC.t('ws.reveal.toast', { path: `<span class="mono">${esc(p.dir)}</span>` }), { icon: 'folder-open' });
+        $('#btn-vscode').onclick = () => PC.toast(PC.t('ws.vscode.toast', { path: `<span class="mono">${esc(p.repo || p.dir)}</span>` }), { icon: 'code-2' });
+        $('#btn-ask').onclick = () => { PC.assistant.open(); setAssistantContext(); const ta = document.querySelector('#pc-composer textarea'); if (ta) ta.focus(); };
+        $('#btn-export').onclick = e => {
+          const a = e.currentTarget;
+          PC.popover(a, [['pdf', 'file-text'], ['docx', 'file-type-2'], ['zip', 'file-archive']].map(x => `<button class="menu-item" data-v="${x[0]}"><i data-lucide="${x[1]}"></i><span>${PC.t('ws.export.' + x[0])}</span></button>`).join(''), () => {
+            PC.toast(PC.t('ws.export.start', { n: S.counts.artifacts }), { icon: 'loader-circle', tone: 'info' });
+            setTimeout(() => PC.toast(PC.t('ws.export.done'), { tone: 'success' }), 1500);
+          });
+        };
+        const h0 = location.hash.slice(1);
+        if (ORDER.includes(h0)) setTimeout(() => { const c = $('#phase-' + h0); c && c.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 120);
+        else if (h0 === 'metrics') setTimeout(() => $('#metrics').scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+      });
+      document.addEventListener('pc:lang', () => { renderAll(); });
+    })();
+  </script>
+</body>
+</html>

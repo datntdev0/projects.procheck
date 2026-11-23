@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New project · Procheck</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <script src="assets/app.js"></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    .canvas { container-type: inline-size; }
+    .wrap-np { max-width: 1120px; margin: 0 auto; }
+
+    /* stepper */
+    .stepper-bar { padding: var(--space-4) var(--space-5); margin-bottom: var(--space-6); background: var(--gradient-hero), var(--bg-surface); }
+    .stepper .step { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-subtle); }
+    .stepper .step.is-current { color: var(--fg-strong); }
+    .stepper .step.is-done { color: var(--fg-default); }
+    .stepper .step:hover .step-label { color: var(--fg-strong); }
+
+    /* layout */
+    .wiz { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-6); align-items: start; }
+    .aside { position: sticky; top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
+    .panel-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--border-subtle); }
+    .panel-head .ph-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--brand-soft); color: var(--brand-fg); flex-shrink: 0; }
+    .panel-head p { margin: 2px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
+    .panel-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
+    .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border-subtle); background: var(--bg-surface-2); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .fgrid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-4); }
+    .s2 { grid-column: span 2; } .s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s6 { grid-column: 1 / -1; }
+    .req { color: var(--danger-fg); margin-left: 2px; }
+    .ferr { display: none; font-size: var(--text-xs); color: var(--danger-fg); align-items: center; gap: 4px; }
+    .ferr svg { width: 12px; height: 12px; }
+    .field.has-error .ferr { display: flex; }
+    .field.has-error .input { border-color: var(--danger); }
+    .field.has-error .input:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 25%, transparent); }
+    .sub-title { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .sub-title h5 { font-size: var(--text-md); }
+
+    /* project directory + tree */
+    .dir-row { display: flex; gap: var(--space-2); }
+    .ptree { border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface-2); overflow: hidden; }
+    .ptree-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: 12px; color: var(--fg-strong); font-weight: var(--weight-medium); background: var(--bg-surface); }
+    .ptree-head svg { color: var(--brand-fg); }
+    .ptree-head .badge { margin-left: auto; font-family: var(--font-sans); flex-shrink: 0; }
+    .tbody { position: relative; margin: 8px 0 8px 22px; border-left: 1px solid var(--border-strong); }
+    .tnode { position: relative; display: grid; grid-template-columns: 16px minmax(0, 232px) minmax(0, 1fr); align-items: center; gap: 10px; padding: 6px 14px 6px 20px; font-size: var(--text-xs); }
+    .tnode::before { content: ""; position: absolute; left: 0; top: 50%; width: 12px; border-top: 1px solid var(--border-strong); }
+    .tnode svg { width: 14px; height: 14px; color: var(--fg-subtle); }
+    .tnode .tp { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-default); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tnode.is-hidden .tp { color: var(--fg-muted); }
+    .tnode .td { color: var(--fg-subtle); }
+    .tnode:hover { background: var(--bg-hover); }
+    .repo-quick { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-top: 2px; }
+    .repo-quick code { font-size: 11px; }
+
+    /* open existing project */
+    .open-wrap { max-width: 860px; margin: 0 auto; }
+    .recent-list { display: flex; flex-direction: column; border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); }
+    .recent-item { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); border: 0; border-bottom: 1px solid var(--border-subtle); background: transparent; text-align: left; cursor: pointer; width: 100%; }
+    .recent-item:last-child { border-bottom: 0; }
+    .recent-item:hover { background: var(--bg-hover); }
+    .recent-item.is-picked { background: var(--brand-soft); }
+    .recent-item .project-avatar { width: 30px; height: 30px; border-radius: 8px; font-size: 11px; }
+    .recent-item .rp { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-subtle); }
+    .detect { border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); overflow: hidden; }
+    .detect-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-subtle); background: var(--gradient-hero), var(--bg-surface); }
+    .detect-head .project-avatar { width: 44px; height: 44px; border-radius: 11px; font-size: 14px; }
+    .detect-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-subtle); }
+    .detect-phases .dp-h { display: flex; justify-content: space-between; font-size: var(--text-xs); margin-bottom: 6px; color: var(--fg-muted); font-weight: var(--weight-medium); }
+    .detect-phases .dp-h b { color: var(--fg-default); font-variant-numeric: tabular-nums; }
+    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--space-6); padding: var(--space-2) var(--space-5); }
+    .fact { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-xs); }
+    .fact .k { color: var(--fg-subtle); white-space: nowrap; }
+    .fact .v { color: var(--fg-default); font-weight: var(--weight-medium); min-width: 0; text-align: right; }
+    .fact .v.mono { font-size: 11px; font-weight: 400; }
+    .checks { padding: var(--space-4) var(--space-5); background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px; }
+    .checks .ck { display: flex; align-items: flex-start; gap: var(--space-2); font-size: var(--text-sm); color: var(--fg-default); }
+    .checks .ck svg { margin-top: 2px; }
+    .checks .ck.ok svg { color: var(--success-fg); } .checks .ck.info svg { color: var(--brand-fg); }
+    .checks .ck code { font-size: 11.5px; background: var(--code-bg); padding: 1px 6px; border-radius: var(--radius-xs); }
+
+    /* selectable cards */
+    .opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+    .opts.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .opt { position: relative; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-5); border: 1.5px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); cursor: pointer; text-align: left; transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast); }
+    .opt:hover { border-color: var(--border-strong); }
+    .opt:focus-visible { box-shadow: var(--shadow-focus); border-radius: var(--radius-lg); }
+    .opt.is-selected { border-color: var(--brand); background: var(--brand-soft); box-shadow: var(--shadow-focus); }
+    .opt .tick { position: absolute; top: 14px; right: 14px; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; color: transparent; background: var(--bg-surface); }
+    .opt .tick svg { width: 12px; height: 12px; stroke-width: 3; }
+    .opt.is-selected .tick { background: var(--brand); border-color: var(--brand); color: var(--fg-on-brand); }
+    .opt-ico { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+    .opt-ico.initial { background: var(--brand-soft); color: var(--phase-initial); }
+    .opt-ico.release { background: var(--accent-purple-soft); color: var(--phase-release); }
+    .opt-ico.sdlc { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
+    .opt.is-selected .opt-ico { background: var(--bg-surface); }
+    .opt h4 { font-size: var(--text-lg); }
+    .opt p { margin: 0; font-size: var(--text-sm); color: var(--fg-muted); line-height: 1.55; }
+    .opt .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: var(--space-1); }
+    .opt-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-lg); cursor: pointer; background: var(--bg-surface); }
+    .opt-row:hover { border-color: var(--border-strong); }
+    .opt-row b { display: block; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
+    .opt-row .hint { display: block; margin-top: 2px; }
+    .opt-row.is-disabled { opacity: .55; pointer-events: none; }
+    .rows { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    /* phase preview */
+    .pv { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+    .pv > div { padding: 10px 12px; border-radius: var(--radius-md); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); }
+    .pv .bar { height: 4px; border-radius: 4px; background: var(--border-default); margin-bottom: 8px; position: relative; overflow: hidden; }
+    .pv .bar i { position: absolute; inset: 0; border-radius: inherit; }
+    .pv b { display: block; font-size: var(--text-xs); color: var(--fg-default); font-weight: var(--weight-semibold); }
+    .pv span { font-size: var(--text-2xs); color: var(--fg-subtle); }
+    .pv .is-start { border-color: var(--brand); background: var(--brand-soft); }
+
+    /* files */
+    .dropzone { padding: var(--space-6); }
+    .dz-ico { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--brand-fg); }
+    .dropzone.is-over .dz-ico, .dropzone:hover .dz-ico { border-color: var(--brand); }
+    .flist { display: flex; flex-direction: column; border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); }
+    .fitem { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); border-bottom: 1px solid var(--border-subtle); }
+    .fitem:last-child { border-bottom: 0; }
+    .fitem .fname { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-default); }
+    .fitem .fmeta { font-size: var(--text-xs); color: var(--fg-subtle); }
+    .fitem .progress { width: 120px; height: 4px; }
+    .flist-empty { padding: var(--space-5); text-align: center; font-size: var(--text-sm); color: var(--fg-subtle); }
+
+    /* ai */
+    .cli-card { gap: var(--space-3); }
+    .cli-top { display: flex; align-items: center; gap: var(--space-3); }
+    .cli-logo { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface-3); color: var(--fg-default); }
+    .opt.is-selected .cli-logo { background: var(--bg-surface); color: var(--brand-fg); }
+    .cli-meta { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); color: var(--fg-subtle); }
+    .cli-meta code { font-size: 11px; color: var(--fg-muted); }
+    .rev { display: flex; flex-direction: column; }
+    .rev-item { display: flex; align-items: flex-start; gap: var(--space-3); padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-sm); }
+    .rev-item:last-child { border-bottom: 0; }
+    .rev-item > svg { color: var(--success-fg); margin-top: 2px; }
+    .rev-item .k { width: 150px; flex-shrink: 0; color: var(--fg-subtle); }
+    .rev-item .v { min-width: 0; color: var(--fg-default); word-break: break-word; }
+    .rev-item .v code { font-size: 11.5px; background: var(--code-bg); padding: 1px 6px; border-radius: var(--radius-xs); }
+
+    /* summary aside */
+    .sum-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-subtle); }
+    .sum-head .project-avatar { width: 40px; height: 40px; border-radius: 10px; }
+    .sum-rows { padding: var(--space-2) var(--space-5) var(--space-4); }
+    .sum-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-xs); }
+    .sum-row:last-child { border-bottom: 0; }
+    .sum-row .k { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-subtle); white-space: nowrap; }
+    .sum-row .k svg { width: 13px; height: 13px; }
+    .sum-row .v { color: var(--fg-default); font-weight: var(--weight-medium); text-align: right; min-width: 0; }
+    .sum-row .avatar { width: 22px; height: 22px; font-size: 8.5px; }
+    .tip-card { padding: var(--space-4); display: flex; gap: var(--space-3); font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.55; }
+    .tip-card svg { color: var(--accent-purple); margin-top: 1px; }
+
+    /* creating modal */
+    .cstep { display: flex; align-items: flex-start; gap: var(--space-3); padding: 8px 0; font-size: var(--text-sm); color: var(--fg-faint); transition: color var(--dur-base); }
+    .cstep .ci { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .cstep .ci i.pend { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+    .cstep.is-run { color: var(--fg-strong); font-weight: var(--weight-medium); }
+    .cstep.is-done { color: var(--fg-default); }
+    .cstep.is-done .ci { color: var(--success); }
+    .cstep small { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); font-weight: 400; margin-top: 1px; }
+
+    @container (max-width: 980px) {
+      .wiz { grid-template-columns: minmax(0, 1fr); }
+      .aside { position: static; }
+    }
+    @container (max-width: 760px) {
+      .opts, .opts.two { grid-template-columns: minmax(0, 1fr); }
+      .s2, .s3, .s4 { grid-column: 1 / -1; }
+      .stepper .step-label { display: none; }
+      .stepper .step.is-current .step-label { display: inline; }
+      .panel-body, .panel-head, .wiz-foot { padding-left: var(--space-4); padding-right: var(--space-4); }
+      .rev-item .k { width: 100px; }
+      .tnode { grid-template-columns: 16px minmax(0, 1fr); } .tnode .td { display: none; }
+      .facts { grid-template-columns: minmax(0, 1fr); } .detect-phases { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body data-page="new-project" data-shell="home" data-crumb="np.title" data-assistant="closed">
+  <main class="canvas"><div class="canvas-inner"><div class="wrap-np">
+
+    <div class="page-header">
+      <div>
+        <div class="crumbs"><a href="index.html" data-i18n="shell.home"></a><i data-lucide="chevron-right" class="icon-sm"></i><span id="h-crumb" data-i18n="np.title"></span></div>
+        <h1 id="h-h1" data-i18n="np.h1"></h1>
+        <div class="subtitle" id="h-sub" data-i18n="np.sub"></div>
+      </div>
+      <a class="btn btn-ghost" href="index.html"><i data-lucide="x"></i><span data-i18n="common.cancel"></span></a>
+    </div>
+
+    <div id="new-flow">
+    <div class="card stepper-bar"><div class="stepper" id="stepper"></div></div>
+
+    <div class="wiz">
+      <div class="card" id="wizard">
+
+        <!-- STEP 1 · Basics -->
+        <section data-panel="1">
+          <div class="panel-head"><span class="ph-ico"><i data-lucide="file-pen-line" class="icon-lg"></i></span><div><h4 data-i18n="np.s1.t"></h4><p data-i18n="np.s1.d"></p></div></div>
+          <div class="panel-body">
+            <div class="fgrid">
+              <div class="field s4" id="f-name">
+                <label class="label" for="name"><span data-i18n="np.name"></span><span class="req">*</span></label>
+                <input class="input" id="name" autocomplete="off" data-i18n-placeholder="np.name.ph">
+                <div class="ferr"><i data-lucide="alert-circle"></i><span data-i18n="np.err.name"></span></div>
+              </div>
+              <div class="field s2">
+                <label class="label" for="code" data-i18n="np.code"></label>
+                <input class="input mono" id="code" maxlength="6" autocomplete="off" placeholder="LP" style="text-transform:uppercase">
+                <div class="hint" data-i18n="np.code.h"></div>
+              </div>
+              <div class="field s3">
+                <label class="label" for="client" data-i18n="np.client"></label>
+                <input class="input" id="client" autocomplete="off" data-i18n-placeholder="np.client.ph">
+              </div>
+              <div class="field s3">
+                <label class="label" for="industry" data-i18n="np.industry"></label>
+                <select class="select" id="industry">
+                  <option value="fintech" data-i18n="np.ind.fintech"></option>
+                  <option value="retail" data-i18n="np.ind.retail"></option>
+                  <option value="health" data-i18n="np.ind.health"></option>
+                  <option value="logistics" data-i18n="np.ind.logistics"></option>
+                  <option value="mfg" data-i18n="np.ind.mfg"></option>
+                  <option value="edu" data-i18n="np.ind.edu"></option>
+                  <option value="other" data-i18n="np.ind.other"></option>
+                </select>
+              </div>
+              <div class="field s6">
+                <label class="label" for="desc" data-i18n="np.desc"></label>
+                <textarea class="textarea" id="desc" data-i18n-placeholder="np.desc.ph"></textarea>
+                <div class="hint" data-i18n="np.desc.h"></div>
+              </div>
+            </div>
+            <div class="field" id="f-dir">
+              <label class="label" for="dir"><span data-i18n="np.dir"></span><span class="req">*</span></label>
+              <div class="dir-row">
+                <div class="input-group grow"><i data-lucide="folder"></i><input class="input mono" id="dir" autocomplete="off" spellcheck="false" data-i18n-placeholder="np.dir.ph"></div>
+                <button class="btn btn-secondary" id="dir-browse" type="button"><i data-lucide="folder-open"></i><span data-i18n="np.browse"></span></button>
+              </div>
+              <div class="ferr"><i data-lucide="alert-circle"></i><span id="dir-err"></span></div>
+              <div class="hint" data-i18n="np.dir.h"></div>
+            </div>
+            <div>
+              <div class="sub-title"><h5 data-i18n="np.tree.title"></h5><span class="text-xs text-subtle" data-i18n="np.tree.sub"></span></div>
+              <div class="ptree" id="ptree"></div>
+              <div class="alert alert-info" style="margin-top:12px"><i data-lucide="hard-drive"></i><div class="grow text-sm" data-i18n-html="np.tree.note"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2 · Starting phase -->
+        <section data-panel="2" class="hidden">
+          <div class="panel-head"><span class="ph-ico"><i data-lucide="route" class="icon-lg"></i></span><div><h4 data-i18n="np.s2.t"></h4><p data-i18n="np.s2.d"></p></div></div>
+          <div class="panel-body">
+            <div class="opts" id="phases" role="radiogroup">
+              <div class="opt is-selected" role="radio" tabindex="0" aria-checked="true" data-phase="initial">
+                <span class="tick"><i data-lucide="check"></i></span>
+                <span class="opt-ico initial"><i data-lucide="compass" class="icon-lg"></i></span>
+                <h4 data-i18n="np.phase.initial.t"></h4>
+                <p data-i18n="np.phase.initial.d"></p>
+                <div class="tags"><span class="tag" data-i18n="np.tag.notes"></span><span class="tag">BRD</span><span class="tag" data-i18n="np.tag.scope"></span><span class="tag" data-i18n="np.tag.estimate"></span><span class="tag">SOW</span></div>
+              </div>
+              <div class="opt" role="radio" tabindex="0" aria-checked="false" data-phase="release">
+                <span class="tick"><i data-lucide="check"></i></span>
+                <span class="opt-ico release"><i data-lucide="rocket" class="icon-lg"></i></span>
+                <h4 data-i18n="np.phase.release.t"></h4>
+                <p data-i18n="np.phase.release.d"></p>
+                <div class="tags"><span class="tag" data-i18n="np.tag.arch"></span><span class="tag" data-i18n="np.tag.scaffold"></span><span class="tag">Infra</span><span class="tag">CI/CD</span></div>
+              </div>
+              <div class="opt" role="radio" tabindex="0" aria-checked="false" data-phase="sdlc">
+                <span class="tick"><i data-lucide="check"></i></span>
+                <span class="opt-ico sdlc"><i data-lucide="infinity" class="icon-lg"></i></span>
+                <h4 data-i18n="np.phase.sdlc.t"></h4>
+                <p data-i18n="np.phase.sdlc.d"></p>
+                <div class="tags"><span class="tag">Kanban</span><span class="tag">Worktree</span><span class="tag" data-i18n="np.tag.evidence"></span><span class="tag">Pull request</span></div>
+              </div>
+            </div>
+
+            <label class="opt-row" id="existing-row">
+              <span class="grow"><b data-i18n="np.existing.t"></b><span class="hint" id="existing-hint"></span></span>
+              <span class="switch"><input type="checkbox" id="existing"></span>
+            </label>
+
+            <div>
+              <div class="sub-title"><h5 data-i18n="np.pv.title"></h5></div>
+              <div class="pv" id="pv"></div>
+            </div>
+
+            <div class="fgrid">
+              <div class="field s3">
+                <label class="label" for="method" data-i18n="np.method"></label>
+                <select class="select" id="method">
+                  <option value="scrum" data-i18n="np.method.scrum"></option>
+                  <option value="kanban" data-i18n="np.method.kanban"></option>
+                  <option value="hybrid" data-i18n="np.method.hybrid"></option>
+                </select>
+              </div>
+              <div class="field s3" style="justify-content:flex-end"><div class="hint" id="method-hint" style="padding-bottom:10px"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3 · Sources -->
+        <section data-panel="3" class="hidden">
+          <div class="panel-head"><span class="ph-ico"><i data-lucide="folder-input" class="icon-lg"></i></span><div><h4 data-i18n="np.s3.t"></h4><p data-i18n="np.s3.d"></p></div></div>
+          <div class="panel-body">
+            <div>
+              <div class="dropzone" id="dz" tabindex="0" role="button">
+                <span class="dz-ico"><i data-lucide="upload-cloud" class="icon-lg"></i></span>
+                <b style="font-size:var(--text-md);color:var(--fg-default)" data-i18n="np.drop.t"></b>
+                <span class="text-xs" data-i18n="np.drop.d"></span>
+                <input type="file" id="file-input" multiple class="hidden" accept=".pdf,.doc,.docx,.xlsx,.xls,.md,.txt,.vtt,.srt,.mp3,.wav,.m4a">
+              </div>
+              <div class="sub-title mt-4"><h5 data-i18n="np.files.title"></h5><button class="btn btn-ghost btn-sm" id="sample" type="button"><i data-lucide="sparkles"></i><span data-i18n="np.drop.sample"></span></button></div>
+              <div class="flist" id="flist"></div>
+            </div>
+
+            <div class="field" id="f-repo">
+              <div class="sub-title" style="margin-bottom:0"><h5 class="label" style="font-size:var(--text-sm)" data-i18n="np.repo.title"></h5><span class="badge" id="repo-badge"></span></div>
+              <div class="row">
+                <div class="input-group grow"><i data-lucide="folder-git-2"></i><input class="input mono" id="repo" autocomplete="off" data-i18n-placeholder="np.repo.ph"></div>
+                <button class="btn btn-secondary" id="browse" type="button"><i data-lucide="folder-open"></i><span data-i18n="np.repo.browse"></span></button>
+              </div>
+              <div class="repo-quick"><button class="btn btn-soft btn-sm" id="repo-inside" type="button"><i data-lucide="corner-down-right"></i><span id="repo-inside-t"></span></button><span class="hint" data-i18n="np.repo.or"></span></div>
+              <div class="ferr"><i data-lucide="alert-circle"></i><span data-i18n="np.repo.err"></span></div>
+              <div class="hint" id="repo-hint"></div>
+              <div id="repo-ok"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 4 · AI setup -->
+        <section data-panel="4" class="hidden">
+          <div class="panel-head"><span class="ph-ico"><i data-lucide="sparkles" class="icon-lg"></i></span><div><h4 data-i18n="np.s4.t"></h4><p data-i18n="np.s4.d"></p></div></div>
+          <div class="panel-body">
+            <div>
+              <div class="sub-title"><h5 data-i18n="np.ai.cli"></h5></div>
+              <div class="opts two" id="clis" role="radiogroup"></div>
+            </div>
+            <div class="fgrid">
+              <div class="field s3">
+                <label class="label" for="model" data-i18n="np.ai.model"></label>
+                <select class="select" id="model"></select>
+              </div>
+            </div>
+            <div class="alert alert-info">
+              <i data-lucide="shield-check"></i>
+              <div class="grow">
+                <b style="color:var(--fg-strong)" data-i18n="np.ai.home.t"></b>
+                <div class="text-sm text-muted mt-2" style="margin-top:2px" data-i18n-html="np.ai.home.d"></div>
+                <div class="code mt-2" id="home-code" style="margin-top:8px;padding:8px 12px"></div>
+              </div>
+            </div>
+            <div class="rows">
+              <label class="opt-row"><span class="grow"><b data-i18n="np.tg.history"></b><span class="hint" data-i18n="np.tg.history.d"></span></span><span class="switch"><input type="checkbox" id="tg-history" checked></span></label>
+              <label class="opt-row"><span class="grow"><b data-i18n="np.tg.worktree"></b><span class="hint" data-i18n="np.tg.worktree.d"></span></span><span class="switch"><input type="checkbox" id="tg-worktree" checked></span></label>
+              <label class="opt-row"><span class="grow"><b data-i18n="np.tg.approval"></b><span class="hint" data-i18n="np.tg.approval.d"></span></span><span class="switch"><input type="checkbox" id="tg-approval" checked></span></label>
+            </div>
+            <div>
+              <div class="sub-title"><h5 data-i18n="np.rev.title"></h5><span class="badge badge-success"><i data-lucide="check"></i><span data-i18n="np.rev.ready"></span></span></div>
+              <div class="card card-flat" style="padding:var(--space-2) var(--space-5);background:var(--bg-surface-2)"><div class="rev" id="review"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="wiz-foot">
+          <button class="btn btn-ghost" id="back" type="button"><i data-lucide="arrow-left"></i><span data-i18n="np.back"></span></button>
+          <div class="row">
+            <span class="text-xs text-subtle" id="step-of"></span>
+            <button class="btn btn-primary" id="next" type="button"><span data-i18n="np.next"></span><i data-lucide="arrow-right"></i></button>
+            <button class="btn btn-ai hidden" id="create" type="button"><i data-lucide="sparkles"></i><span data-i18n="np.create"></span></button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <div class="card" style="overflow:hidden">
+          <div class="sum-head" id="sum-head"></div>
+          <div class="sum-rows" id="sum-rows"></div>
+        </div>
+        <div class="card tip-card"><i data-lucide="lightbulb"></i><span id="tip"></span></div>
+      </aside>
+    </div>
+    </div><!-- /new-flow -->
+
+    <!-- OPEN EXISTING PROJECT (?mode=open) -->
+    <div id="open-flow" class="open-wrap hidden">
+      <div class="card">
+        <div class="panel-head"><span class="ph-ico"><i data-lucide="folder-open" class="icon-lg"></i></span><div><h4 data-i18n="np.open.s.t"></h4><p data-i18n="np.open.s.d"></p></div></div>
+        <div class="panel-body">
+          <div class="field">
+            <label class="label" for="o-path" data-i18n="np.open.path"></label>
+            <div class="dir-row">
+              <div class="input-group grow"><i data-lucide="folder"></i><input class="input mono" id="o-path" autocomplete="off" spellcheck="false" data-i18n-placeholder="np.open.ph"></div>
+              <button class="btn btn-secondary" id="o-browse" type="button"><i data-lucide="folder-open"></i><span data-i18n="np.browse"></span></button>
+            </div>
+            <div class="hint" data-i18n="np.open.h"></div>
+          </div>
+          <div>
+            <div class="sub-title"><h5 data-i18n="np.open.recent"></h5><span class="text-xs text-subtle" data-i18n="np.open.recent.h"></span></div>
+            <div class="recent-list" id="o-recent"></div>
+          </div>
+          <div id="o-result"></div>
+        </div>
+        <div class="wiz-foot">
+          <a class="btn btn-ghost" href="new-project.html"><i data-lucide="folder-plus"></i><span data-i18n="np.open.create"></span></a>
+          <div class="row">
+            <a class="btn btn-ghost" href="index.html" data-i18n="common.cancel"></a>
+            <button class="btn btn-primary" id="o-open" type="button" disabled><i data-lucide="folder-open"></i><span data-i18n="np.open.btn"></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div></div></main>
+
+  <script>
+    PC.i18n.extend({
+      en: {
+        'np.title': 'New project', 'np.h1': 'Create a new project',
+        'np.sub': 'Set up your project in four steps. Everything is stored in the directory you choose — change it later in Project settings.',
+        'np.s1': 'Basics', 'np.s2': 'Starting phase', 'np.s3': 'Sources', 'np.s4': 'AI setup',
+        'np.s1.t': 'Project basics', 'np.s1.d': 'Tell Procheck what you are building and where the project lives on disk.',
+        'np.s2.t': 'Where does this project start?', 'np.s2.d': 'Pick the phase to begin with. You can start from any phase, including projects that are already underway.',
+        'np.s3.t': 'Sources', 'np.s3.d': 'Give the Assistant material to work from and, if needed, connect an existing repository.',
+        'np.s4.t': 'AI setup', 'np.s4.d': 'Choose which CLI tool powers the Assistant and how the agent is allowed to work.',
+        'np.name': 'Project name', 'np.name.ph': 'e.g. Lotus Pay — Merchant Portal', 'np.err.name': 'Project name is required.',
+        'np.code': 'Project code', 'np.code.h': 'Used for task keys, e.g. LP-142.',
+        'np.client': 'Client', 'np.client.ph': 'e.g. Lotus Financial Group',
+        'np.industry': 'Industry',
+        'np.ind.fintech': 'Fintech & Banking', 'np.ind.retail': 'Retail & E-commerce', 'np.ind.health': 'Healthcare', 'np.ind.logistics': 'Logistics & Supply chain', 'np.ind.mfg': 'Manufacturing', 'np.ind.edu': 'Education', 'np.ind.other': 'Other',
+        'np.desc': 'Description', 'np.desc.ph': 'What problem does this project solve? Who are the users?', 'np.desc.h': 'The Assistant reads this as project context for every chat.',
+        'np.dir': 'Project directory', 'np.dir.ph': 'D:\\Projects\\my-project', 'np.browse': 'Browse',
+        'np.dir.h': 'Procheck creates this folder if needed and keeps all project data inside it. Suggested from the project name — edit freely.',
+        'np.dir.err.empty': 'Choose a project directory.', 'np.dir.err.bad': 'Enter a full path, for example D:\\Projects\\my-project.', 'np.dir.picked': 'Folder selected',
+        'np.tree.title': 'What Procheck will create', 'np.tree.sub': 'inside your project directory', 'np.tree.new': 'New',
+        'np.tree.note': 'Application-level data — settings, CLI sign-ins, logs and cache — stays in <code>%LOCALAPPDATA%\\Procheck</code> and is never written into your project.',
+        'np.t.0': 'Project manifest: name, client, phase, linked repo', 'np.t.1': 'Uploaded documents (inputs)', 'np.t.2': 'Generated & edited artifacts with versions', 'np.t.3': 'Tasks, plans, review evidence',
+        'np.t.4': 'Assistant chat history', 'np.t.5': 'Agent run logs & evidence', 'np.t.6': 'Isolated HOME for each CLI tool', 'np.t.7': 'Git worktrees created by agents', 'np.t.8': 'Project-level overrides (CLI, model, harness)',
+        'np.phase.initial.t': 'Initial phase', 'np.phase.initial.d': 'Start with discovery. Upload existing documents; the Assistant consults the initial-phase process and the AI drafts meeting notes, BRD, scope, estimates and SOW.',
+        'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Design the architecture and bootstrap the product. Link a repository and AI builds the scaffolding, repo structure, infra and pipelines.',
+        'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Run delivery on a Kanban board. Pick a task and plan the solution; the agent works in a git worktree, self-verifies end to end, and you review before a PR.',
+        'np.tag.notes': 'Meeting notes', 'np.tag.scope': 'Scope', 'np.tag.estimate': 'Estimate', 'np.tag.arch': 'Architecture', 'np.tag.scaffold': 'Scaffolding', 'np.tag.evidence': 'E2E evidence',
+        'np.existing.t': 'Continue an existing project', 'np.existing.d': 'Earlier phases are marked as done and the documents and code you already have are imported.', 'np.existing.na': 'Available when you start from Scaffolding or SDLC.',
+        'np.pv.title': 'Phase plan', 'np.pv.done': 'Marked as done', 'np.pv.skip': 'Skipped', 'np.pv.start': 'Start here', 'np.pv.next': 'Upcoming',
+        'np.method': 'Methodology', 'np.method.scrum': 'Scrum', 'np.method.kanban': 'Kanban', 'np.method.hybrid': 'Waterfall hybrid',
+        'np.method.scrum.d': 'Sprints with a backlog and ceremonies. Board columns: Backlog, Sprint, In progress, Review, Done.',
+        'np.method.kanban.d': 'Continuous flow with WIP limits. Board columns: To do, In progress, Review, Done.',
+        'np.method.hybrid.d': 'Upfront scope and estimates (waterfall), delivered in iterative sprints.',
+        'np.drop.t': 'Drop documents here or click to browse', 'np.drop.d': 'PDF, DOCX, XLSX, Markdown or audio transcripts (VTT, SRT, TXT) · up to 50 MB each',
+        'np.drop.sample': 'Use sample documents',
+        'np.files.title': 'Uploaded documents', 'np.files.empty': 'No documents yet. You can also add them later from Sources.',
+        'np.file.uploading': 'Uploading… {p}%', 'np.file.ready': 'Ready to index', 'np.file.remove': 'Remove',
+        'np.repo.title': 'Linked repository', 'np.repo.opt': 'Optional', 'np.repo.req': 'Required',
+        'np.repo.ph': 'D:\\src\\my-project', 'np.repo.browse': 'Browse', 'np.repo.inside': 'Use {p}', 'np.repo.or': 'or browse to a repository anywhere on this PC.',
+        'np.repo.hint.opt': 'Optional for the Initial phase. It can sit inside the project directory or anywhere else — you can also link one later.',
+        'np.repo.hint.req': 'Required for Scaffolding and SDLC. The agent works in git worktrees of this repository.',
+        'np.repo.err': 'Connect a local repository to start from this phase.',
+        'np.repo.ok': 'Git repository detected · branch main · clean working tree', 'np.repo.picked': 'Folder selected',
+        'np.ai.cli': 'CLI tool', 'np.ai.model': 'Model', 'np.ai.default': 'Default', 'np.ai.version': 'v{v}',
+        'np.ai.home.t': 'Isolated HOME directory',
+        'np.ai.home.d': 'Each CLI runs with its own HOME so credentials, config and history never leak between projects. Location: <code>&lt;project dir&gt;\\.procheck\\home\\&lt;cli&gt;</code>',
+        'np.tg.history': 'Save chat history', 'np.tg.history.d': 'Keep Assistant conversations per project so you can resume them later.',
+        'np.tg.worktree': 'Allow agent to create worktrees', 'np.tg.worktree.d': 'The agent implements each task in an isolated git worktree, never in your working copy.',
+        'np.tg.approval': 'Require human approval before PR', 'np.tg.approval.d': 'Agents stop at review. Only you can promote changes to a pull request.',
+        'np.rev.title': 'Review summary', 'np.rev.ready': 'Ready to create',
+        'np.rev.folder': 'Project directory', 'np.rev.registry': 'Registered in', 'np.rev.home': 'Isolated HOME', 'np.rev.docs': 'Documents to index', 'np.rev.assistant': 'Assistant', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Safeguards',
+        'np.rev.docs.v': '{n} documents', 'np.rev.assistant.v': '{cli} · {model} · {phase} process',
+        'np.rev.safety.v': '{a}', 'np.on': 'on', 'np.off': 'off',
+        'np.rev.hist': 'chat history saved', 'np.rev.nohist': 'chat history off', 'np.rev.wt': 'worktrees allowed', 'np.rev.nowt': 'no worktrees', 'np.rev.appr': 'approval before PR', 'np.rev.noappr': 'no PR approval gate',
+        'np.sum.untitled': 'Untitled project', 'np.sum.client': 'No client yet',
+        'np.sum.phase': 'Phase', 'np.sum.method': 'Methodology', 'np.sum.docs': 'Documents', 'np.sum.repo': 'Repository', 'np.sum.ai': 'Assistant', 'np.sum.dir': 'Directory',
+        'np.sum.none': 'Not connected', 'np.sum.docs.v': '{n} files',
+        'np.tip.1': 'Tip: add your kickoff transcript and the signed proposal — the Assistant will use them to draft the BRD and scope.',
+        'np.tip.2': 'Tip: pick the phase you are actually in. Tick “continue an existing project” to skip earlier phases and import what you have.',
+        'np.tip.3': 'Tip: an existing repository lets the agent read your conventions before it scaffolds or implements anything.',
+        'np.tip.4': 'Tip: you can switch CLI tool or model per task later, in Project settings.',
+        'np.back': 'Back', 'np.next': 'Next', 'np.create': 'Create project', 'np.step.of': 'Step {a} of {b}',
+        'np.create.title': 'Creating project…', 'np.create.s1': 'Create project directory structure', 'np.create.s2': 'Write procheck.json', 'np.create.s3': 'Register in %LOCALAPPDATA%\\Procheck\\projects.json', 'np.create.s4': 'Prepare isolated HOME', 'np.create.s5': 'Index sources',
+        'np.create.done': 'Project ready. Opening…', 'np.create.toast': 'Project created',
+        'np.open.title': 'Open project folder', 'np.open.h1': 'Open an existing project',
+        'np.open.sub': 'Pick a folder that already contains procheck.json — a project you created earlier, restored from a backup or moved to another drive.',
+        'np.open.s.t': 'Choose a project folder', 'np.open.s.d': 'Procheck looks for procheck.json in this folder.',
+        'np.open.path': 'Project folder', 'np.open.ph': 'D:\\Projects\\my-project', 'np.open.h': 'Paste a path or browse. Nothing is changed until you press Open project.',
+        'np.open.recent': 'Recently used folders', 'np.open.recent.h': 'Click one to fill the path.',
+        'np.open.empty.t': 'No folder selected yet', 'np.open.empty.d': 'Browse for a folder, paste a path, or pick one from the list above.',
+        'np.open.nf.t': 'No Procheck project in this folder', 'np.open.nf.d': 'procheck.json was not found here. Pick the folder that contains it, or create a new project instead.',
+        'np.open.found': 'procheck.json detected', 'np.open.norepo': 'Not linked', 'np.open.picked': 'Folder selected',
+        'np.open.f.dir': 'Directory', 'np.open.f.repo': 'Linked repository', 'np.open.f.art': 'Artifacts', 'np.open.f.tasks': 'Tasks', 'np.open.f.upd': 'Last modified', 'np.open.f.ai': 'AI',
+        'np.open.c.title': 'What happens when you open it',
+        'np.open.c.manifest': 'procheck.json is valid (schema v1)', 'np.open.c.dirs': '<code>sources\\</code>, <code>artifacts\\</code> and <code>board\\</code> found',
+        'np.open.c.settings': 'Project overrides found in <code>.procheck\\settings.json</code>',
+        'np.open.c.reg': 'Added to <code>%LOCALAPPDATA%\\Procheck\\projects.json</code> so it shows up in your project list',
+        'np.open.c.home.ok': 'Isolated HOME found in <code>.procheck\\home\\claude</code>', 'np.open.c.home.new': 'Isolated HOME will be prepared in <code>.procheck\\home\\claude</code>',
+        'np.open.btn': 'Open project', 'np.open.create': 'Create a new project instead',
+        'np.upd.min': '12 min ago', 'np.upd.h': '2 h ago',
+        'np.as.s1': 'Which phase should I start from?', 'np.as.s2': 'Suggest a project code', 'np.as.s3': 'Draft a description from my notes',
+        'np.as.ctx': 'New project'
+      },
+      vi: {
+        'np.title': 'Dự án mới', 'np.h1': 'Tạo dự án mới',
+        'np.sub': 'Thiết lập dự án qua bốn bước. Mọi dữ liệu được lưu trong thư mục bạn chọn — có thể đổi sau trong Cài đặt dự án.',
+        'np.s1': 'Cơ bản', 'np.s2': 'Giai đoạn bắt đầu', 'np.s3': 'Nguồn', 'np.s4': 'Thiết lập AI',
+        'np.s1.t': 'Thông tin cơ bản', 'np.s1.d': 'Cho Procheck biết bạn đang xây dựng gì và dự án nằm ở đâu trên máy.',
+        'np.s2.t': 'Dự án bắt đầu từ đâu?', 'np.s2.d': 'Chọn giai đoạn để bắt đầu. Bạn có thể vào từ bất kỳ giai đoạn nào, kể cả dự án đang triển khai dở.',
+        'np.s3.t': 'Nguồn dữ liệu', 'np.s3.d': 'Cung cấp tài liệu để Trợ lý làm việc và kết nối repository có sẵn nếu cần.',
+        'np.s4.t': 'Thiết lập AI', 'np.s4.d': 'Chọn công cụ CLI chạy Trợ lý và những gì agent được phép làm.',
+        'np.name': 'Tên dự án', 'np.name.ph': 'VD: Lotus Pay — Merchant Portal', 'np.err.name': 'Vui lòng nhập tên dự án.',
+        'np.code': 'Mã dự án', 'np.code.h': 'Dùng làm mã task, ví dụ LP-142.',
+        'np.client': 'Khách hàng', 'np.client.ph': 'VD: Lotus Financial Group',
+        'np.industry': 'Lĩnh vực',
+        'np.ind.fintech': 'Fintech & Ngân hàng', 'np.ind.retail': 'Bán lẻ & Thương mại điện tử', 'np.ind.health': 'Y tế', 'np.ind.logistics': 'Logistics & Chuỗi cung ứng', 'np.ind.mfg': 'Sản xuất', 'np.ind.edu': 'Giáo dục', 'np.ind.other': 'Khác',
+        'np.desc': 'Mô tả', 'np.desc.ph': 'Dự án giải quyết vấn đề gì? Người dùng là ai?', 'np.desc.h': 'Trợ lý đọc phần này làm ngữ cảnh dự án trong mọi cuộc trò chuyện.',
+        'np.dir': 'Thư mục dự án', 'np.dir.ph': 'D:\\Projects\\du-an-cua-toi', 'np.browse': 'Chọn thư mục',
+        'np.dir.h': 'Procheck tạo thư mục này nếu chưa có và lưu toàn bộ dữ liệu dự án bên trong. Gợi ý theo tên dự án — bạn có thể sửa tuỳ ý.',
+        'np.dir.err.empty': 'Hãy chọn thư mục dự án.', 'np.dir.err.bad': 'Nhập đường dẫn đầy đủ, ví dụ D:\\Projects\\du-an-cua-toi.', 'np.dir.picked': 'Đã chọn thư mục',
+        'np.tree.title': 'Procheck sẽ tạo những gì', 'np.tree.sub': 'bên trong thư mục dự án', 'np.tree.new': 'Mới',
+        'np.tree.note': 'Dữ liệu cấp ứng dụng — cài đặt, đăng nhập CLI, log và cache — vẫn nằm ở <code>%LOCALAPPDATA%\\Procheck</code> và không bao giờ được ghi vào dự án của bạn.',
+        'np.t.0': 'Tệp mô tả dự án: tên, khách hàng, giai đoạn, repo liên kết', 'np.t.1': 'Tài liệu tải lên (đầu vào)', 'np.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'np.t.3': 'Task, kế hoạch, bằng chứng review',
+        'np.t.4': 'Lịch sử chat với Trợ lý', 'np.t.5': 'Log và bằng chứng các lượt chạy agent', 'np.t.6': 'HOME cô lập cho từng công cụ CLI', 'np.t.7': 'Git worktree do agent tạo', 'np.t.8': 'Ghi đè ở cấp dự án (CLI, model, harness)',
+        'np.phase.initial.t': 'Giai đoạn khởi tạo', 'np.phase.initial.d': 'Bắt đầu từ khảo sát. Tải lên tài liệu có sẵn; Trợ lý tư vấn theo quy trình khởi tạo và AI soạn biên bản họp, BRD, phạm vi, ước lượng và SOW.',
+        'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Thiết kế kiến trúc và dựng nền tảng sản phẩm. Liên kết repository để AI tạo scaffolding, cấu trúc repo, hạ tầng và pipeline.',
+        'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Vận hành phát triển trên bảng Kanban. Chọn task và lên giải pháp; agent làm việc trong git worktree, tự kiểm thử end-to-end và bạn review trước khi tạo PR.',
+        'np.tag.notes': 'Biên bản họp', 'np.tag.scope': 'Phạm vi', 'np.tag.estimate': 'Ước lượng', 'np.tag.arch': 'Kiến trúc', 'np.tag.scaffold': 'Scaffolding', 'np.tag.evidence': 'Bằng chứng e2e',
+        'np.existing.t': 'Tiếp tục dự án đang có', 'np.existing.d': 'Các giai đoạn trước được đánh dấu hoàn tất, tài liệu và mã nguồn hiện có sẽ được nhập vào.', 'np.existing.na': 'Chỉ áp dụng khi bắt đầu từ Scaffolding hoặc SDLC.',
+        'np.pv.title': 'Kế hoạch các giai đoạn', 'np.pv.done': 'Đánh dấu hoàn tất', 'np.pv.skip': 'Bỏ qua', 'np.pv.start': 'Bắt đầu tại đây', 'np.pv.next': 'Sắp tới',
+        'np.method': 'Phương pháp', 'np.method.scrum': 'Scrum', 'np.method.kanban': 'Kanban', 'np.method.hybrid': 'Waterfall kết hợp',
+        'np.method.scrum.d': 'Làm theo sprint với backlog và các buổi họp Scrum. Cột bảng: Backlog, Sprint, Đang làm, Review, Xong.',
+        'np.method.kanban.d': 'Luồng liên tục với giới hạn WIP. Cột bảng: Cần làm, Đang làm, Review, Xong.',
+        'np.method.hybrid.d': 'Chốt phạm vi và ước lượng từ đầu (waterfall), triển khai theo các sprint lặp.',
+        'np.drop.t': 'Kéo thả tài liệu vào đây hoặc bấm để chọn', 'np.drop.d': 'PDF, DOCX, XLSX, Markdown hoặc bản ghi âm (VTT, SRT, TXT) · tối đa 50 MB mỗi file',
+        'np.drop.sample': 'Dùng tài liệu mẫu',
+        'np.files.title': 'Tài liệu đã tải lên', 'np.files.empty': 'Chưa có tài liệu. Bạn cũng có thể thêm sau trong mục Nguồn.',
+        'np.file.uploading': 'Đang tải lên… {p}%', 'np.file.ready': 'Sẵn sàng lập chỉ mục', 'np.file.remove': 'Xoá',
+        'np.repo.title': 'Repository liên kết', 'np.repo.opt': 'Tuỳ chọn', 'np.repo.req': 'Bắt buộc',
+        'np.repo.ph': 'D:\\src\\du-an-cua-toi', 'np.repo.browse': 'Chọn thư mục', 'np.repo.inside': 'Dùng {p}', 'np.repo.or': 'hoặc chọn repository ở bất kỳ đâu trên máy.',
+        'np.repo.hint.opt': 'Không bắt buộc ở giai đoạn khởi tạo. Repo có thể nằm trong thư mục dự án hoặc ở nơi khác — cũng có thể liên kết sau.',
+        'np.repo.hint.req': 'Bắt buộc với Scaffolding và SDLC. Agent làm việc trong các git worktree của repository này.',
+        'np.repo.err': 'Hãy kết nối repository cục bộ để bắt đầu từ giai đoạn này.',
+        'np.repo.ok': 'Đã nhận diện git repository · nhánh main · working tree sạch', 'np.repo.picked': 'Đã chọn thư mục',
+        'np.ai.cli': 'Công cụ CLI', 'np.ai.model': 'Mô hình', 'np.ai.default': 'Mặc định', 'np.ai.version': 'v{v}',
+        'np.ai.home.t': 'Thư mục HOME cô lập',
+        'np.ai.home.d': 'Mỗi CLI chạy với HOME riêng nên thông tin xác thực, cấu hình và lịch sử không bị lẫn giữa các dự án. Vị trí: <code>&lt;thư mục dự án&gt;\\.procheck\\home\\&lt;cli&gt;</code>',
+        'np.tg.history': 'Lưu lịch sử chat', 'np.tg.history.d': 'Giữ các cuộc trò chuyện với Trợ lý theo từng dự án để tiếp tục về sau.',
+        'np.tg.worktree': 'Cho phép agent tạo worktree', 'np.tg.worktree.d': 'Agent thực hiện mỗi task trong một git worktree riêng, không đụng vào bản làm việc của bạn.',
+        'np.tg.approval': 'Yêu cầu người duyệt trước khi tạo PR', 'np.tg.approval.d': 'Agent dừng ở bước review. Chỉ bạn mới có thể đẩy thay đổi lên pull request.',
+        'np.rev.title': 'Tóm tắt xem lại', 'np.rev.ready': 'Sẵn sàng tạo',
+        'np.rev.folder': 'Thư mục dự án', 'np.rev.registry': 'Đăng ký tại', 'np.rev.home': 'HOME cô lập', 'np.rev.docs': 'Tài liệu sẽ lập chỉ mục', 'np.rev.assistant': 'Trợ lý', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Biện pháp an toàn',
+        'np.rev.docs.v': '{n} tài liệu', 'np.rev.assistant.v': '{cli} · {model} · quy trình {phase}',
+        'np.rev.safety.v': '{a}', 'np.on': 'bật', 'np.off': 'tắt',
+        'np.rev.hist': 'lưu lịch sử chat', 'np.rev.nohist': 'tắt lịch sử chat', 'np.rev.wt': 'cho phép worktree', 'np.rev.nowt': 'không dùng worktree', 'np.rev.appr': 'duyệt trước khi tạo PR', 'np.rev.noappr': 'không cần duyệt PR',
+        'np.sum.untitled': 'Dự án chưa đặt tên', 'np.sum.client': 'Chưa có khách hàng',
+        'np.sum.phase': 'Giai đoạn', 'np.sum.method': 'Phương pháp', 'np.sum.docs': 'Tài liệu', 'np.sum.repo': 'Repository', 'np.sum.ai': 'Trợ lý', 'np.sum.dir': 'Thư mục',
+        'np.sum.none': 'Chưa kết nối', 'np.sum.docs.v': '{n} file',
+        'np.tip.1': 'Mẹo: thêm bản ghi cuộc họp kickoff và đề xuất đã ký — Trợ lý sẽ dùng chúng để soạn BRD và phạm vi.',
+        'np.tip.2': 'Mẹo: hãy chọn đúng giai đoạn bạn đang ở. Bật “tiếp tục dự án đang có” để bỏ qua các giai đoạn trước và nhập dữ liệu sẵn có.',
+        'np.tip.3': 'Mẹo: có repository sẵn giúp agent đọc quy ước của bạn trước khi tạo scaffolding hay triển khai.',
+        'np.tip.4': 'Mẹo: sau này bạn có thể đổi công cụ CLI hoặc mô hình cho từng task trong Cài đặt dự án.',
+        'np.back': 'Quay lại', 'np.next': 'Tiếp theo', 'np.create': 'Tạo dự án', 'np.step.of': 'Bước {a}/{b}',
+        'np.create.title': 'Đang tạo dự án…', 'np.create.s1': 'Tạo cấu trúc thư mục dự án', 'np.create.s2': 'Ghi procheck.json', 'np.create.s3': 'Đăng ký vào %LOCALAPPDATA%\\Procheck\\projects.json', 'np.create.s4': 'Chuẩn bị HOME cô lập', 'np.create.s5': 'Lập chỉ mục nguồn',
+        'np.create.done': 'Dự án đã sẵn sàng. Đang mở…', 'np.create.toast': 'Đã tạo dự án',
+        'np.open.title': 'Mở thư mục dự án', 'np.open.h1': 'Mở dự án có sẵn',
+        'np.open.sub': 'Chọn thư mục đã có procheck.json — dự án bạn tạo trước đó, khôi phục từ bản sao lưu hoặc đã chuyển sang ổ đĩa khác.',
+        'np.open.s.t': 'Chọn thư mục dự án', 'np.open.s.d': 'Procheck sẽ tìm procheck.json trong thư mục này.',
+        'np.open.path': 'Thư mục dự án', 'np.open.ph': 'D:\\Projects\\du-an-cua-toi', 'np.open.h': 'Dán đường dẫn hoặc chọn thư mục. Chưa có gì thay đổi cho đến khi bạn bấm Mở dự án.',
+        'np.open.recent': 'Thư mục dùng gần đây', 'np.open.recent.h': 'Bấm vào một mục để điền đường dẫn.',
+        'np.open.empty.t': 'Chưa chọn thư mục', 'np.open.empty.d': 'Chọn thư mục, dán đường dẫn hoặc chọn từ danh sách phía trên.',
+        'np.open.nf.t': 'Thư mục này không có dự án Procheck', 'np.open.nf.d': 'Không tìm thấy procheck.json ở đây. Hãy chọn thư mục chứa tệp này, hoặc tạo dự án mới.',
+        'np.open.found': 'Đã tìm thấy procheck.json', 'np.open.norepo': 'Chưa liên kết', 'np.open.picked': 'Đã chọn thư mục',
+        'np.open.f.dir': 'Thư mục', 'np.open.f.repo': 'Repository liên kết', 'np.open.f.art': 'Tài liệu', 'np.open.f.tasks': 'Task', 'np.open.f.upd': 'Sửa lần cuối', 'np.open.f.ai': 'AI',
+        'np.open.c.title': 'Điều gì xảy ra khi mở',
+        'np.open.c.manifest': 'procheck.json hợp lệ (schema v1)', 'np.open.c.dirs': 'Có <code>sources\\</code>, <code>artifacts\\</code> và <code>board\\</code>',
+        'np.open.c.settings': 'Có ghi đè cấp dự án trong <code>.procheck\\settings.json</code>',
+        'np.open.c.reg': 'Được thêm vào <code>%LOCALAPPDATA%\\Procheck\\projects.json</code> để hiện trong danh sách dự án',
+        'np.open.c.home.ok': 'Đã có HOME cô lập trong <code>.procheck\\home\\claude</code>', 'np.open.c.home.new': 'HOME cô lập sẽ được chuẩn bị trong <code>.procheck\\home\\claude</code>',
+        'np.open.btn': 'Mở dự án', 'np.open.create': 'Tạo dự án mới',
+        'np.upd.min': '12 phút trước', 'np.upd.h': '2 giờ trước',
+        'np.as.s1': 'Nên bắt đầu từ giai đoạn nào?', 'np.as.s2': 'Gợi ý mã dự án', 'np.as.s3': 'Soạn mô tả từ ghi chú của tôi',
+        'np.as.ctx': 'Dự án mới'
+      }
+    });
+
+    (function () {
+      const D = PC.data;
+      const $ = id => document.getElementById(id);
+      let OPEN = false; try { OPEN = new URLSearchParams(location.search).get('mode') === 'open'; } catch (e) {}
+      if (OPEN) {
+        document.body.dataset.page = 'open-project'; document.body.dataset.crumb = 'np.open.title';
+        $('h-crumb').dataset.i18n = 'np.open.title'; $('h-h1').dataset.i18n = 'np.open.h1'; $('h-sub').dataset.i18n = 'np.open.sub';
+        $('new-flow').classList.add('hidden'); $('open-flow').classList.remove('hidden');
+      }
+      const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
+      const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-4-5'], codex: ['gpt-5-codex', 'gpt-5-codex-mini'] };
+      const SAMPLES = [
+        { name: 'Kickoff-meeting-transcript.vtt', size: 184 * 1024 },
+        { name: 'Merchant-BRD-v2.docx', size: 1.2 * 1024 * 1024 },
+        { name: 'Pricing-estimates.xlsx', size: 86 * 1024 },
+        { name: 'Compliance-checklist.pdf', size: 2.4 * 1024 * 1024 },
+        { name: 'Workshop-notes.md', size: 12 * 1024 },
+      ];
+      let fid = 0;
+      const mkFile = (name, size, p) => ({ id: ++fid, name, size, p: p == null ? 0 : p });
+      const S = {
+        step: 1, name: '', code: '', codeTouched: false, client: '', industry: 'fintech', desc: '',
+        dir: 'D:\\Projects\\my-project', dirTouched: false, phase: 'initial', existing: false, method: 'scrum',
+        files: [mkFile(SAMPLES[0].name, SAMPLES[0].size, 100), mkFile(SAMPLES[1].name, SAMPLES[1].size, 100), mkFile(SAMPLES[2].name, SAMPLES[2].size, 38)],
+        repo: '', cli: D.cli[0].id, model: D.cli[0].model, history: true, worktree: true, approval: true,
+      };
+
+      /* ---------------- helpers ---------------- */
+      const deburr = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+      const head = n => String(n).split(/\s+[—–-]\s+/)[0];
+      const slug = () => deburr(head(S.name)).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-project';
+      const codeFrom = n => { const w = deburr(head(n)).split(/[^A-Za-z0-9]+/).filter(Boolean); return w.slice(0, 4).map(x => x[0]).join('').toUpperCase().slice(0, 6); };
+      const code = () => S.code || codeFrom(S.name) || 'PRJ';
+      const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+      const extOf = n => (n.split('.').pop() || '').toLowerCase();
+      function ftype(n) {
+        const e = extOf(n);
+        if (e === 'pdf') return { c: 'pdf', i: 'file-text' };
+        if (e === 'doc' || e === 'docx') return { c: 'doc', i: 'file-text' };
+        if (e === 'xls' || e === 'xlsx') return { c: 'sheet', i: 'file-spreadsheet' };
+        if (e === 'md') return { c: 'md', i: 'file-code' };
+        if (['vtt', 'srt', 'txt', 'mp3', 'wav', 'm4a'].includes(e)) return { c: 'audio', i: 'audio-lines' };
+        return { c: '', i: 'file' };
+      }
+      const needRepo = () => S.phase !== 'initial';
+      const cliObj = () => D.cli.find(c => c.id === S.cli) || D.cli[0];
+      const defaultDir = () => 'D:\\Projects\\' + slug();
+      const dirPath = () => S.dir.trim().replace(/[\\/]+$/, '') || defaultDir();
+      const homeRoot = () => dirPath() + '\\.procheck\\home';
+      const repoInside = () => dirPath() + '\\repo';
+      const REGISTRY = '%LOCALAPPDATA%\\Procheck\\projects.json';
+
+      /* ---------------- renderers ---------------- */
+      function renderStepper() {
+        const keys = ['np.s1', 'np.s2', 'np.s3', 'np.s4'];
+        $('stepper').innerHTML = keys.map((k, i) => {
+          const n = i + 1, cls = n < S.step ? 'is-done' : n === S.step ? 'is-current' : '';
+          return `<button type="button" class="step ${cls}" data-go="${n}"><span class="step-index">${n < S.step ? '<i data-lucide="check" style="width:13px;height:13px;stroke-width:3"></i>' : n}</span><span class="step-label">${PC.t(k)}</span></button>` + (n < 4 ? `<span class="step-line ${n < S.step ? 'is-done' : ''}"></span>` : '');
+        }).join('');
+        $('step-of').textContent = PC.t('np.step.of', { a: S.step, b: 4 });
+      }
+
+      function renderTree() {
+        const items = D.storage.project.items;
+        $('ptree').innerHTML = `<div class="ptree-head"><i data-lucide="folder-open"></i><span class="truncate" title="${PC.esc(dirPath())}">${PC.esc(dirPath())}\\</span><span class="badge badge-brand">${PC.t('np.tree.new')}</span></div><div class="tbody">` +
+          items.map((it, i) => { const path = it.path.replace('<cli>', S.cli); const folder = /\\$/.test(path); return `<div class="tnode ${path.startsWith('.procheck') ? 'is-hidden' : ''}"><i data-lucide="${folder ? 'folder' : 'file-json'}"></i><span class="tp" title="${PC.esc(path)}">${PC.esc(path)}</span><span class="td">${PC.t('np.t.' + i)}</span></div>`; }).join('') + '</div>';
+        PC.refresh($('ptree'));
+      }
+
+      function renderPhases() {
+        document.querySelectorAll('#phases .opt').forEach(o => { const on = o.dataset.phase === S.phase; o.classList.toggle('is-selected', on); o.setAttribute('aria-checked', on); });
+        const can = S.phase !== 'initial';
+        $('existing').checked = S.existing; $('existing').disabled = !can;
+        $('existing-row').classList.toggle('is-disabled', !can);
+        $('existing-hint').textContent = PC.t(can ? 'np.existing.d' : 'np.existing.na');
+        const order = ['initial', 'release', 'sdlc'], idx = order.indexOf(S.phase);
+        const col = { initial: 'var(--phase-initial)', release: 'var(--phase-release)', sdlc: 'var(--phase-sdlc)' };
+        $('pv').innerHTML = order.map((k, i) => {
+          const st = i < idx ? (S.existing ? 'done' : 'skip') : i === idx ? 'start' : 'next';
+          const fill = st === 'done' ? '100%' : st === 'start' ? '12%' : '0%';
+          return `<div class="${st === 'start' ? 'is-start' : ''}"><div class="bar"><i style="width:${fill};background:${col[k]}"></i></div><b>${PC.t('phase.' + k)}</b><span>${PC.t('np.pv.' + st)}</span></div>`;
+        }).join('');
+      }
+
+      function renderMethodHint() { $('method-hint').textContent = PC.t('np.method.' + S.method + '.d'); }
+
+      function renderFiles() {
+        const f = $('flist');
+        if (!S.files.length) { f.innerHTML = `<div class="flist-empty">${PC.t('np.files.empty')}</div>`; return; }
+        f.innerHTML = S.files.map(x => {
+          const t = ftype(x.name), done = x.p >= 100;
+          return `<div class="fitem"><span class="file-tile ${t.c}"><i data-lucide="${t.i}"></i></span>
+            <div class="grow"><div class="fname truncate">${PC.esc(x.name)}</div><div class="fmeta">${fmtSize(x.size)} · ${done ? `<span class="text-success">${PC.t('np.file.ready')}</span>` : PC.t('np.file.uploading', { p: Math.floor(x.p) })}</div></div>
+            ${done ? '<i data-lucide="check-circle-2" class="text-success"></i>' : `<div class="progress"><span style="width:${x.p}%"></span></div>`}
+            <button type="button" class="btn btn-ghost btn-icon btn-sm" data-rmf="${x.id}" data-i18n-tip="np.file.remove"><i data-lucide="x"></i></button></div>`;
+        }).join('');
+        PC.refresh(f);
+      }
+
+      function renderRepo() {
+        const req = needRepo();
+        const b = $('repo-badge'); b.className = 'badge ' + (req ? 'badge-warning' : 'badge-outline'); b.textContent = PC.t(req ? 'np.repo.req' : 'np.repo.opt');
+        $('repo-hint').textContent = PC.t(req ? 'np.repo.hint.req' : 'np.repo.hint.opt');
+        $('repo-inside-t').textContent = PC.t('np.repo.inside', { p: repoInside() });
+        $('repo-ok').innerHTML = S.repo.trim() ? `<div class="alert alert-success mt-2" style="margin-top:8px"><i data-lucide="git-branch"></i><span>${PC.t('np.repo.ok')}</span></div>` : '';
+        if (S.repo.trim()) $('f-repo').classList.remove('has-error');
+        PC.refresh($('repo-ok'));
+      }
+
+      function renderClis() {
+        $('clis').innerHTML = D.cli.map(c => `<div class="opt cli-card ${c.id === S.cli ? 'is-selected' : ''}" role="radio" tabindex="0" aria-checked="${c.id === S.cli}" data-cli="${c.id}">
+          <span class="tick"><i data-lucide="check"></i></span>
+          <div class="cli-top"><span class="cli-logo"><i data-lucide="${CLI_ICON[c.id] || 'terminal'}" class="icon-lg"></i></span>
+            <div><h4 style="font-size:var(--text-md)">${PC.esc(c.name)}</h4><div class="row gap-2 text-xs text-subtle"><span class="dot dot-success"></span><span>${PC.t('cli.connected')}</span><span>·</span><span>${PC.t('np.ai.version', { v: c.version })}</span></div></div></div>
+          <div class="cli-meta"><span>${PC.t('np.ai.model')}: <code>${PC.esc(c.model)}</code></span><span>HOME: <code>${PC.esc(homeRoot() + '\\' + c.id)}</code></span></div>
+        </div>`).join('');
+        PC.refresh($('clis'));
+      }
+      function renderModels() {
+        const list = MODELS[S.cli] || [cliObj().model];
+        if (!list.includes(S.model)) S.model = cliObj().model;
+        $('model').innerHTML = list.map((m, i) => `<option value="${m}" ${m === S.model ? 'selected' : ''}>${m}${m === cliObj().model ? ' · ' + PC.t('np.ai.default') : ''}</option>`).join('');
+      }
+      function renderHome() { $('home-code').textContent = `HOME=${homeRoot()}\\${S.cli}`; }
+
+      function renderReview() {
+        const c = cliObj(), ready = S.files.length;
+        const safety = [S.history ? 'np.rev.hist' : 'np.rev.nohist', S.worktree ? 'np.rev.wt' : 'np.rev.nowt', S.approval ? 'np.rev.appr' : 'np.rev.noappr'].map(k => PC.t(k)).join(' · ');
+        const rows = [
+          ['np.rev.folder', `<code>${PC.esc(dirPath())}</code>`],
+          ['np.rev.registry', `<code>${REGISTRY}</code>`],
+          ['np.rev.home', `<code>${PC.esc(homeRoot() + '\\' + S.cli)}</code>`],
+          ['np.rev.docs', PC.t('np.rev.docs.v', { n: ready })],
+          ['np.rev.repo', S.repo.trim() ? `<code>${PC.esc(S.repo.trim())}</code>` : PC.t('np.sum.none')],
+          ['np.rev.assistant', PC.esc(PC.t('np.rev.assistant.v', { cli: c.name, model: S.model, phase: PC.t('phase.' + S.phase) }))],
+          ['np.rev.safety', PC.esc(safety)],
+        ];
+        $('review').innerHTML = rows.map(r => `<div class="rev-item"><i data-lucide="check-circle-2" class="icon-sm"></i><span class="k">${PC.t(r[0])}</span><span class="v">${r[1]}</span></div>`).join('');
+        PC.refresh($('review'));
+      }
+
+      function renderSummary() {
+        const c = cliObj();
+        $('sum-head').innerHTML = `<div class="project-avatar" style="background:var(--gradient-brand)">${PC.esc(code().slice(0, 3))}</div>
+          <div class="grow"><div class="${S.name.trim() ? '' : 'text-faint'}" style="font-size:var(--text-sm);font-weight:600;color:${S.name.trim() ? 'var(--fg-strong)' : ''}">${PC.esc(S.name.trim() || PC.t('np.sum.untitled'))}</div><div class="text-xs text-subtle truncate">${PC.esc(S.client.trim() || PC.t('np.sum.client'))}</div></div>`;
+        const row = (icon, k, v) => `<div class="sum-row"><span class="k"><i data-lucide="${icon}"></i>${PC.t(k)}</span><span class="v">${v}</span></div>`;
+        $('sum-rows').innerHTML =
+          row('folder', 'np.sum.dir', `<span class="mono truncate" style="display:inline-block;max-width:160px;font-size:11px;vertical-align:bottom" title="${PC.esc(dirPath())}">${PC.esc(dirPath())}</span>`) +
+          row('route', 'np.sum.phase', `<span class="phase-chip phase-${S.phase === 'release' ? 'release' : S.phase}">${PC.t('phase.' + S.phase)}</span>`) +
+          row('workflow', 'np.sum.method', PC.t('np.method.' + S.method)) +
+          row('files', 'np.sum.docs', PC.t('np.sum.docs.v', { n: S.files.length })) +
+          row('folder-git-2', 'np.sum.repo', S.repo.trim() ? `<span class="mono truncate" style="display:inline-block;max-width:150px;font-size:11px;vertical-align:bottom" title="${PC.esc(S.repo.trim())}">${PC.esc(S.repo.trim())}</span>` : `<span class="text-faint">${PC.t('np.sum.none')}</span>`) +
+          row('cpu', 'np.sum.ai', `${PC.esc(c.name)}<div class="mono text-subtle" style="font-size:10.5px;font-weight:400">${PC.esc(S.model)}</div>`);
+        $('tip').textContent = PC.t('np.tip.' + S.step);
+        PC.refresh($('sum-head').parentElement);
+      }
+
+      function renderStatic() {
+        renderStepper(); renderTree(); renderPhases(); renderMethodHint(); renderFiles(); renderRepo(); renderClis(); renderModels(); renderHome(); renderReview(); renderSummary();
+        PC.refresh(document.querySelector('.canvas'));
+      }
+
+      /* ---------------- navigation ---------------- */
+      function validate(n) {
+        if (n === 1) {
+          let ok = true;
+          if (!S.name.trim()) { $('f-name').classList.add('has-error'); ok = false; }
+          const d = S.dir.trim();
+          if (!(/^[A-Za-z]:[\\/]/.test(d) || /^\\\\/.test(d))) { $('dir-err').textContent = PC.t(d ? 'np.dir.err.bad' : 'np.dir.err.empty'); $('f-dir').classList.add('has-error'); ok = false; }
+          if (!ok) { ($('f-name').classList.contains('has-error') ? $('name') : $('dir')).focus(); return false; }
+        }
+        if (n === 3 && needRepo() && !S.repo.trim()) {
+          $('f-repo').classList.add('has-error'); $('repo').focus(); return false;
+        }
+        return true;
+      }
+      function showStep(n) {
+        S.step = n;
+        document.querySelectorAll('[data-panel]').forEach(p => p.classList.toggle('hidden', +p.dataset.panel !== n));
+        $('back').style.visibility = n === 1 ? 'hidden' : 'visible';
+        $('next').classList.toggle('hidden', n === 4);
+        $('create').classList.toggle('hidden', n !== 4);
+        if (n === 4) { renderReview(); }
+        renderStepper(); renderSummary();
+        PC.refresh($('stepper'));
+        const cv = document.querySelector('.canvas'); if (cv) cv.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      function go(n) {
+        if (n < S.step) return showStep(n);
+        for (let s = S.step; s < n; s++) { if (!validate(s)) { showStep(s); validate(s); return; } }
+        showStep(n);
+      }
+
+      /* ---------------- uploads ---------------- */
+      let ticker = null;
+      function startTicker() {
+        if (ticker) return;
+        ticker = setInterval(() => {
+          let active = false;
+          S.files.forEach(f => { if (f.p < 100) { f.p = Math.min(100, f.p + 5 + Math.random() * 11); active = true; } });
+          renderFiles(); renderSummary();
+          if (!active) { clearInterval(ticker); ticker = null; }
+        }, 260);
+      }
+      function addFiles(list) { list.forEach(f => S.files.push(mkFile(f.name, f.size || 50 * 1024, 0))); renderFiles(); renderSummary(); renderReview(); startTicker(); }
+
+      /* ---------------- create ---------------- */
+      function create() {
+        const keys = ['np.create.s1', 'np.create.s2', 'np.create.s3', 'np.create.s4', 'np.create.s5'];
+        const subs = [dirPath() + '\\', dirPath() + '\\procheck.json', REGISTRY, homeRoot() + '\\' + S.cli, PC.t('np.rev.docs.v', { n: S.files.length }) + ' → ' + dirPath() + '\\sources\\'];
+        let cancelled = false; const timers = [];
+        const m = PC.modal({
+          title: PC.t('np.create.title'), width: 520,
+          body: `<div class="progress progress-ai" style="margin:4px 0 12px"><span id="cprog" style="width:4%"></span></div>
+            <div id="csteps">${keys.map((k, i) => `<div class="cstep" data-i="${i}"><span class="ci"><i class="pend"></i></span><span style="min-width:0"><span>${PC.t(k)}</span><small style="overflow-wrap:anywhere">${PC.esc(subs[i])}</small></span></div>`).join('')}</div>
+            <div class="text-sm text-muted" id="cdone" style="margin-top:8px;min-height:20px"></div>`,
+          onClose: () => { cancelled = true; timers.forEach(clearTimeout); }
+        });
+        const el = i => m.el.querySelector(`.cstep[data-i="${i}"]`);
+        const run = i => {
+          if (cancelled) return;
+          if (i >= keys.length) {
+            m.el.querySelector('#cprog').style.width = '100%';
+            m.el.querySelector('#cdone').textContent = PC.t('np.create.done');
+            timers.push(setTimeout(() => { if (!cancelled) { PC.setProject('lotus-pay'); location.href = 'overview.html?p=lotus-pay'; } }, 700));
+            return;
+          }
+          const s = el(i); s.classList.add('is-run'); s.querySelector('.ci').innerHTML = '<span class="spinner"></span>';
+          m.el.querySelector('#cprog').style.width = (8 + i * 18) + '%';
+          timers.push(setTimeout(() => {
+            if (cancelled) return;
+            s.classList.remove('is-run'); s.classList.add('is-done'); s.querySelector('.ci').innerHTML = '<i data-lucide="check-circle-2"></i>';
+            PC.refresh(s); run(i + 1);
+          }, 650));
+        };
+        run(0);
+      }
+
+      /* ---------------- assistant ---------------- */
+      function setAssistant() {
+        PC.assistant.setContext([{ icon: 'plus', label: PC.t('np.as.ctx') }, { icon: 'cpu', label: S.model }]);
+        PC.assistant.setSuggestions([PC.t('np.as.s1'), PC.t('np.as.s2'), PC.t('np.as.s3')]);
+      }
+
+      /* ---------------- wiring ---------------- */
+      function wire() {
+        $('name').addEventListener('input', e => {
+          S.name = e.target.value; $('f-name').classList.toggle('has-error', false);
+          if (!S.codeTouched) { S.code = codeFrom(S.name); $('code').value = S.code; }
+          if (!S.dirTouched) { S.dir = defaultDir(); $('dir').value = S.dir; $('f-dir').classList.remove('has-error'); }
+          renderTree(); renderRepo(); renderHome(); renderReview(); renderSummary();
+        });
+        $('dir').addEventListener('input', e => { S.dir = e.target.value; S.dirTouched = true; $('f-dir').classList.remove('has-error'); renderTree(); renderRepo(); renderHome(); renderReview(); renderSummary(); });
+        $('dir-browse').addEventListener('click', () => { S.dir = 'D:\\Clients\\' + slug(); S.dirTouched = true; $('dir').value = S.dir; $('f-dir').classList.remove('has-error'); renderTree(); renderRepo(); renderHome(); renderReview(); renderSummary(); PC.toast(PC.t('np.dir.picked')); });
+        $('repo-inside').addEventListener('click', () => { S.repo = repoInside(); $('repo').value = S.repo; renderRepo(); renderSummary(); renderReview(); });
+        $('code').addEventListener('input', e => { S.codeTouched = true; S.code = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); e.target.value = S.code; renderSummary(); });
+        $('client').addEventListener('input', e => { S.client = e.target.value; renderSummary(); });
+        $('industry').addEventListener('change', e => { S.industry = e.target.value; });
+        $('desc').addEventListener('input', e => { S.desc = e.target.value; });
+
+        const pick = (el, fn) => {
+          el.addEventListener('click', e => { const o = e.target.closest('.opt'); if (o && el.contains(o)) fn(o); });
+          el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('opt')) { e.preventDefault(); fn(e.target); } });
+        };
+        pick($('phases'), o => { S.phase = o.dataset.phase; if (S.phase === 'initial') S.existing = false; renderPhases(); renderRepo(); renderReview(); renderSummary(); });
+        $('existing').addEventListener('change', e => { S.existing = e.target.checked; renderPhases(); });
+        $('method').addEventListener('change', e => { S.method = e.target.value; renderMethodHint(); renderSummary(); });
+
+        const dz = $('dz');
+        dz.addEventListener('click', () => $('file-input').click());
+        dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('file-input').click(); } });
+        ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('is-over'); }));
+        ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('is-over'); }));
+        dz.addEventListener('drop', e => { const fl = Array.from(e.dataTransfer && e.dataTransfer.files || []); if (fl.length) addFiles(fl); });
+        $('file-input').addEventListener('change', e => { addFiles(Array.from(e.target.files)); e.target.value = ''; });
+        $('sample').addEventListener('click', () => {
+          const have = S.files.map(f => f.name); const next = SAMPLES.filter(s => !have.includes(s.name)).slice(0, 2);
+          if (next.length) addFiles(next);
+        });
+        $('flist').addEventListener('click', e => { const b = e.target.closest('[data-rmf]'); if (!b) return; S.files = S.files.filter(f => f.id !== +b.dataset.rmf); renderFiles(); renderSummary(); renderReview(); });
+
+        $('repo').addEventListener('input', e => { S.repo = e.target.value; renderRepo(); renderSummary(); });
+        $('browse').addEventListener('click', () => { S.repo = 'D:\\src\\' + slug(); $('repo').value = S.repo; renderRepo(); renderSummary(); PC.toast(PC.t('np.repo.picked')); });
+
+        pick($('clis'), o => { S.cli = o.dataset.cli; S.model = cliObj().model; renderClis(); renderModels(); renderHome(); renderReview(); renderSummary(); setAssistant(); });
+        $('model').addEventListener('change', e => { S.model = e.target.value; renderReview(); renderSummary(); setAssistant(); });
+        $('tg-history').addEventListener('change', e => { S.history = e.target.checked; renderReview(); });
+        $('tg-worktree').addEventListener('change', e => { S.worktree = e.target.checked; renderReview(); });
+        $('tg-approval').addEventListener('change', e => { S.approval = e.target.checked; renderReview(); });
+
+        $('stepper').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
+        $('back').addEventListener('click', () => go(S.step - 1));
+        $('next').addEventListener('click', () => go(S.step + 1));
+        $('create').addEventListener('click', () => { for (let s = 1; s <= 3; s++) { if (!validate(s)) { showStep(s); validate(s); return; } } create(); });
+      }
+
+      /* ---------------- open existing project (?mode=open) ---------------- */
+      const UPD_VI = { '12 min ago': '12 phút trước', '2 h ago': '2 giờ trước', 'Yesterday': 'Hôm qua', '3 days ago': '3 ngày trước', 'Last week': 'Tuần trước' };
+      const O = { path: '' };
+      const norm = v => v.trim().replace(/\//g, '\\').replace(/\\+$/, '').toLowerCase();
+      const findProject = v => { const n = norm(v); return n ? D.projects.find(p => p.dir.toLowerCase() === n) : null; };
+      function renderOpenRecent() {
+        const cur = findProject(O.path);
+        $('o-recent').innerHTML = D.projects.map(p => `<button type="button" class="recent-item ${cur && cur.id === p.id ? 'is-picked' : ''}" data-dir="${PC.esc(p.dir)}"><span class="project-avatar" style="background:${p.color}">${PC.esc(p.short)}</span><span class="grow"><span style="display:block;font-size:var(--text-sm);font-weight:600;color:var(--fg-strong)" class="truncate">${PC.esc(p.name)}</span><span class="rp truncate" style="display:block">${PC.esc(p.dir)}</span></span><span class="phase-chip phase-${p.phase}">${PC.t('phase.' + p.phase)}</span></button>`).join('');
+      }
+      function renderOpenResult() {
+        const raw = O.path.trim(), p = findProject(raw), box = $('o-result');
+        $('o-open').disabled = !p;
+        if (!raw) { box.innerHTML = `<div class="empty" style="padding:var(--space-8) var(--space-6)"><div class="empty-icon"><i data-lucide="folder-search"></i></div><h4>${PC.t('np.open.empty.t')}</h4><div class="text-sm">${PC.t('np.open.empty.d')}</div></div>`; return; }
+        if (!p) { box.innerHTML = `<div class="alert alert-warning"><i data-lucide="alert-triangle"></i><div><b style="color:var(--fg-strong)">${PC.t('np.open.nf.t')}</b><div class="text-sm text-muted" style="margin-top:2px">${PC.t('np.open.nf.d')}</div></div></div>`; return; }
+        const bars = D.phases.map(ph => `<div><div class="dp-h"><span style="color:${ph.color}">${PC.t('phase.' + ph.id)}</span><b>${p.progress[ph.id]}%</b></div><div class="progress"><span style="width:${p.progress[ph.id]}%;background:${ph.color}"></span></div></div>`).join('');
+        const upd = PC.lang === 'vi' ? (UPD_VI[p.updated] || p.updated) : p.updated;
+        const hasHome = p.tasks > 0;
+        const fact = (k, v, mono) => `<div class="fact"><span class="k">${PC.t(k)}</span><span class="v ${mono ? 'mono truncate' : ''}">${v}</span></div>`;
+        const ck = (cls, ico, t) => `<div class="ck ${cls}"><i data-lucide="${ico}"></i><span>${t}</span></div>`;
+        box.innerHTML = `<div class="detect">
+          <div class="detect-head"><div class="project-avatar" style="background:${p.color}">${PC.esc(p.short)}</div>
+            <div class="grow"><div style="font-size:var(--text-lg);font-weight:600;color:var(--fg-strong)">${PC.esc(p.name)}</div><div class="text-xs text-subtle">${PC.esc(p.client)}</div></div>
+            <span class="phase-chip phase-${p.phase}">${PC.t('phase.' + p.phase)}</span>
+            <span class="badge badge-success"><i data-lucide="check"></i>${PC.t('np.open.found')}</span></div>
+          <div class="detect-phases">${bars}</div>
+          <div class="facts">${fact('np.open.f.dir', PC.esc(p.dir), 1)}${fact('np.open.f.repo', p.repo ? PC.esc(p.repo) : `<span class="text-faint">${PC.t('np.open.norepo')}</span>`, !!p.repo)}${fact('np.open.f.art', p.artifacts)}${fact('np.open.f.tasks', p.tasks)}${fact('np.open.f.upd', PC.esc(upd))}${fact('np.open.f.ai', 'Claude Code · claude-opus-5-5')}</div>
+          <div class="checks"><div class="text-xs text-subtle" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">${PC.t('np.open.c.title')}</div>
+            ${ck('ok', 'check-circle-2', PC.t('np.open.c.manifest'))}${ck('ok', 'check-circle-2', PC.t('np.open.c.dirs'))}${hasHome ? ck('ok', 'check-circle-2', PC.t('np.open.c.settings')) : ''}
+            ${ck('info', 'list-plus', PC.t('np.open.c.reg'))}${ck(hasHome ? 'ok' : 'info', hasHome ? 'check-circle-2' : 'wand-sparkles', PC.t(hasHome ? 'np.open.c.home.ok' : 'np.open.c.home.new'))}</div>
+        </div>`;
+      }
+      function renderOpen() { renderOpenRecent(); renderOpenResult(); PC.refresh(document.querySelector('.canvas')); }
+      function wireOpen() {
+        $('o-path').addEventListener('input', e => { O.path = e.target.value; renderOpen(); });
+        $('o-recent').addEventListener('click', e => { const b = e.target.closest('[data-dir]'); if (!b) return; O.path = b.dataset.dir; $('o-path').value = O.path; renderOpen(); });
+        let bi = 0;
+        $('o-browse').addEventListener('click', () => { const d = D.projects[(bi++ % (D.projects.length - 1)) + 1].dir; O.path = d; $('o-path').value = d; renderOpen(); PC.toast(PC.t('np.open.picked')); });
+        $('o-open').addEventListener('click', () => { const p = findProject(O.path); if (!p) return; PC.setProject(p.id); location.href = 'overview.html?p=' + p.id; });
+      }
+
+      PC.onReady(() => {
+        if (OPEN) {
+          let pre = ''; try { pre = new URLSearchParams(location.search).get('dir') || ''; } catch (e) {}
+          O.path = pre; $('o-path').value = pre;
+          wireOpen(); renderOpen();
+          PC.assistant.setContext([{ icon: 'folder-open', label: PC.t('np.open.title') }]);
+          return;
+        }
+        $('dir').value = S.dir;
+        wire(); renderStatic(); showStep(1); setAssistant(); startTicker();
+      });
+      document.addEventListener('pc:lang', () => { if (OPEN) renderOpen(); else { renderStatic(); renderStepper(); setAssistant(); } });
+    })();
+  </script>
+</body>
+</html>
