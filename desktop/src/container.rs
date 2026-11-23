@@ -14,6 +14,7 @@ const LOGS_DIR: &str = "logs";
 const CACHE_DIR: &str = "cache";
 const SCRATCH_DIR: &str = "scratch";
 const CLI_DIR: &str = "cli";
+const CHATS_DIR: &str = "chats";
 
 /// Well-known locations inside the application data directory
 /// (`%LOCALAPPDATA%\Procheck` by default). Project data never lives here.
@@ -34,7 +35,14 @@ impl AppDirectories {
 
     pub(crate) fn at(root: PathBuf) -> StorageResult<Self> {
         let directories = Self { root };
-        for dir in [&directories.root, &directories.logs_dir(), &directories.cache_dir(), &directories.scratch_dir(), &directories.cli_dir()] {
+        for dir in [
+            &directories.root,
+            &directories.logs_dir(),
+            &directories.cache_dir(),
+            &directories.scratch_dir(),
+            &directories.cli_dir(),
+            &directories.chats_dir(),
+        ] {
             fs::create_dir_all(dir)?;
         }
         Ok(directories)
@@ -74,5 +82,9 @@ impl AppDirectories {
     /// while Procheck runs it, kept apart from the user's profile.
     pub fn cli_home(&self, cli: &str) -> PathBuf {
         self.cli_dir().join(cli)
+    }
+
+    pub fn chats_dir(&self) -> PathBuf {
+        self.root.join(CHATS_DIR)
     }
 }

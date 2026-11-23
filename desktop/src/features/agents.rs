@@ -230,7 +230,7 @@ pub fn resolve_binary(agent: AgentId, custom: Option<&str>) -> (Option<PathBuf>,
 }
 
 /// Environment of every CLI run: the CLI home, and no credentials inherited from the user's environment.
-fn launch<'a>(agent: AgentId, home: &Path, cwd: Option<&'a Path>) -> Result<Launch<'a>, AgentError> {
+pub(crate) fn launch<'a>(agent: AgentId, home: &Path, cwd: Option<&'a Path>) -> Result<Launch<'a>, AgentError> {
     fs::create_dir_all(home).map_err(|e| AgentError::Failed(format!("could not create {}: {e}", home.display())))?;
     Ok(Launch {
         cwd,
@@ -239,7 +239,7 @@ fn launch<'a>(agent: AgentId, home: &Path, cwd: Option<&'a Path>) -> Result<Laun
     })
 }
 
-fn require_binary(agent: AgentId, custom: Option<&str>) -> Result<PathBuf, AgentError> {
+pub(crate) fn require_binary(agent: AgentId, custom: Option<&str>) -> Result<PathBuf, AgentError> {
     match resolve_binary(agent, custom) {
         (Some(path), _) if path.is_file() => Ok(path),
         (Some(path), _) => Err(AgentError::NotInstalled(path.display().to_string())),
@@ -560,7 +560,7 @@ fn classify_failure(out: &Output) -> AgentError {
     }
 }
 
-fn looks_signed_out(text: &str) -> bool {
+pub(crate) fn looks_signed_out(text: &str) -> bool {
     let lower = text.to_lowercase();
     ["not logged in", "please run /login", "login required", "not signed in", "unauthorized", "401"]
         .iter()
