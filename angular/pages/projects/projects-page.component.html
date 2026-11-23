@@ -1,0 +1,35 @@
+<div class="canvas-inner projects-page" data-testid="projects-page">
+  <section class="hero" data-testid="projects-hero">
+    <div class="kicker"><pc-icon name="layout-grid" [size]="14" /><span>All projects</span></div>
+    <h1>{{ greeting() }}</h1>
+    <p class="lead">
+      Take every project from the first client meeting to agent-driven delivery. Pick up where you left off, or start
+      something new.
+    </p>
+    <div class="quick">
+      <a class="qa is-primary" routerLink="/projects/new">
+        <span class="ico"><pc-icon name="plus" [size]="20" /></span>
+        <span>
+          <span class="qa-t">New project</span>
+          <span class="qa-d">From documents, a transcript or an existing repo</span>
+        </span>
+        <pc-icon class="chev" name="arrow-right" />
+      </a>
+      <a class="qa" routerLink="/projects/open">
+        <span class="ico"><pc-icon name="folder-open" [size]="20" /></span>
+        <span>
+          <span class="qa-t">Open project folder</span>
+          <span class="qa-d">Pick a folder that already has procheck.json</span>
+        </span>
+      </a>
+      <button class="qa" type="button">
+        <span class="ico"><pc-icon name="history" [size]="20" /></span>
+        <span>
+          <span class="qa-t">Open recent</span>
+          <span class="qa-d">Jump back into a project you used lately</span>
+        </span>
+        <pc-icon class="chev" name="chevron-down" />
+      </button>
+    </div>
+  </section>
+</div>

@@ -23,10 +23,11 @@ function readMigrationHistory(databaseFile: string): MigrationRow[] {
 test('app starts, migrates the database and survives a restart', async ({ app, ui, sandbox }) => {
   const databaseFile = path.join(sandbox.dataDir, 'application.sqlite');
 
-  await test.step('welcome screen shows app name and version', async () => {
-    await expect(ui.welcome.root).toBeVisible();
-    await expect(ui.welcome.title).toHaveText('Procheck');
-    await expect(ui.welcome.version).toHaveText('0.0.0');
+  await test.step('main layout shows app name, version and the projects hero', async () => {
+    await expect(ui.shell.root).toBeVisible();
+    await expect(ui.shell.appName).toHaveText('Procheck');
+    await expect(ui.shell.appVersion).toHaveText('0.0.0');
+    await expect(ui.shell.projectsHero).toBeVisible();
   });
 
   await test.step('database is created with one migration history row', async () => {
@@ -36,8 +37,8 @@ test('app starts, migrates the database and survives a restart', async ({ app, u
 
   await test.step('app restarts without re-running migrations', async () => {
     await app.restart();
-    await expect(ui.welcome.root).toBeVisible();
-    await expect(ui.welcome.version).toHaveText('0.0.0');
+    await expect(ui.shell.root).toBeVisible();
+    await expect(ui.shell.appVersion).toHaveText('0.0.0');
     expect(readMigrationHistory(databaseFile)).toEqual([{ version: '0.0.0', seq: 0 }]);
   });
 });

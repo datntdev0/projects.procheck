@@ -1,0 +1,39 @@
+<div class="sidebar-inner">
+  <a class="sb-brand" routerLink="/projects">
+    <span class="brand-mark"><img src="assets/brand/kms-mark.svg" alt="" /></span>
+    <span class="brand-name" data-testid="app-name">{{ appInfo()?.name ?? fallbackName }}</span>
+    <span class="brand-by">by KMS Technology</span>
+  </a>
+
+  <nav class="nav" aria-label="Main">
+    <div class="nav-group">
+      @for (item of mainNav; track item.id) {
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [attr.data-testid]="'nav-' + item.id"
+        >
+          <pc-icon [name]="item.icon" />
+          <span class="truncate">{{ item.label }}</span>
+        </a>
+      }
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a
+      class="nav-item"
+      [routerLink]="settingsNav.route"
+      routerLinkActive="is-active"
+      [attr.data-testid]="'nav-' + settingsNav.id"
+    >
+      <pc-icon [name]="settingsNav.icon" />
+      <span class="truncate">{{ settingsNav.label }}</span>
+    </a>
+    <div class="sb-version">
+      Version <span data-testid="app-version">{{ appInfo()?.version ?? '—' }}</span>
+    </div>
+  </div>
+</div>

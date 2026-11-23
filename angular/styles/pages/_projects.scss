@@ -1,0 +1,26 @@
+// All projects page (ported from _proto/index.html). Only the hero is built for now.
+.projects-page {
+  .hero { position: relative; border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); background: var(--gradient-hero), var(--bg-surface); padding: var(--space-8); margin-bottom: var(--space-6); overflow: hidden; }
+  .hero .kicker { display: inline-flex; align-items: center; gap: 6px; margin-bottom: var(--space-2); }
+  .hero h1 { font-size: var(--text-3xl); font-weight: var(--weight-semibold); letter-spacing: -0.02em; }
+  .hero .lead { margin: var(--space-2) 0 0; max-width: 620px; }
+  .quick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-6); }
+  .qa { display: flex; align-items: center; gap: var(--space-3); padding: 14px 16px; text-align: left; border-radius: var(--radius-lg); border: 1px solid var(--border-default); background: color-mix(in srgb, var(--bg-surface) 84%, transparent); backdrop-filter: blur(6px); cursor: pointer; color: var(--fg-default); text-decoration: none !important; transition: border-color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast); font: inherit; }
+  .qa:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .qa .ico { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--brand-soft); color: var(--brand-fg); flex-shrink: 0; }
+  .qa.is-primary { border-color: transparent; background: var(--brand); color: var(--fg-on-brand); box-shadow: var(--shadow-md); }
+  .qa.is-primary:hover { background: var(--brand-hover); }
+  .qa.is-primary .ico { background: rgba(255,255,255,.18); color: var(--fg-on-brand); }
+  .qa.is-primary .qa-d { color: rgba(255,255,255,.8); }
+  .qa-t, .qa-d { display: block; }
+  .qa-t { font-size: var(--text-md); font-weight: var(--weight-semibold); line-height: 1.3; }
+  .qa-d { font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.4; margin-top: 2px; }
+  .qa .chev { margin-left: auto; opacity: .6; }
+
+  @container canvas (max-width: 900px) {
+    .hero { padding: var(--space-5); }
+  }
+  @container canvas (max-width: 640px) {
+    .quick { grid-template-columns: minmax(0, 1fr); }
+  }
+}

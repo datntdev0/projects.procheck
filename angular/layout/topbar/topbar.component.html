@@ -1,0 +1,52 @@
+<nav class="crumbs" aria-label="Breadcrumb">
+  <a class="crumb" routerLink="/projects">
+    <pc-icon name="layout-grid" [size]="14" />
+    <span>Projects</span>
+  </a>
+  @if (crumb(); as current) {
+    <span class="crumb-sep">/</span>
+    <span class="crumb current" aria-current="page">{{ current }}</span>
+  }
+</nav>
+
+<button type="button" class="search-btn" data-testid="search-button" (click)="layout.openSearch()">
+  <pc-icon name="search" [size]="14" />
+  <span class="truncate">Search projects, artifacts, tasks…</span>
+  <pc-kbd>Ctrl K</pc-kbd>
+</button>
+
+<div class="tb-actions">
+  <button type="button" class="tb-btn" pcTooltip="Language" tooltipPosition="bottom" data-testid="language-button">
+    <pc-icon name="languages" [size]="14" />
+    <span>EN</span>
+  </button>
+
+  <pc-dropdown placement="bottom-end">
+    <button type="button" class="tb-btn" pcDropdownTrigger pcTooltip="Theme" tooltipPosition="bottom" data-testid="theme-button">
+      <pc-icon name="sun-moon" [size]="14" />
+    </button>
+    <pc-menu style="width: 200px">
+      <pc-menu-label>Theme</pc-menu-label>
+      @for (theme of themes; track theme.id) {
+        <button type="button" pcMenuItem>
+          <pc-icon [name]="theme.icon" />
+          <span>{{ theme.label }}</span>
+        </button>
+      }
+    </pc-menu>
+  </pc-dropdown>
+
+  <div class="tb-sep"></div>
+
+  <button
+    type="button"
+    class="tb-btn"
+    data-testid="assistant-toggle"
+    [class.is-on]="layout.assistantOpen()"
+    [attr.aria-pressed]="layout.assistantOpen()"
+    (click)="layout.toggleAssistant()"
+  >
+    <pc-icon name="sparkles" [size]="14" />
+    <span>Assistant</span>
+  </button>
+</div>

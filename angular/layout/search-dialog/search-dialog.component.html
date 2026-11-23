@@ -1,0 +1,37 @@
+@if (layout.searchOpen()) {
+  <div class="overlay" (mousedown)="onBackdrop($event)">
+    <div class="palette" role="dialog" aria-modal="true" aria-label="Search" data-testid="search-dialog">
+      <input
+        #queryInput
+        type="text"
+        placeholder="Type a command or search…"
+        aria-label="Search"
+        [value]="query()"
+        (input)="onInput($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+      />
+      <div class="palette-list" role="listbox">
+        @for (entry of results(); track entry.label; let i = $index) {
+          @if (isGroupStart(i)) {
+            <pc-menu-label>{{ entry.group }}</pc-menu-label>
+          }
+          <button
+            type="button"
+            class="palette-item"
+            role="option"
+            [class.is-active]="i === activeIndex()"
+            [attr.aria-selected]="i === activeIndex()"
+            (mouseenter)="activeIndex.set(i)"
+            (click)="select(entry)"
+          >
+            <pc-icon [name]="entry.icon" />
+            {{ entry.label }}
+            <pc-icon class="hint" name="corner-down-left" [size]="14" />
+          </button>
+        } @empty {
+          <div class="empty" style="padding: var(--space-8)">No results</div>
+        }
+      </div>
+    </div>
+  </div>
+}

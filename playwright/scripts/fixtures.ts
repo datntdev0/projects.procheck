@@ -1,11 +1,11 @@
 import { test as base } from '@playwright/test';
 
-import { WelcomePage } from '../pages/welcome.ts';
+import { ShellPage } from '../pages/shell.ts';
 import { AppSession } from './app.ts';
 import { type Sandbox, createSandbox } from './sandbox.ts';
 
 export interface Ui {
-  welcome: WelcomePage;
+  shell: ShellPage;
 }
 
 interface Fixtures {
@@ -40,8 +40,8 @@ export const test = base.extend<Fixtures>({
   ui: async ({ app }, use) => {
     // Page objects are resolved lazily so they follow app.restart().
     await use({
-      get welcome() {
-        return new WelcomePage(app.page);
+      get shell() {
+        return new ShellPage(app.page);
       },
     });
   },
