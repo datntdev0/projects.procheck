@@ -1,3 +1,4 @@
+import { Type } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 
 import { LayoutRouteData } from '@layout/breadcrumbs';
@@ -9,14 +10,23 @@ import { ChatsPageComponent } from '@pages/chats/chats-page.component';
 import { ComingSoonPageComponent } from '@pages/coming-soon/coming-soon-page.component';
 import { NewProjectPageComponent } from '@pages/new-project/new-project-page.component';
 import { ProjectPageComponent } from '@pages/project/project-page.component';
+import { ProjectOverviewPageComponent } from '@pages/project-overview/project-overview-page.component';
+import { ProjectSettingsPageComponent } from '@pages/project-settings/project-settings-page.component';
 import { ProjectsPageComponent } from '@pages/projects/projects-page.component';
 import { SettingsPageComponent } from '@pages/settings/settings-page.component';
 
 const crumb = (key: TranslationKey): LayoutRouteData => ({ crumb: key });
 const chatsData: LayoutRouteData = { crumb: 'nav.chats.all', hideAssistant: true };
 
+/** Project pages that are built; the others show a coming-soon note. */
+const PROJECT_PAGE_COMPONENTS: Partial<Record<string, Type<unknown>>> = {
+  overview: ProjectOverviewPageComponent,
+  settings: ProjectSettingsPageComponent,
+};
+
 function projectPageRoute(page: ProjectNavItem): Route {
-  return { path: page.segment, component: ProjectPageComponent, data: crumb(page.label), title: 'Project · Procheck' };
+  const component = PROJECT_PAGE_COMPONENTS[page.segment] ?? ProjectPageComponent;
+  return { path: page.segment, component, data: crumb(page.label), title: 'Project · Procheck' };
 }
 
 export const routes: Routes = [

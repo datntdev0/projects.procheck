@@ -1,5 +1,6 @@
 import { computed, inject } from '@angular/core';
 
+import { ReadyProjectItem } from '@features/projects/projects.model';
 import { ProjectsService } from '@features/projects/projects.service';
 
 import { injectRouteParam } from './breadcrumbs';
@@ -15,7 +16,7 @@ export function injectCurrentProjectId() {
 export function injectCurrentProject() {
   const id = injectCurrentProjectId();
   const projects = inject(ProjectsService);
-  return computed(() => {
+  return computed<ReadyProjectItem | null>(() => {
     const project = projects.find(id());
     return project?.manifest ? { ...project, manifest: project.manifest } : null;
   });

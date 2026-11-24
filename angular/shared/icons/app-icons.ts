@@ -93,6 +93,11 @@ import {
   LucideLock,
   LucideRocket,
   LucideRoute,
+  LucideBuilding2,
+  LucideCodeXml,
+  LucideFolderSearch,
+  LucideListX,
+  LucideUnlink,
   provideLucideIcons,
 } from '@lucide/angular';
 
@@ -191,6 +196,11 @@ export const APP_ICONS = [
   LucideLock,
   LucideRocket,
   LucideRoute,
+  LucideBuilding2,
+  LucideCodeXml,
+  LucideFolderSearch,
+  LucideListX,
+  LucideUnlink,
 ];
 
 export function provideAppIcons(): Provider {

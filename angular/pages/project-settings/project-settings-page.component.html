@@ -1,0 +1,71 @@
+<div class="canvas-inner settings-page project-settings-page" data-testid="project-settings-page">
+  <pc-project-gate>
+    @if (form.project(); as project) {
+      <header class="card ps-head">
+        <pc-project-avatar [short]="monogram()" [size]="56" />
+        <div class="grow ps-title">
+          <span class="kicker">{{ 'ps.kicker' | t }}</span>
+          <h1 data-testid="ps-title">{{ project.manifest.name }}</h1>
+          <div class="ps-paths">
+            <div class="ps-path">
+              <span class="k"><pc-icon name="file-json" [size]="14" />{{ 'ps.stored' | t }}</span>
+              <code data-testid="ps-manifest-file">{{ manifestFile() }}</code>
+            </div>
+            <div class="ps-path">
+              <span class="k"><pc-icon name="folder" [size]="14" />{{ 'ps.pdir' | t }}</span>
+              <code>{{ project.dir }}</code>
+            </div>
+          </div>
+        </div>
+        <div class="ps-acts">
+          <button pcButton size="sm" type="button" data-testid="ps-reveal" (click)="actions.reveal(project.id)">
+            <pc-icon name="folder-search" />{{ 'ps.reveal' | t }}
+          </button>
+          <button pcButton size="sm" type="button" (click)="actions.copyPath(project.dir)"><pc-icon name="copy" />{{ 'ps.copy' | t }}</button>
+        </div>
+      </header>
+      <div class="ap-link">
+        <pc-icon name="settings" [size]="14" />
+        <span>{{ 'ps.defaults' | t }}</span>
+        <a routerLink="/settings">{{ 'nav.app_settings' | t }}</a>
+      </div>
+
+      <div class="set-wrap">
+        <nav class="set-nav" [attr.aria-label]="'nav.project_settings' | t" data-testid="ps-nav">
+          @for (item of nav; track item.id) {
+            @if (item.id === 'danger') {
+              <div class="sp"></div>
+            }
+            <button
+              type="button"
+              class="set-nav-item"
+              [class.danger]="item.id === 'danger'"
+              [class.is-active]="active() === item.id"
+              [attr.aria-current]="active() === item.id ? 'true' : null"
+              [attr.data-testid]="'ps-nav-' + item.id"
+              (click)="go(item.id)"
+            >
+              <pc-icon [name]="item.icon" [size]="15" />
+              <span>{{ item.label | t }}</span>
+            </button>
+          }
+        </nav>
+
+        <div class="set-content">
+          <pc-project-general-section />
+          <pc-project-danger-section [project]="project" />
+        </div>
+      </div>
+
+      <div class="savebar" [class.is-off]="!form.dirty()" role="region" [attr.aria-label]="'set.unsaved' | t" [attr.aria-hidden]="!form.dirty()" data-testid="ps-savebar">
+        <span class="grow"><pc-icon name="circle-dot" [size]="14" class="savebar-dot" />{{ 'set.unsaved' | t }}</span>
+        <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-discard" [disabled]="form.saving()" (click)="discard()">
+          {{ 'set.discard' | t }}
+        </button>
+        <button pcButton variant="primary" size="sm" type="button" data-testid="ps-save" [disabled]="form.saving() || form.nameMissing()" (click)="save()">
+          {{ 'common.save' | t }}
+        </button>
+      </div>
+    }
+  </pc-project-gate>
+</div>

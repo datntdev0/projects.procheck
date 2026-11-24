@@ -33,6 +33,9 @@ export interface ProjectItem {
   manifest: ProjectManifest | null;
 }
 
+/** A project whose `procheck.json` was read. */
+export type ReadyProjectItem = ProjectItem & { manifest: ProjectManifest };
+
 export type DirectoryCheck = 'available' | 'notAbsolute' | 'notDirectory' | 'notEmpty' | 'unreadable';
 
 export type SourceProblem = 'notFound' | 'notAFile' | 'tooLarge';
@@ -53,6 +56,25 @@ export interface RepositoryInfo {
   branch: string | null;
   clean: boolean | null;
 }
+
+/** Mirrors `ProjectUpdate` in desktop/src/features/projects/edit.rs (General section of Project settings). */
+export interface ProjectUpdate {
+  name: string;
+  code: string | null;
+  client: string | null;
+  description: string | null;
+  repository: string | null;
+}
+
+/** Error codes of `projects_update`, `projects_remove` and `projects_delete` (`DesktopIpcError.code`). */
+export type EditErrorCode =
+  | 'notFound'
+  | 'notReady'
+  | 'nameRequired'
+  | 'repositoryRequired'
+  | 'invalidRepository'
+  | 'io'
+  | 'storage';
 
 /** Mirrors `NewProject` in desktop/src/features/projects/create.rs. */
 export interface NewProject {

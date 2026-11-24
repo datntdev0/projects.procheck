@@ -9,6 +9,7 @@ import {
   DirectoryCheck,
   NewProject,
   ProjectItem,
+  ProjectUpdate,
   RepositoryInfo,
   SourceCandidate,
 } from './projects.model';
@@ -52,6 +53,33 @@ export class ProjectsService {
     return project;
   }
 
+  async update(id: string, update: ProjectUpdate): Promise<ProjectItem> {
+    const project = await this.ipc.invoke<ProjectItem>('projects_update', { id, update });
+    this.replace(project);
+    return project;
+  }
+
+  /** Removes the project from the list; its directory is kept. */
+  async remove(id: string): Promise<void> {
+    await this.ipc.invoke<void>('projects_remove', { id });
+    this.forget(id);
+  }
+
+  /** Permanently deletes the project directory and removes the project from the list. */
+  async delete(id: string): Promise<void> {
+    await this.ipc.invoke<void>('projects_delete', { id });
+    this.forget(id);
+  }
+
+  reveal(id: string): Promise<void> {
+    return this.ipc.invoke<void>('projects_reveal', { id });
+  }
+
+  /** Opens the linked repository, or else the project directory, in VS Code. */
+  openInVsCode(id: string): Promise<void> {
+    return this.ipc.invoke<void>('projects_open_in_vscode', { id });
+  }
+
   defaultDir(): Promise<string> {
     return this.ipc.invoke<string>('projects_default_dir');
   }
@@ -91,6 +119,14 @@ export class ProjectsService {
 
   private upsert(project: ProjectItem): void {
     this.items.update((list) => [project, ...list.filter((p) => p.id !== project.id)]);
+  }
+
+  private replace(project: ProjectItem): void {
+    this.items.update((list) => list.map((p) => (p.id === project.id ? project : p)));
+  }
+
+  private forget(id: string): void {
+    this.items.update((list) => list.filter((p) => p.id !== id));
   }
 }
 
