@@ -16,7 +16,7 @@ import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 const MAX_HEIGHT = 200;
 
-const STATE_TONES: Record<ConnectionState, 'success' | 'warning' | 'danger' | 'neutral'> = {
+export const STATE_TONES: Record<ConnectionState, 'success' | 'warning' | 'danger' | 'neutral'> = {
   connected: 'success',
   signedOut: 'warning',
   missing: 'danger',
@@ -51,7 +51,7 @@ interface CliOption {
         #input
         rows="1"
         data-testid="chat-input"
-        [placeholder]="'ch.ph' | t"
+        [placeholder]="placeholder() || ('ch.ph' | t)"
         [attr.aria-label]="'ch.message' | t"
         [value]="draft()"
         (input)="onInput()"
@@ -144,6 +144,7 @@ export class ChatComposerComponent {
   readonly agent = input.required<AgentId>();
   readonly selectedModel = input<string | null>(null);
   readonly locked = input(false);
+  readonly placeholder = input('');
   readonly busy = input(false);
   readonly send = output<string>();
   readonly stop = output<void>();

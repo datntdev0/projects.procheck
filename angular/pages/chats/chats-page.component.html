@@ -14,7 +14,7 @@
         <pc-icon name="chevron-down" [size]="14" />
       </button>
       <div class="sub">
-        <span class="scope-b"><pc-icon name="globe" [size]="11" />{{ 'ch.scope.none' | t }}</span>
+        <pc-chat-scope-picker [scope]="scope()" [locked]="session.locked()" (scopeChange)="setScope($event)" />
         <span class="cli-b" [class.codex]="agent() === 'codex'">{{ agentName() }}</span>
         @if (model(); as model) {
           <span class="mono" style="font-size: 11px">{{ model }}</span>
@@ -29,7 +29,7 @@
       <pc-icon name="square-pen" />{{ 'ch.new' | t }}
     </button>
     @if (historyOpen()) {
-      <pc-chat-history (closed)="historyOpen.set(false)" (picked)="openChat($event)" (newChat)="newChat()" />
+      <pc-chat-history [currentId]="session.currentId()" (closed)="historyOpen.set(false)" (picked)="openChat($event)" (newChat)="newChat()" />
     }
   </header>
 
@@ -38,9 +38,9 @@
       <div class="hero" data-testid="chat-empty">
         <div class="orb"><pc-icon name="sparkles" [size]="26" /></div>
         <h2>{{ 'ch.empty.title' | t }}</h2>
-        <p>{{ 'ch.empty.sub' | t }}</p>
+        <p>{{ scope() === null ? ('ch.empty.sub' | t) : ('ch.empty.sub.project' | t: { project: scopeView().name }) }}</p>
         <div class="sg-grid">
-          @for (s of suggestions; track s.title) {
+          @for (s of suggestions(); track s.title) {
             <button type="button" class="sg" data-testid="chat-suggestion" (click)="fill(s.prompt)">
               <span class="file-tile"><pc-icon [name]="s.icon" [size]="14" /></span>
               <span><b>{{ s.title | t }}</b><span class="d">{{ s.detail | t }}</span></span>
@@ -73,11 +73,12 @@
   </div>
 
   <div class="cmp-wrap">
-    <pc-chat-usage [chat]="chat()" [agent]="agent()" [model]="model()" />
+    <pc-chat-usage [chat]="chat()" [agent]="agent()" [model]="model()" [scope]="scope()" />
     <pc-chat-composer
       [agent]="agent()"
-      [selectedModel]="chats.selectedModel()"
-      [locked]="chats.agentLocked()"
+      [selectedModel]="session.selectedModel()"
+      [locked]="session.locked()"
+      [placeholder]="placeholder()"
       [busy]="!!live()"
       (send)="send($event)"
       (stop)="stop()"

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, computed, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
 import { ButtonComponent } from '@components/button/button.component';
 import { InputDirective } from '@components/form/input.directive';
@@ -6,14 +6,16 @@ import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
 import { AGENT_NAMES } from '@features/agents/agents.service';
-import { CHAT_GROUPS, ChatGroup, ChatSummary, groupOf } from '@features/chats/chats.model';
+import { ChatScopesService, ScopeView } from '@features/chats/chat-scopes.service';
+import { CHAT_GROUPS, ChatGroup, ChatScope, ChatSummary, ScopeFilter, groupOf } from '@features/chats/chats.model';
 import { ChatsService } from '@features/chats/chats.service';
-import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
 import { I18nService } from '@shared/i18n/i18n.service';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { dayLabel } from './chat-format';
+import { ScopeAvatarComponent } from './chat-scope-picker.component';
+import { reportChatError } from './chat-thread';
 
 interface HistoryGroup {
   id: ChatGroup;
@@ -23,10 +25,25 @@ interface HistoryGroup {
 
 type RowMode = 'rename' | 'confirm';
 
-/** Popover listing every general chat: search, date groups, pin, rename and delete. */
+interface ScopeChip {
+  view: ScopeView;
+  count: number;
+}
+
+const ALL: ScopeFilter = { kind: 'all' };
+
+function matches(filter: ScopeFilter, chat: ChatSummary): boolean {
+  return filter.kind === 'all' || chat.projectId === filter.scope;
+}
+
+function distinctScopes(chats: ChatSummary[]): ChatScope[] {
+  return [...new Set(chats.map((c) => c.projectId))].sort((a, b) => (a === null ? 1 : b === null ? -1 : 0));
+}
+
+/** Popover listing the chats: scope filter, search, date groups, pin, rename and delete. */
 @Component({
   selector: 'pc-chat-history',
-  imports: [ButtonComponent, InputDirective, IconComponent, TooltipDirective, TranslatePipe],
+  imports: [ButtonComponent, InputDirective, IconComponent, ScopeAvatarComponent, TooltipDirective, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'hist',
@@ -52,6 +69,24 @@ type RowMode = 'rename' | 'confirm';
         <pc-icon name="square-pen" />{{ 'ch.new' | t }}
       </button>
     </div>
+    @if (chips().length > 1) {
+      <div class="hist-scopes" data-testid="chat-history-scopes">
+        <button type="button" class="hf all" [class.is-on]="filter().kind === 'all'" data-testid="chat-history-scope-all" (click)="filter.set(all)">
+          {{ 'ch.hist.all' | t }}<span class="n">{{ chats.chats().length }}</span>
+        </button>
+        @for (chip of chips(); track chip.view.scope) {
+          <button
+            type="button"
+            class="hf"
+            [class.is-on]="isOn(chip.view.scope)"
+            [attr.data-testid]="'chat-history-scope-' + (chip.view.scope ?? 'none')"
+            (click)="pick(chip.view.scope)"
+          >
+            <pc-scope-avatar [monogram]="chip.view.monogram" /><span class="truncate">{{ chip.view.name }}</span><span class="n">{{ chip.count }}</span>
+          </button>
+        }
+      </div>
+    }
     <div class="hist-list">
       @for (group of groups(); track group.id) {
         <div class="hg">{{ group.label | t }}</div>
@@ -59,12 +94,12 @@ type RowMode = 'rename' | 'confirm';
           <div
             class="hr"
             data-testid="chat-history-row"
-            [class.is-active]="chat.id === chats.currentId()"
+            [class.is-active]="chat.id === currentId()"
             [class.is-editing]="editing() === chat.id && mode() === 'rename'"
             [class.is-confirm]="editing() === chat.id && mode() === 'confirm'"
             (click)="onRowClick(chat)"
           >
-            <span class="sc-av none"><pc-icon name="globe" /></span>
+            <pc-scope-avatar [monogram]="scopes.describe(chat.projectId).monogram" />
             @if (editing() === chat.id && mode() === 'rename') {
               <input
                 pcInput
@@ -95,7 +130,7 @@ type RowMode = 'rename' | 'confirm';
                   }
                   <span class="truncate">{{ chat.title || ('ch.untitled' | t) }}</span>
                 </div>
-                <div class="hr-s truncate">{{ names[chat.agent] }} · {{ 'ch.msgs' | t: { n: chat.messageCount } }}</div>
+                <div class="hr-s truncate">{{ scopes.describe(chat.projectId).name }} · {{ names[chat.agent] }} · {{ 'ch.msgs' | t: { n: chat.messageCount } }}</div>
               </div>
               <span class="hr-time">{{ when(chat) }}</span>
               <div class="hr-acts">
@@ -121,14 +156,26 @@ type RowMode = 'rename' | 'confirm';
 export class ChatHistoryComponent {
   protected readonly i18n = inject(I18nService);
   protected readonly chats = inject(ChatsService);
+  protected readonly scopes = inject(ChatScopesService);
   private readonly toast = inject(ToastService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
+  readonly currentId = input<string | null>(null);
+  readonly initialFilter = input<ScopeFilter>(ALL);
   readonly closed = output<void>();
   readonly picked = output<string>();
   readonly newChat = output<void>();
 
   protected readonly names = AGENT_NAMES;
+  protected readonly all = ALL;
+  protected readonly filter = linkedSignal(() => this.initialFilter());
+  protected readonly chips = computed<ScopeChip[]>(() => {
+    const chats = this.chats.chats();
+    return distinctScopes(chats).map((scope) => ({
+      view: this.scopes.describe(scope),
+      count: chats.filter((c) => c.projectId === scope).length,
+    }));
+  });
   protected readonly query = signal('');
   protected readonly editing = signal<string | null>(null);
   protected readonly mode = signal<RowMode>('rename');
@@ -136,7 +183,8 @@ export class ChatHistoryComponent {
   protected readonly groups = computed<HistoryGroup[]>(() => {
     const q = this.query().trim().toLowerCase();
     const now = new Date();
-    const visible = this.chats.chats().filter((c) => !q || c.title.toLowerCase().includes(q));
+    const filter = this.filter();
+    const visible = this.chats.chats().filter((c) => matches(filter, c) && (!q || c.title.toLowerCase().includes(q)));
     return CHAT_GROUPS.map((id) => ({
       id,
       label: `ch.g.${id}` as TranslationKey,
@@ -146,6 +194,15 @@ export class ChatHistoryComponent {
 
   constructor() {
     afterNextRender(() => this.host.querySelector<HTMLInputElement>('[data-testid="chat-history-search"]')?.focus());
+  }
+
+  protected isOn(scope: ChatScope): boolean {
+    const filter = this.filter();
+    return filter.kind === 'scope' && filter.scope === scope;
+  }
+
+  protected pick(scope: ChatScope): void {
+    this.filter.set({ kind: 'scope', scope });
   }
 
   protected when(chat: ChatSummary): string {
@@ -217,8 +274,7 @@ export class ChatHistoryComponent {
       await action();
       if (done) this.toast.show(this.i18n.t(done));
     } catch (error) {
-      const reason = error instanceof DesktopIpcError ? error.reason : String(error);
-      this.toast.show(this.i18n.t('ch.err.action', { reason }), { icon: 'circle-alert', tone: 'danger' });
+      reportChatError(this.toast, this.i18n, 'ch.err.action', error);
     }
   }
 }

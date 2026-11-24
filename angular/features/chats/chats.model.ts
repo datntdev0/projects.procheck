@@ -5,6 +5,7 @@ export interface ChatSummary {
   id: string;
   title: string;
   agent: AgentId;
+  projectId: string | null;
   model: string | null;
   selectedModel: string | null;
   sessionId: string | null;
@@ -13,6 +14,16 @@ export interface ChatSummary {
   updatedAt: string;
   messageCount: number;
   usage: ChatUsage;
+}
+
+/** Where a chat works: `null` for a general chat, else the id of its project. */
+export type ChatScope = string | null;
+
+/** Filter of the chat history: every chat, or the chats of one scope. */
+export type ScopeFilter = { kind: 'all' } | { kind: 'scope'; scope: ChatScope };
+
+export function inScope(chat: ChatSummary, scope: ChatScope): boolean {
+  return chat.projectId === scope;
 }
 
 export type ChatRole = 'user' | 'assistant';

@@ -7,7 +7,8 @@ import { ToastService } from '@components/toast/toast.service';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
 import { AgentConnectionsService } from '@features/agents/agent-connections.service';
 import { AGENT_NAMES } from '@features/agents/agents.service';
-import { ChatSummary, LimitWindow, UsageLimits, contextPercent, contextUsed, usageTone } from '@features/chats/chats.model';
+import { ChatScopesService } from '@features/chats/chat-scopes.service';
+import { ChatScope, ChatSummary, LimitWindow, UsageLimits, contextPercent, contextUsed, usageTone } from '@features/chats/chats.model';
 import { ChatsService } from '@features/chats/chats.service';
 import type { AgentId } from '@features/settings/app-settings.model';
 import { I18nService } from '@shared/i18n/i18n.service';
@@ -15,6 +16,7 @@ import type { TranslationKey } from '@shared/i18n/locales/en';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { clock, compactNumber, dateTimeLabel, timeLeft } from './chat-format';
+import { ScopeAvatarComponent } from './chat-scope-picker.component';
 
 const RING_RADIUS = 7;
 const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
@@ -30,7 +32,7 @@ interface WindowRow {
 /** Usage strip above the composer; opens the context window, usage limits and chat details. */
 @Component({
   selector: 'pc-chat-usage',
-  imports: [BadgeComponent, ButtonComponent, IconComponent, TooltipDirective, TranslatePipe],
+  imports: [BadgeComponent, ButtonComponent, IconComponent, ScopeAvatarComponent, TooltipDirective, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'usage-host',
@@ -127,7 +129,7 @@ interface WindowRow {
           <div class="cx-h">{{ 'ch.ctx.context' | t }}</div>
           <div class="kv">
             <span class="k">{{ 'ch.ctx.scope' | t }}</span>
-            <span class="v row gap-1"><span class="sc-av none"><pc-icon name="globe" /></span>{{ 'ch.scope.none' | t }}</span>
+            <span class="v row gap-1"><pc-scope-avatar [monogram]="scopeView().monogram" />{{ scopeView().name }}</span>
           </div>
           <div class="kv"><span class="k">{{ 'ch.ctx.messages' | t }}</span><span class="v">{{ chat()?.messageCount ?? 0 }}</span></div>
 
@@ -144,14 +146,17 @@ interface WindowRow {
 
           @if (chats.paths(); as paths) {
             <div class="cx-h">{{ 'ch.ctx.dir' | t }}</div>
-            <div class="path"><span>{{ paths.workingDir }}</span><button pcButton variant="ghost" size="sm" [iconOnly]="true" type="button" [pcTooltip]="'ch.ctx.copy' | t" (click)="copy(paths.workingDir)"><pc-icon name="copy" [size]="14" /></button></div>
+            <div class="path" data-testid="chat-working-dir"><span>{{ workingDir() }}</span><button pcButton variant="ghost" size="sm" [iconOnly]="true" type="button" [pcTooltip]="'ch.ctx.copy' | t" (click)="copy(workingDir())"><pc-icon name="copy" [size]="14" /></button></div>
+            @if (scope() !== null) {
+              <div class="note"><pc-icon name="square-pen" [size]="13" /><span>{{ 'ch.ctx.dir.project' | t }}</span></div>
+            }
 
             <div class="cx-h">
               <span>{{ 'ch.ctx.home' | t }}</span>
-              <pc-badge tone="success"><pc-icon name="shield-check" [size]="12" />{{ 'ch.ctx.isolated' | t }}</pc-badge>
+              <pc-badge tone="success"><pc-icon name="shield-check" [size]="12" />{{ (scope() === null ? 'ch.ctx.isolated' : 'ch.ctx.isolated.project') | t }}</pc-badge>
             </div>
             <div class="path"><span>{{ home() }}</span><button pcButton variant="ghost" size="sm" [iconOnly]="true" type="button" [pcTooltip]="'ch.ctx.copy' | t" (click)="copy(home())"><pc-icon name="copy" [size]="14" /></button></div>
-            <div class="note"><pc-icon name="lock-keyhole" [size]="13" /><span>{{ 'ch.ctx.home.note' | t }}</span></div>
+            <div class="note"><pc-icon name="lock-keyhole" [size]="13" /><span>{{ (scope() === null ? 'ch.ctx.home.note' : 'ch.ctx.home.note.project') | t }}</span></div>
 
             <div class="cx-h">{{ 'ch.ctx.sid' | t }}</div>
             @if (chat()?.sessionId; as sid) {
@@ -164,7 +169,7 @@ interface WindowRow {
               <div class="cx-h">{{ 'ch.ctx.chat' | t }}</div>
               <div class="path"><span>{{ transcript }}</span><button pcButton variant="ghost" size="sm" [iconOnly]="true" type="button" [pcTooltip]="'ch.ctx.copy' | t" (click)="copy(transcript)"><pc-icon name="copy" [size]="14" /></button></div>
             }
-            <div class="note"><pc-icon name="folder-open" [size]="13" /><span>{{ 'ch.ctx.chat.note' | t }}</span></div>
+            <div class="note"><pc-icon name="folder-open" [size]="13" /><span>{{ (scope() === null ? 'ch.ctx.chat.note' : 'ch.ctx.chat.note.project') | t }}</span></div>
           }
         </div>
       </div>
@@ -174,6 +179,7 @@ interface WindowRow {
 export class ChatUsageComponent {
   protected readonly i18n = inject(I18nService);
   protected readonly chats = inject(ChatsService);
+  private readonly scopes = inject(ChatScopesService);
   private readonly connections = inject(AgentConnectionsService);
   private readonly toast = inject(ToastService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -181,11 +187,14 @@ export class ChatUsageComponent {
   readonly chat = input<ChatSummary | null>(null);
   readonly agent = input.required<AgentId>();
   readonly model = input<string | null>(null);
+  readonly scope = input<ChatScope>(null);
 
   protected readonly open = signal(false);
   protected readonly radius = RING_RADIUS;
 
   protected readonly agentName = computed(() => AGENT_NAMES[this.agent()]);
+  protected readonly scopeView = computed(() => this.scopes.describe(this.scope()));
+  protected readonly workingDir = computed(() => this.scopeView().dir ?? this.chats.paths()?.workingDir ?? '');
   protected readonly context = computed(() => this.chat()?.usage.context ?? null);
   protected readonly used = computed(() => contextUsed(this.context()));
   protected readonly percent = computed(() => contextPercent(this.context()));

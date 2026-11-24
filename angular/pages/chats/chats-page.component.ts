@@ -9,23 +9,24 @@ import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
 import { AGENT_NAMES } from '@features/agents/agents.service';
-import type { ChatMessage } from '@features/chats/chats.model';
+import { ChatScopesService } from '@features/chats/chat-scopes.service';
+import type { ChatMessage, ChatScope } from '@features/chats/chats.model';
 import { ChatsService } from '@features/chats/chats.service';
 import type { AgentId } from '@features/settings/app-settings.model';
 import { AppSettingsService } from '@features/settings/app-settings.service';
-import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
 import { I18nService } from '@shared/i18n/i18n.service';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { ChatComposerComponent } from './chat-composer.component';
 import { ChatHistoryComponent } from './chat-history.component';
+import { ChatScopePickerComponent } from './chat-scope-picker.component';
+import { displayedModel, lastOf, promptBefore, reportChatError, reportSendError, scrollThreadToEnd } from './chat-thread';
 import { ChatMessageComponent } from './chat-message.component';
 import { ChatUsageComponent } from './chat-usage.component';
 import { MarkdownComponent } from './markdown.component';
 
 export const DRAFT_ROUTE_ID = 'new';
-const STICKY_SCROLL_PX = 140;
 
 interface Suggestion {
   icon: string;
@@ -34,12 +35,12 @@ interface Suggestion {
   prompt: TranslationKey;
 }
 
-function lastOf(list: ChatMessage[], role: ChatMessage['role']): ChatMessage | null {
-  for (let i = list.length - 1; i >= 0; i--) {
-    if (list[i].role === role) return list[i];
-  }
-  return null;
-}
+const PROJECT_SUGGESTIONS: Suggestion[] = [
+  { icon: 'folder-search', title: 'ch.psg1', detail: 'ch.psg1.d', prompt: 'ch.psg1.p' },
+  { icon: 'file-text', title: 'ch.psg2', detail: 'ch.psg2.d', prompt: 'ch.psg2.p' },
+  { icon: 'list-checks', title: 'ch.psg3', detail: 'ch.psg3.d', prompt: 'ch.psg3.p' },
+  { icon: 'square-pen', title: 'ch.psg4', detail: 'ch.psg4.d', prompt: 'ch.psg4.p' },
+];
 
 const SUGGESTIONS: Suggestion[] = [
   { icon: 'scale', title: 'ch.sg1', detail: 'ch.sg1.d', prompt: 'ch.sg1.p' },
@@ -48,7 +49,7 @@ const SUGGESTIONS: Suggestion[] = [
   { icon: 'terminal', title: 'ch.sg4', detail: 'ch.sg4.d', prompt: 'ch.sg4.p' },
 ];
 
-/** All chats (ported from _proto/assistant.html, general chats only): header, thread, usage strip and composer. */
+/** All chats (ported from _proto/assistant.html): header with the scope picker, thread, usage strip and composer. */
 @Component({
   selector: 'pc-chats-page',
   imports: [
@@ -61,6 +62,7 @@ const SUGGESTIONS: Suggestion[] = [
     ChatComposerComponent,
     ChatHistoryComponent,
     ChatMessageComponent,
+    ChatScopePickerComponent,
     ChatUsageComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,7 +70,9 @@ const SUGGESTIONS: Suggestion[] = [
   templateUrl: './chats-page.component.html',
 })
 export class ChatsPageComponent {
-  protected readonly chats = inject(ChatsService);
+  private readonly chats = inject(ChatsService);
+  private readonly scopes = inject(ChatScopesService);
+  protected readonly session = this.chats.createSession();
   protected readonly i18n = inject(I18nService);
   private readonly settings = inject(AppSettingsService);
   private readonly toast = inject(ToastService);
@@ -77,17 +81,20 @@ export class ChatsPageComponent {
   private readonly thread = viewChild<ElementRef<HTMLElement>>('thread');
   private readonly composer = viewChild(ChatComposerComponent);
 
-  protected readonly suggestions = SUGGESTIONS;
   protected readonly historyOpen = signal(false);
 
-  protected readonly chat = this.chats.current;
-  protected readonly messages = this.chats.messages;
-  protected readonly live = this.chats.live;
-  protected readonly agent = this.chats.agent;
-  protected readonly agentName = computed(() => AGENT_NAMES[this.agent()]);
-  protected readonly model = computed(
-    () => this.live()?.model ?? this.chat()?.model ?? this.chats.selectedModel() ?? this.settings.settings().agents[this.agent()].model,
+  protected readonly chat = this.session.current;
+  protected readonly messages = this.session.messages;
+  protected readonly live = this.session.live;
+  protected readonly agent = this.session.agent;
+  protected readonly scope = this.session.scope;
+  protected readonly scopeView = computed(() => this.scopes.describe(this.scope()));
+  protected readonly suggestions = computed(() => (this.scope() === null ? SUGGESTIONS : PROJECT_SUGGESTIONS));
+  protected readonly placeholder = computed(() =>
+    this.scope() === null ? this.i18n.t('ch.ph') : this.i18n.t('ch.ph.project', { project: this.scopeView().name }),
   );
+  protected readonly agentName = computed(() => AGENT_NAMES[this.agent()]);
+  protected readonly model = computed(() => displayedModel(this.session, this.settings));
   protected readonly title = computed(() => this.chat()?.title || this.i18n.t('ch.untitled'));
   protected readonly empty = computed(() => this.messages().length === 0 && !this.live());
   protected readonly lastAssistantId = computed(() => lastOf(this.messages(), 'assistant')?.id ?? null);
@@ -100,7 +107,7 @@ export class ChatsPageComponent {
       untracked(() => this.follow(id, loaded));
     });
     effect(() => {
-      const current = this.chats.currentId();
+      const current = this.session.currentId();
       untracked(() => this.syncRoute(current));
     });
     afterRenderEffect(() => {
@@ -126,34 +133,32 @@ export class ChatsPageComponent {
   }
 
   protected setAgent(agent: AgentId): void {
-    this.chats.setAgent(agent);
+    this.session.setAgent(agent);
+  }
+
+  protected setScope(scope: ChatScope): void {
+    this.session.setScope(scope);
   }
 
   protected setModel(model: string | null): void {
-    this.chats.setModel(model).catch((error: unknown) => this.fail('ch.err.model', error));
+    this.session.setModel(model).catch((error: unknown) => this.fail('ch.err.model', error));
   }
 
   protected async send(text: string): Promise<void> {
     try {
-      await this.chats.send(text);
+      await this.session.send(text);
     } catch (error) {
-      if (error instanceof DesktopIpcError && error.code === 'busy') {
-        this.toast.show(this.i18n.t('ch.err.busy'), { icon: 'circle-alert', tone: 'warning' });
-      } else {
-        this.fail('ch.err.send', error);
-      }
+      reportSendError(this.toast, this.i18n, error);
     }
   }
 
   protected retry(message: ChatMessage): void {
-    const list = this.messages();
-    const index = list.findIndex((m) => m.id === message.id);
-    const prompt = lastOf(list.slice(0, index), 'user');
+    const prompt = promptBefore(this.messages(), message);
     if (prompt) void this.send(prompt.text);
   }
 
   protected stop(): void {
-    void this.chats.stop();
+    void this.session.stop();
   }
 
   protected onKeydown(event: KeyboardEvent): void {
@@ -171,14 +176,14 @@ export class ChatsPageComponent {
       return;
     }
     if (id === DRAFT_ROUTE_ID) {
-      this.chats.startDraft();
+      this.session.startDraft();
       return;
     }
     if (!this.chats.chats().some((c) => c.id === id)) {
       void this.router.navigate(['/chats', DRAFT_ROUTE_ID], { replaceUrl: true });
       return;
     }
-    this.chats.open(id).catch((error: unknown) => this.fail('ch.err.load', error));
+    this.session.open(id).catch((error: unknown) => this.fail('ch.err.load', error));
   }
 
   private syncRoute(current: string | null): void {
@@ -191,14 +196,10 @@ export class ChatsPageComponent {
   }
 
   private scrollToEnd(): void {
-    const el = this.thread()?.nativeElement;
-    if (!el) return;
-    const nearEnd = el.scrollHeight - el.scrollTop - el.clientHeight < STICKY_SCROLL_PX;
-    if (nearEnd || !this.live()) el.scrollTop = el.scrollHeight;
+    scrollThreadToEnd(this.thread()?.nativeElement, !!this.live());
   }
 
   private fail(key: TranslationKey, error: unknown): void {
-    const reason = error instanceof DesktopIpcError ? error.reason : String(error);
-    this.toast.show(this.i18n.t(key, { reason }), { icon: 'circle-alert', tone: 'danger' });
+    reportChatError(this.toast, this.i18n, key, error);
   }
 }

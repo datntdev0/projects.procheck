@@ -16,19 +16,27 @@ pc-chats-page.ac { height: 100%; display: flex; flex-direction: column; overflow
 .sc-av { width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
 .sc-av.none { background: var(--bg-surface-3); color: var(--fg-muted); }
 .sc-av.none pc-icon { width: 11px !important; height: 11px !important; }
+.sc-av.project-avatar { width: 18px; height: 18px; border-radius: 5px; font-size: 7.5px; }
+.scope-pick { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 6px 0 3px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); background: var(--bg-surface); color: var(--fg-default); font-size: var(--text-2xs); font-weight: var(--weight-medium); cursor: pointer; max-width: 260px; min-width: 0; }
+.scope-pick:hover { border-color: var(--brand); }
+.scope-pick pc-icon { flex-shrink: 0; color: var(--fg-subtle); }
+.scope-pick.is-locked { cursor: default; padding-right: 8px; }
+.scope-pick.is-locked:hover { border-color: var(--border-default); }
+.scope-menu { min-width: 240px; max-width: 320px; max-height: 360px; overflow: auto; }
+.scope-menu .mi-note { padding: 4px 10px 6px; font-size: 11px; color: var(--fg-faint); }
 
 /* thread */
 .thread { flex: 1; overflow: auto; min-height: 0; }
 .t-in { max-width: 760px; margin: 0 auto; padding: var(--space-6) var(--space-6) var(--space-4); display: flex; flex-direction: column; gap: var(--space-6); }
-.conv .m { display: flex; gap: 12px; min-width: 0; }
-.conv .m .avatar { width: 28px; height: 28px; margin-top: 2px; flex-shrink: 0; }
-.conv .m-body { flex: 1; min-width: 0; font-size: 14px; line-height: 1.7; }
-.conv .m-meta { display: flex; align-items: center; gap: 8px; font-size: var(--text-xs); color: var(--fg-faint); margin-bottom: 4px; }
-.conv .m-meta b { color: var(--fg-strong); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
-.conv .m.user { justify-content: flex-end; }
-.conv .m.user .m-body { flex: 0 1 auto; max-width: 86%; }
-.conv .m.user .m-meta { justify-content: flex-end; margin: 4px 0 0; }
-.conv .bubble { background: var(--brand-soft); color: var(--fg-default); border-radius: var(--radius-lg) 4px var(--radius-lg) var(--radius-lg); padding: 10px 14px; white-space: pre-wrap; word-break: break-word; }
+:is(.conv, .as-thread) .m { display: flex; gap: 12px; min-width: 0; }
+:is(.conv, .as-thread) .m .avatar { width: 28px; height: 28px; margin-top: 2px; flex-shrink: 0; }
+:is(.conv, .as-thread) .m-body { flex: 1; min-width: 0; font-size: 14px; line-height: 1.7; }
+:is(.conv, .as-thread) .m-meta { display: flex; align-items: center; gap: 8px; font-size: var(--text-xs); color: var(--fg-faint); margin-bottom: 4px; }
+:is(.conv, .as-thread) .m-meta b { color: var(--fg-strong); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+:is(.conv, .as-thread) .m.user { justify-content: flex-end; }
+:is(.conv, .as-thread) .m.user .m-body { flex: 0 1 auto; max-width: 86%; }
+:is(.conv, .as-thread) .m.user .m-meta { justify-content: flex-end; margin: 4px 0 0; }
+:is(.conv, .as-thread) .bubble { background: var(--brand-soft); color: var(--fg-default); border-radius: var(--radius-lg) 4px var(--radius-lg) var(--radius-lg); padding: 10px 14px; white-space: pre-wrap; word-break: break-word; }
 .m-acts { display: flex; gap: 2px; margin-top: 8px; }
 .m-acts .btn { color: var(--fg-faint); }
 .m-note { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: var(--text-xs); color: var(--fg-subtle); }
@@ -144,6 +152,12 @@ pc-chat-usage { display: block; position: relative; }
 pc-chat-history.hist { position: absolute; top: calc(100% + 4px); left: var(--space-4); z-index: var(--z-dropdown); width: min(680px, calc(100% - 2 * var(--space-4))); display: flex; flex-direction: column; max-height: min(620px, calc(100vh - 140px)); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); animation: popIn var(--dur-fast) var(--ease-out); }
 .hist-top { display: flex; gap: 8px; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
 .hist-top .input { height: 32px; }
+.hist-scopes { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+.hf { display: inline-flex; align-items: center; gap: 6px; height: 26px; max-width: 220px; padding: 0 10px 0 4px; border: 1px solid var(--border-default); border-radius: var(--radius-full); background: var(--bg-surface); font-size: var(--text-2xs); font-weight: var(--weight-medium); color: var(--fg-muted); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.hf.all { padding-left: 10px; }
+.hf:hover { color: var(--fg-default); border-color: var(--fg-faint); }
+.hf.is-on { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-fg); }
+.hf .n { color: var(--fg-faint); font-variant-numeric: tabular-nums; }
 .hist-list { flex: 1; overflow: auto; padding: 2px 6px 8px; }
 .hg { padding: 12px 8px 4px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-faint); }
 .hr { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: var(--radius-md); cursor: pointer; min-height: 46px; }
@@ -171,3 +185,4 @@ pc-chat-history.hist { position: absolute; top: calc(100% + 4px); left: var(--sp
   .ctx-pop { grid-template-columns: minmax(0, 1fr); }
   .ctx-pop > div + div { border-left: 0; border-top: 1px solid var(--border-subtle); }
 }
+
