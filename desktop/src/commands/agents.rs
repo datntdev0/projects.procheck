@@ -4,7 +4,7 @@
 use tauri::{AppHandle, Runtime, State};
 use tauri_plugin_dialog::DialogExt;
 
-use super::{CommandError, CommandResult};
+use super::{CommandError, CommandResult, blocking};
 use crate::container::AppDirectories;
 use crate::features::agents::{self, AgentError, AgentId, AgentStatus, TestResult};
 
@@ -12,12 +12,6 @@ impl From<AgentError> for CommandError {
     fn from(e: AgentError) -> Self {
         CommandError::new(e.code(), e)
     }
-}
-
-async fn blocking<T: Send + 'static>(job: impl FnOnce() -> T + Send + 'static) -> CommandResult<T> {
-    tauri::async_runtime::spawn_blocking(job)
-        .await
-        .map_err(|e| CommandError::new("failed", e))
 }
 
 /// Executable, version, sign-in state and models of one CLI.

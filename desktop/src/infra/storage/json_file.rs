@@ -22,6 +22,20 @@ pub fn read<T: DeserializeOwned>(path: &Path) -> StorageResult<Option<T>> {
         })
 }
 
+/// Reads a JSON document, falling back to the default value when it is missing. An unparsable
+/// document is renamed to `*.invalid.json` so it is kept for inspection but no longer read.
+pub fn read_or_reset<T: DeserializeOwned + Default>(path: &Path) -> StorageResult<T> {
+    match read(path) {
+        Ok(value) => Ok(value.unwrap_or_default()),
+        Err(e @ StorageError::Json { .. }) => {
+            log::warn!("{e}; starting over");
+            let _ = fs::rename(path, path.with_extension("invalid.json"));
+            Ok(T::default())
+        }
+        Err(e) => Err(e),
+    }
+}
+
 /// Writes `value` as pretty JSON. The document is written to a sibling temp file
 /// first and then renamed over the target, so a crash never leaves a half-written file.
 pub fn write<T: Serialize>(path: &Path, value: &T) -> StorageResult<()> {
@@ -96,6 +110,19 @@ mod tests {
         fs::write(&path, "{ not json").unwrap();
 
         assert!(matches!(read::<Doc>(&path), Err(StorageError::Json { .. })));
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn invalid_json_is_set_aside_and_reset() {
+        let dir = temp_dir("reset");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("doc.json");
+        fs::write(&path, "{ not json").unwrap();
+
+        assert_eq!(read_or_reset::<Vec<u32>>(&path).unwrap(), Vec::<u32>::new());
+        assert!(!path.exists());
+        assert!(dir.join("doc.invalid.json").exists());
         fs::remove_dir_all(dir).unwrap();
     }
 }

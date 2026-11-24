@@ -24,3 +24,10 @@ impl CommandError {
 }
 
 pub type CommandResult<T> = Result<T, CommandError>;
+
+/// Runs blocking work (processes, file copies, native dialogs) off the IPC thread.
+pub async fn blocking<T: Send + 'static>(job: impl FnOnce() -> T + Send + 'static) -> CommandResult<T> {
+    tauri::async_runtime::spawn_blocking(job)
+        .await
+        .map_err(|e| CommandError::new("failed", e))
+}

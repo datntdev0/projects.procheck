@@ -73,16 +73,7 @@ pub struct ChatStore {
 impl ChatStore {
     pub fn open(dir: PathBuf) -> StorageResult<Self> {
         fs::create_dir_all(&dir)?;
-        let index_path = dir.join(INDEX_FILE);
-        let index = match json_file::read::<ChatIndex>(&index_path) {
-            Ok(index) => index.unwrap_or_default(),
-            Err(e @ StorageError::Json { .. }) => {
-                log::warn!("{e}; starting with an empty chat list");
-                let _ = fs::rename(&index_path, index_path.with_extension("invalid.json"));
-                ChatIndex::default()
-            }
-            Err(e) => return Err(e),
-        };
+        let index = json_file::read_or_reset::<ChatIndex>(&dir.join(INDEX_FILE))?;
         let limits = json_file::read::<Vec<UsageLimits>>(&dir.join(LIMITS_FILE))
             .inspect_err(|e| log::warn!("ignoring usage limits: {e}"))
             .ok()
