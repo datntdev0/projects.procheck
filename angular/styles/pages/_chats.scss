@@ -186,3 +186,22 @@ pc-chat-history.hist { position: absolute; top: calc(100% + 4px); left: var(--sp
   .ctx-pop > div + div { border-left: 0; border-top: 1px solid var(--border-subtle); }
 }
 
+/* assistant panel: the same chat parts in a narrow column */
+.assistant .as-header { position: relative; }
+.assistant pc-chat-history.hist { left: var(--space-2); right: var(--space-2); width: auto; }
+.assistant .as-context { align-items: center; flex-wrap: nowrap; min-width: 0; }
+.assistant .as-chat { min-width: 0; font-size: var(--text-xs); color: var(--fg-subtle); }
+.as-thread .m { gap: 10px; }
+.as-thread .m .avatar { width: 24px; height: 24px; }
+.as-thread .m-body { font-size: var(--text-sm); line-height: 1.6; }
+.as-thread .m.user .m-body { max-width: 92%; }
+.as-thread .bubble { padding: 8px 12px; }
+.as-empty { padding: var(--space-8) var(--space-2); }
+.as-empty .as-suggest { justify-content: center; padding: var(--space-3) 0 0; }
+.as-cmp { padding: 0 var(--space-3) var(--space-2); }
+.as-cmp .cmp textarea { padding: 10px 12px 4px; min-height: 44px; font-size: var(--text-sm); }
+.as-cmp .cli-menu { min-width: 260px; }
+.as-cmp .as-usage { gap: 6px; padding: 0 6px; }
+.as-cmp .ctx-pop { grid-template-columns: minmax(0, 1fr); max-height: calc(100vh - 260px); }
+.as-cmp .ctx-pop > div { padding: 12px 14px; }
+.as-cmp .ctx-pop > div + div { border-left: 0; border-top: 1px solid var(--border-subtle); }

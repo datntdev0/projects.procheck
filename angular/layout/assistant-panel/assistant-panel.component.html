@@ -2,96 +2,96 @@
 <div class="assistant-inner">
   <header class="as-header">
     <pc-avatar [ai]="true" />
-    <div class="grow">
+    <div class="grow" style="min-width: 0">
       <div class="as-title">{{ 'as.title' | t }}</div>
-      <div class="as-sub"><pc-status-dot style="width: 6px; height: 6px" /> Claude Code · {{ 'as.status.disconnected' | t }}</div>
+      <div class="as-sub" data-testid="assistant-status">
+        <pc-status-dot [tone]="connectionTone()" style="width: 6px; height: 6px" /> {{ agentName() }} · {{ connectionLabel() | t }}
+        @if (model(); as model) {
+          <span class="mono truncate">· {{ model }}</span>
+        }
+      </div>
     </div>
-    <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.history' | t" tooltipPosition="bottom"><pc-icon name="history" /></button>
-    <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.new' | t" tooltipPosition="bottom" (click)="newChat()">
+    <button
+      pcButton
+      variant="ghost"
+      size="sm"
+      [iconOnly]="true"
+      data-history-trigger
+      data-testid="assistant-history"
+      [pcTooltip]="'as.history' | t"
+      tooltipPosition="bottom"
+      (click)="historyOpen.set(!historyOpen())"
+    >
+      <pc-icon name="history" />
+    </button>
+    <button pcButton variant="ghost" size="sm" [iconOnly]="true" data-testid="assistant-new" [pcTooltip]="'as.new' | t" tooltipPosition="bottom" (click)="newChat()">
       <pc-icon name="square-pen" />
     </button>
     <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.close' | t" tooltipPosition="bottom" (click)="layout.toggleAssistant(false)">
       <pc-icon name="panel-right-close" />
     </button>
+    @if (historyOpen()) {
+      <pc-chat-history
+        [currentId]="session.currentId()"
+        [initialFilter]="historyFilter()"
+        (closed)="historyOpen.set(false)"
+        (picked)="openChat($event)"
+        (newChat)="newChat()"
+      />
+    }
   </header>
 
   <div class="as-context" [attr.aria-label]="'as.context' | t">
-    @for (chip of context(); track chip.label) {
-      <span class="ctx-chip"><pc-icon [name]="chip.icon" />{{ chip.label | t }}</span>
-    }
+    <pc-chat-scope-picker [scope]="scope()" [locked]="session.locked()" (scopeChange)="setScope($event)" />
+    <span class="as-chat truncate" data-testid="assistant-chat-title">{{ title() }}</span>
   </div>
 
-  <div #messageList class="as-messages" role="log" aria-live="polite" data-testid="assistant-messages">
-    @for (msg of messages(); track $index) {
-      @if (msg.role === 'user') {
-        <div class="msg user">
-          <pc-avatar initials="Y" size="sm" />
-          <div class="msg-body">
-            <div class="msg-meta"><b>{{ 'as.you' | t }}</b>· {{ msg.time }}</div>
-            <div class="msg-text">{{ msg.text }}</div>
-          </div>
+  <div #messageList class="as-messages as-thread" role="log" aria-live="polite" data-testid="assistant-messages">
+    @if (empty()) {
+      <div class="empty as-empty">
+        <div class="empty-icon"><pc-icon name="sparkles" [size]="22" /></div>
+        <span class="text-sm">{{ (scope() === null ? 'as.empty' : 'as.empty.project') | t }}</span>
+        <div class="as-suggest">
+          @for (s of suggestions(); track s) {
+            <button type="button" data-testid="assistant-suggestion" (click)="suggest(s)">{{ s | t }}</button>
+          }
         </div>
-      } @else {
-        <div class="msg">
-          <pc-avatar [ai]="true" size="sm" />
-          <div class="msg-body">
-            <div class="msg-meta"><b>{{ 'as.name' | t }}</b>· {{ msg.time }}</div>
-            <div class="msg-text" style="margin-top: 4px">{{ msg.textKey ? (msg.textKey | t) : msg.text }}</div>
-            <div class="msg-actions">
-              <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.copy' | t"><pc-icon name="copy" [size]="14" /></button>
-              <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.helpful' | t"><pc-icon name="thumbs-up" [size]="14" /></button>
-              <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.retry' | t"><pc-icon name="rotate-ccw" [size]="14" /></button>
+      </div>
+    } @else {
+      @for (message of messages(); track message.id) {
+        <pc-chat-message [message]="message" [agent]="agent()" [canRetry]="!live() && message.id === lastAssistantId()" (retry)="retry(message)" />
+      }
+      @if (live(); as live) {
+        <div class="m" data-testid="assistant-live">
+          <pc-avatar [ai]="true" />
+          <div class="m-body">
+            <div class="m-meta">
+              <b>{{ 'ch.assistant' | t }}</b><span class="cli-b" [class.codex]="agent() === 'codex'">{{ agentName() }}</span>
             </div>
+            @if (live.text) {
+              <pc-markdown class="caret" [source]="live.text" />
+            } @else {
+              <div class="typing" [attr.aria-label]="'ch.thinking' | t"><i></i><i></i><i></i></div>
+            }
           </div>
         </div>
       }
-    } @empty {
-      <div class="empty" style="padding: var(--space-8) var(--space-4)">
-        <div class="empty-icon"><pc-icon name="sparkles" [size]="22" /></div>
-        <span class="text-sm">{{ 'as.empty' | t }}</span>
-      </div>
     }
   </div>
 
-  <div class="as-suggest">
-    @for (s of suggestions(); track s) {
-      <button type="button" (click)="send(i18n.t(s))">{{ s | t }}</button>
-    }
+  <div class="as-cmp">
+    <pc-chat-usage [chat]="session.current()" [agent]="agent()" [model]="model()" [scope]="scope()" />
+    <pc-chat-composer
+      [agent]="agent()"
+      [selectedModel]="session.selectedModel()"
+      [locked]="session.locked()"
+      [busy]="!!live()"
+      [placeholder]="placeholder()"
+      (send)="send($event)"
+      (stop)="stop()"
+      (agentChange)="setAgent($event)"
+      (modelChange)="setModel($event)"
+    />
   </div>
-
-  <form class="composer" (submit)="$event.preventDefault(); send()">
-    <textarea
-      rows="1"
-      [placeholder]="'as.placeholder' | t"
-      [attr.aria-label]="'as.message' | t"
-      data-testid="assistant-input"
-      [value]="draft()"
-      (input)="draft.set($any($event.target).value)"
-      (keydown)="onComposerKeydown($event)"
-    ></textarea>
-    <div class="composer-bar">
-      <button pcButton type="button" variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.attach' | t"><pc-icon name="paperclip" /></button>
-      <button pcButton type="button" variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'as.mention' | t"><pc-icon name="at-sign" /></button>
-      <pc-dropdown placement="top-start">
-        <button type="button" class="mode" pcDropdownTrigger>
-          <pc-icon [name]="modeOf(mode()).icon" [size]="14" />
-          <span>{{ modeOf(mode()).label | t }}</span>
-          <pc-icon name="chevron-down" [size]="14" />
-        </button>
-        <pc-menu style="width: 180px">
-          @for (m of modes; track m.id) {
-            <button type="button" pcMenuItem [active]="m.id === mode()" (click)="mode.set(m.id)">
-              <pc-icon [name]="m.icon" />
-              <span class="grow">{{ m.label | t }}</span>
-              @if (m.id === mode()) {
-                <pc-icon name="check" />
-              }
-            </button>
-          }
-        </pc-menu>
-      </pc-dropdown>
-      <button type="submit" class="send" [attr.aria-label]="'as.send' | t" [disabled]="!draft().trim()"><pc-icon name="arrow-up" /></button>
-    </div>
-  </form>
-  <div class="as-footnote">{{ 'as.footnote' | t }}</div>
+  <div class="as-footnote">{{ footnote() | t }}</div>
 </div>
