@@ -23,9 +23,15 @@ function deepest<T>(route: ActivatedRouteSnapshot | null, read: DataReader<T>, f
   return value;
 }
 
-function injectRouteData<T>(read: DataReader<T>, fallback: T) {
+function deepestParam(route: ActivatedRouteSnapshot | null, name: string): string | null {
+  let value: string | null = null;
+  for (let r = route; r; r = r.firstChild) value = r.paramMap.get(name) ?? value;
+  return value;
+}
+
+function injectFromRoute<T>(read: (root: ActivatedRouteSnapshot) => T) {
   const router = inject(Router);
-  const current = () => deepest(router.routerState.snapshot.root, read, fallback);
+  const current = () => read(router.routerState.snapshot.root);
   return toSignal(
     router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
@@ -33,6 +39,15 @@ function injectRouteData<T>(read: DataReader<T>, fallback: T) {
     ),
     { initialValue: current() },
   );
+}
+
+function injectRouteData<T>(read: DataReader<T>, fallback: T) {
+  return injectFromRoute((root) => deepest(root, read, fallback));
+}
+
+/** Value of a route parameter anywhere in the active route, as a signal. Must run in an injection context. */
+export function injectRouteParam(name: string) {
+  return injectFromRoute((root) => deepestParam(root, name));
 }
 
 /** Translation key of the current page crumb, as a signal. Must run in an injection context. */

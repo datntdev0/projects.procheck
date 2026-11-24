@@ -3,6 +3,13 @@
     <pc-icon name="layout-grid" [size]="14" />
     <span>{{ 'shell.home' | t }}</span>
   </a>
+  @if (project(); as current) {
+    <span class="crumb-sep">/</span>
+    <a class="crumb" [routerLink]="['/projects', current.id]" data-testid="crumb-project">
+      <pc-project-avatar [short]="monogram()" [size]="20" />
+      <span class="truncate" style="max-width: 240px">{{ current.manifest.name }}</span>
+    </a>
+  }
   @if (crumb(); as current) {
     <span class="crumb-sep">/</span>
     <span class="crumb current" aria-current="page">{{ current | t }}</span>
