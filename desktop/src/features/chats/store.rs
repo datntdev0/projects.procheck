@@ -110,12 +110,13 @@ impl ChatStore {
             .ok_or_else(|| ChatStoreError::NotFound(id.to_owned()))
     }
 
-    pub fn create(&self, agent: AgentId, selected_model: Option<String>) -> ChatStoreResult<ChatSummary> {
+    pub fn create(&self, agent: AgentId, selected_model: Option<String>, project_id: Option<String>) -> ChatStoreResult<ChatSummary> {
         let at = now();
         let chat = ChatSummary {
             id: self.next_id("c"),
             title: String::new(),
             agent,
+            project_id,
             model: None,
             selected_model,
             session_id: None,
@@ -128,7 +129,7 @@ impl ChatStore {
         let mut index = self.lock_index();
         index.chats.push(chat.clone());
         self.write_index(&index)?;
-        log::info!("created chat {} ({})", chat.id, agent.name());
+        log::info!("created chat {} ({}, {})", chat.id, agent.name(), chat.project_id.as_deref().unwrap_or("no project"));
         Ok(chat)
     }
 
@@ -257,7 +258,7 @@ mod tests {
     fn chats_and_messages_survive_a_reload() {
         let dir = temp_dir("reload");
         let store = ChatStore::open(dir.clone()).unwrap();
-        let chat = store.create(AgentId::Claude, Some("haiku".into())).unwrap();
+        let chat = store.create(AgentId::Claude, Some("haiku".into()), Some("p1".into())).unwrap();
         store.append(&chat.id, &message(&store, Role::User, "Hi\nthere")).unwrap();
         store.append(&chat.id, &message(&store, Role::Assistant, "**Hello**")).unwrap();
         store.update(&chat.id, |c| c.session_id = Some("ses".into())).unwrap();
@@ -267,6 +268,7 @@ mod tests {
         assert_eq!(summary.message_count, 2);
         assert_eq!(summary.session_id.as_deref(), Some("ses"));
         assert_eq!(summary.selected_model.as_deref(), Some("haiku"));
+        assert_eq!(summary.project_id.as_deref(), Some("p1"));
         let messages = reloaded.messages(&chat.id).unwrap();
         assert_eq!(messages.iter().map(|m| m.text.as_str()).collect::<Vec<_>>(), ["Hi\nthere", "**Hello**"]);
         fs::remove_dir_all(dir).unwrap();
@@ -276,7 +278,7 @@ mod tests {
     fn delete_removes_the_chat_and_its_transcript() {
         let dir = temp_dir("delete");
         let store = ChatStore::open(dir.clone()).unwrap();
-        let chat = store.create(AgentId::Codex, None).unwrap();
+        let chat = store.create(AgentId::Codex, None, None).unwrap();
         store.append(&chat.id, &message(&store, Role::User, "x")).unwrap();
 
         store.delete(&chat.id).unwrap();
@@ -292,9 +294,9 @@ mod tests {
     fn list_is_newest_first_and_ids_are_unique() {
         let dir = temp_dir("order");
         let store = ChatStore::open(dir.clone()).unwrap();
-        let old = store.create(AgentId::Claude, None).unwrap();
+        let old = store.create(AgentId::Claude, None, None).unwrap();
         store.update(&old.id, |c| c.title = "old".into()).unwrap();
-        let new = store.create(AgentId::Claude, None).unwrap();
+        let new = store.create(AgentId::Claude, None, None).unwrap();
         store.update(&new.id, |c| c.title = "new".into()).unwrap();
         store.update(&old.id, |c| c.updated_at = "2020-01-01T00:00:00+07:00".into()).unwrap();
 
@@ -312,7 +314,7 @@ mod tests {
         assert!(store.list().is_empty());
         assert!(dir.join("index.invalid.json").is_file());
 
-        let chat = store.create(AgentId::Claude, None).unwrap();
+        let chat = store.create(AgentId::Claude, None, None).unwrap();
         store.append(&chat.id, &message(&store, Role::User, "ok")).unwrap();
         let mut file = OpenOptions::new().append(true).open(store.transcript_path(&chat.id)).unwrap();
         file.write_all(b"not json\n").unwrap();

@@ -1,5 +1,6 @@
-//! One chat turn: records the user's message, runs the CLI from the scratch folder with its
-//! Procheck home (resuming the chat's CLI session), streams the answer and records it.
+//! One chat turn: records the user's message, runs the CLI from the chat's working folder (the
+//! scratch folder, or the project directory of a project chat) with its Procheck home, resuming
+//! the chat's CLI session, streams the answer and records it.
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -7,7 +8,7 @@ use std::sync::{Arc, Mutex, MutexGuard};
 use serde::Serialize;
 
 use super::store::{ChatStore, ChatStoreError};
-use super::{ChatMessage, ChatSummary, ContextUsage, MessageStatus, Role, TokenTotals, TurnError, UsageLimits, claude, codex, now, title_from};
+use super::{ChatMessage, ChatSummary, ContextUsage, MessageStatus, Role, TokenTotals, ToolAccess, TurnError, UsageLimits, claude, codex, now, title_from};
 use crate::features::agents::{self, AgentError, AgentId};
 use crate::features::settings::AgentSettings;
 use crate::infra::process::{self, KillSwitch, StreamingChild};
@@ -150,7 +151,8 @@ impl Drop for RunGuard<'_> {
     }
 }
 
-/// Where a turn runs: the CLI settings, the Procheck CLI home of each CLI and the working folder.
+/// Where a turn runs: the CLI settings, the Procheck CLI home of each CLI, the working folder and
+/// what the CLI may do there.
 pub struct TurnContext<'a> {
     pub store: &'a ChatStore,
     pub runs: &'a ChatRuns,
@@ -158,6 +160,7 @@ pub struct TurnContext<'a> {
     pub codex: AgentSettings,
     pub cli_dir: PathBuf,
     pub cwd: PathBuf,
+    pub access: ToolAccess,
 }
 
 impl TurnContext<'_> {
@@ -278,8 +281,8 @@ fn execute(ctx: &TurnContext<'_>, chat: &ChatSummary, home: &Path, prompt: &str,
     let model = chat.selected_model.as_deref().or(settings.model.as_deref());
     let session = chat.session_id.as_deref();
     let args = match chat.agent {
-        AgentId::Claude => claude::args(model, session),
-        AgentId::Codex => codex::args(model, session),
+        AgentId::Claude => claude::args(model, session, ctx.access),
+        AgentId::Codex => codex::args(model, session, ctx.access),
     };
     log::info!("chat {}: {} turn ({})", chat.id, chat.agent.name(), if session.is_some() { "resume" } else { "new session" });
     let child = match process::spawn_streaming(&bin, &args, &launch, prompt) {
@@ -411,6 +414,7 @@ mod tests {
                 codex: AgentSettings::default(),
                 cli_dir: self.dir.join("cli"),
                 cwd: self.dir.join("scratch"),
+                access: ToolAccess::None,
             }
         }
     }
@@ -431,7 +435,7 @@ mod tests {
     fn a_turn_records_both_messages_and_the_session() {
         let fx = Fixture::new("ok");
         let bin = fx.fake_cli("claude", ANSWER, 0);
-        let chat = fx.store.create(AgentId::Claude, None).unwrap();
+        let chat = fx.store.create(AgentId::Claude, None, None).unwrap();
         let mut events = Vec::new();
 
         let result = send(&fx.context(Some(bin)), &chat.id, "  Hello there\nsecond line ", &mut |e| events.push(e)).unwrap();
@@ -456,7 +460,7 @@ mod tests {
         let bin = fx.fake_cli("claude", ANSWER, 0);
         let mut ctx = fx.context(Some(bin));
         ctx.claude.model = Some("sonnet".into());
-        let chat = fx.store.create(AgentId::Claude, Some("haiku".into())).unwrap();
+        let chat = fx.store.create(AgentId::Claude, Some("haiku".into()), None).unwrap();
 
         send(&ctx, &chat.id, "hi", &mut |_| {}).unwrap();
         let args = fs::read_to_string(fx.dir.join("claude.args")).unwrap();
@@ -469,9 +473,23 @@ mod tests {
     }
 
     #[test]
+    fn project_access_lets_the_cli_edit_files() {
+        let fx = Fixture::new("project");
+        let bin = fx.fake_cli("claude", ANSWER, 0);
+        let mut ctx = fx.context(Some(bin));
+        ctx.access = ToolAccess::ProjectFiles;
+        let chat = fx.store.create(AgentId::Claude, None, Some("p1".into())).unwrap();
+
+        send(&ctx, &chat.id, "fix the typo", &mut |_| {}).unwrap();
+
+        let args = fs::read_to_string(fx.dir.join("claude.args")).unwrap();
+        assert!(args.contains("--permission-mode acceptEdits"), "{args}");
+    }
+
+    #[test]
     fn a_missing_cli_is_recorded_as_an_error_reply() {
         let fx = Fixture::new("missing");
-        let chat = fx.store.create(AgentId::Claude, None).unwrap();
+        let chat = fx.store.create(AgentId::Claude, None, None).unwrap();
 
         let result = send(&fx.context(Some("Z:\\nowhere\\claude.exe".into())), &chat.id, "hi", &mut |_| {}).unwrap();
 
@@ -484,7 +502,7 @@ mod tests {
     fn a_failed_turn_keeps_the_previous_session() {
         let fx = Fixture::new("failed");
         let bin = fx.fake_cli("claude", r#"{"type":"result","is_error":true,"result":"Not logged in · Please run /login"}"#, 1);
-        let chat = fx.store.create(AgentId::Claude, None).unwrap();
+        let chat = fx.store.create(AgentId::Claude, None, None).unwrap();
         fx.store.update(&chat.id, |c| c.session_id = Some("old".into())).unwrap();
 
         let result = send(&fx.context(Some(bin)), &chat.id, "hi", &mut |_| {}).unwrap();
@@ -496,7 +514,7 @@ mod tests {
     #[test]
     fn empty_messages_and_parallel_turns_are_rejected() {
         let fx = Fixture::new("busy");
-        let chat = fx.store.create(AgentId::Claude, None).unwrap();
+        let chat = fx.store.create(AgentId::Claude, None, None).unwrap();
         assert!(matches!(send(&fx.context(None), &chat.id, "  ", &mut |_| {}), Err(ChatRunError::Empty)));
 
         let _guard = fx.runs.claim(&chat.id).unwrap();

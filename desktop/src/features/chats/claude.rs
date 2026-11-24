@@ -4,22 +4,18 @@
 use serde_json::Value;
 
 use super::runner::{Signal, TurnOutcome};
-use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, UsageLimits, from_epoch_seconds, now};
+use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, ToolAccess, UsageLimits, from_epoch_seconds, now};
 use crate::features::agents::AgentId;
 
-pub fn args(model: Option<&str>, session_id: Option<&str>) -> Vec<String> {
-    let mut args: Vec<String> = [
-        "-p",
-        "--output-format",
-        "stream-json",
-        "--verbose",
-        "--include-partial-messages",
-        "--tools",
-        "",
-        "--strict-mcp-config",
-    ]
-    .map(String::from)
-    .into();
+const PROJECT_TOOLS: &str = "Read,Edit,Write,Glob,Grep";
+const BLOCK_SEPARATOR: &str = "\n\n";
+
+pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -> Vec<String> {
+    let mut args: Vec<String> = ["-p", "--output-format", "stream-json", "--verbose", "--include-partial-messages"]
+        .map(String::from)
+        .into();
+    args.extend(tool_args(access));
+    args.push("--strict-mcp-config".into());
     if let Some(model) = model {
         args.extend(["--model".into(), model.into()]);
     }
@@ -27,6 +23,14 @@ pub fn args(model: Option<&str>, session_id: Option<&str>) -> Vec<String> {
         args.extend(["--resume".into(), session_id.into()]);
     }
     args
+}
+
+fn tool_args(access: ToolAccess) -> Vec<String> {
+    let list: &[&str] = match access {
+        ToolAccess::None => &["--tools", ""],
+        ToolAccess::ProjectFiles => &["--tools", PROJECT_TOOLS, "--allowedTools", PROJECT_TOOLS, "--permission-mode", "acceptEdits"],
+    };
+    list.iter().map(|a| (*a).to_owned()).collect()
 }
 
 #[derive(Debug, Default)]
@@ -60,9 +64,13 @@ impl ClaudeTurn {
     }
 
     pub fn finish(mut self) -> TurnOutcome {
-        let whole = self.whole.join("\n\n");
-        self.outcome.text = [self.result.take(), Some(whole), Some(self.streamed)]
+        let several = self.whole.len() > 1;
+        let whole = Some(self.whole.join(BLOCK_SEPARATOR));
+        let result = self.result.take();
+        let candidates = if several { [whole, result] } else { [result, whole] };
+        self.outcome.text = candidates
             .into_iter()
+            .chain([Some(self.streamed)])
             .flatten()
             .find(|t| !t.trim().is_empty())
             .unwrap_or_default();
@@ -79,9 +87,23 @@ impl ClaudeTurn {
 
     fn on_stream(&mut self, event: &Value) -> Option<Signal> {
         let inner = event.get("event")?;
-        if text(inner, "type")? != "content_block_delta" {
+        match text(inner, "type")? {
+            "content_block_start" => self.on_block_start(inner),
+            "content_block_delta" => self.on_delta(inner),
+            _ => None,
+        }
+    }
+
+    fn on_block_start(&mut self, inner: &Value) -> Option<Signal> {
+        let starts_text = inner.pointer("/content_block/type").and_then(Value::as_str) == Some("text");
+        if !starts_text || self.streamed.trim().is_empty() || self.streamed.ends_with(BLOCK_SEPARATOR) {
             return None;
         }
+        self.streamed.push_str(BLOCK_SEPARATOR);
+        Some(Signal::Delta(BLOCK_SEPARATOR.into()))
+    }
+
+    fn on_delta(&mut self, inner: &Value) -> Option<Signal> {
         let delta = inner.get("delta")?;
         if text(delta, "type")? != "text_delta" {
             return None;
@@ -199,12 +221,22 @@ mod tests {
 
     #[test]
     fn args_resume_the_session_and_disable_tools() {
-        let first = args(None, None);
+        let first = args(None, None, ToolAccess::None);
         assert!(first.windows(2).any(|w| w == ["--tools", ""]));
+        assert!(!first.contains(&"--permission-mode".to_owned()));
         assert!(!first.contains(&"--resume".to_owned()));
-        let next = args(Some("haiku"), Some("ses-1"));
+        let next = args(Some("haiku"), Some("ses-1"), ToolAccess::None);
         assert!(next.windows(2).any(|w| w == ["--model", "haiku"]));
         assert!(next.windows(2).any(|w| w == ["--resume", "ses-1"]));
+    }
+
+    #[test]
+    fn project_chats_may_read_and_edit_files() {
+        let args = args(None, None, ToolAccess::ProjectFiles);
+        assert!(args.windows(2).any(|w| w == ["--tools", PROJECT_TOOLS]));
+        assert!(args.windows(2).any(|w| w == ["--allowedTools", PROJECT_TOOLS]));
+        assert!(args.windows(2).any(|w| w == ["--permission-mode", "acceptEdits"]));
+        assert!(!PROJECT_TOOLS.contains("Bash"));
     }
 
     #[test]
@@ -230,6 +262,26 @@ mod tests {
         assert_eq!(limits.windows[1].kind, LimitKind::Weekly);
         assert!((limits.windows[1].used_percent - 28.0).abs() < 1e-9);
         assert!(limits.windows[1].resets_at.is_some());
+    }
+
+    const TOOL_TURN: &str = concat!(
+        r#"{"type":"stream_event","event":{"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}}"#, "\n",
+        r#"{"type":"stream_event","event":{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Reading the BRD."}}}"#, "\n",
+        r#"{"type":"assistant","message":{"content":[{"type":"text","text":"Reading the BRD."},{"type":"tool_use","name":"Read","input":{}}]}}"#, "\n",
+        r#"{"type":"stream_event","event":{"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}}"#, "\n",
+        r#"{"type":"stream_event","event":{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Done."}}}"#, "\n",
+        r#"{"type":"assistant","message":{"content":[{"type":"text","text":"Done."}]}}"#, "\n",
+        r#"{"type":"result","is_error":false,"session_id":"ses-2","result":"Done."}"#, "\n",
+    );
+
+    #[test]
+    fn text_around_tool_calls_is_kept_apart_and_whole() {
+        let (signals, outcome) = run(TOOL_TURN);
+        assert_eq!(
+            signals,
+            vec![Signal::Delta("Reading the BRD.".into()), Signal::Delta("\n\n".into()), Signal::Delta("Done.".into())]
+        );
+        assert_eq!(outcome.text, "Reading the BRD.\n\nDone.");
     }
 
     #[test]

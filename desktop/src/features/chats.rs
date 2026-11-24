@@ -1,6 +1,7 @@
-//! General chats: Q&A with an agent CLI that belongs to no project. History is kept in the
-//! application data directory (`<data dir>\chats`) and every turn runs from the empty scratch
-//! folder with the CLI's Procheck home, resuming the CLI session recorded for the chat.
+//! Chats with an agent CLI. A general chat belongs to no project: its turns run from the empty
+//! scratch folder without tools. A project chat runs from the project directory and lets the CLI
+//! read and edit the files there. History of both is kept in the application data directory
+//! (`<data dir>\chats`) and every turn uses the CLI's Procheck home, resuming the chat's CLI session.
 mod claude;
 mod codex;
 pub mod runner;
@@ -18,6 +19,8 @@ pub struct ChatSummary {
     pub id: String,
     pub title: String,
     pub agent: AgentId,
+    #[serde(default)]
+    pub project_id: Option<String>,
     #[serde(default)]
     pub model: Option<String>,
     #[serde(default)]
@@ -141,6 +144,13 @@ impl LimitKind {
             _ => Self::Other,
         }
     }
+}
+
+/// What the CLI may do during a turn.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ToolAccess {
+    None,
+    ProjectFiles,
 }
 
 /// Title of a new chat: the first line of the first message, shortened.

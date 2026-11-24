@@ -1,5 +1,7 @@
-//! All chats page: general chats (no project). A turn streams its events over a channel and
-//! resolves with the recorded answer once the CLI is done.
+//! Chats: general chats (no project) and project chats. A turn streams its events over a channel
+//! and resolves with the recorded answer once the CLI is done.
+use std::path::PathBuf;
+
 use serde::Serialize;
 use tauri::ipc::Channel;
 use tauri::{AppHandle, Manager, Runtime, State};
@@ -9,8 +11,12 @@ use crate::container::AppDirectories;
 use crate::features::agents::AgentId;
 use crate::features::chats::runner::{self, ChatEvent, ChatRunError, ChatRuns, TurnContext, TurnResult};
 use crate::features::chats::store::{ChatStore, ChatStoreError};
-use crate::features::chats::{ChatMessage, ChatSummary, UsageLimits};
+use crate::features::chats::{ChatMessage, ChatSummary, ToolAccess, UsageLimits};
+use crate::features::projects::edit::{self, EditError};
+use crate::features::projects::registry::ProjectRegistry;
 use crate::features::settings::SettingsStore;
+
+const PROJECT_UNAVAILABLE: &str = "projectUnavailable";
 
 impl From<ChatStoreError> for CommandError {
     fn from(e: ChatStoreError) -> Self {
@@ -52,8 +58,23 @@ pub fn chats_overview(
 }
 
 #[tauri::command]
-pub fn chats_create(store: State<'_, ChatStore>, agent: AgentId, model: Option<String>) -> CommandResult<ChatSummary> {
-    Ok(store.create(agent, clean_model(model))?)
+pub fn chats_create(
+    store: State<'_, ChatStore>,
+    registry: State<'_, ProjectRegistry>,
+    agent: AgentId,
+    model: Option<String>,
+    project_id: Option<String>,
+) -> CommandResult<ChatSummary> {
+    if let Some(project_id) = &project_id {
+        project_dir(&registry, project_id)?;
+    }
+    Ok(store.create(agent, clean_model(model), project_id)?)
+}
+
+fn project_dir(registry: &ProjectRegistry, project_id: &str) -> CommandResult<PathBuf> {
+    edit::ready(registry, project_id)
+        .map(|project| PathBuf::from(project.entry.dir))
+        .map_err(|e: EditError| CommandError::new(PROJECT_UNAVAILABLE, e))
 }
 
 #[tauri::command]
@@ -112,14 +133,20 @@ pub async fn chats_send<R: Runtime>(
 
 fn run_turn<R: Runtime>(app: &AppHandle<R>, id: &str, text: &str, channel: &Channel<ChatEvent>) -> CommandResult<TurnResult> {
     let directories = app.state::<AppDirectories>();
+    let store = app.state::<ChatStore>();
     let agents = app.state::<SettingsStore>().get().agents;
+    let (cwd, access) = match store.get(id)?.project_id {
+        Some(project_id) => (project_dir(&app.state::<ProjectRegistry>(), &project_id)?, ToolAccess::ProjectFiles),
+        None => (directories.scratch_dir(), ToolAccess::None),
+    };
     let ctx = TurnContext {
-        store: &app.state::<ChatStore>(),
+        store: &store,
         runs: &app.state::<ChatRuns>(),
         claude: agents.claude,
         codex: agents.codex,
         cli_dir: directories.cli_dir(),
-        cwd: directories.scratch_dir(),
+        cwd,
+        access,
     };
     let mut emit = |event: ChatEvent| {
         if let Err(e) = channel.send(event) {

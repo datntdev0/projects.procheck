@@ -9,13 +9,17 @@ use std::path::{Path, PathBuf};
 use serde_json::Value;
 
 use super::runner::{Signal, TurnOutcome};
-use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, UsageLimits, from_epoch_seconds, now};
+use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, ToolAccess, UsageLimits, from_epoch_seconds, now};
 use crate::features::agents::AgentId;
 
 const SESSIONS_DIR: &str = "sessions";
 
-pub fn args(model: Option<&str>, session_id: Option<&str>) -> Vec<String> {
-    let mut args: Vec<String> = vec!["exec".into(), "--sandbox".into(), "read-only".into()];
+pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -> Vec<String> {
+    let sandbox = match access {
+        ToolAccess::None => "read-only",
+        ToolAccess::ProjectFiles => "workspace-write",
+    };
+    let mut args: Vec<String> = vec!["exec".into(), "--sandbox".into(), sandbox.into()];
     if session_id.is_some() {
         args.push("resume".into());
     }
@@ -221,11 +225,16 @@ mod tests {
 
     #[test]
     fn args_put_the_sandbox_before_resume() {
-        assert_eq!(args(None, None), ["exec", "--sandbox", "read-only", "--json", "--skip-git-repo-check", "-"]);
+        assert_eq!(args(None, None, ToolAccess::None), ["exec", "--sandbox", "read-only", "--json", "--skip-git-repo-check", "-"]);
         assert_eq!(
-            args(Some("gpt-6-luna"), Some("0199-thread")),
+            args(Some("gpt-6-luna"), Some("0199-thread"), ToolAccess::None),
             ["exec", "--sandbox", "read-only", "resume", "--json", "--skip-git-repo-check", "-m", "gpt-6-luna", "0199-thread", "-"]
         );
+    }
+
+    #[test]
+    fn project_chats_may_write_in_the_workspace() {
+        assert_eq!(args(None, None, ToolAccess::ProjectFiles)[..3], ["exec", "--sandbox", "workspace-write"]);
     }
 
     #[test]
