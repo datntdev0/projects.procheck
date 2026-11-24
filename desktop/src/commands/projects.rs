@@ -4,19 +4,27 @@ use std::path::{Path, PathBuf};
 use tauri::ipc::Channel;
 use tauri::{AppHandle, Manager, Runtime, State};
 use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_opener::OpenerExt;
 
 use super::{CommandError, CommandResult, blocking};
 use crate::features::projects::create::{self, CreateError, CreateProgress, DirectoryCheck, NewProject};
+use crate::features::projects::edit::{self, EditError, ProjectUpdate};
 use crate::features::projects::registry::ProjectRegistry;
 use crate::features::projects::repository::{self, RepositoryInfo};
 use crate::features::projects::sources::{self, SOURCE_EXTENSIONS, SourceCandidate};
-use crate::features::projects::{ProjectItem, describe};
+use crate::features::projects::{ProjectItem, describe, vscode};
 use crate::infra::storage::StorageError;
 
 const DEFAULT_PROJECTS_FOLDER: &str = "Procheck";
 
 impl From<CreateError> for CommandError {
     fn from(e: CreateError) -> Self {
+        CommandError::new(e.code(), e)
+    }
+}
+
+impl From<EditError> for CommandError {
+    fn from(e: EditError) -> Self {
         CommandError::new(e.code(), e)
     }
 }
@@ -94,6 +102,55 @@ pub async fn projects_create<R: Runtime>(
     })
     .await?
     .map_err(Into::into)
+}
+
+/// Saves the General section of Project settings to `procheck.json`.
+#[tauri::command]
+pub async fn projects_update<R: Runtime>(app: AppHandle<R>, id: String, update: ProjectUpdate) -> CommandResult<ProjectItem> {
+    blocking(move || edit::update(&app.state::<ProjectRegistry>(), &id, update))
+        .await?
+        .map_err(Into::into)
+}
+
+/// Removes a project from the project list and keeps its directory.
+#[tauri::command]
+pub fn projects_remove(registry: State<'_, ProjectRegistry>, id: String) -> CommandResult<()> {
+    edit::remove(&registry, &id).map_err(Into::into)
+}
+
+/// Permanently deletes the project directory and removes the project from the list.
+#[tauri::command]
+pub async fn projects_delete<R: Runtime>(app: AppHandle<R>, id: String) -> CommandResult<()> {
+    blocking(move || edit::delete(&app.state::<ProjectRegistry>(), &id))
+        .await?
+        .map_err(Into::into)
+}
+
+/// Opens the project directory in the OS file manager.
+#[tauri::command]
+pub fn projects_reveal<R: Runtime>(app: AppHandle<R>, registry: State<'_, ProjectRegistry>, id: String) -> CommandResult<()> {
+    let project = edit::ready(&registry, &id)?;
+    app.opener()
+        .open_path(project.entry.dir, None::<&str>)
+        .map_err(|e| CommandError::new("opener", e))
+}
+
+/// Opens the linked repository, or else the project directory, in VS Code.
+#[tauri::command]
+pub async fn projects_open_in_vscode<R: Runtime>(app: AppHandle<R>, registry: State<'_, ProjectRegistry>, id: String) -> CommandResult<()> {
+    let project = edit::ready(&registry, &id)?;
+    let folder = PathBuf::from(project.manifest.repository.unwrap_or(project.entry.dir));
+    let url = vscode::protocol_url(&folder);
+    let launched = blocking(move || vscode::open_with_cli(&folder))
+        .await?
+        .map_err(|e| CommandError::new("vscode", e))?;
+    if launched {
+        return Ok(());
+    }
+    app.opener().open_url(url, None::<&str>).map_err(|e| {
+        log::warn!("could not open VS Code: {e}");
+        CommandError::new("vscodeMissing", e)
+    })
 }
 
 fn report(channel: &Channel<CreateProgress>, step: CreateProgress) {

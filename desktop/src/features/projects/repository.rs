@@ -5,6 +5,7 @@ use std::time::Duration;
 
 use serde::Serialize;
 
+use super::ProjectPhase;
 use crate::infra::process::{self, Launch, Output, RunError};
 
 const GIT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -39,6 +40,29 @@ impl RepositoryInfo {
             branch: None,
             clean: None,
         }
+    }
+}
+
+/// Why a folder cannot be linked to a project.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LinkError {
+    /// SDLC works in git worktrees, so it cannot run without a repository.
+    Required,
+    Invalid(RepositoryStatus),
+}
+
+/// Validates the repository to link for a project in `phase`; links the work tree root.
+pub fn link(phase: ProjectPhase, path: Option<String>) -> Result<Option<String>, LinkError> {
+    let Some(path) = path else {
+        return match phase {
+            ProjectPhase::Sdlc => Err(LinkError::Required),
+            _ => Ok(None),
+        };
+    };
+    let info = inspect(Path::new(&path));
+    match info.status {
+        RepositoryStatus::Ready => Ok(info.root.or(Some(path))),
+        status => Err(LinkError::Invalid(status)),
     }
 }
 

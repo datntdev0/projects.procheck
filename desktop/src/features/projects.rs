@@ -1,10 +1,12 @@
 //! Projects: a project is a directory holding `procheck.json` plus its data folders.
 //! The application data directory only keeps `projects.json`, a registry pointing at them.
 pub mod create;
+pub mod edit;
 pub mod layout;
 pub mod registry;
 pub mod repository;
 pub mod sources;
+pub mod vscode;
 
 use std::path::Path;
 
@@ -101,4 +103,9 @@ pub fn describe(entry: RegistryEntry) -> ProjectItem {
         status,
         manifest,
     }
+}
+
+/// Trimmed text, or `None` when it is blank.
+pub fn clean(value: Option<String>) -> Option<String> {
+    value.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty())
 }

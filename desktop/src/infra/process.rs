@@ -110,6 +110,23 @@ where
     })
 }
 
+/// Starts a GUI program (e.g. VS Code behind its `.cmd` shim) without waiting for it and
+/// without a console window.
+pub fn launch_detached<I, S>(program: &Path, args: I) -> io::Result<()>
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<OsStr>,
+{
+    let mut command = base_command(program, args, &Launch::default());
+    command.stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null());
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        command.creation_flags(CREATE_NO_WINDOW);
+    }
+    command.spawn().map(drop)
+}
+
 /// Runs `program` in a new, visible console window (for interactive sign-in) and waits up to
 /// `timeout` for the user to finish and the window to close.
 pub fn run_in_console<I, S>(program: &Path, args: I, launch: &Launch<'_>, timeout: Duration) -> Result<ExitStatus, RunError>

@@ -67,6 +67,23 @@ impl ProjectRegistry {
         self.save(&mut document, projects)
     }
 
+    pub fn find(&self, id: &str) -> Option<RegistryEntry> {
+        self.lock().projects.iter().find(|p| p.id == id).cloned()
+    }
+
+    /// Forgets a project; its directory is left untouched. `false` when it was not registered.
+    pub fn remove(&self, id: &str) -> StorageResult<bool> {
+        let mut document = self.lock();
+        let mut projects = document.projects.clone();
+        let before = projects.len();
+        projects.retain(|p| p.id != id);
+        if projects.len() == before {
+            return Ok(false);
+        }
+        self.save(&mut document, projects)?;
+        Ok(true)
+    }
+
     pub fn touch(&self, id: &str) -> StorageResult<Option<RegistryEntry>> {
         let mut document = self.lock();
         let mut projects = document.projects.clone();
@@ -124,6 +141,12 @@ mod tests {
 
         assert!(reloaded.touch("a").unwrap().is_none());
         assert!(reloaded.touch("c").unwrap().is_some());
+
+        assert!(reloaded.remove("c").unwrap());
+        assert!(!reloaded.remove("c").unwrap());
+        assert!(reloaded.find("c").is_none());
+        let ids: Vec<_> = ProjectRegistry::open(path.clone()).unwrap().entries().into_iter().map(|e| e.id).collect();
+        assert_eq!(ids, ["b"]);
         std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
     }
 }

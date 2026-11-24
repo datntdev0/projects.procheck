@@ -8,9 +8,9 @@ use serde::{Deserialize, Serialize};
 
 use super::layout::ProjectDirectories;
 use super::registry::{ProjectRegistry, RegistryEntry};
-use super::repository::{self, RepositoryStatus};
+use super::repository::{self, LinkError, RepositoryStatus};
 use super::sources::{self, SourceProblem};
-use super::{MANIFEST_VERSION, ProjectItem, ProjectManifest, ProjectPhase, ProjectSettings, describe};
+use super::{MANIFEST_VERSION, ProjectItem, ProjectManifest, ProjectPhase, ProjectSettings, clean, describe};
 use crate::features::agents::AgentId;
 use crate::features::chats::now;
 use crate::infra::storage::{StorageError, json_file};
@@ -100,6 +100,15 @@ impl std::fmt::Display for CreateError {
 
 impl std::error::Error for CreateError {}
 
+impl From<LinkError> for CreateError {
+    fn from(e: LinkError) -> Self {
+        match e {
+            LinkError::Required => Self::RepositoryRequired,
+            LinkError::Invalid(status) => Self::Repository(status),
+        }
+    }
+}
+
 impl From<io::Error> for CreateError {
     fn from(e: io::Error) -> Self {
         Self::Io(e)
@@ -169,7 +178,7 @@ impl Plan {
             DirectoryCheck::Available => {}
             other => return Err(CreateError::Directory(other)),
         }
-        let repository = link_repository(input.phase, clean(input.repository))?;
+        let repository = repository::link(input.phase, clean(input.repository))?;
         let sources = input
             .sources
             .iter()
@@ -196,20 +205,6 @@ impl Plan {
             },
             sources,
         })
-    }
-}
-
-fn link_repository(phase: ProjectPhase, path: Option<String>) -> Result<Option<String>, CreateError> {
-    let Some(path) = path else {
-        return match phase {
-            ProjectPhase::Sdlc => Err(CreateError::RepositoryRequired),
-            _ => Ok(None),
-        };
-    };
-    let info = repository::inspect(Path::new(&path));
-    match info.status {
-        RepositoryStatus::Ready => Ok(info.root.or(Some(path))),
-        status => Err(CreateError::Repository(status)),
     }
 }
 
@@ -248,10 +243,6 @@ fn write_project(plan: &Plan, progress: &mut dyn FnMut(CreateProgress)) -> Resul
     progress(CreateProgress::Manifest);
     json_file::write(&dirs.manifest_file(), &plan.manifest)?;
     Ok(())
-}
-
-fn clean(value: Option<String>) -> Option<String> {
-    value.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty())
 }
 
 /// What to remove when creation fails: the topmost folder Procheck had to create, or, when the
