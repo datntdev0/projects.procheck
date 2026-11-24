@@ -3,6 +3,7 @@ import { provideRouter, withHashLocation } from '@angular/router';
 
 import { provideAgentConnections } from '@features/agents/agent-connections.service';
 import { provideDiagnostics } from '@features/diagnostics/diagnostics.service';
+import { provideProjects } from '@features/projects/projects.service';
 import { provideAppSettings } from '@features/settings/app-settings.service';
 import { provideAppIcons } from '@shared/icons/app-icons';
 import { provideTheme } from '@shared/theme/theme.service';
@@ -19,5 +20,6 @@ export const rootConfig: ApplicationConfig = {
     provideTheme(),
     provideAppSettings(),
     provideAgentConnections(),
+    provideProjects(),
   ],
 };

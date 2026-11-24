@@ -5,6 +5,7 @@ import type { TranslationKey } from '@shared/i18n/locales/en';
 import { MainLayoutComponent } from '@layout/main-layout/main-layout.component';
 import { ChatsPageComponent } from '@pages/chats/chats-page.component';
 import { ComingSoonPageComponent } from '@pages/coming-soon/coming-soon-page.component';
+import { NewProjectPageComponent } from '@pages/new-project/new-project-page.component';
 import { ProjectsPageComponent } from '@pages/projects/projects-page.component';
 import { SettingsPageComponent } from '@pages/settings/settings-page.component';
 
@@ -18,7 +19,7 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'projects' },
       { path: 'projects', component: ProjectsPageComponent, title: 'Projects · Procheck' },
-      { path: 'projects/new', component: ComingSoonPageComponent, data: crumb('nav.new_project'), title: 'New project · Procheck' },
+      { path: 'projects/new', component: NewProjectPageComponent, data: crumb('nav.new_project'), title: 'New project · Procheck' },
       { path: 'projects/open', component: ComingSoonPageComponent, data: crumb('nav.open_project'), title: 'Open project · Procheck' },
       { path: 'chats', component: ChatsPageComponent, data: chatsData, title: 'All chats · Procheck' },
       { path: 'chats/:id', component: ChatsPageComponent, data: chatsData, title: 'All chats · Procheck' },
