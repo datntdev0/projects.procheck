@@ -214,13 +214,6 @@
     .card .empty { padding: var(--space-8) var(--space-6); }
     .card .empty h4 { color: var(--fg-strong); margin: 0; }
     .card .empty .text-sm { max-width: 380px; }
-    .act-l { display: flex; flex-direction: column; padding: var(--space-3) var(--space-4); }
-    .act { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; padding: 8px 0; position: relative; color: inherit; text-decoration: none !important; }
-    .act + .act { border-top: 1px solid var(--border-subtle); }
-    .act .r-ic { width: 22px; height: 22px; } .act .r-ic svg { width: 12px; height: 12px; }
-    .act .t { font-size: var(--text-sm); color: var(--fg-default); line-height: 1.4; }
-    .act .t b { color: var(--fg-strong); font-weight: var(--weight-semibold); }
-    .act .w { font-size: var(--text-xs); color: var(--fg-faint); white-space: nowrap; }
 
     /* Burndown */
     .bd { padding: var(--space-4) var(--space-5) var(--space-5); }
@@ -321,7 +314,6 @@
       <div>
         <div class="card" id="ws-runs"></div>
         <div class="card" id="ws-arts"></div>
-        <div class="card" id="ws-act"></div>
       </div>
       <div>
         <div class="card" id="ws-risks"></div>
@@ -376,7 +368,6 @@
         'ws.arts.title': 'Recent artifacts', 'ws.arts.all': 'View all', 'ws.st.approved': 'Approved', 'ws.st.review': 'In review', 'ws.st.draft': 'Draft', 'ws.st.in_review': 'In review', 'ws.st.not_started': 'Not started', 'ws.st.awaiting': 'Awaiting approval',
         'ws.by.assistant': 'Assistant', 'ws.you': 'You',
         'ws.arts.empty.t': 'No artifacts yet', 'ws.arts.empty.d': 'Nothing has been generated. Start with meeting notes from your intro call — the Assistant drafts them from the transcript.', 'ws.arts.empty.cta': 'Generate meeting notes', 'ws.src.title': 'Sources in this project',
-        'ws.act.title': 'Recent activity',
         'ws.burn.title': 'Sprint {n} burndown', 'ws.burn.remaining': 'pts remaining', 'ws.burn.behind': '{n} pts behind ideal', 'ws.burn.ontrack': 'On track',
         'ws.burn.ideal': 'Ideal', 'ws.burn.actual': 'Actual', 'ws.burn.proj': 'Projection', 'ws.burn.today': 'Today', 'ws.burn.axis': 'Sprint day',
         'ws.dec.title': 'Decisions log', 'ws.dec.all': 'All decisions', 'ws.dec.pending': 'Pending',
@@ -430,7 +421,6 @@
         'ws.arts.title': 'Tài liệu gần đây', 'ws.arts.all': 'Xem tất cả', 'ws.st.approved': 'Đã duyệt', 'ws.st.review': 'Đang review', 'ws.st.draft': 'Bản nháp', 'ws.st.in_review': 'Đang review', 'ws.st.not_started': 'Chưa bắt đầu', 'ws.st.awaiting': 'Chờ duyệt',
         'ws.by.assistant': 'Trợ lý', 'ws.you': 'Bạn',
         'ws.arts.empty.t': 'Chưa có tài liệu nào', 'ws.arts.empty.d': 'Chưa có gì được tạo. Hãy bắt đầu bằng biên bản họp từ intro call — Trợ lý soạn từ transcript.', 'ws.arts.empty.cta': 'Tạo biên bản họp', 'ws.src.title': 'Tài liệu nguồn của dự án',
-        'ws.act.title': 'Hoạt động gần đây',
         'ws.burn.title': 'Burndown Sprint {n}', 'ws.burn.remaining': 'điểm còn lại', 'ws.burn.behind': 'Chậm {n} điểm so với lý tưởng', 'ws.burn.ontrack': 'Đúng tiến độ',
         'ws.burn.ideal': 'Lý tưởng', 'ws.burn.actual': 'Thực tế', 'ws.burn.proj': 'Dự báo', 'ws.burn.today': 'Hôm nay', 'ws.burn.axis': 'Ngày sprint',
         'ws.dec.title': 'Nhật ký quyết định', 'ws.dec.all': 'Tất cả quyết định', 'ws.dec.pending': 'Chờ duyệt',
@@ -488,11 +478,6 @@
           sources: S.initial.sources,
           decisions: [],
           risks: [],
-          activity: [
-            { ic: 'mic', tone: 'info', t: L('Transcript <b>Intro call with Ops Director</b> imported', 'Đã nhập transcript <b>Intro call with Ops Director</b>'), ago: ['day', 4], page: 'initial.html' },
-            { ic: 'paperclip', tone: 'info', t: L('<b>2 sources</b> uploaded (RFP, dispatch process)', 'Đã tải lên <b>2 tài liệu nguồn</b> (RFP, quy trình điều phối)'), ago: ['day', 4], page: 'artifacts.html' },
-            { ic: 'folder-plus', tone: 'ok', t: L('Project created from documents', 'Dự án được tạo từ tài liệu'), ago: ['day', 4], page: 'project-settings.html' },
-          ],
           suggest: [['Extract insights from the intro call', 'Draft discovery questions', 'What is still missing from the RFP?'], ['Trích ý chính từ intro call', 'Soạn câu hỏi discovery', 'RFP còn thiếu thông tin gì?']],
         },
         /* ------------------------------------------------ VIETHEALTH — Initial, scoping */
@@ -528,12 +513,6 @@
             { sev: 'high', t: L('E-prescription legal scope not confirmed with the client\'s counsel', 'Phạm vi pháp lý kê đơn điện tử chưa được pháp chế khách hàng xác nhận'), mit: L('Blocking question #1 — schedule a call with the client\'s legal team', 'Câu hỏi blocking #1 — đặt lịch gọi với pháp chế của khách hàng') },
             { sev: 'high', t: L('HIS integration ownership unclear (vendor vs. clinic IT)', 'Chưa rõ ai chịu trách nhiệm tích hợp HIS (nhà cung cấp hay IT phòng khám)'), mit: L('Blocking question #2 — get a named owner before estimating', 'Câu hỏi blocking #2 — cần người phụ trách cụ thể trước khi ước lượng') },
             { sev: 'med', t: L('Compliance session notes not analysed yet', 'Ghi chú buổi tuân thủ chưa được phân tích'), mit: L('Extract insights and update the BRD before sign-off', 'Trích ý chính và cập nhật BRD trước khi ký duyệt') },
-          ],
-          activity: [
-            { ic: 'file-text', tone: 'review', t: L('<b>Scope v1</b> drafted by Claude Code', '<b>Scope v1</b> do Claude Code soạn'), ago: ['hour', 5], page: 'artifacts.html' },
-            { ic: 'file-text', tone: 'review', t: L('<b>BRD v1</b> submitted for your review', '<b>BRD v1</b> được gửi để bạn review'), ago: ['day', 1], page: 'artifacts.html' },
-            { ic: 'circle-help', tone: 'failed', t: L('<b>2 blocking questions</b> raised from the IT security session', 'Phát sinh <b>2 câu hỏi blocking</b> từ buổi làm việc về bảo mật'), ago: ['day', 1], page: 'initial.html' },
-            { ic: 'sparkles', tone: 'ok', t: L('Insights extracted from <b>Clinical workflow workshop</b>', 'Đã trích ý chính từ <b>Clinical workflow workshop</b>'), ago: ['day', 3], page: 'initial.html' },
           ],
           suggest: [['Draft the client call agenda for the blocking questions', 'Summarize BRD v1 gaps', 'Extract insights from the IT security notes'], ['Soạn agenda cuộc gọi cho các câu hỏi blocking', 'Tóm tắt khoảng trống của BRD v1', 'Trích ý chính từ ghi chú buổi bảo mật']],
         },
@@ -573,12 +552,6 @@
             { sev: 'med', t: L('Existing repo has thin integration tests — the CI step may expose flaky legacy tests', 'Repo hiện có ít integration test — bước CI có thể làm lộ các test cũ không ổn định'), mit: L('Quarantine flaky tests, fix after scaffolding', 'Cô lập test không ổn định, sửa sau khi scaffolding xong') },
             { sev: 'med', t: L('Event bus choice blocks dev-container and service templates', 'Lựa chọn event bus đang chặn dev container và service template'), mit: L('Approve ADR-004 today to keep the schedule', 'Duyệt ADR-004 hôm nay để giữ tiến độ') },
             { sev: 'low', t: L('Repository lives outside the project directory (D:\\src)', 'Repository nằm ngoài thư mục dự án (D:\\src)'), mit: L('Keep the link in procheck.json; no copy is made', 'Giữ liên kết trong procheck.json; không sao chép') },
-          ],
-          activity: [
-            { ic: 'loader-circle', spin: true, tone: 'running', t: L('Agent <b>SC-04</b> started generating CI/CD pipelines', 'Agent <b>SC-04</b> bắt đầu sinh pipeline CI/CD'), ago: ['min', 7], page: 'task.html' },
-            { ic: 'git-pull-request-arrow', tone: 'review', t: L('<b>ADR-004</b> drafted — awaiting your approval', '<b>ADR-004</b> đã được soạn — chờ bạn duyệt'), ago: ['hour', 2], page: 'scaffolding.html' },
-            { ic: 'check', tone: 'ok', t: L('Step <b>Infrastructure (IaC)</b> completed', 'Hoàn tất bước <b>Hạ tầng (IaC)</b>'), ago: ['day', 1], page: 'scaffolding.html' },
-            { ic: 'folder-git-2', tone: 'info', t: L('Existing repository <b>D:\\src\\mekong-omni</b> linked', 'Đã liên kết repository có sẵn <b>D:\\src\\mekong-omni</b>'), ago: ['week', 2], page: 'scaffolding.html' },
           ],
           suggest: [['Compare Service Bus and Kafka for our load', 'What does the CI/CD run produce?', 'Summarise open scaffolding steps'], ['So sánh Service Bus và Kafka với tải của dự án', 'Lượt chạy CI/CD tạo ra gì?', 'Tóm tắt các bước scaffolding còn lại']],
         },
@@ -622,12 +595,6 @@
             { sev: 'med', t: L('Client UAT availability in December', 'Khách hàng khó sắp xếp UAT vào tháng 12'), mit: L('Fix UAT slots in sprint 5 planning', 'Chốt lịch UAT ngay khi lập kế hoạch sprint 5') },
             { sev: 'low', t: L('Test coverage on legacy auth adapter written by agent', 'Độ phủ test của adapter xác thực cũ do agent viết'), mit: L('Add contract tests, review the PR yourself', 'Bổ sung contract test, tự review PR') },
           ],
-          activity: [
-            { ic: 'loader-circle', spin: true, tone: 'running', t: L('Agent started <b>LP-155</b> Rate limiting', 'Agent bắt đầu <b>LP-155</b> Rate limiting'), ago: ['min', 3], page: 'task.html' },
-            { ic: 'eye', tone: 'review', t: L('<b>LP-142</b> ready for your review · e2e 12/12', '<b>LP-142</b> chờ bạn review · e2e 12/12'), ago: ['min', 12], page: 'task.html' },
-            { ic: 'eye', tone: 'review', t: L('<b>LP-151</b> ready for your review · e2e 5/5', '<b>LP-151</b> chờ bạn review · e2e 5/5'), ago: ['hour', 1], page: 'task.html' },
-            { ic: 'git-merge', tone: 'ok', t: L('PR for <b>LP-139</b> Webhook retry policy merged', 'Đã merge PR của <b>LP-139</b> Webhook retry policy'), ago: ['hour', 6], page: 'board.html' },
-          ],
           sdlcSteps: [['done', L('Backlog (34 tasks)', 'Backlog (34 task)')], ['active', L('Sprint 4 in progress', 'Sprint 4 đang diễn ra')], ['review', L('Review & promote PRs', 'Review & đưa PR')], ['todo', L('Release 1.3', 'Release 1.3')]],
           phase: { sdlc: { cur: L('Sprint 4 · day 5 of 10', 'Sprint 4 · ngày 5/10'), next: L('Review LP-142 and LP-151 to unblock 13 pts.', 'Review LP-142 và LP-151 để giải phóng 13 điểm.') } },
           sdlcM: { velocity: [18, 24, 31], success: { pct: 87, note: L('First-time acceptance · <b>20 of 23</b> runs accepted at first review', 'Được chấp nhận ngay lần đầu · <b>20/23</b> lượt chạy đạt ở lần review đầu') }, review: { v: '2h 18m', tone: 'ok', note: L('34 min faster than Sprint 3', 'Nhanh hơn Sprint 3 là 34 phút'), spark: [250, 185, 172, 138] }, spend: [{ id: 'claude', amt: 29.40, runs: 14 }, { id: 'codex', amt: 12.40, runs: 9 }], burn: { actual: [66, 64, 60, 57, 53, 48], projected: 8 } },
@@ -669,12 +636,6 @@
             { sev: 'high', t: L('NAPAS export fails 3 e2e checks — blocks the v2.0 release candidate', 'Xuất NAPAS lỗi 3 ca e2e — chặn release candidate v2.0'), mit: L('Analyse the failure with the Assistant and re-run AH-311', 'Phân tích lỗi cùng Trợ lý rồi chạy lại AH-311') },
             { sev: 'med', t: L('Leave delegation rework (AH-298) may slip the release by 1 day', 'Làm lại uỷ quyền nghỉ phép (AH-298) có thể trễ release 1 ngày'), mit: L('Keep it behind the feature flag if not ready', 'Giữ sau feature flag nếu chưa sẵn sàng') },
             { sev: 'med', t: L('UAT sign-off from HR operations still pending', 'Chưa có xác nhận UAT từ bộ phận vận hành nhân sự'), mit: L('Share the UAT plan v3 and fix a sign-off date', 'Gửi kế hoạch UAT v3 và chốt ngày ký duyệt') },
-          ],
-          activity: [
-            { ic: 'circle-x', tone: 'failed', t: L('Agent run <b>AH-311</b> failed · e2e 6/9', 'Lượt chạy agent <b>AH-311</b> lỗi · e2e 6/9'), ago: ['min', 40], page: 'task.html' },
-            { ic: 'message-square-warning', tone: 'review', t: L('You requested changes on <b>AH-298</b>', 'Bạn đã yêu cầu chỉnh sửa <b>AH-298</b>'), ago: ['hour', 3], page: 'task.html' },
-            { ic: 'git-merge', tone: 'ok', t: L('PR #482 for <b>AH-310</b> Payroll export to CSV merged', 'Đã merge PR #482 của <b>AH-310</b> Xuất bảng lương ra CSV'), ago: ['hour', 5], page: 'board.html' },
-            { ic: 'loader-circle', spin: true, tone: 'running', t: L('Agent started <b>AH-305</b> Tax declaration report', 'Agent bắt đầu <b>AH-305</b> Báo cáo quyết toán thuế'), ago: ['hour', 6], page: 'task.html' },
           ],
           sdlcSteps: [['done', L('Backlog (61 tasks)', 'Backlog (61 task)')], ['active', L('Sprint 9 in progress', 'Sprint 9 đang diễn ra')], ['review', L('Review & promote PRs', 'Review & đưa PR')], ['active', L('Release v2.0', 'Release v2.0')]],
           phase: { sdlc: { cur: L('Sprint 9 · release hardening', 'Sprint 9 · hardening release'), next: L('Analyse the AH-311 failure and address AH-298 changes.', 'Phân tích lỗi AH-311 và xử lý yêu cầu chỉnh sửa AH-298.') } },
@@ -952,11 +913,6 @@
         }
         PC.refresh(el);
       }
-      function renderActivity() {
-        $('#ws-act').innerHTML = `<div class="card-header"><span class="card-title"><i data-lucide="history"></i>${PC.t('ws.act.title')}</span></div>
-          <div class="act-l">${D.activity.map(a => `<a class="act" href="${U(a.page)}"><span class="r-ic ${a.tone}"><i data-lucide="${a.ic}" ${a.spin ? 'class="spin-i"' : ''}></i></span><span class="t">${T(a.t)}</span><span class="w">${rel(a.ago[0], a.ago[1])}</span></a>`).join('')}</div>`;
-        PC.refresh($('#ws-act'));
-      }
       function renderRisks() {
         $('#ws-risks').innerHTML = `<div class="card-header"><span class="card-title"><i data-lucide="shield-alert"></i>${PC.t('ws.risk.title')}<span class="badge">${D.risks.length}</span></span><button class="btn btn-ghost btn-sm" id="risk-add"><i data-lucide="plus"></i>${PC.t('ws.risk.add')}</button></div>
           ${D.risks.length ? `<div class="rows" style="padding:var(--space-2) var(--space-3)">${D.risks.map(r => `<div class="risk"><span class="risk-ic ${r.sev}"><i data-lucide="${r.sev === 'high' ? 'flame' : r.sev === 'med' ? 'triangle-alert' : 'info'}"></i></span>
@@ -983,7 +939,7 @@
         PC.assistant.setSuggestions(D.suggest[PC.lang === 'vi' ? 1 : 0]);
       }
 
-      function renderAll() { renderHero(); renderFocus(); renderKpis(); renderTimeline(); renderMetrics(); renderRuns(); renderArts(); renderActivity(); renderRisks(); renderDecisions(); setAssistantContext(); }
+      function renderAll() { renderHero(); renderFocus(); renderKpis(); renderTimeline(); renderMetrics(); renderRuns(); renderArts(); renderRisks(); renderDecisions(); setAssistantContext(); }
 
       /* ---------- simulated live progress (running agent runs only) ---------- */
       const LIVE = {};

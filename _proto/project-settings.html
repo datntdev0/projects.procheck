@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="assets/components.css">
   <link rel="stylesheet" href="assets/shell.css">
   <script src="assets/app.js"></script>
+  <script src="assets/workflow.js"></script>
   <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
     .canvas { container-type: inline-size; scroll-behavior: smooth; }
@@ -85,6 +86,33 @@
     .ph .bar i { display: block; height: 100%; background: var(--_c); }
     .ph .m { font-size: var(--text-2xs); color: var(--fg-subtle); display: flex; justify-content: space-between; }
 
+    /* initial phase steps */
+    .fl-bar { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-3); }
+    .fstep { margin-bottom: var(--space-3); overflow: hidden; }
+    .fstep > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; }
+    .fstep > summary::-webkit-details-marker { display: none; }
+    .fstep > summary:hover { background: var(--bg-hover); }
+    .fstep[open] > summary { border-bottom: 1px solid var(--border-subtle); }
+    .fs-n { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--brand-soft); color: var(--brand-fg); font-size: var(--text-xs); font-weight: 600; flex-shrink: 0; }
+    .fs-t { flex: 1; min-width: 0; }
+    .fs-t b { display: block; font-size: var(--text-md); color: var(--fg-strong); font-weight: var(--weight-semibold); }
+    .fs-t small { display: block; font-size: var(--text-xs); color: var(--fg-subtle); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fstep > summary .chev { color: var(--fg-subtle); transition: transform var(--dur-fast); }
+    .fstep[open] > summary .chev { transform: rotate(180deg); }
+    .textarea.instr { min-height: 140px; line-height: 1.6; font-size: var(--text-sm); }
+    .fa { display: grid; grid-template-columns: 32px minmax(0, 1fr) minmax(0, 1.1fr) auto; gap: 10px var(--space-3); align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }
+    .fa:last-of-type { border-bottom: 0; }
+    .fa .file-tile { width: 32px; height: 32px; }
+    .fa .input { height: 34px; }
+    .fa.is-over { background: var(--brand-soft); border-radius: var(--radius-md); }
+    .fa-file { display: flex; align-items: center; gap: 8px; min-width: 0; height: 34px; padding: 0 6px 0 10px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface-2); font-size: var(--text-xs); }
+    .fa-file > svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--brand-fg); }
+    .fa-file .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-default); font-weight: var(--weight-medium); }
+    .fa-file .sz { color: var(--fg-subtle); white-space: nowrap; }
+    .fa-attach { justify-content: flex-start; height: 34px; border-style: dashed; }
+    .fa-none { padding: var(--space-3) 0 var(--space-2); font-size: var(--text-xs); color: var(--fg-faint); }
+    @container (max-width: 860px) { .fa { grid-template-columns: 32px minmax(0, 1fr) auto; } .fa .fa-file, .fa .fa-attach { grid-column: 2 / -1; grid-row: 2; } }
+
     /* prompts */
     .ptabs { display: flex; gap: var(--space-1); padding: 0 20px; border-bottom: 1px solid var(--border-subtle); }
     .ptabs .tab { height: 40px; }
@@ -162,6 +190,7 @@
       <nav class="set-nav" aria-label="Project settings" id="setnav">
         <a href="#general" data-sec="general"><i data-lucide="sliders-horizontal"></i><span data-i18n="ps.n.general"></span></a>
         <a href="#workflow" data-sec="workflow"><i data-lucide="route"></i><span data-i18n="ps.n.workflow"></span></a>
+        <a href="#initial-flow" data-sec="initial-flow"><i data-lucide="compass"></i><span data-i18n="ps.n.flow"></span></a>
         <a href="#ai" data-sec="ai"><i data-lucide="sparkles"></i><span data-i18n="ps.n.ai"></span></a>
         <a href="#isolation" data-sec="isolation"><i data-lucide="shield-check"></i><span data-i18n="ps.n.isolation"></span></a>
         <a href="#harness" data-sec="harness"><i data-lucide="bot"></i><span data-i18n="ps.n.harness"></span></a>
@@ -205,6 +234,16 @@
             <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.gate2"></div><div class="sdesc" data-i18n="ps.gate2.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
             <div class="srow"><div class="sinfo"><div class="slabel" data-i18n="ps.gate3"></div><div class="sdesc" data-i18n="ps.gate3.d"></div></div><div class="sctl"><label class="switch"><input type="checkbox" checked></label></div></div>
           </div>
+        </section>
+
+        <!-- Initial phase steps: what each step does and which artifacts it produces -->
+        <section class="sec" id="initial-flow" data-sec="initial-flow">
+          <div class="sec-head"><h2 data-i18n="ps.fl.title"></h2><p data-i18n="ps.fl.d"></p></div>
+          <div class="fl-bar"><span class="text-xs text-subtle" id="fl-sum"></span><span class="grow"></span>
+            <button class="btn btn-ghost btn-sm" data-act="fl-reset"><i data-lucide="rotate-ccw"></i><span data-i18n="ps.fl.reset"></span></button>
+            <a class="btn btn-secondary btn-sm" href="initial.html#overview"><i data-lucide="compass"></i><span data-i18n="ps.fl.open"></span></a></div>
+          <div id="flow"></div>
+          <input type="file" id="fl-file" hidden>
         </section>
 
         <!-- AI overrides -->
@@ -319,7 +358,15 @@
   <script>
     PC.i18n.extend({
       en: {
-        'ps.kicker': 'Project settings', 'ps.stored': 'Stored in', 'ps.pdir': 'Project directory', 'ps.reveal': 'Reveal', 'ps.copy': 'Copy path', 'ps.copied': 'Path copied',
+        'ps.n.flow': 'Initial phase', 'ps.fl.title': 'Initial phase steps',
+        'ps.fl.d': 'Tell the Assistant how you work in each step and which documents the step produces. Write the instructions in your own words, and attach any document as a template.',
+        'ps.fl.reset': 'Reset to Procheck default', 'ps.fl.open': 'Open Initial phase', 'ps.fl.sum': '{a} artifacts · {t} with a template',
+        'ps.fl.reset.t': 'Reset the Initial phase steps?', 'ps.fl.reset.d': 'Instructions go back to the default text and every step keeps one artifact without a template. Documents already generated stay in the artifacts folder.', 'ps.fl.reset.done': 'Steps reset to the Procheck default',
+        'ps.fl.count': '{n} artifact(s)', 'ps.fl.instr': 'Instructions for the Assistant', 'ps.fl.instr.d': 'Free text. What is this step for, what should the Assistant look at, what should the output look like?', 'ps.fl.instr.reset': 'Use default text',
+        'ps.fl.arts': 'Artifacts', 'ps.fl.arts.d': 'Name what this step produces. Attach any document as its template, or leave it empty and the Assistant chooses a structure.',
+        'ps.fl.name_ph': 'Artifact name', 'ps.fl.attach': 'Attach template', 'ps.fl.replace': 'Replace', 'ps.fl.rmfile': 'Remove template', 'ps.fl.add': 'Add artifact', 'ps.fl.rm': 'Remove artifact',
+        'ps.fl.none': 'No artifacts — this step only guides the Assistant.', 'ps.fl.attached': 'Template attached: {f}',
+        'ps.kicker': 'Project settings',        'ps.kicker': 'Project settings', 'ps.stored': 'Stored in', 'ps.pdir': 'Project directory', 'ps.reveal': 'Reveal', 'ps.copy': 'Copy path', 'ps.copied': 'Path copied',
         'ps.defaults': 'Defaults for every project come from', 'ps.unsaved': 'Unsaved changes', 'ps.discard': 'Discard', 'ps.saved': 'Saved to .procheck\\settings.json', 'ps.discarded': 'Changes discarded',
         'ps.n.general': 'General', 'ps.n.workflow': 'Workflow', 'ps.n.ai': 'AI overrides', 'ps.n.isolation': 'Isolation', 'ps.n.harness': 'Agent harness', 'ps.n.export': 'Export defaults', 'ps.n.storage': 'Storage', 'ps.n.danger': 'Danger zone',
         'ps.change': 'Change', 'ps.add': 'Add', 'ps.reset': 'Reset to default', 'ps.nonerepo': 'Not linked',
@@ -363,7 +410,7 @@
         'ps.export.d': 'Defaults when you export artifacts from this project.', 'ps.fmt.docx': 'Editable, best for sharing with clients.', 'ps.fmt.pdf': 'Fixed layout for sign-off and archiving.', 'ps.fmt.md': 'Plain text that lives well in git.',
         'ps.ex.dest': 'Export folder', 'ps.ex.dest.d': 'Where exported files are written.', 'ps.ex.cover': 'Include cover page', 'ps.ex.cover.d': 'Add project name, client and version on the first page.', 'ps.ex.ver': 'Add version to file name', 'ps.ex.ver.d': 'e.g. Merchant-BRD-v3.docx',
         'ps.storage.d': 'What this project currently stores in its directory.', 'ps.st.in': 'in',
-        'ps.t.0': 'Project manifest', 'ps.t.1': 'Uploaded documents (inputs)', 'ps.t.2': 'Generated & edited artifacts with versions', 'ps.t.3': 'Tasks, plans, review evidence', 'ps.t.4': 'Git repository (source code)', 'ps.t.5': 'Assistant chat history', 'ps.t.6': 'Agent run logs & evidence', 'ps.t.7': 'CLI profile per tool: settings, MCP, instructions', 'ps.t.8': 'Git worktrees created by agents', 'ps.t.9': 'Project-level overrides',
+        'ps.t.0': 'Project manifest', 'ps.t.1': 'Uploaded documents (inputs)', 'ps.t.2': 'Generated & edited artifacts with versions', 'ps.t.3': 'Tasks, plans, review evidence', 'ps.t.4': 'Git repository (source code)', 'ps.t.5': 'Text extracted from sources (transcripts, OCR, parsed data) for the CLI', 'ps.t.6': 'Assistant chat history', 'ps.t.7': 'Agent run logs & evidence', 'ps.t.8': 'CLI profile per tool: settings, MCP, instructions', 'ps.t.9': 'Git worktrees created by agents', 'ps.t.10': 'Project-level overrides',
         'ps.st.chat': 'Chat history', 'ps.st.chat.d': 'Assistant conversations saved in .procheck\\chats.', 'ps.st.chat.clear': 'Clear history', 'ps.st.chat.t': 'Clear all chat history?', 'ps.st.chat.td': 'Deletes every saved Assistant conversation for this project. Artifacts are not affected.', 'ps.st.chat.done': 'Chat history cleared',
         'ps.st.runs': 'Agent run logs', 'ps.st.runs.d': 'Free space by deleting old run logs and evidence from .procheck\\runs.', 'ps.st.older': 'Older than', 'ps.st.days': 'days', 'ps.st.runs.clear': 'Clear logs', 'ps.st.runs.done': 'Cleared run logs older than {n} days · freed 96 MB',
         'ps.danger.d': 'These actions affect how the project is registered or stored on disk.',
@@ -373,7 +420,15 @@
         'ps.d.delete.t': 'Delete project directory?', 'ps.d.delete.td': 'This permanently deletes <code>{p}</code> and all of its contents. Type the project id <b>{id}</b> to confirm.', 'ps.d.delete.confirm': 'Delete permanently', 'ps.d.deleted': 'Project directory deleted (prototype)'
       },
       vi: {
-        'ps.kicker': 'Cài đặt dự án', 'ps.stored': 'Lưu tại', 'ps.pdir': 'Thư mục dự án', 'ps.reveal': 'Mở thư mục', 'ps.copy': 'Sao chép đường dẫn', 'ps.copied': 'Đã sao chép đường dẫn',
+        'ps.n.flow': 'Giai đoạn khởi tạo', 'ps.fl.title': 'Các bước của giai đoạn khởi tạo',
+        'ps.fl.d': 'Cho Trợ lý biết bạn làm việc thế nào ở từng bước và bước đó tạo ra tài liệu gì. Viết hướng dẫn theo cách của bạn, và đính kèm tài liệu bất kỳ làm template.',
+        'ps.fl.reset': 'Khôi phục mặc định Procheck', 'ps.fl.open': 'Mở giai đoạn khởi tạo', 'ps.fl.sum': '{a} tài liệu · {t} có template',
+        'ps.fl.reset.t': 'Khôi phục các bước của giai đoạn khởi tạo?', 'ps.fl.reset.d': 'Hướng dẫn quay về nội dung mặc định và mỗi bước giữ một tài liệu không có template. Các tài liệu đã tạo vẫn nằm trong thư mục artifacts.', 'ps.fl.reset.done': 'Đã khôi phục các bước về mặc định Procheck',
+        'ps.fl.count': '{n} tài liệu', 'ps.fl.instr': 'Hướng dẫn cho Trợ lý', 'ps.fl.instr.d': 'Viết tự do. Bước này để làm gì, Trợ lý cần xem gì, kết quả nên trông thế nào?', 'ps.fl.instr.reset': 'Dùng nội dung mặc định',
+        'ps.fl.arts': 'Tài liệu', 'ps.fl.arts.d': 'Đặt tên cho những gì bước này tạo ra. Đính kèm tài liệu bất kỳ làm template, hoặc để trống và Trợ lý tự chọn cấu trúc.',
+        'ps.fl.name_ph': 'Tên tài liệu', 'ps.fl.attach': 'Đính kèm template', 'ps.fl.replace': 'Thay file', 'ps.fl.rmfile': 'Gỡ template', 'ps.fl.add': 'Thêm tài liệu', 'ps.fl.rm': 'Gỡ tài liệu',
+        'ps.fl.none': 'Chưa có tài liệu — bước này chỉ để hướng dẫn Trợ lý.', 'ps.fl.attached': 'Đã đính kèm template: {f}',
+        'ps.kicker': 'Cài đặt dự án',        'ps.kicker': 'Cài đặt dự án', 'ps.stored': 'Lưu tại', 'ps.pdir': 'Thư mục dự án', 'ps.reveal': 'Mở thư mục', 'ps.copy': 'Sao chép đường dẫn', 'ps.copied': 'Đã sao chép đường dẫn',
         'ps.defaults': 'Giá trị mặc định cho mọi dự án nằm ở', 'ps.unsaved': 'Có thay đổi chưa lưu', 'ps.discard': 'Bỏ thay đổi', 'ps.saved': 'Đã lưu vào .procheck\\settings.json', 'ps.discarded': 'Đã bỏ các thay đổi',
         'ps.n.general': 'Chung', 'ps.n.workflow': 'Quy trình', 'ps.n.ai': 'Ghi đè AI', 'ps.n.isolation': 'Cô lập', 'ps.n.harness': 'Agent harness', 'ps.n.export': 'Mặc định xuất tệp', 'ps.n.storage': 'Lưu trữ', 'ps.n.danger': 'Vùng nguy hiểm',
         'ps.change': 'Đổi', 'ps.add': 'Thêm', 'ps.reset': 'Về mặc định', 'ps.nonerepo': 'Chưa liên kết',
@@ -417,7 +472,7 @@
         'ps.export.d': 'Mặc định khi xuất tài liệu của dự án này.', 'ps.fmt.docx': 'Chỉnh sửa được, hợp để gửi khách hàng.', 'ps.fmt.pdf': 'Bố cục cố định để ký duyệt và lưu trữ.', 'ps.fmt.md': 'Văn bản thuần, phù hợp lưu trong git.',
         'ps.ex.dest': 'Thư mục xuất', 'ps.ex.dest.d': 'Nơi ghi các tệp đã xuất.', 'ps.ex.cover': 'Thêm trang bìa', 'ps.ex.cover.d': 'Thêm tên dự án, khách hàng và phiên bản ở trang đầu.', 'ps.ex.ver': 'Thêm phiên bản vào tên tệp', 'ps.ex.ver.d': 'VD: Merchant-BRD-v3.docx',
         'ps.storage.d': 'Những gì dự án này đang lưu trong thư mục của nó.', 'ps.st.in': 'trong',
-        'ps.t.0': 'Tệp mô tả dự án', 'ps.t.1': 'Tài liệu tải lên (đầu vào)', 'ps.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ps.t.3': 'Task, kế hoạch, bằng chứng review', 'ps.t.4': 'Git repository (mã nguồn)', 'ps.t.5': 'Lịch sử chat với Trợ lý', 'ps.t.6': 'Log và bằng chứng các lượt chạy agent', 'ps.t.7': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ps.t.8': 'Git worktree do agent tạo', 'ps.t.9': 'Ghi đè cấp dự án',
+        'ps.t.0': 'Tệp mô tả dự án', 'ps.t.1': 'Tài liệu tải lên (đầu vào)', 'ps.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ps.t.3': 'Task, kế hoạch, bằng chứng review', 'ps.t.4': 'Git repository (mã nguồn)', 'ps.t.5': 'Văn bản trích từ nguồn (transcript, OCR, dữ liệu đã phân tích) cho CLI', 'ps.t.6': 'Lịch sử chat với Trợ lý', 'ps.t.7': 'Log và bằng chứng các lượt chạy agent', 'ps.t.8': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ps.t.9': 'Git worktree do agent tạo', 'ps.t.10': 'Ghi đè cấp dự án',
         'ps.st.chat': 'Lịch sử chat', 'ps.st.chat.d': 'Các cuộc trò chuyện với Trợ lý lưu trong .procheck\\chats.', 'ps.st.chat.clear': 'Xoá lịch sử', 'ps.st.chat.t': 'Xoá toàn bộ lịch sử chat?', 'ps.st.chat.td': 'Xoá mọi cuộc trò chuyện với Trợ lý đã lưu của dự án này. Tài liệu không bị ảnh hưởng.', 'ps.st.chat.done': 'Đã xoá lịch sử chat',
         'ps.st.runs': 'Log lượt chạy agent', 'ps.st.runs.d': 'Giải phóng dung lượng bằng cách xoá log và bằng chứng cũ trong .procheck\\runs.', 'ps.st.older': 'Cũ hơn', 'ps.st.days': 'ngày', 'ps.st.runs.clear': 'Xoá log', 'ps.st.runs.done': 'Đã xoá log cũ hơn {n} ngày · giải phóng 96 MB',
         'ps.danger.d': 'Các thao tác này ảnh hưởng đến cách dự án được đăng ký hoặc lưu trên ổ đĩa.',
@@ -435,14 +490,15 @@
       const P = () => PC.project();
       const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
       const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-fable-5-2'], codex: ['gpt-6-luna', 'gpt-5.6-terra', 'gpt-5.6-luna'] };
-      const PROJ_SIZES = [[0.003, '3 KB'], [86, '86 MB'], [41, '41 MB'], [12, '12 MB'], [236, '236 MB'], [6, '6 MB'], [148, '148 MB'], [22, '22 MB'], [94, '94 MB'], [0.001, '1 KB']];
-      const TREE_COL = ['var(--fg-faint)', 'var(--brand)', 'var(--accent-purple)', 'var(--accent-teal)', 'var(--fg-muted)', 'var(--accent-sky)', 'var(--warning)', 'var(--accent-magenta)', 'var(--success)', 'var(--fg-faint)'];
+      const PROJ_SIZES = [[0.003, '3 KB'], [86, '86 MB'], [41, '41 MB'], [12, '12 MB'], [236, '236 MB'], [18, '18 MB'], [6, '6 MB'], [148, '148 MB'], [22, '22 MB'], [94, '94 MB'], [0.001, '1 KB']];
+      const TREE_COL = ['var(--fg-faint)', 'var(--brand)', 'var(--accent-purple)', 'var(--accent-teal)', 'var(--fg-muted)', 'var(--info)', 'var(--accent-sky)', 'var(--warning)', 'var(--accent-magenta)', 'var(--success)', 'var(--fg-faint)'];
       const PROMPTS = {
         initial: 'You are the discovery assistant for {project} ({client}).\nWork in the Initial phase: turn meeting notes and source documents into\nclarifying questions, a BRD, scope and estimates.\nAlways cite the source document and flag assumptions explicitly.',
         release: 'You are the architecture assistant for {project} ({client}).\nWork in the Scaffolding phase: propose the architecture, repository structure,\ninfrastructure and CI/CD pipeline, then generate the scaffold in the linked repo.\nFollow existing conventions; never overwrite files without a diff.',
         sdlc: 'You are an implementation agent on {project} ({client}).\nWork in the SDLC phase: for each task, plan the solution, implement it in an\nisolated git worktree, run the e2e command and attach evidence.\nStop at review. Never push or open a pull request without approval.'
       };
-      const S = { aiMode: 'default', promptTab: 'sdlc', prompts: Object.assign({}, PROMPTS), env: ['PATH', 'TEMP', 'TMP', 'SystemRoot', 'NODE_OPTIONS'], envCli: 'claude', isoGlobal: true, isoFs: true, phase: null, fmt: 'docx', dirty: false, chatsCleared: false };
+      const WF = PC.workflow, Lx = o => PC.L(o);
+      const S = { flow: null, aiMode: 'default', promptTab: 'sdlc', prompts: Object.assign({}, PROMPTS), env: ['PATH', 'TEMP', 'TMP', 'SystemRoot', 'NODE_OPTIONS'], envCli: 'claude', isoGlobal: true, isoFs: true, phase: null, fmt: 'docx', dirty: false, chatsCleared: false };
       const LS = { get(k, d) { try { return localStorage.getItem('pc.' + k) || d; } catch (e) { return d; } } };
       const join = (a, b) => a.replace(/\\+$/, '') + '\\' + b;
       const code = p => p.short;
@@ -539,13 +595,46 @@
         $('st-total').textContent = Math.round(total) + ' MB';
         $('st-bar').innerHTML = PROJ_SIZES.map((x, i) => x[0] > 1 ? `<i style="width:${(x[0] / total) * 100}%;background:${TREE_COL[i]}"></i>` : '').join('');
         $('st-tree').innerHTML = D.storage.project.items.map((it, i) => {
-          const size = S.chatsCleared && i === 5 ? '0 KB' : PROJ_SIZES[i][1];
+          const size = S.chatsCleared && i === 6 ? '0 KB' : PROJ_SIZES[i][1];
           return `<div class="znode"><i data-lucide="${PC.storageIcon(it.path)}"></i><span class="zp"><i style="background:${TREE_COL[i]}"></i>${PC.esc(it.path.replace('<cli>', '*'))}</span><span class="zs">${size}</span><span class="zd">${tx('ps.t.' + i)}</span></div>`;
         }).join('');
         $('chat-size').textContent = S.chatsCleared ? '0 KB · 0' : '6 MB · 38 chats';
       }
 
-      function renderAll() { renderHead(); bind(); renderPhases(); renderOverride(); renderPrompts(); renderHomes(); renderEnv(); renderStorage(); PC.refresh(document.querySelector('.canvas')); }
+      /* ---------------- Initial phase steps: free-text instructions + artifacts with any template file ---------------- */
+      function renderFlow() {
+        if (!S.flow) S.flow = WF.get(P().id);
+        const all = WF.STEPS.flatMap(sk => S.flow.steps[sk].arts);
+        $('fl-sum').textContent = PC.t('ps.fl.sum', { a: all.length, t: all.filter(a => a.file).length });
+        $('flow').innerHTML = WF.STEPS.map((sk, i) => {
+          const st = S.flow.steps[sk];
+          const rows = st.arts.map((a, n) => `<div class="fa" data-row="${sk}|${n}"><span class="file-tile"><i data-lucide="${WF.artIcon(a)}"></i></span>
+              <input class="input" data-aname="${sk}|${n}" value="${PC.esc(a.name || (WF.SEED[a.id] ? WF.artName(a) : ''))}" placeholder="${PC.esc(tx('ps.fl.name_ph'))}">
+              ${a.file ? `<div class="fa-file"><i data-lucide="file-badge"></i><span class="nm" title="${PC.esc(a.file.name)}">${PC.esc(a.file.name)}</span><span class="sz">${PC.esc(a.file.size || '')}</span>
+                  <button type="button" class="btn btn-ghost btn-sm btn-icon" data-act="fa-pick" data-s="${sk}" data-n="${n}" data-i18n-tip="ps.fl.replace"><i data-lucide="replace"></i></button>
+                  <button type="button" class="btn btn-ghost btn-sm btn-icon" data-act="fa-unfile" data-s="${sk}" data-n="${n}" data-i18n-tip="ps.fl.rmfile"><i data-lucide="x"></i></button></div>`
+                : `<button type="button" class="btn btn-secondary btn-sm fa-attach" data-act="fa-pick" data-s="${sk}" data-n="${n}"><i data-lucide="paperclip"></i>${tx('ps.fl.attach')}</button>`}
+              <button type="button" class="btn btn-ghost btn-sm btn-icon" data-act="fa-rm" data-s="${sk}" data-n="${n}" data-i18n-tip="ps.fl.rm"><i data-lucide="trash-2"></i></button></div>`).join('');
+          return `<details class="card fstep" ${S.openStep === sk ? 'open' : ''} data-step="${sk}">
+            <summary><span class="fs-n">${i + 1}</span><span class="fs-t"><b>${PC.esc(Lx(WF.STEP_META[sk].name))}</b><small>${PC.esc(PC.t('ps.fl.count', { n: st.arts.length }))}${st.arts.length ? ' · ' + st.arts.map(a => PC.esc(WF.artName(a))).join(', ') : ''}</small></span><i data-lucide="chevron-down" class="chev"></i></summary>
+            <div class="srow stack"><div class="row between"><div class="sinfo"><div class="slabel">${tx('ps.fl.instr')}</div><div class="sdesc">${tx('ps.fl.instr.d')}</div></div>
+                ${st.instr != null ? `<button type="button" class="btn btn-ghost btn-sm" data-act="instr-reset" data-s="${sk}"><i data-lucide="rotate-ccw"></i>${tx('ps.fl.instr.reset')}</button>` : ''}</div>
+              <textarea class="textarea instr" data-instr="${sk}" spellcheck="false">${PC.esc(WF.instr(S.flow, sk))}</textarea></div>
+            <div class="srow stack" style="gap:0"><div class="row between" style="margin-bottom:6px"><div class="sinfo"><div class="slabel">${tx('ps.fl.arts')}</div><div class="sdesc">${tx('ps.fl.arts.d')}</div></div>
+                <button type="button" class="btn btn-secondary btn-sm" data-act="fa-add" data-s="${sk}"><i data-lucide="plus"></i>${tx('ps.fl.add')}</button></div>
+              ${rows || `<div class="fa-none">${tx('ps.fl.none')}</div>`}</div>
+          </details>`;
+        }).join('');
+        PC.refresh($('flow'));
+      }
+      const flowDirty = sk => { if (sk) S.openStep = sk; setDirty(true); renderFlow(); };
+      function attach(sk, n, f) {
+        if (!f) return;
+        S.flow.steps[sk].arts[n].file = { name: f.name, size: WF.fileSize(f), updated: '2026-11-25' };
+        flowDirty(sk); PC.toast(PC.t('ps.fl.attached', { f: PC.esc(f.name) }), { icon: 'paperclip' });
+      }
+
+      function renderAll() { renderHead(); bind(); renderPhases(); renderFlow(); renderOverride(); renderPrompts(); renderHomes(); renderEnv(); renderStorage(); PC.refresh(document.querySelector('.canvas')); }
 
       function setDirty(v) { S.dirty = v; $('savebar').classList.toggle('is-off', !v); }
       function spy() {
@@ -593,12 +682,28 @@
           else if (act === 'env-add') { const v = $('env-in').value.trim().toUpperCase().replace(/[^A-Z0-9_]/g, ''); if (v && !S.env.includes(v)) { S.env.push(v); renderEnv(); setDirty(true); } $('env-in').value = ''; }
           else if (act === 'clear-chats') dlgConfirm(tx('ps.st.chat.t'), tx('ps.st.chat.td'), tx('ps.st.chat.clear'), 'trash-2', () => { S.chatsCleared = true; renderStorage(); PC.refresh($('st-tree')); PC.toast(tx('ps.st.chat.done')); });
           else if (act === 'clear-runs') PC.toast(tx('ps.st.runs.done').replace('{n}', $('runs-days').value || 30), { icon: 'eraser' });
-          else if (act === 'save') { setDirty(false); PC.toast(tx('ps.saved')); }
-          else if (act === 'discard') { fillForm(); setDirty(false); PC.toast(tx('ps.discarded'), { icon: 'undo-2' }); }
+          else if (act === 'save') { WF.save(p.id, S.flow); setDirty(false); PC.toast(tx('ps.saved')); }
+          else if (act === 'fl-reset') dlgConfirm(tx('ps.fl.reset.t'), tx('ps.fl.reset.d'), tx('ps.fl.reset'), 'rotate-ccw', () => { S.flow = WF.defaults(); flowDirty(); PC.toast(tx('ps.fl.reset.done'), { icon: 'rotate-ccw' }); });
+          else if (act === 'instr-reset') { S.flow.steps[a.dataset.s].instr = null; flowDirty(a.dataset.s); }
+          else if (act === 'fa-add') { const arts = S.flow.steps[a.dataset.s].arts; arts.push({ id: 'a-' + Date.now(), name: '', file: null }); flowDirty(a.dataset.s); const ins = document.querySelectorAll('[data-aname^="' + a.dataset.s + '|"]'); if (ins.length) ins[ins.length - 1].focus(); }
+          else if (act === 'fa-rm') { S.flow.steps[a.dataset.s].arts.splice(+a.dataset.n, 1); flowDirty(a.dataset.s); }
+          else if (act === 'fa-unfile') { S.flow.steps[a.dataset.s].arts[+a.dataset.n].file = null; flowDirty(a.dataset.s); }
+          else if (act === 'fa-pick') { S.pickFor = [a.dataset.s, +a.dataset.n]; $('fl-file').click(); }
+          else if (act === 'discard') { fillForm(); S.flow = WF.get(p.id); renderFlow(); setDirty(false); PC.toast(tx('ps.discarded'), { icon: 'undo-2' }); }
         });
         $('content').addEventListener('input', e => { if (e.target.closest('.card')) setDirty(true); if (e.target.id === 'wt-root') bind(); });
         $('content').addEventListener('change', e => { if (e.target.closest('.card')) setDirty(true); });
         $('prompt').addEventListener('input', e => { S.prompts[S.promptTab] = e.target.value; });
+        $('flow').addEventListener('input', e => {
+          const el = e.target;
+          if (el.dataset.instr) { S.flow.steps[el.dataset.instr].instr = el.value; setDirty(true); }
+          else if (el.dataset.aname) { const [sk, n] = el.dataset.aname.split('|'); S.flow.steps[sk].arts[+n].name = el.value; setDirty(true); }
+        });
+        $('fl-file').addEventListener('change', e => { const f = e.target.files[0]; if (f && S.pickFor) attach(S.pickFor[0], S.pickFor[1], f); e.target.value = ''; });
+        $('flow').addEventListener('dragover', e => { const r = e.target.closest('.fa'); if (!r) return; e.preventDefault(); document.querySelectorAll('.fa.is-over').forEach(x => x !== r && x.classList.remove('is-over')); r.classList.add('is-over'); });
+        $('flow').addEventListener('dragleave', e => { const r = e.target.closest('.fa'); if (r && !r.contains(e.relatedTarget)) r.classList.remove('is-over'); });
+        $('flow').addEventListener('drop', e => { const r = e.target.closest('.fa'); if (!r) return; e.preventDefault(); r.classList.remove('is-over'); const [sk, n] = r.dataset.row.split('|'); attach(sk, +n, e.dataTransfer.files[0]); });
+        $('flow').addEventListener('toggle', e => { if (e.target.open) S.openStep = e.target.dataset.step; }, true);
         $('ptabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; S.promptTab = b.dataset.tab; renderPrompts(); PC.refresh($('ptabs')); });
         $('phases').addEventListener('click', e => { const b = e.target.closest('[data-phase]'); if (!b) return; S.phase = b.dataset.phase; renderPhases(); PC.refresh($('phases')); setDirty(true); });
         const pick = (el, fn) => { el.addEventListener('click', e => { const o = e.target.closest('.opt'); if (o && el.contains(o)) fn(o); }); el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('opt')) { e.preventDefault(); fn(e.target); } }); };
@@ -618,6 +723,7 @@
       }
 
       PC.onReady(() => {
+        S.openStep = 'discovery';
         $('branch').value = 'agent/<id>-<slug>';
         fillForm(); wire(); renderAll(); spy();
         if (location.hash) { const el = document.getElementById(location.hash.slice(1)); if (el && el.classList.contains('sec')) setTimeout(() => el.scrollIntoView(), 60); }

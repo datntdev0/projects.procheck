@@ -89,7 +89,7 @@
     en: {
       'app.name': 'Procheck', 'app.by': 'by KMS Technology', 'app.version': 'Version', 'nav.settings': 'Settings',
       'shell.search': 'Search projects, artifacts, tasks…',
-      'shell.home': 'Projects', 'shell.search.tip': 'Search (Ctrl K)', 'shell.assistant': 'Assistant', 'shell.activity': 'Activity',
+      'shell.home': 'Projects', 'shell.search.tip': 'Search (Ctrl K)', 'shell.assistant': 'Assistant',
       'shell.runs': 'Agent runs', 'shell.design': 'Design system', 'shell.settings': 'Settings', 'shell.profile': 'Profile',
       'shell.theme': 'Theme', 'theme.system': 'System', 'theme.light': 'Light', 'theme.dark': 'Dark', 'shell.lang': 'Language',
       'nav.project': 'Project', 'nav.overview': 'Overview', 'nav.workflow': 'Workflow',
@@ -127,7 +127,7 @@
     vi: {
       'app.name': 'Procheck', 'app.by': 'bởi KMS Technology', 'app.version': 'Phiên bản', 'nav.settings': 'Cài đặt',
       'shell.search': 'Tìm dự án, tài liệu, task…',
-      'shell.home': 'Dự án', 'shell.search.tip': 'Tìm kiếm (Ctrl K)', 'shell.assistant': 'Trợ lý', 'shell.activity': 'Hoạt động',
+      'shell.home': 'Dự án', 'shell.search.tip': 'Tìm kiếm (Ctrl K)', 'shell.assistant': 'Trợ lý',
       'shell.runs': 'Lượt chạy agent', 'shell.design': 'Design system', 'shell.settings': 'Cài đặt', 'shell.profile': 'Hồ sơ',
       'shell.theme': 'Giao diện', 'theme.system': 'Theo hệ thống', 'theme.light': 'Sáng', 'theme.dark': 'Tối', 'shell.lang': 'Ngôn ngữ',
       'nav.project': 'Dự án', 'nav.overview': 'Tổng quan', 'nav.workflow': 'Quy trình',

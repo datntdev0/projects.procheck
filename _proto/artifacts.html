@@ -377,6 +377,13 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
             S('Key discussion points', 'Merchants currently onboard by email with a 9-day average turnaround. Settlement reconciliation is done in spreadsheets by 14 operations staff.', '- Pain: duplicated data entry across three systems', '- Pain: merchants cannot see their KYC status', '- Constraint: go-live before the January peak season'),
             S('Decisions', '- Build a self-service merchant portal as Release 1', '- Use Lotus Identity (Keycloak) for authentication'),
             S('Action items', '- You: draft BRD from the kickoff recording by 19 Aug', '- Lotus Finance Ops: share the merchant volume forecast by 16 Aug', '- Lotus Compliance: send the e-KYC circular and audit requirements')] } },
+        { id: 'discovery-report', ph: 'initial', icon: 'compass', st: 'approved', title: 'Discovery report', src: ['rec-kickoff', 'interview-fin', 'rfp', 'process-doc', 'ekyc-circular'], tasks: [],
+          vers: [['AI', '2026-08-18', 'Synthesised from the kickoff, the finance interview and 3 client documents']],
+          doc: { lead: '**Lotus Pay — Merchant portal** · Based on 2 meetings and 3 client documents', sections: [
+            S('1. Summary', 'Merchant onboarding takes 9 days by email and settlement is reconciled in spreadsheets by 14 people. Release 1 is a self-service merchant portal on Lotus Identity, live before the January peak season.'),
+            S('2. Findings by theme', '**Pain points**', '- Duplicated data entry across three systems *(F-01 · Kickoff)*', '- Merchants cannot see their KYC status *(F-02 · Kickoff)*', '**Constraints**', '- e-KYC follows the State Bank circular; decisions kept for 7 years *(F-07 · e-KYC circular.pdf)*', '- The eKYC sandbox caps calls at 100 per minute *(F-09 · Process document)*'),
+            S('3. Conflicts', '- The RFP says CSV export only; Finance asked for XLSX too → Q-02, answered: both formats'),
+            S('4. Requirement candidates', '- 12 findings read as requirements and feed the BRD.')] } },
         { id: 'brd', ph: 'initial', icon: 'file-text', st: 'approved', title: 'Business Requirements Doc', src: ['rfp', 'rec-kickoff', 'process-doc', 'ekyc-circular', 'interview-fin'], tasks: [['LP-142', 'Merchant KYC document upload'], ['LP-151', 'Settlement report export']],
           vers: [['AI', '2026-08-17', 'Generated from RFP and kickoff transcript'], ['ME', '2026-08-19', 'Added settlement requirements and stakeholder table'], ['AI', '2026-11-16', 'Tightened NFR-02/03, added BRD-FR-09 per CR-02']],
           md3: BRD_V3, back: BRD_BACK,
@@ -480,6 +487,15 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
             S('Key discussion points', 'Patients wait 25 minutes on average at the front desk; 30% of chronic-care patients skip follow-up visits.', '- Video consultations cover follow-up visits only; first visits stay in the clinic', '- Doctors need the full patient history from the HIS during the call', '- Prescriptions must be signed by the doctor; paper fallback until the legal scope is clear'),
             S('Decisions', '- Build a telemedicine platform for 12 clinics: booking, video visits, e-prescription, payments', '- Integrate with the existing HIS for patient records'),
             S('Action items', '- You: draft BRD v1 by 17 Nov', '- Clinic operations lead: share the HIS integration spec', '- Medical director: confirm the legal basis for e-prescription')] } },
+        { id: 'discovery-report', ph: 'initial', icon: 'compass', st: 'approved', title: 'Discovery report', src: ['kickoff-vtt', 'workshop-m4a', 'journey-map', 'ops-overview', 'his-spec'], tasks: [],
+          vers: [['AI', '2026-11-06', 'Synthesised from the kickoff, the clinical workshop and 3 client documents'], ['AI', '2026-11-13', 'Added the HIS spec conflict and Q-04']],
+          doc: { lead: '**VietHealth Telemedicine** · Based on 2 meetings and 3 client documents · 14 findings', sections: [
+            S('1. Summary', 'VietHealth wants patients to book, attend follow-up visits by video and receive prescriptions without travelling. The main drivers are front-desk waiting time and missed chronic-care follow-ups. Two topics are still unclear: the legal scope of e-prescription and the HIS integration.'),
+            S('2. Sources', '| Source | Type | Date | Findings |', '|---|---|---|---|', '| Kickoff | Meeting | 28 Oct | 4 |', '| Clinical workflow workshop | Meeting | 4 Nov | 4 |', '| Operations overview.pdf | Process | 30 Oct | 2 |', '| Patient journey map.png | Image | 30 Oct | 2 |', '| HIS integration spec.pdf | Spec | 6 Nov | 2 |'),
+            S('3. Findings by theme', '**Pain points**', '- Patients wait 25 minutes on average at the front desk *(F-05 · Clinical workflow workshop)*', '- 30% of chronic-care patients skip follow-up visits *(F-04 · Kickoff)*', '**Constraints**', '- Patient data stays in Vietnam, Decree 13/2023 *(F-02 · Kickoff)*', '- Prescriptions are signed by the doctor; paper fallback until the legal scope is clear *(F-08 · Clinical workflow workshop)*', '**Requirements**', '- Doctors see the full HIS patient history during the call *(F-07 · Clinical workflow workshop)*'),
+            S('4. Conflicts', '- The kickoff says visit notes are written back to the HIS; the HIS spec only offers a read API *(F-12 · HIS integration spec.pdf)* → Q-04, open'),
+            S('5. Open questions', '- Q-03 (blocking): is e-prescription legally valid for chronic-disease refills?', '- Q-04 (blocking): who owns the HIS integration and is a write API available?'),
+            S('6. Requirement candidates', '- 9 findings read as requirements and feed BRD v1.')] } },
         { id: 'brd', ph: 'initial', icon: 'file-text', st: 'review', title: 'Business Requirements Doc', src: ['ops-overview', 'journey-map', 'his-spec', 'workshop-m4a'], tasks: [],
           vers: [['AI', '2026-11-17', 'Generated from meeting notes, HIS spec and operations overview']],
           comments: [{ at: 'issue and sign e-prescriptions', who: 'CX', t: 'Blocked by Q-03: the legal scope of e-prescription is unconfirmed. Keep it Must until the client answers?' }, { at: 'write consultation notes back to the HIS', who: 'ME', t: 'Depends on Q-04 (who owns the HIS integration). Do not freeze scope before this is answered.' }],
@@ -505,6 +521,13 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
           doc: { lead: '**Date:** 21 Jul 2026 · **Location:** Mekong Retail HQ, Tan Binh · **Recorded:** 55 min', sections: [
             S('Key discussion points', '- Pain: online and in-store stock differ; 8% of online orders are cancelled for stock errors', '- Pain: store staff cannot see online reservations while serving walk-in customers', '- Constraint: phase 1 must go live before the mid-year sale 2027'),
             S('Decisions', '- Extend the existing platform instead of rebuilding it', '- 60 stores and the web shop are in scope for release 1')] } },
+        { id: 'discovery-report', ph: 'initial', icon: 'compass', st: 'approved', title: 'Discovery report', src: ['kickoff-m4a', 'store-interview', 'rfp', 'arch-overview', 'store-process'], tasks: [],
+          vers: [['AI', '2026-07-31', 'Synthesised from the kickoff, the store interview, the RFP and the architecture overview'], ['ME', '2026-08-06', 'Grouped findings by channel']],
+          doc: { lead: '**Mekong Retail — Omnichannel** · Based on 2 meetings and 3 client documents', sections: [
+            S('1. Summary', 'Mekong Retail loses online orders because web and store stock differ. The platform is extended, not rebuilt, and release 1 covers 60 stores and the web shop before the mid-year sale 2027.'),
+            S('2. Findings by theme', '**Pain points**', '- 8% of online orders are cancelled for stock errors *(F-01 · Kickoff)*', '- Store staff cannot see online reservations *(F-02 · Kickoff)*', '**Constraints**', '- Go-live before the mid-year sale 2027 *(F-03 · Kickoff)*', '- The POS sends stock to the ERP only every 15 minutes *(F-09 · Architecture overview.pdf)*'),
+            S('3. Conflicts', '- The RFP asks for real-time stock; the POS batch interval is 15 minutes → Q-02, answered: under 60 seconds is accepted'),
+            S('4. Requirement candidates', '- 11 findings read as requirements and feed the BRD.')] } },
         { id: 'brd', ph: 'initial', icon: 'file-text', st: 'approved', title: 'Business Requirements Doc', src: ['rfp', 'arch-overview', 'pos-erp-spec', 'store-process', 'kickoff-m4a'], tasks: [],
           vers: [['AI', '2026-08-28', 'Generated from RFP and kickoff notes'], ['ME', '2026-09-12', 'Added ship-from-store and promotion requirements']],
           doc: { lead: '**Mekong Retail — Omnichannel** · Version 2.0 · Status: Approved', sections: [
@@ -553,6 +576,12 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
         { id: 'meeting-notes', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff 2026-01-12', src: ['kickoff-m4a'], tasks: [],
           vers: [['AI', '2026-01-14', 'Generated from the kickoff recording'], ['ME', '2026-01-16', 'Added action owners']],
           doc: { lead: '**Date:** 12 Jan 2026 · **Location:** Atlas Group HQ · **Recorded:** 45 min', sections: [S('Decisions', '- Build one HR suite for about 2,400 employees: core HR, leave, payroll and self-service', '- Salary and ID data stay inside the Atlas Group network')] } },
+        { id: 'discovery-report', ph: 'initial', icon: 'compass', st: 'approved', title: 'Discovery report', src: ['kickoff-m4a', 'process-map', 'data-dict', 'napas'], tasks: [],
+          vers: [['AI', '2026-01-20', 'Synthesised from the kickoff and 3 internal documents']],
+          doc: { lead: '**Atlas HR Suite** · Based on 1 meeting and 3 internal documents', sections: [
+            S('1. Summary', 'Payroll closing takes 4 days and about 3% of employees get a wrong payslip. One HR suite replaces the legacy tool before its licence ends on 30 Jun 2026.'),
+            S('2. Findings by theme', '**Pain points**', '- Payroll closing takes 4 days *(F-01 · Kickoff)*', '- Leave balances are kept in spreadsheets per site *(F-04 · Process map)*', '**Constraints**', '- Salary and ID data stay inside the Atlas network *(F-02 · Kickoff)*', '- Bank files follow the NAPAS format *(F-06 · NAPAS spec)*'),
+            S('3. Requirement candidates', '- 10 findings read as requirements and feed the BRD.')] } },
         { id: 'brd', ph: 'initial', icon: 'file-text', st: 'approved', title: 'Business Requirements Doc', src: ['process-map', 'data-dict', 'napas', 'kickoff-m4a'], tasks: [['AH-298', 'Leave approval delegation'], ['AH-311', 'Payroll export to bank file (NAPAS)']],
           vers: [['AI', '2026-02-10', 'Generated from process map and interviews'], ['ME', '2026-02-20', 'Added payroll and bank file requirements'], ['AI', '2026-03-02', 'Tightened NFRs and added delegation rules']],
           doc: { lead: '**Atlas HR Suite** · Internal project · Version 3.0 · Status: Approved', sections: [

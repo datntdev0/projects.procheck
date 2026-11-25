@@ -9,6 +9,7 @@ desktop/gen/schemas/
 
 # Angular cache (no leading path: matches angular/.angular/ too)
 .angular/
+.playwright-cli/
 
 # Storybook default output
 storybook-static/

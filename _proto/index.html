@@ -113,7 +113,7 @@
     .plist-head { padding: 0 var(--space-4); font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); }
     .prow .upd { margin-left: 0; justify-content: flex-end; }
 
-    /* attention + activity */
+    /* attention */
     .att { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); text-decoration: none !important; color: inherit; --_accent: var(--warning); }
     .att-top { display: flex; align-items: flex-start; gap: var(--space-3); }
     .att-id { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-subtle); }
@@ -121,17 +121,6 @@
     .att-meta { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-xs); color: var(--fg-subtle); }
     .att-meta span { display: inline-flex; align-items: center; gap: 4px; }
     .att-meta svg { width: 12px; height: 12px; }
-    .run { display: flex; align-items: flex-start; gap: var(--space-3); padding: 10px var(--space-4); text-decoration: none !important; color: inherit; border-bottom: 1px solid var(--border-subtle); }
-    .run:last-child { border-bottom: 0; }
-    .run:hover { background: var(--bg-hover); }
-    .run-ico { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-    .run-ico svg { width: 14px; height: 14px; }
-    .run-ico.running { background: var(--brand-soft); color: var(--brand-fg); }
-    .run-ico.review { background: var(--warning-soft); color: var(--warning-fg); }
-    .run-ico.passed { background: var(--success-soft); color: var(--success-fg); }
-    .run-ico.failed { background: var(--danger-soft); color: var(--danger-fg); }
-    .run-title { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-default); line-height: 1.35; }
-    .run-meta { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 2px; }
 
     .spin-i, svg.spin-i { animation: spin 1.2s linear infinite; }
 
@@ -217,10 +206,6 @@
           <div class="section-title"><h3 data-i18n="home.att.title"></h3><span class="badge badge-warning" id="att-count">0</span></div>
           <div class="col gap-3" id="attention"></div>
         </section>
-        <section>
-          <div class="section-title"><h3 data-i18n="home.act.title"></h3><a class="text-xs" href="task.html" data-i18n="home.act.all"></a></div>
-          <div class="card" style="overflow:hidden" id="activity"></div>
-        </section>
       </aside>
     </div>
 
@@ -267,7 +252,6 @@
         'home.col.project': 'Project', 'home.col.phase': 'Phase & state', 'home.col.att': 'Attention', 'home.col.progress': 'Progress', 'home.col.dir': 'Project directory', 'home.col.updated': 'Updated',
         'home.empty.t': 'No projects match', 'home.empty.d': 'Try another search term or clear the phase filter.', 'home.empty.clear': 'Clear filters',
         'home.att.title': 'Needs your attention', 'home.att.review': 'Review changes', 'home.att.files': '{n} files', 'home.att.e2e': 'e2e {a}/{b} passed',
-        'home.act.title': 'Agent activity', 'home.act.all': 'View all',
         'home.run.running': 'Running', 'home.run.review': 'Needs review', 'home.run.passed': 'Passed', 'home.run.failed': 'Failed',
         'home.run.step': 'Step {a}/{b}', 'home.run.files': '{n} files changed', 'home.run.fail': 'e2e: {n} failing', 'home.run.pr': 'PR #{n} promoted',
         'home.ago.min': '{n} min ago', 'home.ago.h': '{n} h ago', 'home.ago.d': '{n} d ago',
@@ -315,7 +299,6 @@
         'home.col.project': 'Dự án', 'home.col.phase': 'Giai đoạn & trạng thái', 'home.col.att': 'Cần xử lý', 'home.col.progress': 'Tiến độ', 'home.col.dir': 'Thư mục dự án', 'home.col.updated': 'Cập nhật',
         'home.empty.t': 'Không có dự án phù hợp', 'home.empty.d': 'Thử từ khoá khác hoặc bỏ bộ lọc giai đoạn.', 'home.empty.clear': 'Xoá bộ lọc',
         'home.att.title': 'Cần bạn xử lý', 'home.att.review': 'Xem thay đổi', 'home.att.files': '{n} file', 'home.att.e2e': 'e2e đạt {a}/{b}',
-        'home.act.title': 'Hoạt động của agent', 'home.act.all': 'Xem tất cả',
         'home.run.running': 'Đang chạy', 'home.run.review': 'Chờ review', 'home.run.passed': 'Đạt', 'home.run.failed': 'Thất bại',
         'home.run.step': 'Bước {a}/{b}', 'home.run.files': '{n} file thay đổi', 'home.run.fail': 'e2e: {n} ca lỗi', 'home.run.pr': 'Đã đẩy PR #{n}',
         'home.ago.min': '{n} phút trước', 'home.ago.h': '{n} giờ trước', 'home.ago.d': '{n} ngày trước',
@@ -355,7 +338,7 @@
         { pid: 'lotus-pay', tone: 'warning', icon: 'eye', id: 'LP-142', t: () => PC.t('home.att.rv1'), m: () => PC.t('home.att.files', { n: 14 }) + ' · ' + PC.t('home.att.e2e', { a: 12, b: 12 }), href: ['task.html'], cta: 'home.att.rvw', ago: ['min', 12] },
         { pid: 'lotus-pay', tone: 'warning', icon: 'eye', id: 'LP-151', t: () => PC.t('home.att.rv2'), m: () => PC.t('home.att.files', { n: 6 }) + ' · ' + PC.t('home.att.e2e', { a: 5, b: 5 }), href: ['task.html'], cta: 'home.att.rvw', ago: ['hour', 1] },
         { pid: 'atlas-hr', tone: 'warning', icon: 'message-square-warning', id: 'AH-298', t: () => PC.t('home.att.chg'), m: () => PC.t('home.att.chg.m'), href: ['task.html'], cta: 'home.att.open', ago: ['hour', 3] },
-        { pid: 'saigon-tms', tone: 'info', icon: 'mic', id: 'M-01', t: () => PC.t('home.att.tr'), m: () => PC.t('home.att.tr.m'), href: ['initial.html', '#meetings'], cta: 'home.att.extract', ago: ['day', 4] },
+        { pid: 'saigon-tms', tone: 'info', icon: 'mic', id: 'M-01', t: () => PC.t('home.att.tr'), m: () => PC.t('home.att.tr.m'), href: ['initial.html', '#discovery'], cta: 'home.att.extract', ago: ['day', 4] },
       ];
       const attOf = id => ATT.filter(a => a.pid === id);
       const projectsNeedingYou = () => new Set(ATT.map(a => a.pid)).size;
@@ -368,7 +351,7 @@
         'atlas-hr': L('AH-311 agent run failed · e2e 6/9', 'Lượt chạy agent AH-311 lỗi · e2e 6/9'),
       };
       const phasePage = p => PH_PAGE[p.phase];
-      // Agent activity feed (agents only — saigon has no runs; viethealth has only drafted artifacts)
+      // Agent runs across projects: drive the hero line and the Agent runs stat
       const RUNS = [
         { pid: 'lotus-pay', st: 'running', id: 'LP-155', title: () => PC.lang === 'vi' ? 'Giới hạn tốc độ cho API công khai' : 'Rate limiting on public API', cli: 'Claude Code', meta: () => PC.t('home.run.step', { a: 4, b: 6 }), ago: ['min', 3], page: 'task.html', n: 3 },
         { pid: 'mekong', st: 'running', id: 'SC-04', title: () => PC.t('home.run.cicd', { n: 60 }), cli: 'Claude Code', meta: () => PC.t('home.run.running'), ago: ['min', 7], page: 'task.html', n: 7 },
@@ -503,17 +486,6 @@
         PC.refresh($('attention'));
       }
 
-      const RUN_ICON = { running: 'loader-circle', review: 'eye', passed: 'check', failed: 'x' };
-      function renderActivity() {
-        $('activity').innerHTML = RUNS.map(r => { const p = byId(r.pid); return `<a class="run" href="${U(r.pid, r.page, r.hash)}">
-          <span class="run-ico ${r.st}"><i data-lucide="${RUN_ICON[r.st]}" ${r.st === 'running' ? 'class="spin-i"' : ''}></i></span>
-          <div class="grow"><div class="run-title"><span class="mono text-xs text-subtle">${r.id}</span> ${PC.esc(r.title())}</div>
-            <div class="run-meta"><b style="font-weight:600;color:var(--fg-default)">${PC.esc(p.short)}</b> · ${PC.t('home.run.' + r.st)} · ${r.meta()} · ${r.cli}</div></div>
-          <span class="text-xs text-faint nowrap">${PC.t('home.ago.' + r.ago[0], { n: r.ago[1] })}</span>
-        </a>`; }).join('');
-        PC.refresh($('activity'));
-      }
-
       function setAssistant(forceSeed) {
         const A = PC.assistant;
         A.setContext([{ icon: 'layout-grid', label: PC.t('home.as.ctx.ws') }, { icon: 'folder', label: PC.t('home.as.ctx.n', { n: D.projects.length }) }, { icon: 'eye', label: PC.t('home.as.ctx.review', { n: ATT.length }) }]);
@@ -532,7 +504,7 @@
       }
 
       function refreshPhase() { renderLife(); renderFilters(); renderProjects(); PC.refresh($('life')); }
-      function renderAll() { renderHero(); renderStats(); renderLife(); renderContinue(); renderFilters(); renderProjects(); renderAttention(); renderActivity(); PC.refresh(document.querySelector('.canvas')); }
+      function renderAll() { renderHero(); renderStats(); renderLife(); renderContinue(); renderFilters(); renderProjects(); renderAttention(); PC.refresh(document.querySelector('.canvas')); }
 
       PC.onReady(() => {
         renderAll(); setAssistant(true);
