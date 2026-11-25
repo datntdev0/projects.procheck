@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal, untracked } from '@angular/core';
 
 import { AlertComponent } from '@components/alert/alert.component';
 import { ButtonComponent } from '@components/button/button.component';
@@ -31,6 +31,8 @@ import { TranslatePipe } from '@shared/i18n/translate.pipe';
 import { ProjectGateComponent } from '../project/project-gate.component';
 import { SourceAccessComponent } from './source-access.component';
 import { SourceDetailComponent } from './source-detail.component';
+import { SourceUpload } from './source-upload';
+import { SourceUploadDialogComponent } from './source-upload-dialog.component';
 import { STATUS_FILTERS, SourceSort, SourcesStore, StatusFilter } from './sources-store';
 
 interface Column {
@@ -66,16 +68,18 @@ const SAMPLE_KINDS: SourceKind[] = ['pdf', 'doc', 'slide', 'sheet', 'audio', 'vi
     ProjectGateComponent,
     SourceAccessComponent,
     SourceDetailComponent,
+    SourceUploadDialogComponent,
     TooltipDirective,
     TranslatePipe,
   ],
-  providers: [SourcesStore],
+  providers: [SourcesStore, SourceUpload],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(window:focus)': 'onWindowFocus()' },
   templateUrl: './sources-page.component.html',
 })
 export class SourcesPageComponent {
   protected readonly store = inject(SourcesStore);
+  protected readonly upload = inject(SourceUpload);
   private readonly projects = inject(ProjectsService);
   private readonly i18n = inject(I18nService);
   private readonly projectId = injectCurrentProjectId();
@@ -86,6 +90,7 @@ export class SourcesPageComponent {
   protected readonly statusFilters = STATUS_FILTERS;
   protected readonly sampleKinds = SAMPLE_KINDS;
 
+  protected readonly dragOver = signal(false);
   protected readonly pendingRemove = signal<string[]>([]);
   protected readonly pendingSources = computed(() => this.store.items().filter((s) => this.pendingRemove().includes(s.id)));
   protected readonly selectedIds = computed(() => [...this.store.selected()]);
@@ -98,6 +103,11 @@ export class SourcesPageComponent {
       const ready = !!this.project();
       if (id && ready && this.projects.loaded()) untracked(() => void this.store.load(id));
     });
+    const subscription = this.projects.onFileDrop(
+      (paths) => void this.upload.drop(paths),
+      (over) => this.dragOver.set(over && !!this.project() && !this.upload.busy()),
+    );
+    inject(DestroyRef).onDestroy(() => void subscription.then((unlisten) => unlisten()));
   }
 
   protected onWindowFocus(): void {

@@ -1,6 +1,9 @@
 /* ---------- Dropzone ---------- */
 .dropzone { border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg); padding: var(--space-8); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); text-align: center; color: var(--fg-subtle); background: var(--bg-surface-2); transition: border-color var(--dur-fast), background var(--dur-fast); cursor: pointer; }
 .dropzone:hover, .dropzone.is-over { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-fg); }
+.dz-ico { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--brand-fg); }
+.dropzone.is-over .dz-ico, .dropzone:hover .dz-ico { border-color: var(--brand); }
+.dz-title { font-size: var(--text-md); color: var(--fg-default); }
 
 /* ---------- File icon tile ---------- */
 .file-tile { width: 32px; height: 32px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--brand-soft); color: var(--brand-fg); }

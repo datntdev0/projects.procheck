@@ -10,6 +10,7 @@
         </div>
         <div class="row">
           <button pcButton data-testid="src-open-folder" (click)="store.reveal(null)"><pc-icon name="folder-open" /> {{ 'src.open_folder' | t }}</button>
+          <button pcButton variant="primary" data-testid="src-upload" (click)="upload.show()"><pc-icon name="upload" /> {{ 'src.upload' | t }}</button>
         </div>
       </div>
 
@@ -87,6 +88,7 @@
               <span><pc-icon [name]="visual(k).icon" [size]="12" />{{ 'src.k.' + k | t }}</span>
             }
           </div>
+          <button pcButton variant="primary" (click)="upload.show()"><pc-icon name="upload" /> {{ 'src.upload' | t }}</button>
         </div>
       } @else if (store.items().length) {
         <div class="sp-grid" [class.has-detail]="!!store.open()">
@@ -211,6 +213,18 @@
           <button pcButton variant="danger" data-testid="src-remove-confirm" (click)="confirmRemove()"><pc-icon name="trash-2" /> {{ 'src.rm.go' | t }}</button>
         </div>
       </pc-dialog>
+
+      <pc-source-upload-dialog />
+
+      @if (dragOver()) {
+        <div class="drop-ov" data-testid="src-drop-overlay">
+          <div class="box">
+            <pc-icon name="upload" [size]="24" />
+            <b>{{ 'src.drop.t' | t }}</b>
+            <span class="text-xs text-subtle">{{ 'src.drop.d' | t }}</span>
+          </div>
+        </div>
+      }
     }
   </pc-project-gate>
 </div>
