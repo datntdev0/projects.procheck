@@ -13,6 +13,7 @@ use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, ToolAccess, Usage
 use crate::features::agents::AgentId;
 
 const SESSIONS_DIR: &str = "sessions";
+const WINDOWS_SANDBOX: &str = "windows.sandbox=\"unelevated\"";
 
 pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -> Vec<String> {
     let sandbox = match access {
@@ -20,6 +21,9 @@ pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -
         ToolAccess::ProjectFiles => "workspace-write",
     };
     let mut args: Vec<String> = vec!["exec".into(), "--sandbox".into(), sandbox.into()];
+    if cfg!(windows) {
+        args.extend(["-c".into(), WINDOWS_SANDBOX.into()]);
+    }
     if session_id.is_some() {
         args.push("resume".into());
     }
@@ -225,11 +229,16 @@ mod tests {
 
     #[test]
     fn args_put_the_sandbox_before_resume() {
-        assert_eq!(args(None, None, ToolAccess::None), ["exec", "--sandbox", "read-only", "--json", "--skip-git-repo-check", "-"]);
+        assert_eq!(args(None, None, ToolAccess::None), read_only_args(&["--json", "--skip-git-repo-check", "-"]));
         assert_eq!(
             args(Some("gpt-6-luna"), Some("0199-thread"), ToolAccess::None),
-            ["exec", "--sandbox", "read-only", "resume", "--json", "--skip-git-repo-check", "-m", "gpt-6-luna", "0199-thread", "-"]
+            read_only_args(&["resume", "--json", "--skip-git-repo-check", "-m", "gpt-6-luna", "0199-thread", "-"])
         );
+    }
+
+    fn read_only_args(rest: &[&str]) -> Vec<String> {
+        let sandbox: &[&str] = if cfg!(windows) { &["-c", WINDOWS_SANDBOX] } else { &[] };
+        [&["exec", "--sandbox", "read-only"], sandbox, rest].concat().into_iter().map(str::to_owned).collect()
     }
 
     #[test]

@@ -7,7 +7,7 @@ use super::runner::{Signal, TurnOutcome};
 use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, ToolAccess, UsageLimits, from_epoch_seconds, now};
 use crate::features::agents::AgentId;
 
-const PROJECT_TOOLS: &str = "Read,Edit,Write,Glob,Grep";
+const PROJECT_TOOLS: &str = "Read,Edit,Write,Glob,Grep,Bash";
 const BLOCK_SEPARATOR: &str = "\n\n";
 
 pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -> Vec<String> {
@@ -231,12 +231,12 @@ mod tests {
     }
 
     #[test]
-    fn project_chats_may_read_and_edit_files() {
+    fn project_chats_may_read_edit_and_run_commands() {
         let args = args(None, None, ToolAccess::ProjectFiles);
         assert!(args.windows(2).any(|w| w == ["--tools", PROJECT_TOOLS]));
         assert!(args.windows(2).any(|w| w == ["--allowedTools", PROJECT_TOOLS]));
         assert!(args.windows(2).any(|w| w == ["--permission-mode", "acceptEdits"]));
-        assert!(!PROJECT_TOOLS.contains("Bash"));
+        assert!(PROJECT_TOOLS.split(',').any(|t| t == "Bash"));
     }
 
     #[test]

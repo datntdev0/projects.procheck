@@ -13,13 +13,19 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+use base64::Engine;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::infra::process::{self, Launch, Output, RunError};
 
+const CODEX_AUTH_FILE: &str = "auth.json";
+const CLAUDE_CREDENTIALS_FILE: &str = ".credentials.json";
+const CLAUDE_CONFIG_FILE: &str = ".claude.json";
+const OPENAI_AUTH_CLAIM: &str = "https://api.openai.com/auth";
+
 const VERSION_TIMEOUT: Duration = Duration::from_secs(15);
-const AUTH_TIMEOUT: Duration = Duration::from_secs(20);
 const TEST_TIMEOUT: Duration = Duration::from_secs(120);
 const SIGN_OUT_TIMEOUT: Duration = Duration::from_secs(30);
 const SIGN_IN_TIMEOUT: Duration = Duration::from_secs(600);
@@ -120,7 +126,6 @@ pub enum AuthMethod {
     /// Claude.ai / ChatGPT account.
     Subscription,
     ApiKey,
-    Other,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
@@ -293,28 +298,82 @@ pub fn status(agent: AgentId, custom: Option<&str>, home: &Path) -> AgentStatus 
         return status;
     }
 
-    match read_auth(agent, &bin, &env) {
-        Ok(auth) => status.auth = auth,
-        Err(e) => status.error = Some(format!("could not read the sign-in state: {e}")),
-    }
+    status.auth = read_auth(agent, home);
     status.models = models(agent, &bin, &env);
     log::debug!("agent status: {status:?}");
     status
 }
 
-fn read_auth(agent: AgentId, bin: &Path, env: &Launch<'_>) -> Result<AuthStatus, AgentError> {
-    match agent {
-        AgentId::Claude => {
-            // Exit code 1 when signed out; the JSON is printed either way.
-            let out = process::run(bin, ["auth", "status", "--json"], env, AUTH_TIMEOUT)?;
-            parse_claude_auth(&out.stdout).ok_or_else(|| AgentError::Failed(failure_reason(&out)))
-        }
-        AgentId::Codex => {
-            // Prints to stderr; exit code 1 when signed out.
-            let out = process::run(bin, ["login", "status"], env, AUTH_TIMEOUT)?;
-            Ok(parse_codex_auth(&format!("{}\n{}", out.stdout, out.stderr), out.success()))
-        }
+fn read_auth(agent: AgentId, home: &Path) -> AuthStatus {
+    let auth = match agent {
+        AgentId::Claude => read_claude_files(home),
+        AgentId::Codex => read_codex_file(home),
+    };
+    auth.unwrap_or_default()
+}
+
+fn read_claude_files(home: &Path) -> Option<AuthStatus> {
+    let credentials = fs::read_to_string(home.join(CLAUDE_CREDENTIALS_FILE)).ok()?;
+    let config = fs::read_to_string(home.join(CLAUDE_CONFIG_FILE)).ok();
+    parse_claude_files(&credentials, config.as_deref(), chrono::Utc::now().timestamp_millis())
+}
+
+fn parse_claude_files(credentials: &str, config: Option<&str>, now_ms: i64) -> Option<AuthStatus> {
+    let credentials: Value = serde_json::from_str(credentials).ok()?;
+    let oauth = credentials.get("claudeAiOauth")?;
+    json_text(oauth, &["refreshToken"])?;
+    let expired = oauth.get("refreshTokenExpiresAt").and_then(Value::as_i64).is_some_and(|at| at <= now_ms);
+    if expired {
+        return None;
     }
+    let account = config
+        .and_then(|c| serde_json::from_str::<Value>(c).ok())
+        .and_then(|c| json_text(&c, &["oauthAccount", "emailAddress"]));
+    Some(AuthStatus {
+        signed_in: true,
+        method: Some(AuthMethod::Subscription),
+        plan: json_text(oauth, &["subscriptionType"]).map(|p| capitalize(&p)),
+        account,
+    })
+}
+
+fn read_codex_file(home: &Path) -> Option<AuthStatus> {
+    parse_codex_file(&fs::read_to_string(home.join(CODEX_AUTH_FILE)).ok()?)
+}
+
+fn parse_codex_file(auth_json: &str) -> Option<AuthStatus> {
+    let json: Value = serde_json::from_str(auth_json).ok()?;
+    if json_text(&json, &["OPENAI_API_KEY"]).is_some() {
+        return Some(AuthStatus {
+            signed_in: true,
+            method: Some(AuthMethod::ApiKey),
+            plan: None,
+            account: None,
+        });
+    }
+    json_text(&json, &["tokens", "refresh_token"])?;
+    let claims = codex_id_claims(&json);
+    Some(AuthStatus {
+        signed_in: true,
+        method: Some(AuthMethod::Subscription),
+        plan: claims.as_ref().and_then(|c| json_text(c, &[OPENAI_AUTH_CLAIM, "chatgpt_plan_type"])).map(|p| capitalize(&p)),
+        account: claims.as_ref().and_then(|c| json_text(c, &["email"])),
+    })
+}
+
+fn codex_id_claims(json: &Value) -> Option<Value> {
+    let token = json.get("tokens")?.get("id_token")?.as_str()?;
+    let payload = token.split('.').nth(1)?;
+    let bytes = URL_SAFE_NO_PAD.decode(payload.trim_end_matches('=')).ok()?;
+    serde_json::from_slice(&bytes).ok()
+}
+
+fn json_text(value: &Value, path: &[&str]) -> Option<String> {
+    path.iter()
+        .try_fold(value, |node, key| node.get(*key))?
+        .as_str()
+        .filter(|s| !s.is_empty())
+        .map(str::to_owned)
 }
 
 /// Sends one short prompt from `cwd` (an empty scratch folder) and waits for the answer.
@@ -430,48 +489,6 @@ fn parse_version(stdout: &str) -> Option<String> {
         .split_whitespace()
         .find(|t| t.starts_with(|c: char| c.is_ascii_digit()))
         .map(|t| t.trim_end_matches(|c: char| !c.is_ascii_alphanumeric()).to_owned())
-}
-
-fn parse_claude_auth(stdout: &str) -> Option<AuthStatus> {
-    let json: Value = serde_json::from_str(stdout.trim()).ok()?;
-    let signed_in = json.get("loggedIn")?.as_bool()?;
-    if !signed_in {
-        return Some(AuthStatus::default());
-    }
-    let text = |key: &str| json.get(key).and_then(Value::as_str).filter(|s| !s.is_empty()).map(str::to_owned);
-    let plan = text("subscriptionType").map(|p| capitalize(&p));
-    let method = match text("authMethod").as_deref() {
-        Some("claude.ai") => AuthMethod::Subscription,
-        Some(m) if m.contains("api") || m.contains("console") || m.contains("key") => AuthMethod::ApiKey,
-        _ if plan.is_some() => AuthMethod::Subscription,
-        _ => AuthMethod::Other,
-    };
-    Some(AuthStatus {
-        signed_in,
-        method: Some(method),
-        plan,
-        account: text("email"),
-    })
-}
-
-fn parse_codex_auth(output: &str, success: bool) -> AuthStatus {
-    let lower = output.to_lowercase();
-    if !success || lower.contains("not logged in") {
-        return AuthStatus::default();
-    }
-    let method = if lower.contains("api key") {
-        AuthMethod::ApiKey
-    } else if lower.contains("chatgpt") {
-        AuthMethod::Subscription
-    } else {
-        AuthMethod::Other
-    };
-    AuthStatus {
-        signed_in: true,
-        method: Some(method),
-        plan: None,
-        account: None,
-    }
 }
 
 fn parse_codex_models(text: &str) -> Vec<ModelOption> {
@@ -614,29 +631,44 @@ mod tests {
     }
 
     #[test]
-    fn claude_auth() {
-        let signed_in = r#"{ "loggedIn": true, "authMethod": "claude.ai", "email": "me@example.com", "subscriptionType": "max" }"#;
+    fn claude_account_comes_from_the_home_files() {
+        let credentials = r#"{"claudeAiOauth":{"refreshToken":"r","refreshTokenExpiresAt":2000,"subscriptionType":"team"}}"#;
+        let config = r#"{"oauthAccount":{"emailAddress":"me@example.com"}}"#;
         assert_eq!(
-            parse_claude_auth(signed_in),
+            parse_claude_files(credentials, Some(config), 1000),
             Some(AuthStatus {
                 signed_in: true,
                 method: Some(AuthMethod::Subscription),
-                plan: Some("Max".into()),
+                plan: Some("Team".into()),
                 account: Some("me@example.com".into()),
             })
         );
-        let key = r#"{ "loggedIn": true, "authMethod": "api_key" }"#;
-        assert_eq!(parse_claude_auth(key).unwrap().method, Some(AuthMethod::ApiKey));
-        let out = r#"{ "loggedIn": false, "authMethod": "none" }"#;
-        assert_eq!(parse_claude_auth(out), Some(AuthStatus::default()));
-        assert_eq!(parse_claude_auth("error: unknown command"), None);
+        assert_eq!(parse_claude_files(credentials, None, 1000).unwrap().account, None);
+        assert_eq!(parse_claude_files(credentials, Some(config), 2000), None);
+        assert_eq!(parse_claude_files("{}", Some(config), 1000), None);
+        assert_eq!(parse_claude_files("not json", Some(config), 1000), None);
     }
 
     #[test]
-    fn codex_auth() {
-        assert_eq!(parse_codex_auth("\nLogged in using ChatGPT\n", true).method, Some(AuthMethod::Subscription));
-        assert_eq!(parse_codex_auth("Logged in using an API key - sk-***", true).method, Some(AuthMethod::ApiKey));
-        assert!(!parse_codex_auth("Not logged in", false).signed_in);
+    fn codex_account_comes_from_the_auth_file() {
+        let claims = r#"{"email":"me@example.com","https://api.openai.com/auth":{"chatgpt_plan_type":"plus"}}"#;
+        let token = format!("header.{}.signature", URL_SAFE_NO_PAD.encode(claims));
+        let chatgpt = serde_json::json!({ "auth_mode": "chatgpt", "OPENAI_API_KEY": null, "tokens": { "id_token": token, "refresh_token": "r" } });
+        assert_eq!(
+            parse_codex_file(&chatgpt.to_string()),
+            Some(AuthStatus {
+                signed_in: true,
+                method: Some(AuthMethod::Subscription),
+                plan: Some("Plus".into()),
+                account: Some("me@example.com".into()),
+            })
+        );
+        let no_claims = serde_json::json!({ "tokens": { "id_token": "broken", "refresh_token": "r" } });
+        assert_eq!(parse_codex_file(&no_claims.to_string()).map(|a| (a.account, a.plan)), Some((None, None)));
+        let key = r#"{"auth_mode":"apikey","OPENAI_API_KEY":"sk-test"}"#;
+        assert_eq!(parse_codex_file(key).unwrap().method, Some(AuthMethod::ApiKey));
+        assert_eq!(parse_codex_file(r#"{"OPENAI_API_KEY":null,"tokens":null}"#), None);
+        assert_eq!(parse_codex_file("not json"), None);
     }
 
     #[test]

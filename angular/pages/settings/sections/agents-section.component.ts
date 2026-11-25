@@ -254,7 +254,7 @@ export class AgentCardComponent {
   protected readonly authLabel = computed(() => {
     const auth = this.status()?.auth;
     if (!auth?.signedIn) return '';
-    const method = this.i18n.t(auth.method === 'apiKey' ? 'set.ag.auth.key' : auth.method === 'subscription' ? 'set.ag.auth.sub' : 'set.ag.auth.other');
+    const method = this.i18n.t(auth.method === 'apiKey' ? 'set.ag.auth.key' : 'set.ag.auth.sub');
     return auth.plan ? `${method} · ${auth.plan}` : method;
   });
 

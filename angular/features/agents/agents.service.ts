@@ -4,7 +4,7 @@ import type { AgentId } from '@features/settings/app-settings.model';
 import { DesktopIpcService } from '@shared/desktop/desktop-ipc.service';
 
 export type BinarySource = 'custom' | 'detected' | 'none';
-export type AuthMethod = 'subscription' | 'apiKey' | 'other';
+export type AuthMethod = 'subscription' | 'apiKey';
 
 export interface AgentAuth {
   signedIn: boolean;
