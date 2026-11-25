@@ -111,12 +111,16 @@ pub fn read(dirs: &ProjectDirectories) -> StorageResult<SourceCatalog> {
     json_file::read_or_reset(&dirs.sources_catalog())
 }
 
-/// Reads the catalog, applies `change` and writes it back, holding the catalog lock throughout.
+/// Reads the catalog, applies `change` and writes it back when it changed, holding the catalog
+/// lock throughout.
 pub fn update<T>(dirs: &ProjectDirectories, change: impl FnOnce(&mut SourceCatalog) -> T) -> StorageResult<T> {
     let _guard = CATALOG_LOCK.lock().unwrap_or_else(PoisonError::into_inner);
     let mut catalog = read(dirs)?;
+    let before = catalog.clone();
     let result = change(&mut catalog);
-    json_file::write(&dirs.sources_catalog(), &catalog)?;
+    if catalog != before {
+        json_file::write(&dirs.sources_catalog(), &catalog)?;
+    }
     Ok(result)
 }
 

@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use super::layout::ProjectDirectories;
 use super::registry::{ProjectRegistry, RegistryEntry};
 use super::repository::{self, LinkError, RepositoryStatus};
+use super::sources::import::{self, ImportError, ImportItem};
 use super::sources::{self, SourceProblem};
 use super::{MANIFEST_VERSION, ProjectItem, ProjectManifest, ProjectPhase, ProjectSettings, clean, describe};
 use crate::features::agents::AgentId;
@@ -121,6 +122,17 @@ impl From<StorageError> for CreateError {
     }
 }
 
+impl From<ImportError> for CreateError {
+    fn from(e: ImportError) -> Self {
+        match e {
+            ImportError::Source { path, problem } => Self::Source { path, problem },
+            ImportError::InvalidPath(path) => Self::Io(io::Error::new(io::ErrorKind::InvalidInput, path)),
+            ImportError::Io(e) => Self::Io(e),
+            ImportError::Storage(e) => Self::Storage(e),
+        }
+    }
+}
+
 pub fn check_directory(path: &Path) -> DirectoryCheck {
     if !path.is_absolute() {
         return DirectoryCheck::NotAbsolute;
@@ -167,7 +179,7 @@ struct Plan {
     root: PathBuf,
     manifest: ProjectManifest,
     settings: ProjectSettings,
-    sources: Vec<PathBuf>,
+    sources: Vec<ImportItem>,
 }
 
 impl Plan {
@@ -208,10 +220,10 @@ impl Plan {
     }
 }
 
-fn check_source(path: &Path) -> Result<PathBuf, CreateError> {
+fn check_source(path: &Path) -> Result<ImportItem, CreateError> {
     let candidate = sources::describe(path);
     match candidate.problem {
-        None => Ok(path.to_owned()),
+        None => Ok(ImportItem::from(&candidate)),
         Some(problem) => Err(CreateError::Source {
             path: candidate.path,
             problem,
@@ -226,15 +238,13 @@ fn write_project(plan: &Plan, progress: &mut dyn FnMut(CreateProgress)) -> Resul
         fs::create_dir_all(dir)?;
     }
 
-    let total = plan.sources.len();
-    for (index, source) in plan.sources.iter().enumerate() {
+    import::import(&dirs, &plan.sources, &mut |step| {
         progress(CreateProgress::Source {
-            index,
-            total,
-            name: source.file_name().unwrap_or_default().to_string_lossy().into_owned(),
-        });
-        sources::copy_into(&dirs.sources_dir(), source)?;
-    }
+            index: step.index,
+            total: step.total,
+            name: step.name,
+        })
+    })?;
 
     progress(CreateProgress::Settings);
     fs::create_dir_all(dirs.cli_profile(plan.settings.cli))?;
@@ -337,6 +347,8 @@ mod tests {
         assert!(dirs.scaffold().iter().all(|d| d.is_dir()));
         assert!(dirs.cli_profile(AgentId::Claude).is_dir());
         assert_eq!(fs::read_to_string(dirs.sources_dir().join("brief.md")).unwrap(), "# Brief");
+        let catalog = sources::catalog::read(&dirs).unwrap();
+        assert_eq!(catalog.sources.iter().map(|s| s.path.as_str()).collect::<Vec<_>>(), ["brief.md"]);
         let entries = registry.entries();
         assert_eq!((entries[0].id.as_str(), entries[0].dir.clone()), (manifest.id.as_str(), root.display().to_string()));
         assert_eq!(steps.first(), Some(&CreateProgress::Directories));
