@@ -475,14 +475,14 @@
             cta: { t: L('Extract insights', 'Trích ý chính'), icon: 'sparkles', page: 'initial.html', hash: '#meetings' }, cta2: { t: L('Add a meeting or source', 'Thêm cuộc họp hoặc tài liệu'), page: 'initial.html' } },
           kpis: [
             { icon: 'mic', tone: 'warning', label: L('Meetings', 'Cuộc họp'), value: 1, sub: L('<b>1</b> not analysed yet', '<b>1</b> chưa phân tích'), href: ['initial.html', '#meetings'], cls: 'is-warn' },
-            { icon: 'paperclip', tone: '', label: L('Sources', 'Tài liệu nguồn'), value: 2, sub: L('RFP · dispatch process', 'RFP · quy trình điều phối'), href: ['artifacts.html'] },
+            { icon: 'paperclip', tone: '', label: L('Sources', 'Tài liệu nguồn'), value: 2, sub: L('RFP · dispatch process', 'RFP · quy trình điều phối'), href: ['sources.html'] },
             { icon: 'circle-help', tone: 'muted', label: L('Open questions', 'Câu hỏi đang mở'), value: 0, sub: L('None raised yet', 'Chưa có câu hỏi'), href: ['initial.html', '#questions'] },
             { icon: 'list-checks', tone: 'muted', label: L('Requirements', 'Yêu cầu'), value: 0, sub: L('Appear after insights', 'Xuất hiện sau khi trích ý chính'), href: ['initial.html'] },
             { icon: 'file-check', tone: 'muted', label: L('Artifacts approved', 'Tài liệu đã duyệt'), value: '0<small>/5</small>', sub: L('<b>0</b> generated so far', 'Mới tạo <b>0</b> tài liệu'), href: ['artifacts.html'] },
           ],
           work: [
             { id: 'M-01', ic: 'mic', tone: 'review', title: L('Intro call with Ops Director', 'Intro call với Ops Director'), sub: L('Transcript · 19 Nov · insights not extracted', 'Transcript · 19/11 · chưa trích ý chính'), badge: ['review', 'ws.b.notanalysed'], page: 'initial.html', hash: '#meetings' },
-            { id: 'SRC', ic: 'paperclip', tone: 'info', title: L('2 source documents ready to read', '2 tài liệu nguồn sẵn sàng để đọc'), sub: L('RFP and current dispatch process — not summarised yet', 'RFP và quy trình điều phối hiện tại — chưa được tóm tắt'), badge: ['outline', 'ws.b.ready'], page: 'artifacts.html' },
+            { id: 'SRC', ic: 'paperclip', tone: 'info', title: L('2 source documents ready to read', '2 tài liệu nguồn sẵn sàng để đọc'), sub: L('RFP and current dispatch process — not summarised yet', 'RFP và quy trình điều phối hiện tại — chưa được tóm tắt'), badge: ['outline', 'ws.b.ready'], page: 'sources.html' },
           ],
           arts: [],
           sources: S.initial.sources,
@@ -504,7 +504,7 @@
             cta: { t: L('Resolve blocking questions', 'Xử lý câu hỏi blocking'), icon: 'circle-help', page: 'initial.html', hash: '#questions' }, cta2: { t: L('Review BRD v1', 'Review BRD v1'), page: 'artifacts.html', hash: '#brd' } },
           kpis: [
             { icon: 'mic', tone: 'warning', label: L('Meetings', 'Cuộc họp'), value: 3, sub: L('<b>2</b> analysed · 1 pending', 'Đã phân tích <b>2</b> · 1 đang chờ'), href: ['initial.html', '#meetings'] },
-            { icon: 'paperclip', tone: '', label: L('Sources', 'Tài liệu nguồn'), value: 3, sub: L('ops overview · journey map · HIS spec', 'ops · journey map · HIS spec'), href: ['artifacts.html'] },
+            { icon: 'paperclip', tone: '', label: L('Sources', 'Tài liệu nguồn'), value: 3, sub: L('ops overview · journey map · HIS spec', 'ops · journey map · HIS spec'), href: ['sources.html'] },
             { icon: 'circle-help', tone: 'danger', label: L('Open questions', 'Câu hỏi đang mở'), value: 5, sub: L('<b>2 blocking</b> of 9 total', '<b>2 blocking</b> trên tổng 9'), href: ['initial.html', '#questions'], cls: 'is-bad' },
             { icon: 'list-checks', tone: 'purple', label: L('Requirements', 'Yêu cầu'), value: 31, sub: L('BRD v1 in review', 'BRD v1 đang review'), href: ['initial.html'] },
             { icon: 'file-check', tone: 'success', label: L('Artifacts approved', 'Tài liệu đã duyệt'), value: '1<small>/5</small>', sub: L('<b>3</b> generated · 2 not started', 'Đã tạo <b>3</b> · 2 chưa bắt đầu'), href: ['artifacts.html'] },

@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sources · Procheck</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <script src="assets/app.js"></script>
+  <script src="assets/sources.js"></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    .sp { container-type: inline-size; container-name: sp; }
+    .sp-path { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-subtle); background: var(--bg-surface-3); padding: 1px 6px; border-radius: var(--radius-xs); }
+
+    .sp-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
+    .sp-stat { display: flex; align-items: center; gap: var(--space-3); padding: 12px 14px; border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); }
+    .sp-stat .ic { width: 32px; height: 32px; border-radius: var(--radius-md); display: inline-flex; align-items: center; justify-content: center; background: var(--brand-soft); color: var(--brand-fg); flex-shrink: 0; }
+    .sp-stat .ic.ok { background: var(--success-soft); color: var(--success-fg); }
+    .sp-stat .ic.warn { background: var(--warning-soft); color: var(--warning-fg); }
+    .sp-stat .v { font-size: var(--text-lg); font-weight: var(--weight-semibold); color: var(--fg-strong); line-height: 1.2; }
+    .sp-stat .l { font-size: var(--text-xs); color: var(--fg-subtle); }
+
+    .sp-tools { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-3); min-height: 34px; }
+    .sp-tools .input-group { width: 240px; }
+    .sp-tools .sp-fill { flex: 1; }
+    .sp-tools .select { width: auto; height: 32px; font-size: var(--text-sm); }
+    .fchips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .fchip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: var(--radius-full); border: 1px solid var(--border-default); background: var(--bg-surface); color: var(--fg-muted); font-size: var(--text-xs); font-weight: var(--weight-medium); cursor: pointer; white-space: nowrap; }
+    .fchip:hover { border-color: var(--border-strong); color: var(--fg-default); }
+    .fchip.is-on { background: var(--brand-soft); border-color: transparent; color: var(--brand-fg); }
+    .fchip .n { font-size: var(--text-2xs); color: var(--fg-faint); }
+    .fchip.is-on .n { color: var(--brand-fg); }
+    .bulk { display: flex; align-items: center; gap: var(--space-2); flex: 1; padding: 4px 6px 4px 12px; border-radius: var(--radius-md); background: var(--bg-inverse); color: var(--fg-inverse); font-size: var(--text-sm); }
+    .bulk b { font-weight: var(--weight-semibold); }
+    .bulk .sp-fill { flex: 1; }
+    .bulk .btn-ghost { color: var(--fg-inverse); }
+    .bulk .btn-ghost:hover { background: color-mix(in srgb, var(--fg-inverse) 14%, transparent); color: var(--fg-inverse); }
+
+    .sp-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); align-items: start; position: relative; }
+    .sp-grid.has-detail { grid-template-columns: minmax(0, 1fr) 320px; }
+    .sp .table-wrap { overflow-x: auto; }
+    .sp .table { min-width: 680px; }
+    .sp .table td.c-name { width: 100%; max-width: 0; }
+    .sp .table th { padding: 9px 12px; white-space: nowrap; }
+    .sp .table td { padding: 8px 12px; }
+    .sp .table th.ck, .sp .table td.ck { width: 36px; padding-right: 0; }
+    .sp .table td.num, .sp .table th.num { text-align: right; }
+    .sp .table td.act { width: 40px; padding: 4px 8px; }
+    .sp .table tbody tr { cursor: pointer; }
+    .sp .table tbody tr.is-sel { background: var(--brand-soft); }
+    .sp .table tbody tr.is-open td { background: var(--bg-active); }
+    .sp .table tbody tr.is-open td:first-child { box-shadow: inset 3px 0 0 var(--brand); }
+    .sp .table tbody tr.is-new td { animation: rowIn 1.6s var(--ease-out); }
+    @keyframes rowIn { from { background: var(--brand-soft-2); } to { background: transparent; } }
+    .th-s { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+    .th-s:hover, .th-s.is-on { color: var(--fg-strong); }
+    .th-s svg { width: 12px; height: 12px; opacity: .5; }
+    .th-s.is-on svg { opacity: 1; }
+    .nm { display: flex; align-items: center; gap: 10px; min-width: 180px; }
+    .nm .file-tile { width: 30px; height: 30px; }
+    .nm .file-tile svg { width: 15px; height: 15px; }
+    .nm .t { font-weight: var(--weight-medium); color: var(--fg-strong); }
+    .nm .s { font-size: var(--text-2xs); color: var(--fg-subtle); display: flex; align-items: center; gap: 6px; }
+    .nm .s svg { width: 11px; height: 11px; }
+    .kd { font-size: var(--text-xs); color: var(--fg-muted); white-space: nowrap; }
+    .kd .ext { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-subtle); text-transform: uppercase; margin-left: 4px; }
+    .ai { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-xs); white-space: nowrap; color: var(--fg-default); }
+    .ai svg { width: 13px; height: 13px; }
+    .ai.success svg { color: var(--success); }
+    .ai.muted { color: var(--fg-subtle); }
+    .ai.danger { color: var(--danger-fg); }
+    .ai .spinner { width: 11px; height: 11px; border-width: 1.5px; }
+    .used { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: var(--radius-full); border: 1px solid var(--border-default); background: var(--bg-surface); font-size: var(--text-xs); color: var(--fg-default); cursor: pointer; }
+    .used:hover { border-color: var(--brand); color: var(--brand-fg); }
+    .used svg { width: 12px; height: 12px; }
+    .sp-empty { padding: var(--space-12) var(--space-6); text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+    .sp-empty p { max-width: 440px; margin: 0; color: var(--fg-muted); font-size: var(--text-sm); }
+    .types { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-width: 520px; }
+    .types span { display: inline-flex; align-items: center; gap: 5px; font-size: var(--text-2xs); color: var(--fg-subtle); padding: 3px 8px; border-radius: var(--radius-full); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); }
+    .types svg { width: 12px; height: 12px; }
+
+    .sd { position: sticky; top: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); box-shadow: var(--shadow-sm); max-height: calc(100vh - 140px); overflow: auto; }
+    .sd-head { display: flex; align-items: flex-start; gap: 10px; padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); }
+    .sd-head h4 { font-size: var(--text-md); line-height: 1.35; word-break: break-word; }
+    .sd-sec { padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); }
+    .sd-sec:last-child { border-bottom: 0; }
+    .sd-h { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-subtle); margin-bottom: var(--space-2); }
+    .props { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px 10px; font-size: var(--text-sm); margin: 0; }
+    .props dt { color: var(--fg-subtle); font-size: var(--text-xs); padding-top: 2px; }
+    .props dd { margin: 0; color: var(--fg-default); min-width: 0; word-break: break-word; }
+    .props .mono { font-family: var(--font-mono); font-size: 11.5px; }
+    .props .select { height: 28px; font-size: var(--text-xs); }
+    .sd-note { font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.55; margin: 8px 0 10px; }
+    .sd-row { display: flex; align-items: center; gap: 10px; padding: 6px 8px; margin: 0 -8px; border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--fg-default); text-decoration: none !important; }
+    .sd-row:hover { background: var(--bg-hover); }
+    .sd-row .file-tile { width: 26px; height: 26px; }
+    .sd-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .up-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) 150px 28px; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface-2); font-size: var(--text-sm); margin-top: 6px; }
+    .up-row .file-tile { width: 28px; height: 28px; }
+    .up-row .s { font-size: var(--text-2xs); color: var(--fg-subtle); display: flex; align-items: center; gap: 6px; }
+    .up-row .select { height: 28px; font-size: var(--text-xs); }
+    .up-list { max-height: 280px; overflow: auto; margin-top: var(--space-3); }
+    .up-pick { display: flex; gap: var(--space-2); justify-content: center; margin-top: var(--space-2); }
+    .up-sum { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3); font-size: var(--text-xs); color: var(--fg-subtle); }
+
+    .drop-ov { position: fixed; inset: 0; z-index: var(--z-modal); display: none; align-items: center; justify-content: center; background: color-mix(in srgb, var(--brand) 10%, transparent); backdrop-filter: blur(2px); pointer-events: none; }
+    .drop-ov.is-on { display: flex; }
+    .drop-ov .box { padding: var(--space-8) var(--space-10); border: 2px dashed var(--brand); border-radius: var(--radius-xl); background: var(--bg-surface); color: var(--brand-fg); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); box-shadow: var(--shadow-lg); }
+
+    @container sp (max-width: 1080px) {
+      .sp-grid.has-detail { grid-template-columns: minmax(0, 1fr); }
+      .sd { position: absolute; top: 0; right: 0; width: min(320px, 100%); max-height: none; z-index: 5; box-shadow: var(--shadow-lg); }
+      .c-cat { display: none; }
+    }
+    @container sp (max-width: 820px) {
+      .sp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .c-date { display: none; }
+      .sp-tools .input-group { width: 100%; }
+    }
+  </style>
+</head>
+<body data-page="sources" data-shell="project" data-crumb="nav.sources">
+  <main class="canvas"><div class="canvas-inner sp" id="sp">
+    <div class="page-header">
+      <div>
+        <h1 data-i18n="src.title"></h1>
+        <div class="subtitle" id="sp-sub"></div>
+      </div>
+      <div class="row gap-2 wrap">
+        <button class="btn btn-secondary" id="btn-folder"><i data-lucide="folder-open"></i><span data-i18n="src.open_folder"></span></button>
+        <button class="btn btn-primary" id="btn-upload"><i data-lucide="upload"></i><span data-i18n="src.upload"></span></button>
+      </div>
+    </div>
+    <div class="sp-stats" id="sp-stats"></div>
+    <div class="sp-tools" id="sp-tools"></div>
+    <div class="sp-grid" id="sp-grid">
+      <div id="sp-table"></div>
+      <aside class="sd hidden" id="sp-detail"></aside>
+    </div>
+  </div></main>
+  <div class="drop-ov" id="drop-ov"><div class="box"><i data-lucide="cloud-upload" class="icon-lg"></i><b data-i18n="src.drop.t"></b><span class="text-xs text-subtle" data-i18n="src.drop.d"></span></div></div>
+
+  <script>
+    PC.i18n.extend({
+      en: {
+        'src.title': 'Sources', 'src.sub': 'Files you add for the Assistant and agents to read. Copied into {path}.',
+        'src.upload': 'Upload files', 'src.open_folder': 'Open folder', 'src.folder_opened': 'Opened {path} in File Explorer',
+        'src.st.files': 'Files', 'src.st.size': 'Total size', 'src.st.ready': 'Readable by the Assistant', 'src.st.attn': 'Stored only or failed',
+        'src.search': 'Search by name…', 'src.cat.all': 'All',
+        'src.cat.docs': 'Documents', 'src.cat.meet': 'Meetings & recordings', 'src.cat.media': 'Images', 'src.cat.data': 'Data', 'src.cat.design': 'Designs & diagrams', 'src.cat.code': 'Code & archives', 'src.cat.other': 'Other',
+        'src.f.all': 'All statuses', 'src.f.indexed': 'Readable', 'src.f.indexing': 'Processing', 'src.f.stored': 'Stored only', 'src.f.failed': 'Failed',
+        'src.th.name': 'Name', 'src.th.type': 'Type', 'src.th.cat': 'Category', 'src.th.size': 'Size', 'src.th.date': 'Added', 'src.th.ai': 'Assistant access', 'src.th.used': 'Used in',
+        'src.k.pdf': 'PDF', 'src.k.doc': 'Word', 'src.k.slide': 'Slides', 'src.k.md': 'Markdown', 'src.k.text': 'Text', 'src.k.html': 'Web page', 'src.k.email': 'Email', 'src.k.transcript': 'Transcript',
+        'src.k.audio': 'Audio', 'src.k.video': 'Video', 'src.k.image': 'Image', 'src.k.sheet': 'Spreadsheet', 'src.k.csv': 'CSV', 'src.k.json': 'Structured data', 'src.k.diagram': 'Diagram', 'src.k.design': 'Design file', 'src.k.code': 'Source code', 'src.k.archive': 'Archive', 'src.k.other': 'File',
+        'src.m.text': 'Text extracted', 'src.m.transcribe': 'Transcribed', 'src.m.vision': 'Image read', 'src.m.data': 'Parsed as data', 'src.m.code': 'Read as code', 'src.m.unpack': 'Unpacked', 'src.m.store': 'Stored only',
+        'src.p.text': 'Extracting text…', 'src.p.transcribe': 'Transcribing…', 'src.p.vision': 'Reading image…', 'src.p.data': 'Parsing…', 'src.p.code': 'Reading code…', 'src.p.unpack': 'Unpacking…', 'src.p.store': 'Copying…',
+        'src.failed': 'Failed — password protected',
+        'src.d.text': 'The text is extracted to the project index. The Assistant and agents read it and can cite it.',
+        'src.d.transcribe': 'The connected CLI transcribes the recording with timestamps and speakers. The transcript is saved to the project index.',
+        'src.d.vision': 'The CLI reads the image (text and layout). A description is saved to the project index.',
+        'src.d.data': 'Sheets, rows and fields are parsed so the Assistant can quote figures and query the data.',
+        'src.d.code': 'The file is read as source code, with its language and symbols.',
+        'src.d.unpack': 'The archive is unpacked into the index. Each readable file inside it is processed by its own type.',
+        'src.d.store': 'There is no reader for this format. The file is kept as an attachment; the Assistant only sees its name and details. Export it to PDF or PNG to make it readable.',
+        'src.d.failed': 'The PDF is password protected. Enter the password or upload an unlocked copy.',
+        'src.u.pages': '{n} pages', 'src.u.slides': '{n} slides', 'src.u.lines': '{n} lines', 'src.u.msgs': '{n} messages', 'src.u.min': '{n} min', 'src.u.sheets': '{n} sheets', 'src.u.rows': '{n} rows', 'src.u.files': '{n} files',
+        'src.used.n': '{n}', 'src.used.t': 'Used in artifacts', 'src.used.none': 'Not used by any artifact yet.', 'src.new': 'New',
+        'src.none.t': 'No sources yet', 'src.none.d': 'Add the documents, recordings and files the client gives you. Procheck copies them into the project, and the Assistant reads them to draft artifacts.',
+        'src.none.f': 'No files match these filters.', 'src.none.clear': 'Clear filters',
+        'src.sel': '{n} selected', 'src.sel.remove': 'Remove', 'src.sel.clear': 'Clear selection', 'src.sel.all': 'Select all',
+        'src.a.open': 'Open in default app', 'src.a.reveal': 'Show in folder', 'src.a.retry': 'Retry with password', 'src.a.cat': 'Move to category', 'src.a.remove': 'Remove from sources',
+        'src.t.opened': 'Opened {n}', 'src.t.revealed': 'Showing {n} in File Explorer', 'src.t.cat': 'Moved to {c}', 'src.t.removed': '{n} file(s) removed',
+        'src.rm.title': 'Remove {n} file(s)?', 'src.rm.d': 'The files are deleted from {path} and the project index. Artifacts that used them keep their content.', 'src.rm.go': 'Remove',
+        'src.pw.title': 'Unlock “{n}”', 'src.pw.label': 'PDF password', 'src.pw.hint': 'Used once to extract the text. The password is not saved.', 'src.pw.go': 'Unlock & process', 'src.pw.done': 'Unlocked — extracting text…',
+        'src.det.title': 'Details', 'src.det.type': 'Type', 'src.det.cat': 'Category', 'src.det.size': 'Size', 'src.det.content': 'Content', 'src.det.added': 'Added', 'src.det.path': 'Location', 'src.det.index': 'Index', 'src.det.access': 'Assistant access', 'src.det.close': 'Close',
+        'src.up.title': 'Upload files', 'src.up.drop': 'Drop files or folders here', 'src.up.files': 'Choose files', 'src.up.folder': 'Choose folder',
+        'src.up.hint': 'Any file type, up to 2 GB each. Documents, recordings, images, data and code are read by the Assistant. Other files are kept as attachments.',
+        'src.up.sum': '{n} file(s) · {r} readable · {s} stored only', 'src.up.go': 'Add {n} file(s)', 'src.up.go0': 'Add files', 'src.up.none': 'Choose at least one file', 'src.up.done': '{n} file(s) added — processing for the Assistant…', 'src.up.rm': 'Remove from list',
+        'src.up.note': 'Files are copied into {path}. Extracted text goes to {index}. Audio and video are transcribed by the connected CLI.',
+        'src.drop.t': 'Drop to add to sources', 'src.drop.d': 'Any file type',
+        'src.now': 'just now', 'src.ctx.n': '{n} sources',
+        'src.sg.summ': 'Summarize the new sources', 'src.sg.gaps': 'What is missing from these sources?', 'src.sg.gen': 'Draft meeting notes from the recordings',
+      },
+      vi: {
+        'src.title': 'Nguồn', 'src.sub': 'Các file bạn thêm để Trợ lý và agent đọc. Được sao chép vào {path}.',
+        'src.upload': 'Tải file lên', 'src.open_folder': 'Mở thư mục', 'src.folder_opened': 'Đã mở {path} trong File Explorer',
+        'src.st.files': 'File', 'src.st.size': 'Tổng dung lượng', 'src.st.ready': 'Trợ lý đọc được', 'src.st.attn': 'Chỉ lưu trữ hoặc lỗi',
+        'src.search': 'Tìm theo tên…', 'src.cat.all': 'Tất cả',
+        'src.cat.docs': 'Tài liệu', 'src.cat.meet': 'Cuộc họp & bản ghi', 'src.cat.media': 'Hình ảnh', 'src.cat.data': 'Dữ liệu', 'src.cat.design': 'Thiết kế & sơ đồ', 'src.cat.code': 'Mã nguồn & file nén', 'src.cat.other': 'Khác',
+        'src.f.all': 'Mọi trạng thái', 'src.f.indexed': 'Đọc được', 'src.f.indexing': 'Đang xử lý', 'src.f.stored': 'Chỉ lưu trữ', 'src.f.failed': 'Lỗi',
+        'src.th.name': 'Tên', 'src.th.type': 'Loại', 'src.th.cat': 'Nhóm', 'src.th.size': 'Dung lượng', 'src.th.date': 'Ngày thêm', 'src.th.ai': 'Trợ lý truy cập', 'src.th.used': 'Dùng trong',
+        'src.k.pdf': 'PDF', 'src.k.doc': 'Word', 'src.k.slide': 'Slide', 'src.k.md': 'Markdown', 'src.k.text': 'Văn bản', 'src.k.html': 'Trang web', 'src.k.email': 'Email', 'src.k.transcript': 'Transcript',
+        'src.k.audio': 'Âm thanh', 'src.k.video': 'Video', 'src.k.image': 'Hình ảnh', 'src.k.sheet': 'Bảng tính', 'src.k.csv': 'CSV', 'src.k.json': 'Dữ liệu có cấu trúc', 'src.k.diagram': 'Sơ đồ', 'src.k.design': 'File thiết kế', 'src.k.code': 'Mã nguồn', 'src.k.archive': 'File nén', 'src.k.other': 'File',
+        'src.m.text': 'Đã trích văn bản', 'src.m.transcribe': 'Đã chuyển lời thoại', 'src.m.vision': 'Đã đọc hình ảnh', 'src.m.data': 'Đã đọc dữ liệu', 'src.m.code': 'Đã đọc mã', 'src.m.unpack': 'Đã giải nén', 'src.m.store': 'Chỉ lưu trữ',
+        'src.p.text': 'Đang trích văn bản…', 'src.p.transcribe': 'Đang chuyển lời thoại…', 'src.p.vision': 'Đang đọc hình ảnh…', 'src.p.data': 'Đang đọc dữ liệu…', 'src.p.code': 'Đang đọc mã…', 'src.p.unpack': 'Đang giải nén…', 'src.p.store': 'Đang sao chép…',
+        'src.failed': 'Lỗi — có mật khẩu',
+        'src.d.text': 'Văn bản được trích vào chỉ mục của dự án. Trợ lý và agent đọc được và có thể trích dẫn.',
+        'src.d.transcribe': 'CLI đã kết nối chuyển bản ghi thành văn bản kèm mốc thời gian và người nói. Transcript được lưu vào chỉ mục dự án.',
+        'src.d.vision': 'CLI đọc hình ảnh (chữ và bố cục). Phần mô tả được lưu vào chỉ mục dự án.',
+        'src.d.data': 'Sheet, dòng và trường được đọc để Trợ lý trích số liệu và truy vấn dữ liệu.',
+        'src.d.code': 'File được đọc như mã nguồn, kèm ngôn ngữ và các symbol.',
+        'src.d.unpack': 'File nén được giải nén vào chỉ mục. Mỗi file đọc được bên trong được xử lý theo loại của nó.',
+        'src.d.store': 'Chưa có trình đọc cho định dạng này. File được giữ làm tệp đính kèm; Trợ lý chỉ thấy tên và thông tin file. Hãy xuất sang PDF hoặc PNG để Trợ lý đọc được.',
+        'src.d.failed': 'File PDF có mật khẩu. Hãy nhập mật khẩu hoặc tải lên bản đã mở khoá.',
+        'src.u.pages': '{n} trang', 'src.u.slides': '{n} slide', 'src.u.lines': '{n} dòng', 'src.u.msgs': '{n} thư', 'src.u.min': '{n} phút', 'src.u.sheets': '{n} sheet', 'src.u.rows': '{n} dòng', 'src.u.files': '{n} file',
+        'src.used.n': '{n}', 'src.used.t': 'Được dùng trong tài liệu', 'src.used.none': 'Chưa có tài liệu nào dùng file này.', 'src.new': 'Mới',
+        'src.none.t': 'Chưa có nguồn nào', 'src.none.d': 'Thêm tài liệu, bản ghi và các file khách hàng gửi. Procheck sao chép chúng vào dự án, và Trợ lý đọc chúng để soạn tài liệu.',
+        'src.none.f': 'Không có file nào khớp bộ lọc.', 'src.none.clear': 'Xoá bộ lọc',
+        'src.sel': 'Đã chọn {n}', 'src.sel.remove': 'Xoá', 'src.sel.clear': 'Bỏ chọn', 'src.sel.all': 'Chọn tất cả',
+        'src.a.open': 'Mở bằng ứng dụng mặc định', 'src.a.reveal': 'Hiện trong thư mục', 'src.a.retry': 'Thử lại với mật khẩu', 'src.a.cat': 'Chuyển nhóm', 'src.a.remove': 'Xoá khỏi nguồn',
+        'src.t.opened': 'Đã mở {n}', 'src.t.revealed': 'Đang hiện {n} trong File Explorer', 'src.t.cat': 'Đã chuyển sang {c}', 'src.t.removed': 'Đã xoá {n} file',
+        'src.rm.title': 'Xoá {n} file?', 'src.rm.d': 'Các file bị xoá khỏi {path} và chỉ mục dự án. Tài liệu đã dùng chúng vẫn giữ nguyên nội dung.', 'src.rm.go': 'Xoá',
+        'src.pw.title': 'Mở khoá “{n}”', 'src.pw.label': 'Mật khẩu PDF', 'src.pw.hint': 'Chỉ dùng một lần để trích văn bản. Mật khẩu không được lưu.', 'src.pw.go': 'Mở khoá & xử lý', 'src.pw.done': 'Đã mở khoá — đang trích văn bản…',
+        'src.det.title': 'Chi tiết', 'src.det.type': 'Loại', 'src.det.cat': 'Nhóm', 'src.det.size': 'Dung lượng', 'src.det.content': 'Nội dung', 'src.det.added': 'Ngày thêm', 'src.det.path': 'Vị trí', 'src.det.index': 'Chỉ mục', 'src.det.access': 'Trợ lý truy cập', 'src.det.close': 'Đóng',
+        'src.up.title': 'Tải file lên', 'src.up.drop': 'Kéo thả file hoặc thư mục vào đây', 'src.up.files': 'Chọn file', 'src.up.folder': 'Chọn thư mục',
+        'src.up.hint': 'Mọi loại file, tối đa 2 GB mỗi file. Tài liệu, bản ghi, hình ảnh, dữ liệu và mã nguồn được Trợ lý đọc. Các file khác được giữ làm tệp đính kèm.',
+        'src.up.sum': '{n} file · {r} đọc được · {s} chỉ lưu trữ', 'src.up.go': 'Thêm {n} file', 'src.up.go0': 'Thêm file', 'src.up.none': 'Hãy chọn ít nhất một file', 'src.up.done': 'Đã thêm {n} file — đang xử lý cho Trợ lý…', 'src.up.rm': 'Bỏ khỏi danh sách',
+        'src.up.note': 'File được sao chép vào {path}. Văn bản trích xuất lưu ở {index}. Âm thanh và video được CLI đã kết nối chuyển thành văn bản.',
+        'src.drop.t': 'Thả để thêm vào nguồn', 'src.drop.d': 'Mọi loại file',
+        'src.now': 'vừa xong', 'src.ctx.n': '{n} nguồn',
+        'src.sg.summ': 'Tóm tắt các nguồn mới', 'src.sg.gaps': 'Các nguồn này còn thiếu gì?', 'src.sg.gen': 'Soạn biên bản họp từ các bản ghi',
+      }
+    });
+
+    (function () {
+      const $ = (s, r) => (r || document).querySelector(s);
+      const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+      const esc = PC.esc;
+      const SRC = PC.sources();
+      const P = PC.project();
+      const DIR = P.dir + '\\sources\\';
+      const INDEX = P.dir + '\\.procheck\\index\\';
+      const UNIT = { B: 1, KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3 };
+      const state = { q: '', cat: 'all', status: 'all', sort: 'date', dir: -1, sel: new Set(), open: null, fresh: new Set(), seq: 0 };
+
+      const kindOf = s => PC.srcKind(s.kind);
+      const modeOf = s => kindOf(s).mode;
+      const bytes = size => { const m = /([\d.]+)\s*(B|KB|MB|GB)/i.exec(size || ''); return m ? +m[1] * UNIT[m[2].toUpperCase()] : 0; };
+      const fmtBytes = n => n >= UNIT.GB ? (n / UNIT.GB).toFixed(1) + ' GB' : n >= UNIT.MB ? (n / UNIT.MB).toFixed(1) + ' MB' : Math.max(1, Math.round(n / UNIT.KB)) + ' KB';
+      const ext = name => (String(name).split('.').pop() || '').toLowerCase();
+      const fmtDate = iso => iso === 'now' ? PC.t('src.now') : new Intl.DateTimeFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(iso + 'T10:00:00'));
+      const fmtNum = n => new Intl.NumberFormat(PC.lang === 'vi' ? 'vi-VN' : 'en-US').format(n);
+      const contentOf = s => s.meta != null && kindOf(s).unit ? PC.t('src.u.' + kindOf(s).unit, { n: fmtNum(s.meta) }) : '';
+      const byId = id => SRC.find(s => s.id === id);
+      const isReadable = s => s.status === 'indexed' && modeOf(s) !== 'store';
+      const statusOf = s => s.status === 'indexed' && modeOf(s) === 'store' ? 'stored' : s.status;
+
+      function aiCell(s) {
+        const m = modeOf(s), st = statusOf(s);
+        if (st === 'indexing') return `<span class="ai"><span class="spinner"></span>${PC.t('src.p.' + m)}</span>`;
+        if (st === 'failed') return `<span class="ai danger"><i data-lucide="lock-keyhole"></i>${PC.t('src.failed')}</span>`;
+        if (st === 'stored') return `<span class="ai muted" data-tip="${esc(PC.t('src.d.store'))}"><i data-lucide="archive"></i>${PC.t('src.m.store')}</span>`;
+        return `<span class="ai success"><i data-lucide="${PC.srcModes[m].icon}"></i>${PC.t('src.m.' + m)}</span>`;
+      }
+
+      function filtered() {
+        const q = state.q.trim().toLowerCase();
+        return SRC.filter(s => (state.cat === 'all' || s.cat === state.cat) && (state.status === 'all' || statusOf(s) === state.status) && (!q || s.name.toLowerCase().includes(q)));
+      }
+
+      const SORTERS = {
+        name: s => s.name.toLowerCase(), type: s => PC.t('src.k.' + s.kind), cat: s => PC.srcCats.indexOf(s.cat), size: s => bytes(s.size),
+        date: s => s.date === 'now' ? '9999' : s.date, ai: s => statusOf(s), used: s => s.used.length,
+      };
+      function sorted(list) {
+        const f = SORTERS[state.sort];
+        return list.slice().sort((a, b) => { const x = f(a), y = f(b); return (x > y ? 1 : x < y ? -1 : 0) * state.dir; });
+      }
+
+      const statHTML = (ic, tone, v, l) => `<div class="sp-stat"><span class="ic ${tone}"><i data-lucide="${ic}" class="icon-sm"></i></span><div><div class="v">${v}</div><div class="l">${PC.t(l)}</div></div></div>`;
+      const catCount = c => c === 'all' ? SRC.length : SRC.filter(s => s.cat === c).length;
+
+      function renderHeader() {
+        $('#sp-sub').innerHTML = PC.t('src.sub', { path: `<span class="sp-path">${esc(DIR)}</span>` });
+        const total = SRC.reduce((n, s) => n + bytes(s.size), 0);
+        const ready = SRC.filter(isReadable).length;
+        const attn = SRC.filter(s => ['stored', 'failed'].includes(statusOf(s))).length;
+        $('#sp-stats').innerHTML = statHTML('files', '', SRC.length, 'src.st.files') + statHTML('hard-drive', '', SRC.length ? fmtBytes(total) : '0 KB', 'src.st.size')
+          + statHTML('sparkles', 'ok', `${ready}<span class="text-faint" style="font-weight:400;font-size:var(--text-sm)">/${SRC.length}</span>`, 'src.st.ready') + statHTML('archive', attn ? 'warn' : '', attn, 'src.st.attn');
+        PC.refresh($('#sp-stats'));
+      }
+
+      function renderTools() {
+        const el = $('#sp-tools');
+        if (state.sel.size) {
+          el.innerHTML = `<div class="bulk"><b>${PC.t('src.sel', { n: state.sel.size })}</b><span class="sp-fill"></span>
+            <button class="btn btn-ghost btn-sm" data-bulk="remove"><i data-lucide="trash-2" class="icon-sm"></i>${PC.t('src.sel.remove')}</button>
+            <button class="btn btn-ghost btn-sm btn-icon" data-bulk="clear" data-tip="${esc(PC.t('src.sel.clear'))}"><i data-lucide="x" class="icon-sm"></i></button></div>`;
+          PC.refresh(el); return;
+        }
+        const cats = ['all'].concat(PC.srcCats.filter(catCount));
+        el.innerHTML = `<div class="input-group"><i data-lucide="search" class="icon-sm"></i><input class="input" id="sp-q" style="height:32px" placeholder="${esc(PC.t('src.search'))}" value="${esc(state.q)}"></div>
+          <div class="fchips">${cats.map(c => `<button class="fchip ${state.cat === c ? 'is-on' : ''}" data-cat="${c}">${PC.t('src.cat.' + c)}<span class="n">${catCount(c)}</span></button>`).join('')}</div>
+          <span class="sp-fill"></span>
+          <select class="select" id="sp-status">${['all', 'indexed', 'indexing', 'stored', 'failed'].map(v => `<option value="${v}" ${state.status === v ? 'selected' : ''}>${PC.t('src.f.' + v)}</option>`).join('')}</select>`;
+        PC.refresh(el);
+        const q = $('#sp-q'); q.oninput = () => { state.q = q.value; renderTable(); };
+        $('#sp-status').onchange = e => { state.status = e.target.value; renderTable(); };
+      }
+
+      function th(key, label, cls) {
+        const on = state.sort === key;
+        return `<th class="${cls || ''}"><button class="th-s ${on ? 'is-on' : ''}" data-sort="${key}">${PC.t(label)}<i data-lucide="${on ? (state.dir > 0 ? 'arrow-up' : 'arrow-down') : 'arrow-up-down'}"></i></button></th>`;
+      }
+
+      function row(s) {
+        const k = kindOf(s), sub = contentOf(s);
+        const cls = [state.sel.has(s.id) ? 'is-sel' : '', state.open === s.id ? 'is-open' : '', state.fresh.has(s.id) ? 'is-new' : ''].join(' ');
+        return `<tr class="${cls}" data-id="${s.id}">
+          <td class="ck"><label class="checkbox"><input type="checkbox" data-ck="${s.id}" ${state.sel.has(s.id) ? 'checked' : ''}></label></td>
+          <td class="c-name"><div class="nm"><span class="file-tile ${k.tile}"><i data-lucide="${k.icon}"></i></span><div style="min-width:0"><div class="t truncate">${esc(s.name)}${state.fresh.has(s.id) ? ` <span class="badge badge-purple" style="height:18px">${PC.t('src.new')}</span>` : ''}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div></div></td>
+          <td><span class="kd">${PC.t('src.k.' + s.kind)}<span class="ext">.${esc(ext(s.name))}</span></span></td>
+          <td class="c-cat"><span class="text-xs text-muted nowrap">${PC.t('src.cat.' + s.cat)}</span></td>
+          <td class="num"><span class="text-xs nowrap">${esc(s.size)}</span></td>
+          <td class="c-date"><span class="text-xs text-muted nowrap">${fmtDate(s.date)}</span></td>
+          <td>${aiCell(s)}</td>
+          <td>${s.used.length ? `<button class="used" data-used="${s.id}"><i data-lucide="files"></i>${PC.t('src.used.n', { n: s.used.length })}</button>` : '<span class="text-faint">—</span>'}</td>
+          <td class="act"><button class="btn btn-ghost btn-icon btn-sm" data-menu="${s.id}"><i data-lucide="ellipsis" class="icon-sm"></i></button></td></tr>`;
+      }
+
+      function emptyHTML() {
+        const kinds = ['pdf', 'doc', 'slide', 'sheet', 'audio', 'video', 'image', 'email', 'diagram', 'code', 'archive', 'design'];
+        return `<div class="card sp-empty"><span class="empty-icon"><i data-lucide="folder-input"></i></span><h3>${PC.t('src.none.t')}</h3><p>${PC.t('src.none.d')}</p>
+          <div class="types">${kinds.map(k => `<span><i data-lucide="${PC.srcKind(k).icon}"></i>${PC.t('src.k.' + k)}</span>`).join('')}</div>
+          <button class="btn btn-primary" data-up="1"><i data-lucide="upload"></i>${PC.t('src.upload')}</button></div>`;
+      }
+
+      function renderTable() {
+        const el = $('#sp-table');
+        if (!SRC.length) { el.innerHTML = emptyHTML(); PC.refresh(el); return; }
+        const list = sorted(filtered());
+        const allOn = list.length && list.every(s => state.sel.has(s.id));
+        el.innerHTML = `<div class="table-wrap"><table class="table"><thead><tr>
+            <th class="ck"><label class="checkbox"><input type="checkbox" id="ck-all" ${allOn ? 'checked' : ''} aria-label="${esc(PC.t('src.sel.all'))}"></label></th>
+            ${th('name', 'src.th.name')}${th('type', 'src.th.type')}${th('cat', 'src.th.cat', 'c-cat')}${th('size', 'src.th.size', 'num')}${th('date', 'src.th.date', 'c-date')}${th('ai', 'src.th.ai')}${th('used', 'src.th.used')}<th class="act"></th>
+          </tr></thead><tbody>${list.map(row).join('')}</tbody></table>
+          ${list.length ? '' : `<div class="sp-empty"><p>${PC.t('src.none.f')}</p><button class="btn btn-secondary btn-sm" data-clear="1">${PC.t('src.none.clear')}</button></div>`}</div>`;
+        PC.refresh(el);
+        const ck = $('#ck-all'); if (ck) ck.indeterminate = !allOn && list.some(s => state.sel.has(s.id));
+      }
+
+      function detailHTML(s) {
+        const k = kindOf(s), m = modeOf(s), st = statusOf(s);
+        const note = st === 'failed' ? 'src.d.failed' : st === 'stored' ? 'src.d.store' : 'src.d.' + m;
+        const used = s.used.map(id => { const a = PC.srcArtifact(id); return `<a class="sd-row" href="artifacts.html#${esc(id)}"><span class="file-tile"><i data-lucide="${a[0]}" class="icon-sm"></i></span><span class="grow truncate">${esc(a[1])}</span><i data-lucide="arrow-up-right" class="icon-sm text-faint"></i></a>`; }).join('');
+        return `<div class="sd-head"><span class="file-tile ${k.tile}"><i data-lucide="${k.icon}"></i></span><div class="grow"><h4>${esc(s.name)}</h4><div class="text-xs text-subtle">${PC.t('src.k.' + s.kind)} · ${esc(s.size)}</div></div>
+            <button class="btn btn-ghost btn-icon btn-sm" data-close="1" data-tip="${esc(PC.t('src.det.close'))}"><i data-lucide="x" class="icon-sm"></i></button></div>
+          <div class="sd-sec"><div class="sd-acts">
+            <button class="btn btn-secondary btn-sm" data-act="open"><i data-lucide="external-link" class="icon-sm"></i>${PC.t('src.a.open')}</button>
+            <button class="btn btn-secondary btn-sm btn-icon" data-act="reveal" data-tip="${esc(PC.t('src.a.reveal'))}"><i data-lucide="folder-search" class="icon-sm"></i></button></div></div>
+          <div class="sd-sec"><div class="sd-h">${PC.t('src.det.access')}</div>${aiCell(s)}<p class="sd-note">${PC.t(note)}</p>
+            ${st === 'failed' ? `<button class="btn btn-secondary btn-sm" data-act="retry"><i data-lucide="key-round" class="icon-sm"></i>${PC.t('src.a.retry')}</button>` : ''}</div>
+          <div class="sd-sec"><div class="sd-h">${PC.t('src.det.title')}</div><dl class="props">
+            <dt>${PC.t('src.det.cat')}</dt><dd><select class="select" data-act="cat">${PC.srcCats.map(c => `<option value="${c}" ${s.cat === c ? 'selected' : ''}>${PC.t('src.cat.' + c)}</option>`).join('')}</select></dd>
+            ${contentOf(s) ? `<dt>${PC.t('src.det.content')}</dt><dd>${contentOf(s)}</dd>` : ''}
+            <dt>${PC.t('src.det.added')}</dt><dd>${fmtDate(s.date)} · ${esc(PC.t('as.you'))}</dd>
+            <dt>${PC.t('src.det.path')}</dt><dd class="mono">${esc(DIR + s.name)}</dd>
+            ${isReadable(s) ? `<dt>${PC.t('src.det.index')}</dt><dd class="mono">${esc(INDEX + s.id + '.md')}</dd>` : ''}</dl></div>
+          <div class="sd-sec"><div class="sd-h">${PC.t('src.used.t')} · ${s.used.length}</div>${used || `<div class="text-xs text-faint">${PC.t('src.used.none')}</div>`}</div>
+          <div class="sd-sec"><button class="btn btn-ghost btn-sm text-danger" data-act="remove"><i data-lucide="trash-2" class="icon-sm"></i>${PC.t('src.a.remove')}</button></div>`;
+      }
+
+      function renderDetail() {
+        const el = $('#sp-detail'), s = byId(state.open);
+        $('#sp-grid').classList.toggle('has-detail', !!s);
+        el.classList.toggle('hidden', !s);
+        if (!s) { el.innerHTML = ''; return; }
+        el.innerHTML = detailHTML(s); PC.refresh(el);
+      }
+
+      function setAssistant() {
+        const name = P.name.split(' — ')[0], s = byId(state.open);
+        PC.assistant.setContext([{ icon: 'folder', label: name }, s ? { icon: kindOf(s).icon, label: s.name } : { icon: 'paperclip', label: PC.t('src.ctx.n', { n: SRC.length }) }, { icon: 'cpu', label: 'claude-opus-5-5' }]);
+        PC.assistant.setSuggestions([PC.t('src.sg.summ'), PC.t('src.sg.gaps'), PC.t('src.sg.gen')]);
+      }
+
+      function renderAll() { renderHeader(); renderTools(); renderTable(); renderDetail(); setAssistant(); }
+
+      function openDetail(id) {
+        state.open = state.open === id ? null : id;
+        try { history.replaceState(null, '', state.open ? '#' + state.open : location.pathname + location.search); } catch (e) { /* file:// */ }
+        renderTable(); renderDetail(); setAssistant();
+      }
+
+      function toggleSel(id, on) { if (on) state.sel.add(id); else state.sel.delete(id); renderTools(); renderTable(); }
+
+      function finishProcessing(list) { list.forEach(s => { s.status = 'indexed'; }); renderAll(); }
+
+      function setCat(s, c) { s.cat = c; PC.toast(PC.t('src.t.cat', { c: PC.t('src.cat.' + c) }), { icon: 'folder' }); renderAll(); }
+
+      function confirmRemove(ids) {
+        PC.modal({ title: PC.t('src.rm.title', { n: ids.length }), width: 460,
+          body: `<p class="text-sm" style="margin:0">${PC.t('src.rm.d', { path: `<span class="sp-path">${esc(DIR)}</span>` })}</p><div class="up-list">${ids.map(byId).map(upRowStatic).join('')}</div>`,
+          actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('src.rm.go'), kind: 'danger', icon: 'trash-2', onClick: () => removeSources(ids) }] });
+      }
+
+      function removeSources(ids) {
+        ids.forEach(id => { const i = SRC.findIndex(s => s.id === id); if (i >= 0) SRC.splice(i, 1); state.sel.delete(id); });
+        if (ids.includes(state.open)) state.open = null;
+        PC.toast(PC.t('src.t.removed', { n: ids.length }), { icon: 'trash-2' });
+        renderAll();
+      }
+
+      function upRowStatic(s) {
+        const k = kindOf(s);
+        return `<div class="up-row" style="grid-template-columns:28px minmax(0,1fr) auto"><span class="file-tile ${k.tile}"><i data-lucide="${k.icon}" class="icon-sm"></i></span><span class="truncate">${esc(s.name)}</span><span class="text-xs text-subtle">${esc(s.size)}</span></div>`;
+      }
+
+      function unlock(s) {
+        const m = PC.modal({ title: PC.t('src.pw.title', { n: esc(s.name) }), width: 420,
+          body: `<div class="field"><label class="label">${PC.t('src.pw.label')}</label><input class="input" type="password" id="pw" autocomplete="off"><div class="hint">${PC.t('src.pw.hint')}</div></div>`,
+          actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('src.pw.go'), kind: 'primary', icon: 'key-round', onClick: () => startUnlock(s) }] });
+        $('#pw', m.el).focus();
+      }
+
+      function startUnlock(s) {
+        s.status = 'indexing'; s.meta = 64;
+        PC.toast(PC.t('src.pw.done'), { icon: 'key-round' });
+        renderAll();
+        setTimeout(() => finishProcessing([s]), 1800);
+      }
+
+      function rowMenu(btn, s) {
+        const items = [['open', 'external-link', 'src.a.open'], ['reveal', 'folder-search', 'src.a.reveal']];
+        if (statusOf(s) === 'failed') items.push(['retry', 'key-round', 'src.a.retry']);
+        items.push(['cat', 'folder', 'src.a.cat']);
+        const html = items.map(x => `<button class="menu-item" data-v="${x[0]}"><i data-lucide="${x[1]}"></i><span>${PC.t(x[2])}</span></button>`).join('')
+          + `<div class="menu-sep"></div><button class="menu-item text-danger" data-v="remove"><i data-lucide="trash-2"></i><span>${PC.t('src.a.remove')}</span></button>`;
+        PC.popover(btn, html, v => runAction(v, s, btn));
+      }
+
+      function catMenu(anchor, s) {
+        PC.popover(anchor, `<div class="menu-label">${PC.t('src.a.cat')}</div>` + PC.srcCats.map(c => `<button class="menu-item" data-v="${c}"><span class="grow">${PC.t('src.cat.' + c)}</span>${s.cat === c ? '<i data-lucide="check"></i>' : ''}</button>`).join(''), c => setCat(s, c));
+      }
+
+      function usedMenu(btn, s) {
+        PC.popover(btn, `<div class="menu-label">${PC.t('src.used.t')}</div>` + s.used.map(id => { const a = PC.srcArtifact(id); return `<button class="menu-item" data-v="${esc(id)}" style="min-width:240px"><i data-lucide="${a[0]}"></i><span class="grow">${esc(a[1])}</span></button>`; }).join(''), id => { location.href = 'artifacts.html#' + id; });
+      }
+
+      function runAction(v, s, anchor) {
+        if (v === 'open') PC.toast(PC.t('src.t.opened', { n: esc(s.name) }), { icon: 'external-link' });
+        else if (v === 'reveal') PC.toast(PC.t('src.t.revealed', { n: esc(s.name) }), { icon: 'folder-search' });
+        else if (v === 'retry') unlock(s);
+        else if (v === 'cat') catMenu(anchor, s);
+        else if (v === 'remove') confirmRemove([s.id]);
+      }
+
+      function onBulk(v) {
+        if (v === 'remove') confirmRemove(Array.from(state.sel));
+        else { state.sel.clear(); renderTools(); renderTable(); }
+      }
+
+      function onTableClick(e) {
+        const t = e.target;
+        if (t.closest('[data-up]')) return openUpload([]);
+        if (t.closest('[data-clear]')) { state.q = ''; state.cat = 'all'; state.status = 'all'; renderTools(); renderTable(); return; }
+        const sb = t.closest('[data-sort]');
+        if (sb) { const k = sb.dataset.sort; state.dir = state.sort === k ? -state.dir : (k === 'date' || k === 'size' || k === 'used' ? -1 : 1); state.sort = k; renderTable(); return; }
+        if (t.closest('.ck')) return;
+        const mb = t.closest('[data-menu]'); if (mb) return rowMenu(mb, byId(mb.dataset.menu));
+        const ub = t.closest('[data-used]'); if (ub) return usedMenu(ub, byId(ub.dataset.used));
+        const tr = t.closest('tr[data-id]'); if (tr) openDetail(tr.dataset.id);
+      }
+
+      function onTableChange(e) {
+        const t = e.target;
+        if (t.id === 'ck-all') { sorted(filtered()).forEach(s => (t.checked ? state.sel.add(s.id) : state.sel.delete(s.id))); renderTools(); renderTable(); return; }
+        if (t.dataset.ck) toggleSel(t.dataset.ck, t.checked);
+      }
+
+      function onDetailClick(e) {
+        const s = byId(state.open); if (!s) return;
+        if (e.target.closest('[data-close]')) return openDetail(s.id);
+        const b = e.target.closest('button[data-act]'); if (b) runAction(b.dataset.act, s, b);
+      }
+
+      function onDetailChange(e) {
+        const s = byId(state.open); if (!s) return;
+        if (e.target.dataset.act === 'cat') setCat(s, e.target.value);
+      }
+
+      function draftFile(f) {
+        const kind = PC.srcKindOf(f.name);
+        return { id: 'up-' + (++state.seq) + '-' + Date.now().toString(36), kind, name: f.path || f.name, size: fmtBytes(f.size || (Math.random() * 3 + .2) * UNIT.MB), meta: null, date: 'now', by: 'ME', used: [], cat: PC.srcKind(kind).cat, status: 'indexing' };
+      }
+
+      function upRow(f, i) {
+        const k = PC.srcKind(f.kind), m = k.mode;
+        return `<div class="up-row"><span class="file-tile ${k.tile}"><i data-lucide="${k.icon}" class="icon-sm"></i></span>
+          <div style="min-width:0"><div class="truncate">${esc(f.name)}</div><div class="s">${PC.t('src.k.' + f.kind)} · ${esc(f.size)} · <span class="${m === 'store' ? 'text-warning' : 'text-success'}">${PC.t('src.m.' + m)}</span></div></div>
+          <select class="select" data-up-cat="${i}">${PC.srcCats.map(c => `<option value="${c}" ${f.cat === c ? 'selected' : ''}>${PC.t('src.cat.' + c)}</option>`).join('')}</select>
+          <button class="btn btn-ghost btn-icon btn-sm" data-up-rm="${i}" data-tip="${esc(PC.t('src.up.rm'))}"><i data-lucide="x" class="icon-sm"></i></button></div>`;
+      }
+
+      function drawUpList(m, files) {
+        const list = $('#up-list', m.el), sum = $('#up-sum', m.el), go = $$('.modal-footer .btn', m.el).pop();
+        list.innerHTML = files.map(upRow).join('');
+        const stored = files.filter(f => PC.srcKind(f.kind).mode === 'store').length;
+        sum.innerHTML = files.length ? `<i data-lucide="info" class="icon-sm"></i>${PC.t('src.up.sum', { n: files.length, r: files.length - stored, s: stored })}` : '';
+        go.querySelector('span').textContent = files.length ? PC.t('src.up.go', { n: files.length }) : PC.t('src.up.go0');
+        PC.refresh(m.el);
+      }
+
+      function commitUpload(files) {
+        if (!files.length) { PC.toast(PC.t('src.up.none'), { tone: 'warning', icon: 'triangle-alert' }); return false; }
+        files.forEach(f => { SRC.unshift(f); state.fresh.add(f.id); });
+        state.cat = 'all'; state.status = 'all'; state.q = ''; state.sort = 'date'; state.dir = -1;
+        PC.toast(PC.t('src.up.done', { n: files.length }), { icon: 'upload' });
+        renderAll();
+        setTimeout(() => finishUpload(files), 2400);
+      }
+
+      function finishUpload(files) {
+        files.forEach(f => { f.status = 'indexed'; f.meta = PC.srcKind(f.kind).unit ? Math.ceil(Math.random() * 30) + 1 : null; });
+        renderAll();
+      }
+
+      function addPicked(m, files, picked) {
+        picked.forEach(f => files.push(draftFile(f)));
+        drawUpList(m, files);
+      }
+
+      function bindUpload(m, files) {
+        const dz = $('#up-dz', m.el), inF = $('#up-in', m.el), inD = $('#up-dir', m.el);
+        dz.onclick = e => { if (!e.target.closest('button')) inF.click(); };
+        $('#up-pf', m.el).onclick = () => inF.click();
+        $('#up-pd', m.el).onclick = () => inD.click();
+        inF.onchange = () => { addPicked(m, files, Array.from(inF.files)); inF.value = ''; };
+        inD.onchange = () => { addPicked(m, files, Array.from(inD.files).map(f => ({ name: f.webkitRelativePath || f.name, size: f.size }))); inD.value = ''; };
+        ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('is-over'); }));
+        ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('is-over'); }));
+        dz.addEventListener('drop', e => addPicked(m, files, Array.from(e.dataTransfer.files)));
+        $('#up-list', m.el).addEventListener('click', e => { const b = e.target.closest('[data-up-rm]'); if (b) { files.splice(+b.dataset.upRm, 1); drawUpList(m, files); } });
+        $('#up-list', m.el).addEventListener('change', e => { const i = e.target.dataset.upCat; if (i != null) files[+i].cat = e.target.value; });
+      }
+
+      function openUpload(initial) {
+        const files = (initial || []).map(draftFile);
+        const m = PC.modal({ title: PC.t('src.up.title'), width: 620,
+          body: `<div class="dropzone" id="up-dz"><i data-lucide="cloud-upload" class="icon-lg"></i><b style="color:var(--fg-default);font-weight:500">${PC.t('src.up.drop')}</b><span class="hint" style="max-width:440px">${PC.t('src.up.hint')}</span>
+              <div class="up-pick"><button class="btn btn-secondary btn-sm" id="up-pf"><i data-lucide="file-plus-2" class="icon-sm"></i>${PC.t('src.up.files')}</button><button class="btn btn-secondary btn-sm" id="up-pd"><i data-lucide="folder-plus" class="icon-sm"></i>${PC.t('src.up.folder')}</button></div></div>
+            <input type="file" id="up-in" multiple hidden><input type="file" id="up-dir" webkitdirectory multiple hidden>
+            <div class="up-list" id="up-list"></div><div class="up-sum" id="up-sum"></div>
+            <p class="hint" style="margin:12px 0 0">${PC.t('src.up.note', { path: `<span class="sp-path">${esc(DIR)}</span>`, index: `<span class="sp-path">${esc(INDEX)}</span>` })}</p>`,
+          actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('src.up.go0'), kind: 'primary', icon: 'upload', onClick: () => commitUpload(files) }] });
+        bindUpload(m, files);
+        drawUpList(m, files);
+      }
+
+      let dragDepth = 0;
+      const hasFiles = e => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+      const modalOpen = () => !!document.querySelector('.overlay');
+      function onDragEnter(e) { if (!hasFiles(e) || modalOpen()) return; e.preventDefault(); dragDepth++; $('#drop-ov').classList.add('is-on'); }
+      function onDragLeave(e) { if (!hasFiles(e) || modalOpen()) return; dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) $('#drop-ov').classList.remove('is-on'); }
+      function onDragOver(e) { if (hasFiles(e) && !modalOpen()) e.preventDefault(); }
+      function onDrop(e) {
+        if (!hasFiles(e) || modalOpen()) return;
+        e.preventDefault(); dragDepth = 0; $('#drop-ov').classList.remove('is-on');
+        openUpload(Array.from(e.dataTransfer.files));
+      }
+
+      PC.onReady(() => {
+        const h = location.hash.slice(1); if (h && byId(h)) state.open = h;
+        $('#btn-upload').onclick = () => openUpload([]);
+        $('#btn-folder').onclick = () => PC.toast(PC.t('src.folder_opened', { path: esc(DIR) }), { icon: 'folder-open' });
+        $('#sp-tools').addEventListener('click', e => { const c = e.target.closest('[data-cat]'); if (c) { state.cat = c.dataset.cat; renderTools(); renderTable(); return; } const b = e.target.closest('[data-bulk]'); if (b) onBulk(b.dataset.bulk); });
+        $('#sp-table').addEventListener('click', onTableClick);
+        $('#sp-table').addEventListener('change', onTableChange);
+        $('#sp-detail').addEventListener('click', onDetailClick);
+        $('#sp-detail').addEventListener('change', onDetailChange);
+        document.addEventListener('dragenter', onDragEnter);
+        document.addEventListener('dragleave', onDragLeave);
+        document.addEventListener('dragover', onDragOver);
+        document.addEventListener('drop', onDrop);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.open && !modalOpen()) openDetail(state.open); });
+        renderAll();
+        if (new URLSearchParams(location.search).has('upload')) openUpload([]);
+        if (state.open) { const tr = document.querySelector(`tr[data-id="${state.open}"]`); if (tr) tr.scrollIntoView({ block: 'center' }); }
+      });
+      document.addEventListener('pc:lang', renderAll);
+    })();
+  </script>
+</body>
+</html>

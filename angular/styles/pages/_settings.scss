@@ -111,14 +111,16 @@
   .cli-stat .spinner { width: 10px; height: 10px; }
   .cli-acts { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
   .cli-acts .spinner { width: 12px; height: 12px; }
-  .cli-fields { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+  .cli-fields { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
   .cli-field { min-width: 0; }
   .mini-label { display: block; margin-bottom: 4px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); }
   .cli-bin { display: flex; align-items: center; gap: var(--space-2); }
   .cli-bin .input { flex: 1 1 auto; min-width: 0; height: 34px; font-size: 11.5px; }
   .cli-bin .btn { flex-shrink: 0; height: 34px; }
   .cli-field .select { width: 100%; height: 34px; }
-  .cli-auth { display: flex; align-items: center; gap: var(--space-2); height: 34px; }
+  .cli-auth { display: flex; align-items: center; gap: var(--space-2); min-height: 24px; flex-wrap: wrap; }
+  .cli-doc { display: inline-flex; align-items: center; gap: 2px; color: var(--brand-fg); }
+  .cli-doc:hover { text-decoration: underline; }
   .cli-auth-d { font-size: var(--text-xs); color: var(--fg-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cli-hint { margin-top: 6px; font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.5; overflow-wrap: anywhere; }
   .cli-hint code { font-family: var(--font-mono); font-size: 11px; }

@@ -103,7 +103,7 @@
     .opt-row:hover { border-color: var(--border-strong); }
     .opt-row b { display: block; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
     .opt-row .hint { display: block; margin-top: 2px; }
-    .opt-row.is-disabled { opacity: .55; pointer-events: none; }
+    .opt-row.is-disabled, .field.is-disabled { opacity: .55; pointer-events: none; }
     .rows { display: flex; flex-direction: column; gap: var(--space-2); }
 
     /* phase preview */
@@ -134,6 +134,8 @@
     .opt.is-selected .cli-logo { background: var(--bg-surface); color: var(--brand-fg); }
     .cli-meta { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); color: var(--fg-subtle); }
     .cli-meta code { font-size: 11px; color: var(--fg-muted); }
+    .cli-model { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); color: var(--fg-subtle); font-weight: var(--weight-medium); }
+    .cli-model .select { width: 100%; }
     .rev { display: flex; flex-direction: column; }
     .rev-item { display: flex; align-items: flex-start; gap: var(--space-3); padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-sm); }
     .rev-item:last-child { border-bottom: 0; }
@@ -280,18 +282,13 @@
               </div>
             </div>
 
-            <label class="opt-row" id="existing-row">
-              <span class="grow"><b data-i18n="np.existing.t"></b><span class="hint" id="existing-hint"></span></span>
-              <span class="switch"><input type="checkbox" id="existing"></span>
-            </label>
-
             <div>
               <div class="sub-title"><h5 data-i18n="np.pv.title"></h5></div>
               <div class="pv" id="pv"></div>
             </div>
 
             <div class="fgrid">
-              <div class="field s3">
+              <div class="field s3" id="method-field">
                 <label class="label" for="method" data-i18n="np.method"></label>
                 <select class="select" id="method">
                   <option value="scrum" data-i18n="np.method.scrum"></option>
@@ -315,7 +312,7 @@
                 <span class="text-xs" data-i18n="np.drop.d"></span>
                 <input type="file" id="file-input" multiple class="hidden" accept=".pdf,.doc,.docx,.xlsx,.xls,.md,.txt,.vtt,.srt,.mp3,.wav,.m4a">
               </div>
-              <div class="sub-title mt-4"><h5 data-i18n="np.files.title"></h5><button class="btn btn-ghost btn-sm" id="sample" type="button"><i data-lucide="sparkles"></i><span data-i18n="np.drop.sample"></span></button></div>
+              <div class="sub-title mt-4"><h5 data-i18n="np.files.title"></h5></div>
               <div class="flist" id="flist"></div>
             </div>
 
@@ -341,12 +338,6 @@
               <div class="sub-title"><h5 data-i18n="np.ai.cli"></h5></div>
               <div class="opts two" id="clis" role="radiogroup"></div>
             </div>
-            <div class="fgrid">
-              <div class="field s3">
-                <label class="label" for="model" data-i18n="np.ai.model"></label>
-                <select class="select" id="model"></select>
-              </div>
-            </div>
             <div class="alert alert-info">
               <i data-lucide="shield-check"></i>
               <div class="grow">
@@ -354,11 +345,6 @@
                 <div class="text-sm text-muted mt-2" style="margin-top:2px" data-i18n-html="np.ai.home.d"></div>
                 <div class="code mt-2" id="home-code" style="margin-top:8px;padding:8px 12px"></div>
               </div>
-            </div>
-            <div class="rows">
-              <label class="opt-row"><span class="grow"><b data-i18n="np.tg.history"></b><span class="hint" data-i18n="np.tg.history.d"></span></span><span class="switch"><input type="checkbox" id="tg-history" checked></span></label>
-              <label class="opt-row"><span class="grow"><b data-i18n="np.tg.worktree"></b><span class="hint" data-i18n="np.tg.worktree.d"></span></span><span class="switch"><input type="checkbox" id="tg-worktree" checked></span></label>
-              <label class="opt-row"><span class="grow"><b data-i18n="np.tg.approval"></b><span class="hint" data-i18n="np.tg.approval.d"></span></span><span class="switch"><input type="checkbox" id="tg-approval" checked></span></label>
             </div>
             <div>
               <div class="sub-title"><h5 data-i18n="np.rev.title"></h5><span class="badge badge-success"><i data-lucide="check"></i><span data-i18n="np.rev.ready"></span></span></div>
@@ -440,43 +426,37 @@
         'np.tree.title': 'What Procheck will create', 'np.tree.sub': 'inside your project directory', 'np.tree.new': 'New',
         'np.tree.note': 'Application-level data — settings, CLI registrations, logs and cache — stays in <code>%LOCALAPPDATA%\\Procheck</code> and is never written into your project.',
         'np.t.0': 'Project manifest: name, client, phase, linked repo', 'np.t.1': 'Uploaded documents (inputs)', 'np.t.2': 'Generated & edited artifacts with versions', 'np.t.3': 'Tasks, plans, review evidence',
-        'np.t.4': 'Assistant chat history', 'np.t.5': 'Agent run logs & evidence', 'np.t.6': 'CLI profile per tool: settings, MCP, instructions', 'np.t.7': 'Git worktrees created by agents', 'np.t.8': 'Project-level overrides (CLI, model, harness)',
+        'np.t.4': 'Git repository with the project source code', 'np.t.5': 'Assistant chat history', 'np.t.6': 'Agent run logs & evidence', 'np.t.7': 'CLI profile per tool: settings, MCP, instructions', 'np.t.8': 'Git worktrees created by agents', 'np.t.9': 'Project-level overrides (CLI, model, harness)',
         'np.phase.initial.t': 'Initial phase', 'np.phase.initial.d': 'Start with discovery. Upload existing documents; the Assistant consults the initial-phase process and the AI drafts meeting notes, BRD, scope, estimates and SOW.',
         'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Design the architecture and bootstrap the product. Link a repository and AI builds the scaffolding, repo structure, infra and pipelines.',
         'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Run delivery on a Kanban board. Pick a task and plan the solution; the agent works in a git worktree, self-verifies end to end, and you review before a PR.',
         'np.tag.notes': 'Meeting notes', 'np.tag.scope': 'Scope', 'np.tag.estimate': 'Estimate', 'np.tag.arch': 'Architecture', 'np.tag.scaffold': 'Scaffolding', 'np.tag.evidence': 'E2E evidence',
-        'np.existing.t': 'Continue an existing project', 'np.existing.d': 'Earlier phases are marked as done and the documents and code you already have are imported.', 'np.existing.na': 'Available when you start from Scaffolding or SDLC.',
-        'np.pv.title': 'Phase plan', 'np.pv.done': 'Marked as done', 'np.pv.skip': 'Skipped', 'np.pv.start': 'Start here', 'np.pv.next': 'Upcoming',
+        'np.pv.title': 'Phase plan', 'np.pv.done': 'Marked as done', 'np.pv.start': 'Start here', 'np.pv.next': 'Upcoming',
         'np.method': 'Methodology', 'np.method.scrum': 'Scrum', 'np.method.kanban': 'Kanban', 'np.method.hybrid': 'Waterfall hybrid',
         'np.method.scrum.d': 'Sprints with a backlog and ceremonies. Board columns: Backlog, Sprint, In progress, Review, Done.',
         'np.method.kanban.d': 'Continuous flow with WIP limits. Board columns: To do, In progress, Review, Done.',
         'np.method.hybrid.d': 'Upfront scope and estimates (waterfall), delivered in iterative sprints.',
+        'np.method.na': 'Available when you start from SDLC. You can set it later in project settings.', 'np.method.none': 'Not set',
         'np.drop.t': 'Drop documents here or click to browse', 'np.drop.d': 'PDF, DOCX, XLSX, Markdown or audio transcripts (VTT, SRT, TXT) · up to 50 MB each',
-        'np.drop.sample': 'Use sample documents',
         'np.files.title': 'Uploaded documents', 'np.files.empty': 'No documents yet. You can also add them later from Sources.',
         'np.file.uploading': 'Uploading… {p}%', 'np.file.ready': 'Ready to index', 'np.file.remove': 'Remove',
         'np.repo.title': 'Linked repository', 'np.repo.opt': 'Optional', 'np.repo.req': 'Required',
         'np.repo.ph': 'D:\\src\\my-project', 'np.repo.browse': 'Browse', 'np.repo.inside': 'Use {p}', 'np.repo.or': 'or browse to a repository anywhere on this PC.',
-        'np.repo.hint.opt': 'Optional for the Initial phase. It can sit inside the project directory or anywhere else — you can also link one later.',
-        'np.repo.hint.req': 'Required for Scaffolding and SDLC. The agent works in git worktrees of this repository.',
+        'np.repo.hint.opt': 'Optional for Initial and Scaffolding. No git repository yet? Skip it — Scaffolding can initialize one, or you can link it later. It can sit inside the project directory or anywhere else.',
+        'np.repo.hint.req': 'Required for SDLC. The agent works in git worktrees of this repository.',
         'np.repo.err': 'Connect a local repository to start from this phase.',
         'np.repo.ok': 'Git repository detected · branch main · clean working tree', 'np.repo.picked': 'Folder selected',
         'np.ai.cli': 'CLI tool', 'np.ai.signed': 'Signed in · shared', 'np.ai.model': 'Model', 'np.ai.default': 'Default', 'np.ai.version': 'v{v}',
         'np.ai.home.t': 'Procheck sign-in, project-only context',
         'np.ai.home.d': 'No new sign-in needed: the CLI uses the sign-in made once in App settings, kept in Procheck’s CLI home (<code>%LOCALAPPDATA%\\Procheck\\cli\\&lt;cli&gt;</code>), apart from your own profile. Procheck runs it in the project directory with this project’s profile (settings, MCP servers, instructions), so context and sessions never mix between projects. Profile: <code>&lt;project dir&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
-        'np.tg.history': 'Save chat history', 'np.tg.history.d': 'Keep Assistant conversations per project so you can resume them later.',
-        'np.tg.worktree': 'Allow agent to create worktrees', 'np.tg.worktree.d': 'The agent implements each task in an isolated git worktree, never in your working copy.',
-        'np.tg.approval': 'Require human approval before PR', 'np.tg.approval.d': 'Agents stop at review. Only you can promote changes to a pull request.',
         'np.rev.title': 'Review summary', 'np.rev.ready': 'Ready to create',
-        'np.rev.folder': 'Project directory', 'np.rev.registry': 'Registered in', 'np.rev.home': 'CLI profile', 'np.rev.docs': 'Documents to index', 'np.rev.assistant': 'Assistant', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Safeguards',
+        'np.rev.folder': 'Project directory', 'np.rev.registry': 'Registered in', 'np.rev.home': 'CLI profile', 'np.rev.docs': 'Documents to index', 'np.rev.assistant': 'Assistant', 'np.rev.repo': 'Repository',
         'np.rev.docs.v': '{n} documents', 'np.rev.assistant.v': '{cli} · {model} · {phase} process',
-        'np.rev.safety.v': '{a}', 'np.on': 'on', 'np.off': 'off',
-        'np.rev.hist': 'chat history saved', 'np.rev.nohist': 'chat history off', 'np.rev.wt': 'worktrees allowed', 'np.rev.nowt': 'no worktrees', 'np.rev.appr': 'approval before PR', 'np.rev.noappr': 'no PR approval gate',
         'np.sum.untitled': 'Untitled project', 'np.sum.client': 'No client yet',
         'np.sum.phase': 'Phase', 'np.sum.method': 'Methodology', 'np.sum.docs': 'Documents', 'np.sum.repo': 'Repository', 'np.sum.ai': 'Assistant', 'np.sum.dir': 'Directory',
         'np.sum.none': 'Not connected', 'np.sum.docs.v': '{n} files',
         'np.tip.1': 'Tip: add your kickoff transcript and the signed proposal — the Assistant will use them to draft the BRD and scope.',
-        'np.tip.2': 'Tip: pick the phase you are actually in. Tick “continue an existing project” to skip earlier phases and import what you have.',
+        'np.tip.2': 'Tip: pick the phase you are actually in. Earlier phases are marked as done.',
         'np.tip.3': 'Tip: an existing repository lets the agent read your conventions before it scaffolds or implements anything.',
         'np.tip.4': 'Tip: you can switch CLI tool or model per task later, in Project settings.',
         'np.back': 'Back', 'np.next': 'Next', 'np.create': 'Create project', 'np.step.of': 'Step {a} of {b}',
@@ -521,43 +501,37 @@
         'np.tree.title': 'Procheck sẽ tạo những gì', 'np.tree.sub': 'bên trong thư mục dự án', 'np.tree.new': 'Mới',
         'np.tree.note': 'Dữ liệu cấp ứng dụng — cài đặt, đăng ký CLI, log và cache — vẫn nằm ở <code>%LOCALAPPDATA%\\Procheck</code> và không bao giờ được ghi vào dự án của bạn.',
         'np.t.0': 'Tệp mô tả dự án: tên, khách hàng, giai đoạn, repo liên kết', 'np.t.1': 'Tài liệu tải lên (đầu vào)', 'np.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'np.t.3': 'Task, kế hoạch, bằng chứng review',
-        'np.t.4': 'Lịch sử chat với Trợ lý', 'np.t.5': 'Log và bằng chứng các lượt chạy agent', 'np.t.6': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'np.t.7': 'Git worktree do agent tạo', 'np.t.8': 'Ghi đè ở cấp dự án (CLI, model, harness)',
+        'np.t.4': 'Git repository chứa mã nguồn dự án', 'np.t.5': 'Lịch sử chat với Trợ lý', 'np.t.6': 'Log và bằng chứng các lượt chạy agent', 'np.t.7': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'np.t.8': 'Git worktree do agent tạo', 'np.t.9': 'Ghi đè ở cấp dự án (CLI, model, harness)',
         'np.phase.initial.t': 'Giai đoạn khởi tạo', 'np.phase.initial.d': 'Bắt đầu từ khảo sát. Tải lên tài liệu có sẵn; Trợ lý tư vấn theo quy trình khởi tạo và AI soạn biên bản họp, BRD, phạm vi, ước lượng và SOW.',
         'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Thiết kế kiến trúc và dựng nền tảng sản phẩm. Liên kết repository để AI tạo scaffolding, cấu trúc repo, hạ tầng và pipeline.',
         'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Vận hành phát triển trên bảng Kanban. Chọn task và lên giải pháp; agent làm việc trong git worktree, tự kiểm thử end-to-end và bạn review trước khi tạo PR.',
         'np.tag.notes': 'Biên bản họp', 'np.tag.scope': 'Phạm vi', 'np.tag.estimate': 'Ước lượng', 'np.tag.arch': 'Kiến trúc', 'np.tag.scaffold': 'Scaffolding', 'np.tag.evidence': 'Bằng chứng e2e',
-        'np.existing.t': 'Tiếp tục dự án đang có', 'np.existing.d': 'Các giai đoạn trước được đánh dấu hoàn tất, tài liệu và mã nguồn hiện có sẽ được nhập vào.', 'np.existing.na': 'Chỉ áp dụng khi bắt đầu từ Scaffolding hoặc SDLC.',
-        'np.pv.title': 'Kế hoạch các giai đoạn', 'np.pv.done': 'Đánh dấu hoàn tất', 'np.pv.skip': 'Bỏ qua', 'np.pv.start': 'Bắt đầu tại đây', 'np.pv.next': 'Sắp tới',
+        'np.pv.title': 'Kế hoạch các giai đoạn', 'np.pv.done': 'Đánh dấu hoàn tất', 'np.pv.start': 'Bắt đầu tại đây', 'np.pv.next': 'Sắp tới',
         'np.method': 'Phương pháp', 'np.method.scrum': 'Scrum', 'np.method.kanban': 'Kanban', 'np.method.hybrid': 'Waterfall kết hợp',
         'np.method.scrum.d': 'Làm theo sprint với backlog và các buổi họp Scrum. Cột bảng: Backlog, Sprint, Đang làm, Review, Xong.',
         'np.method.kanban.d': 'Luồng liên tục với giới hạn WIP. Cột bảng: Cần làm, Đang làm, Review, Xong.',
         'np.method.hybrid.d': 'Chốt phạm vi và ước lượng từ đầu (waterfall), triển khai theo các sprint lặp.',
+        'np.method.na': 'Chỉ áp dụng khi bắt đầu từ SDLC. Bạn có thể thiết lập sau trong cài đặt dự án.', 'np.method.none': 'Chưa thiết lập',
         'np.drop.t': 'Kéo thả tài liệu vào đây hoặc bấm để chọn', 'np.drop.d': 'PDF, DOCX, XLSX, Markdown hoặc bản ghi âm (VTT, SRT, TXT) · tối đa 50 MB mỗi file',
-        'np.drop.sample': 'Dùng tài liệu mẫu',
         'np.files.title': 'Tài liệu đã tải lên', 'np.files.empty': 'Chưa có tài liệu. Bạn cũng có thể thêm sau trong mục Nguồn.',
         'np.file.uploading': 'Đang tải lên… {p}%', 'np.file.ready': 'Sẵn sàng lập chỉ mục', 'np.file.remove': 'Xoá',
         'np.repo.title': 'Repository liên kết', 'np.repo.opt': 'Tuỳ chọn', 'np.repo.req': 'Bắt buộc',
         'np.repo.ph': 'D:\\src\\du-an-cua-toi', 'np.repo.browse': 'Chọn thư mục', 'np.repo.inside': 'Dùng {p}', 'np.repo.or': 'hoặc chọn repository ở bất kỳ đâu trên máy.',
-        'np.repo.hint.opt': 'Không bắt buộc ở giai đoạn khởi tạo. Repo có thể nằm trong thư mục dự án hoặc ở nơi khác — cũng có thể liên kết sau.',
-        'np.repo.hint.req': 'Bắt buộc với Scaffolding và SDLC. Agent làm việc trong các git worktree của repository này.',
+        'np.repo.hint.opt': 'Không bắt buộc với giai đoạn khởi tạo và Scaffolding. Chưa có git repository? Cứ bỏ qua — Scaffolding có thể khởi tạo repo, hoặc bạn liên kết sau. Repo có thể nằm trong thư mục dự án hoặc ở nơi khác.',
+        'np.repo.hint.req': 'Bắt buộc với SDLC. Agent làm việc trong các git worktree của repository này.',
         'np.repo.err': 'Hãy kết nối repository cục bộ để bắt đầu từ giai đoạn này.',
         'np.repo.ok': 'Đã nhận diện git repository · nhánh main · working tree sạch', 'np.repo.picked': 'Đã chọn thư mục',
         'np.ai.cli': 'Công cụ CLI', 'np.ai.signed': 'Đã đăng nhập · dùng chung', 'np.ai.model': 'Mô hình', 'np.ai.default': 'Mặc định', 'np.ai.version': 'v{v}',
         'np.ai.home.t': 'Đăng nhập của Procheck, ngữ cảnh riêng dự án',
         'np.ai.home.d': 'Không cần đăng nhập lại: CLI dùng phiên đăng nhập đã thực hiện một lần trong Cài đặt ứng dụng, lưu trong home CLI của Procheck (<code>%LOCALAPPDATA%\\Procheck\\cli\\&lt;cli&gt;</code>), tách khỏi profile của bạn. Procheck chạy CLI trong thư mục dự án với profile của dự án (settings, MCP server, chỉ dẫn), nên ngữ cảnh và phiên làm việc không lẫn giữa các dự án. Profile: <code>&lt;thư mục dự án&gt;\\.procheck\\cli\\&lt;cli&gt;</code>',
-        'np.tg.history': 'Lưu lịch sử chat', 'np.tg.history.d': 'Giữ các cuộc trò chuyện với Trợ lý theo từng dự án để tiếp tục về sau.',
-        'np.tg.worktree': 'Cho phép agent tạo worktree', 'np.tg.worktree.d': 'Agent thực hiện mỗi task trong một git worktree riêng, không đụng vào bản làm việc của bạn.',
-        'np.tg.approval': 'Yêu cầu người duyệt trước khi tạo PR', 'np.tg.approval.d': 'Agent dừng ở bước review. Chỉ bạn mới có thể đẩy thay đổi lên pull request.',
         'np.rev.title': 'Tóm tắt xem lại', 'np.rev.ready': 'Sẵn sàng tạo',
-        'np.rev.folder': 'Thư mục dự án', 'np.rev.registry': 'Đăng ký tại', 'np.rev.home': 'CLI profile', 'np.rev.docs': 'Tài liệu sẽ lập chỉ mục', 'np.rev.assistant': 'Trợ lý', 'np.rev.repo': 'Repository', 'np.rev.safety': 'Biện pháp an toàn',
+        'np.rev.folder': 'Thư mục dự án', 'np.rev.registry': 'Đăng ký tại', 'np.rev.home': 'CLI profile', 'np.rev.docs': 'Tài liệu sẽ lập chỉ mục', 'np.rev.assistant': 'Trợ lý', 'np.rev.repo': 'Repository',
         'np.rev.docs.v': '{n} tài liệu', 'np.rev.assistant.v': '{cli} · {model} · quy trình {phase}',
-        'np.rev.safety.v': '{a}', 'np.on': 'bật', 'np.off': 'tắt',
-        'np.rev.hist': 'lưu lịch sử chat', 'np.rev.nohist': 'tắt lịch sử chat', 'np.rev.wt': 'cho phép worktree', 'np.rev.nowt': 'không dùng worktree', 'np.rev.appr': 'duyệt trước khi tạo PR', 'np.rev.noappr': 'không cần duyệt PR',
         'np.sum.untitled': 'Dự án chưa đặt tên', 'np.sum.client': 'Chưa có khách hàng',
         'np.sum.phase': 'Giai đoạn', 'np.sum.method': 'Phương pháp', 'np.sum.docs': 'Tài liệu', 'np.sum.repo': 'Repository', 'np.sum.ai': 'Trợ lý', 'np.sum.dir': 'Thư mục',
         'np.sum.none': 'Chưa kết nối', 'np.sum.docs.v': '{n} file',
         'np.tip.1': 'Mẹo: thêm bản ghi cuộc họp kickoff và đề xuất đã ký — Trợ lý sẽ dùng chúng để soạn BRD và phạm vi.',
-        'np.tip.2': 'Mẹo: hãy chọn đúng giai đoạn bạn đang ở. Bật “tiếp tục dự án đang có” để bỏ qua các giai đoạn trước và nhập dữ liệu sẵn có.',
+        'np.tip.2': 'Mẹo: hãy chọn đúng giai đoạn bạn đang ở. Các giai đoạn trước sẽ được đánh dấu hoàn tất.',
         'np.tip.3': 'Mẹo: có repository sẵn giúp agent đọc quy ước của bạn trước khi tạo scaffolding hay triển khai.',
         'np.tip.4': 'Mẹo: sau này bạn có thể đổi công cụ CLI hoặc mô hình cho từng task trong Cài đặt dự án.',
         'np.back': 'Quay lại', 'np.next': 'Tiếp theo', 'np.create': 'Tạo dự án', 'np.step.of': 'Bước {a}/{b}',
@@ -599,16 +573,14 @@
         { name: 'Kickoff-meeting-transcript.vtt', size: 184 * 1024 },
         { name: 'Merchant-BRD-v2.docx', size: 1.2 * 1024 * 1024 },
         { name: 'Pricing-estimates.xlsx', size: 86 * 1024 },
-        { name: 'Compliance-checklist.pdf', size: 2.4 * 1024 * 1024 },
-        { name: 'Workshop-notes.md', size: 12 * 1024 },
       ];
       let fid = 0;
       const mkFile = (name, size, p) => ({ id: ++fid, name, size, p: p == null ? 0 : p });
       const S = {
         step: 1, name: '', code: '', codeTouched: false, client: '', industry: 'fintech', desc: '',
-        dir: 'D:\\Projects\\my-project', dirTouched: false, phase: 'initial', existing: false, method: 'scrum',
+        dir: 'D:\\Projects\\my-project', dirTouched: false, phase: 'initial', method: 'scrum',
         files: [mkFile(SAMPLES[0].name, SAMPLES[0].size, 100), mkFile(SAMPLES[1].name, SAMPLES[1].size, 100), mkFile(SAMPLES[2].name, SAMPLES[2].size, 38)],
-        repo: '', cli: D.cli[0].id, model: D.cli[0].model, history: true, worktree: true, approval: true,
+        repo: '', cli: D.cli[0].id, model: D.cli[0].model, models: Object.fromEntries(D.cli.map(c => [c.id, c.model])),
       };
 
       /* ---------------- helpers ---------------- */
@@ -628,12 +600,12 @@
         if (['vtt', 'srt', 'txt', 'mp3', 'wav', 'm4a'].includes(e)) return { c: 'audio', i: 'audio-lines' };
         return { c: '', i: 'file' };
       }
-      const needRepo = () => S.phase !== 'initial';
+      const needRepo = () => S.phase === 'sdlc';
       const cliObj = () => D.cli.find(c => c.id === S.cli) || D.cli[0];
       const defaultDir = () => 'D:\\Projects\\' + slug();
       const dirPath = () => S.dir.trim().replace(/[\\/]+$/, '') || defaultDir();
       const homeRoot = () => dirPath() + '\\.procheck\\cli';   // project CLI profiles (no credentials)
-      const repoInside = () => dirPath() + '\\repo';
+      const repoInside = () => dirPath() + '\\repository';
       const REGISTRY = '%LOCALAPPDATA%\\Procheck\\projects.json';
 
       /* ---------------- renderers ---------------- */
@@ -649,26 +621,29 @@
       function renderTree() {
         const items = D.storage.project.items;
         $('ptree').innerHTML = `<div class="ptree-head"><i data-lucide="folder-open"></i><span class="truncate" title="${PC.esc(dirPath())}">${PC.esc(dirPath())}\\</span><span class="badge badge-brand">${PC.t('np.tree.new')}</span></div><div class="tbody">` +
-          items.map((it, i) => { const path = it.path.replace('<cli>', S.cli); const folder = /\\$/.test(path); return `<div class="tnode ${path.startsWith('.procheck') ? 'is-hidden' : ''}"><i data-lucide="${folder ? 'folder' : 'file-json'}"></i><span class="tp" title="${PC.esc(path)}">${PC.esc(path)}</span><span class="td">${PC.t('np.t.' + i)}</span></div>`; }).join('') + '</div>';
+          items.map((it, i) => { const path = it.path.replace('<cli>', S.cli); return `<div class="tnode ${path.startsWith('.procheck') ? 'is-hidden' : ''}"><i data-lucide="${PC.storageIcon(path)}"></i><span class="tp" title="${PC.esc(path)}">${PC.esc(path)}</span><span class="td">${PC.t('np.t.' + i)}</span></div>`; }).join('') + '</div>';
         PC.refresh($('ptree'));
       }
 
       function renderPhases() {
         document.querySelectorAll('#phases .opt').forEach(o => { const on = o.dataset.phase === S.phase; o.classList.toggle('is-selected', on); o.setAttribute('aria-checked', on); });
-        const can = S.phase !== 'initial';
-        $('existing').checked = S.existing; $('existing').disabled = !can;
-        $('existing-row').classList.toggle('is-disabled', !can);
-        $('existing-hint').textContent = PC.t(can ? 'np.existing.d' : 'np.existing.na');
         const order = ['initial', 'release', 'sdlc'], idx = order.indexOf(S.phase);
         const col = { initial: 'var(--phase-initial)', release: 'var(--phase-release)', sdlc: 'var(--phase-sdlc)' };
         $('pv').innerHTML = order.map((k, i) => {
-          const st = i < idx ? (S.existing ? 'done' : 'skip') : i === idx ? 'start' : 'next';
+          const st = i < idx ? 'done' : i === idx ? 'start' : 'next';
           const fill = st === 'done' ? '100%' : st === 'start' ? '12%' : '0%';
           return `<div class="${st === 'start' ? 'is-start' : ''}"><div class="bar"><i style="width:${fill};background:${col[k]}"></i></div><b>${PC.t('phase.' + k)}</b><span>${PC.t('np.pv.' + st)}</span></div>`;
         }).join('');
       }
 
-      function renderMethodHint() { $('method-hint').textContent = PC.t('np.method.' + S.method + '.d'); }
+      const methodApplies = () => S.phase === 'sdlc';
+
+      function renderMethod() {
+        const on = methodApplies();
+        $('method').disabled = !on;
+        $('method-field').classList.toggle('is-disabled', !on);
+        $('method-hint').textContent = PC.t(on ? 'np.method.' + S.method + '.d' : 'np.method.na');
+      }
 
       function renderFiles() {
         const f = $('flist');
@@ -693,25 +668,34 @@
         PC.refresh($('repo-ok'));
       }
 
-      function renderClis() {
-        $('clis').innerHTML = D.cli.map(c => `<div class="opt cli-card ${c.id === S.cli ? 'is-selected' : ''}" role="radio" tabindex="0" aria-checked="${c.id === S.cli}" data-cli="${c.id}">
+      function modelOptions(c) {
+        const list = MODELS[c.id] || [c.model];
+        return list.map(m => `<option value="${m}" ${m === S.models[c.id] ? 'selected' : ''}>${m}${m === c.model ? ' · ' + PC.t('np.ai.default') : ''}</option>`).join('');
+      }
+      function cliCard(c) {
+        const on = c.id === S.cli;
+        return `<div class="opt cli-card ${on ? 'is-selected' : ''}" role="radio" tabindex="0" aria-checked="${on}" data-cli="${c.id}">
           <span class="tick"><i data-lucide="check"></i></span>
           <div class="cli-top"><span class="cli-logo"><i data-lucide="${CLI_ICON[c.id] || 'terminal'}" class="icon-lg"></i></span>
             <div><h4 style="font-size:var(--text-md)">${PC.esc(c.name)}</h4><div class="row gap-2 text-xs text-subtle"><span class="dot dot-success"></span><span>${PC.t('cli.connected')}</span><span>·</span><span>${PC.t('np.ai.version', { v: c.version })}</span></div></div></div>
-          <div class="cli-meta"><span>${PC.t('np.ai.model')}: <code>${PC.esc(c.model)}</code></span><span>${PC.t('np.ai.signed')}</span></div>
-        </div>`).join('');
+          <label class="cli-model"><span>${PC.t('np.ai.model')}</span><select class="select" data-model-for="${c.id}">${modelOptions(c)}</select></label>
+          <div class="cli-meta"><span>${PC.t('np.ai.signed')}</span></div>
+        </div>`;
+      }
+      function renderClis() {
+        $('clis').innerHTML = D.cli.map(cliCard).join('');
         PC.refresh($('clis'));
       }
-      function renderModels() {
-        const list = MODELS[S.cli] || [cliObj().model];
-        if (!list.includes(S.model)) S.model = cliObj().model;
-        $('model').innerHTML = list.map((m, i) => `<option value="${m}" ${m === S.model ? 'selected' : ''}>${m}${m === cliObj().model ? ' · ' + PC.t('np.ai.default') : ''}</option>`).join('');
+      function selectCli(id, model) {
+        S.cli = id;
+        if (model) S.models[id] = model;
+        S.model = S.models[id];
+        renderClis(); renderHome(); renderReview(); renderSummary(); setAssistant();
       }
       function renderHome() { $('home-code').textContent = `cd ${dirPath()}\n${S.cli === 'codex' ? 'codex' : 'claude'} ${PC.cliFlags(S.cli, { dir: dirPath() }).split(' --').join(' \\\n    --')}`; }
 
       function renderReview() {
         const c = cliObj(), ready = S.files.length;
-        const safety = [S.history ? 'np.rev.hist' : 'np.rev.nohist', S.worktree ? 'np.rev.wt' : 'np.rev.nowt', S.approval ? 'np.rev.appr' : 'np.rev.noappr'].map(k => PC.t(k)).join(' · ');
         const rows = [
           ['np.rev.folder', `<code>${PC.esc(dirPath())}</code>`],
           ['np.rev.registry', `<code>${REGISTRY}</code>`],
@@ -719,7 +703,6 @@
           ['np.rev.docs', PC.t('np.rev.docs.v', { n: ready })],
           ['np.rev.repo', S.repo.trim() ? `<code>${PC.esc(S.repo.trim())}</code>` : PC.t('np.sum.none')],
           ['np.rev.assistant', PC.esc(PC.t('np.rev.assistant.v', { cli: c.name, model: S.model, phase: PC.t('phase.' + S.phase) }))],
-          ['np.rev.safety', PC.esc(safety)],
         ];
         $('review').innerHTML = rows.map(r => `<div class="rev-item"><i data-lucide="check-circle-2" class="icon-sm"></i><span class="k">${PC.t(r[0])}</span><span class="v">${r[1]}</span></div>`).join('');
         PC.refresh($('review'));
@@ -733,7 +716,7 @@
         $('sum-rows').innerHTML =
           row('folder', 'np.sum.dir', `<span class="mono truncate" style="display:inline-block;max-width:160px;font-size:11px;vertical-align:bottom" title="${PC.esc(dirPath())}">${PC.esc(dirPath())}</span>`) +
           row('route', 'np.sum.phase', `<span class="phase-chip phase-${S.phase === 'release' ? 'release' : S.phase}">${PC.t('phase.' + S.phase)}</span>`) +
-          row('workflow', 'np.sum.method', PC.t('np.method.' + S.method)) +
+          row('workflow', 'np.sum.method', methodApplies() ? PC.t('np.method.' + S.method) : `<span class="text-faint">${PC.t('np.method.none')}</span>`) +
           row('files', 'np.sum.docs', PC.t('np.sum.docs.v', { n: S.files.length })) +
           row('folder-git-2', 'np.sum.repo', S.repo.trim() ? `<span class="mono truncate" style="display:inline-block;max-width:150px;font-size:11px;vertical-align:bottom" title="${PC.esc(S.repo.trim())}">${PC.esc(S.repo.trim())}</span>` : `<span class="text-faint">${PC.t('np.sum.none')}</span>`) +
           row('cpu', 'np.sum.ai', `${PC.esc(c.name)}<div class="mono text-subtle" style="font-size:10.5px;font-weight:400">${PC.esc(S.model)}</div>`);
@@ -742,7 +725,7 @@
       }
 
       function renderStatic() {
-        renderStepper(); renderTree(); renderPhases(); renderMethodHint(); renderFiles(); renderRepo(); renderClis(); renderModels(); renderHome(); renderReview(); renderSummary();
+        renderStepper(); renderTree(); renderPhases(); renderMethod(); renderFiles(); renderRepo(); renderClis(); renderHome(); renderReview(); renderSummary();
         PC.refresh(document.querySelector('.canvas'));
       }
 
@@ -845,12 +828,11 @@
         $('desc').addEventListener('input', e => { S.desc = e.target.value; });
 
         const pick = (el, fn) => {
-          el.addEventListener('click', e => { const o = e.target.closest('.opt'); if (o && el.contains(o)) fn(o); });
+          el.addEventListener('click', e => { if (e.target.closest('select')) return; const o = e.target.closest('.opt'); if (o && el.contains(o)) fn(o); });
           el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('opt')) { e.preventDefault(); fn(e.target); } });
         };
-        pick($('phases'), o => { S.phase = o.dataset.phase; if (S.phase === 'initial') S.existing = false; renderPhases(); renderRepo(); renderReview(); renderSummary(); });
-        $('existing').addEventListener('change', e => { S.existing = e.target.checked; renderPhases(); });
-        $('method').addEventListener('change', e => { S.method = e.target.value; renderMethodHint(); renderSummary(); });
+        pick($('phases'), o => { S.phase = o.dataset.phase; renderPhases(); renderMethod(); renderRepo(); renderReview(); renderSummary(); });
+        $('method').addEventListener('change', e => { S.method = e.target.value; renderMethod(); renderSummary(); });
 
         const dz = $('dz');
         dz.addEventListener('click', () => $('file-input').click());
@@ -859,20 +841,13 @@
         ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('is-over'); }));
         dz.addEventListener('drop', e => { const fl = Array.from(e.dataTransfer && e.dataTransfer.files || []); if (fl.length) addFiles(fl); });
         $('file-input').addEventListener('change', e => { addFiles(Array.from(e.target.files)); e.target.value = ''; });
-        $('sample').addEventListener('click', () => {
-          const have = S.files.map(f => f.name); const next = SAMPLES.filter(s => !have.includes(s.name)).slice(0, 2);
-          if (next.length) addFiles(next);
-        });
         $('flist').addEventListener('click', e => { const b = e.target.closest('[data-rmf]'); if (!b) return; S.files = S.files.filter(f => f.id !== +b.dataset.rmf); renderFiles(); renderSummary(); renderReview(); });
 
         $('repo').addEventListener('input', e => { S.repo = e.target.value; renderRepo(); renderSummary(); });
         $('browse').addEventListener('click', () => { S.repo = 'D:\\src\\' + slug(); $('repo').value = S.repo; renderRepo(); renderSummary(); PC.toast(PC.t('np.repo.picked')); });
 
-        pick($('clis'), o => { S.cli = o.dataset.cli; S.model = cliObj().model; renderClis(); renderModels(); renderHome(); renderReview(); renderSummary(); setAssistant(); });
-        $('model').addEventListener('change', e => { S.model = e.target.value; renderReview(); renderSummary(); setAssistant(); });
-        $('tg-history').addEventListener('change', e => { S.history = e.target.checked; renderReview(); });
-        $('tg-worktree').addEventListener('change', e => { S.worktree = e.target.checked; renderReview(); });
-        $('tg-approval').addEventListener('change', e => { S.approval = e.target.checked; renderReview(); });
+        pick($('clis'), o => selectCli(o.dataset.cli));
+        $('clis').addEventListener('change', e => { const s = e.target.closest('[data-model-for]'); if (s) selectCli(s.dataset.modelFor, s.value); });
 
         $('stepper').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(+b.dataset.go); });
         $('back').addEventListener('click', () => go(S.step - 1));

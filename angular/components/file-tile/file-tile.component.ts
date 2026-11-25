@@ -9,7 +9,7 @@ export type FileKind = 'pdf' | 'doc' | 'sheet' | 'md' | 'audio' | 'video' | 'sli
   selector: 'pc-file-tile',
   imports: [IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class]': "'file-tile ' + kind()" },
+  host: { '[class]': "'file-tile file-tile-' + kind()" },
   template: `<pc-icon [name]="icon() || 'file-text'" />`,
 })
 export class FileTileComponent {

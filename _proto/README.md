@@ -13,10 +13,11 @@ Open `index.html` in a browser (double-click works; `npx serve _proto` is nicer)
 | Navigation | Cross-project overview via breadcrumb: **Projects** (→ `index.html`) **/ Project ▾** (switcher) **/ Page**. |
 | Chrome colors | Sidebar/topbar follow the selected theme (`--bg-sidebar`, `--bg-topbar`) like native chrome — no fixed navy. |
 | People | **Single user, local PC.** There is only **me** ("You") and **agents** (Claude Code, Codex). No assignees, members, reviewers or teams. |
-| Storage boundary | **Application data** → `%LOCALAPPDATA%\Procheck\` (settings.json, projects.json registry, cli\, logs\, cache\). **Project data** → the directory chosen for the project (procheck.json, sources\, artifacts\, board\, .procheck\chats, .procheck\runs, .procheck\cli\<cli> (project CLI profile), .procheck\worktrees, .procheck\settings.json). See `PC.data.storage`. |
+| Storage boundary | **Application data** → `%LOCALAPPDATA%\Procheck\` (settings.json, projects.json registry, cli\, logs\, cache\). **Project data** → the directory chosen for the project (procheck.json, sources\, artifacts\, board\, repository\ (git repo with source code, when kept inside), .procheck\chats, .procheck\runs, .procheck\cli\<cli> (project CLI profile), .procheck\worktrees, .procheck\settings.json). See `PC.data.storage`. |
 | CLI isolation | **Procheck CLI home, isolated context.** Connecting a CLI = running its exe with a **CLI home in application data**: `%LOCALAPPDATA%\Procheck\cli\<cli>\`, set through the CLI's home variable (`CLAUDE_CONFIG_DIR`, `CODEX_HOME`). Procheck's sign-in (`claude auth login`, `codex login` run inside that home), base config and sessions live there; the user's own profile (`~/.claude`, `~/.codex`) is never read or changed, and credential env vars (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, …) are not passed. `HOME` / `USERPROFILE` stay unchanged so git, ssh and npm keep working. The user signs in once in **App settings → Agent Integration** and every project reuses it. Per project, Procheck isolates the context of each launch: cwd = project dir (Assistant) or worktree (agents) · project CLI profile in `.procheck\cli\<cli>\` (settings, MCP servers, instructions — no credentials) · shared CLI-home config ignored by default · `--resume` only with session ids recorded in the project · env allowlist. See `PC.cliHome`, `PC.cliEnv`, `PC.projectCli`, `PC.cliFlags`. |
-| Chat scopes | **Project chats** (`<project dir>\.procheck\chats`, cwd = project dir) and **General chats** (`%LOCALAPPDATA%\Procheck\chats`, cwd = empty `%LOCALAPPDATA%\Procheck\scratch`, app-level CLI profile, Ask mode only, no artifacts). Both appear in the sidebar **Chats** group; `assistant.html?scope=general` opens general chats in the app (home) shell. A general chat can be **moved to a project**. |
+| Chat scopes | **Project chats** (`<project dir>\.procheck\chats`, cwd = project dir) and **General chats** (`%LOCALAPPDATA%\Procheck\chats`, cwd = empty `%LOCALAPPDATA%\Procheck\scratch`, app-level CLI profile, Ask mode only, no artifacts). The project sidebar has no Chats group (Project: Overview, Artifacts, Sources; Workflow: Initial, Scaffolding, SDLC board, Agent runs); chats are reached from the Assistant panel and **All chats**; `assistant.html?scope=general` opens general chats in the app (home) shell. A general chat can be **moved to a project**. |
 | Usage display | Assistant shows **context window** (last reply's prompt size / model window) and **usage limits** (5-hour + weekly, per CLI account). Updated **at the end of each reply**, not realtime. See *Usage telemetry* below. |
+| Sources | `sources.html` is a **table**, not a preview: name, type, size, added, Assistant access, used in. **Any file type** can be added (files, folders or drag-and-drop anywhere on the page). Each kind has a read mode: text extracted, transcribed (audio/video), image read, parsed as data, read as code, unpacked (archives) or **stored only** (no reader, e.g. `.fig`). Extracted content goes to `.procheck\index\`. Registry and per-project data: `assets/sources.js` (`PC.srcKinds`, `PC.srcKindOf`, `PC.sources()`). |
 | Workspace | **No "workspace" concept.** A project = a directory. Never use the word "workspace" in UI. |
 | Settings | `settings.html` = **App settings** (stored in LOCALAPPDATA). `project-settings.html` = **Project settings** (stored in the project directory). |
 | Language | Bilingual EN / VI with toggle (persisted). |
@@ -35,11 +36,12 @@ _proto/
   scaffolding.html       Scaffolding phase: linked repo, scaffolding plan & agent generation
   board.html             SDLC board (kanban) — no metrics, no assignees
   task.html              Task detail: solution → plan → agent run in worktree → review evidence → PR
-  artifacts.html         Sources & generated artifacts, editor/preview, export
+  artifacts.html         Generated artifacts, editor/preview, export (?gen=<source ids> opens Generate)
+  sources.html           Uploaded sources as a table: filters, bulk actions, details panel, upload any file type (?upload=1)
   assistant.html         Full-page Assistant with chat history
   settings.html          App settings (%LOCALAPPDATA%\Procheck)
   project-settings.html  Project settings (<project dir>\.procheck\settings.json)
-  assets/ tokens.css · components.css · shell.css · app.js · kms-*.svg
+  assets/ tokens.css · components.css · shell.css · app.js · sources.js · kms-*.svg
 ```
 
 ## Page contract
@@ -69,7 +71,7 @@ _proto/
 ```
 
 - `data-shell`: `project` (project sidebar) · `home` (app sidebar: all projects, new/open project, recent projects) · `none` (no chrome).
-- `data-page` ids — project sidebar: `overview`, `artifacts`, `assistant`, `initial`, `scaffolding`, `board`, `task`, `project-settings`; app sidebar: `home`, `new-project`, `open-project`, `settings`, `design`.
+- `data-page` ids — project sidebar: `overview`, `artifacts`, `sources`, `assistant`, `initial`, `scaffolding`, `board`, `task`, `project-settings`; app sidebar: `home`, `new-project`, `open-project`, `settings`, `design`.
 - `PC.project()` = current project (switchable via breadcrumb, `?p=<id>`, persisted). Use `p.dir`, `p.repo`, `PC.projectCli('claude')` for paths and `PC.cliFlags('claude')` for CLI launch lines. `PC.data.agents`, `PC.data.storage`, `PC.data.cli`.
 - i18n: `data-i18n`, `-placeholder`, `-title`, `-tip`, `-html`; dynamic text via `PC.t()` + `pc:lang`. Shared keys: `phase.release` = "Scaffolding", `nav.scaffolding`, `nav.board` = "SDLC board", `storage.app`, `storage.project`.
 - Helpers: `PC.toast`, `PC.modal`, `PC.popover`, `PC.assistant.setContext / seed / setSuggestions / reply`, `PC.esc`.

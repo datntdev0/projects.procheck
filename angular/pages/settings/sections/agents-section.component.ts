@@ -9,7 +9,7 @@ import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
 import { AgentConnectionsService } from '@features/agents/agent-connections.service';
-import { AGENT_INSTALL, AGENT_NAMES, AgentModel, AgentStatus, AgentsService, ConnectionState, connectionState } from '@features/agents/agents.service';
+import { AGENT_DOCS, AGENT_INSTALL, AGENT_NAMES, AgentModel, AgentStatus, AgentsService, ConnectionState, connectionState } from '@features/agents/agents.service';
 import { AGENT_IDS, AgentId } from '@features/settings/app-settings.model';
 import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
 import { I18nService } from '@shared/i18n/i18n.service';
@@ -68,6 +68,10 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
           @if (status()?.version; as version) {
             <span>·</span><span data-testid="agent-version">v{{ version }}</span>
           }
+          <span>·</span>
+          <a class="cli-doc" data-testid="agent-docs" [href]="docs()" [title]="docs()" (click)="openGuide($event)">
+            {{ 'set.ag.docs' | t }}<pc-icon name="arrow-up-right" [size]="12" />
+          </a>
         </div>
       </div>
       <div class="cli-acts">
@@ -148,28 +152,10 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
               {{ 'set.ag.bin.detected' | t }} <code>{{ s.binPath }}</code>
             } @else if (s.source === 'none') {
               {{ 'set.ag.bin.none' | t }} <code>{{ install() }}</code>
+              {{ 'set.ag.bin.guide' | t }} <a class="cli-doc" [href]="docs()" (click)="openGuide($event)">{{ 'set.ag.docs' | t }}<pc-icon name="arrow-up-right" [size]="12" /></a>
             }
           }
         </div>
-      </div>
-
-      <div class="cli-field">
-        <div class="mini-label">{{ 'set.ag.auth' | t }}</div>
-        <div class="cli-auth" data-testid="agent-auth">
-          @if (status()?.auth; as auth) {
-            @if (auth.signedIn) {
-              <pc-badge tone="success"><pc-icon name="check" [size]="12" />{{ 'set.ag.signed' | t }}</pc-badge>
-              <span class="cli-auth-d">{{ authLabel() }}</span>
-            } @else if (status()?.installed) {
-              <pc-badge>{{ 'set.ag.signedout' | t }}</pc-badge>
-            } @else {
-              <span class="cli-auth-d">—</span>
-            }
-          }
-        </div>
-        @if (status()?.auth?.account; as account) {
-          <div class="cli-hint">{{ account }}</div>
-        }
       </div>
 
       <div class="cli-field">
@@ -186,6 +172,25 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
             <option [value]="m.id" [selected]="m.id === draft().model">{{ m.label }}</option>
           }
         </select>
+      </div>
+    </div>
+
+    <div class="cli-auth-row">
+      <div class="mini-label">{{ 'set.ag.auth' | t }}</div>
+      <div class="cli-auth" data-testid="agent-auth">
+        @if (status()?.auth; as auth) {
+          @if (auth.signedIn) {
+            <pc-badge tone="success"><pc-icon name="check" [size]="12" />{{ 'set.ag.signed' | t }}</pc-badge>
+            <span class="cli-auth-d">{{ authLabel() }}</span>
+            @if (auth.account; as account) {
+              <span class="cli-auth-d">·</span><span class="cli-auth-d" data-testid="agent-account">{{ account }}</span>
+            }
+          } @else if (status()?.installed) {
+            <pc-badge>{{ 'set.ag.signedout' | t }}</pc-badge>
+          } @else {
+            <span class="cli-auth-d">—</span>
+          }
+        }
       </div>
     </div>
 
@@ -231,6 +236,7 @@ export class AgentCardComponent {
   protected readonly name = computed(() => AGENT_NAMES[this.agent()]);
   protected readonly icon = computed(() => AGENT_ICONS[this.agent()]);
   protected readonly install = computed(() => AGENT_INSTALL[this.agent()]);
+  protected readonly docs = computed(() => AGENT_DOCS[this.agent()]);
   protected readonly homeVar = computed(() => (this.agent() === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR'));
   protected readonly draft = computed(() => this.form.value().agents[this.agent()]);
   protected readonly isDefault = computed(() => this.form.value().agents.defaultAgent === this.agent());
@@ -272,6 +278,15 @@ export class AgentCardComponent {
       });
     });
     inject(DestroyRef).onDestroy(() => clearTimeout(this.timer));
+  }
+
+  protected async openGuide(event: Event): Promise<void> {
+    event.preventDefault();
+    try {
+      await this.agents.openInstallGuide(this.agent());
+    } catch {
+      this.toast.show(this.i18n.t('set.ag.docs.failed'), { icon: 'circle-alert', tone: 'danger' });
+    }
   }
 
   protected refresh(): void {

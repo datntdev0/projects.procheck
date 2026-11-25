@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="assets/components.css">
   <link rel="stylesheet" href="assets/shell.css">
   <script src="assets/app.js"></script>
+  <script src="assets/sources.js"></script>
   <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
     /* ===== Artifacts — 3-pane manager. Page-only styles, semantic tokens only ===== */
@@ -19,12 +20,9 @@
 
     /* ---- left list pane ---- */
     .lp { display: flex; flex-direction: column; min-width: 0; min-height: 0; border-right: 1px solid var(--border-default); background: var(--bg-surface-2); }
-    .lp-top { padding: var(--space-3) var(--space-3) 0; display: flex; flex-direction: column; gap: var(--space-3); background: var(--bg-surface); border-bottom: 1px solid var(--border-default); }
+    .lp-top { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); background: var(--bg-surface); border-bottom: 1px solid var(--border-default); }
     .lp-actions { display: flex; gap: var(--space-2); }
     .lp-actions .btn { flex: 1; padding: 0 var(--space-2); }
-    .lp .tabs { border-bottom: 0; gap: 0; margin: 0 -4px; }
-    .lp .tab { flex: 1; justify-content: center; padding: 0 4px; font-size: 11.5px; white-space: nowrap; }
-    .lp .tab .count { display: none; }
     .lp-list { flex: 1; overflow: auto; padding: var(--space-2) var(--space-2) var(--space-6); }
     .grp { margin-top: var(--space-2); }
     .grp-h { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; cursor: pointer; padding: 8px 8px 6px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-subtle); }
@@ -42,9 +40,6 @@
     .it .new { margin-left: auto; }
     .st-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-faint); flex-shrink: 0; }
     .st-dot.approved { background: var(--success); } .st-dot.review { background: var(--warning); } .st-dot.draft { background: var(--fg-faint); }
-    .src-it .file-tile { width: 34px; height: 34px; }
-    .lp-sub { display: flex; align-items: center; gap: 8px; padding: 10px 8px 4px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-subtle); }
-    .lp-sub span { font-weight: var(--weight-medium); color: var(--fg-faint); }
     .ar-empty { height: 100%; display: flex; align-items: center; justify-content: center; padding: var(--space-8); }
     .ar-empty .box { max-width: 460px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
     .ar-empty .rec { display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); font-size: var(--text-sm); width: 100%; }
@@ -122,19 +117,6 @@
     .dv .sum { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-sm); }
     .dv .sum .add { color: var(--success-fg); font-weight: 600; } .dv .sum .del { color: var(--danger-fg); font-weight: 600; }
 
-    /* sources viewer */
-    .sv { max-width: 820px; margin: 0 auto; padding: var(--space-6) var(--space-8) var(--space-12); }
-    .sv-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
-    .sv-meta > div { padding: 10px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface-2); }
-    .sv-meta .l { font-size: var(--text-2xs); color: var(--fg-subtle); } .sv-meta .v { font-size: var(--text-sm); font-weight: 500; color: var(--fg-strong); }
-    .page { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: var(--space-8); font-size: var(--text-sm); line-height: 1.7; color: var(--fg-default); }
-    .page h4 { margin-bottom: 8px; }
-    .tx { display: grid; grid-template-columns: 52px 92px minmax(0, 1fr); gap: 4px 12px; font-size: var(--text-sm); }
-    .tx .ts { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-subtle); padding-top: 2px; } .tx .sp { font-weight: 600; color: var(--fg-strong); }
-    .wave { display: flex; align-items: center; gap: 2px; height: 56px; padding: 0 var(--space-4); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); }
-    .wave i { flex: 1; background: var(--accent-magenta); border-radius: 2px; opacity: .75; min-width: 2px; }
-    .wave i.p { background: var(--border-strong); }
-
     /* meta pane */
     .meta { display: none; flex-direction: column; min-height: 0; border-left: 1px solid var(--border-default); background: var(--bg-surface); overflow: auto; }
     .ar.meta-open .meta { display: flex; }
@@ -175,7 +157,6 @@
     .gen-steps li { display: flex; align-items: center; gap: 10px; font-size: var(--text-sm); color: var(--fg-subtle); }
     .gen-steps li.done { color: var(--fg-default); } .gen-steps li.done svg { color: var(--success); } .gen-steps li.cur { color: var(--fg-strong); font-weight: 500; }
     .gen-steps .ic { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; }
-    .up-file { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface-2); font-size: var(--text-sm); margin-top: 8px; }
 
     /* container-driven responsiveness: assistant panel is open by default so canvas is often < 1100px */
     @container ar (max-width: 1100px) {
@@ -186,7 +167,6 @@
       .ar, .ar.meta-open { grid-template-columns: 236px minmax(0, 1fr); }
       .adoc { padding: var(--space-6) var(--space-5) var(--space-12); }
       .btn-lbl { display: none; }
-      .sv-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 760px) { .tpl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   </style>
@@ -197,14 +177,10 @@
       <aside class="lp">
         <div class="lp-top">
           <div class="lp-actions">
-            <button class="btn btn-secondary btn-sm" id="btn-upload"><i data-lucide="upload"></i><span data-i18n="ar.upload"></span></button>
+            <a class="btn btn-secondary btn-sm" href="sources.html?upload=1" style="text-decoration:none"><i data-lucide="upload"></i><span data-i18n="ar.upload"></span></a>
             <button class="btn btn-ai btn-sm" id="btn-gen"><i data-lucide="sparkles"></i><span data-i18n="ar.generate"></span></button>
           </div>
           <div class="input-group"><i data-lucide="search"></i><input class="input" id="lp-q" data-i18n-placeholder="ar.search" style="height:32px"></div>
-          <div class="tabs" role="tablist">
-            <button class="tab is-active" data-tab="artifacts"><span data-i18n="ar.tab.gen"></span><span class="count" id="cnt-art"></span></button>
-            <button class="tab" data-tab="sources"><span data-i18n="ar.tab.src"></span><span class="count" id="cnt-src"></span></button>
-          </div>
         </div>
         <div class="lp-list" id="lp-list"></div>
       </aside>
@@ -218,11 +194,11 @@
       en: {
         'ar.empty.t': 'No generated artifacts yet', 'ar.empty.d': 'Artifacts are documents the Assistant drafts from your sources: meeting notes, BRD, scope, estimation. Nothing has been generated for this project yet.', 'ar.empty.list': 'Generated documents will appear here.', 'ar.empty.cta': 'Generate first artifact',
         'ar.empty.rec': 'Recommended first: Meeting notes', 'ar.empty.rec.d': 'Built from the intro call transcript. Every later artifact builds on it.', 'ar.empty.meta': 'Select an artifact to see its sources, linked tasks, comments and history.', 'ar.empty.ctx': '{n} sources',
-        'ar.sg.first1': 'Summarize the intro call', 'ar.sg.first2': 'Draft discovery questions', 'ar.grp.docs': 'Documents', 'ar.grp.meet': 'Meeting recordings & transcripts',
+        'ar.sg.first1': 'Summarize the intro call', 'ar.sg.first2': 'Draft discovery questions',
         'ar.tpl.notes': 'Meeting notes', 'ar.tpl.notes.d': 'Attendees, decisions, actions',
-        'ar.upload': 'Upload', 'ar.generate': 'Generate', 'ar.search': 'Search artifacts…', 'ar.search.src': 'Search sources…',
-        'ar.tab.gen': 'Generated artifacts', 'ar.tab.src': 'Sources (uploaded)', 'ar.none': 'No results for this search.',
-        'ar.new': 'New', 'ar.indexing': 'Indexing…', 'ar.indexed': 'Indexed', 'ar.used': 'Used in {n}',
+        'ar.upload': 'Upload', 'ar.generate': 'Generate', 'ar.search': 'Search artifacts…',
+        'ar.none': 'No results for this search.',
+        'ar.new': 'New',
         'ar.st.draft': 'Draft', 'ar.st.review': 'In review', 'ar.st.approved': 'Approved', 'ar.status': 'Status',
         'ar.mode.preview': 'Preview', 'ar.mode.edit': 'Edit markdown', 'ar.mode.diff': 'Diff vs previous',
         'ar.version': 'Version', 'ar.versions': 'Version history', 'ar.latest': 'latest', 'ar.by': 'by', 'ar.assistant': 'Assistant',
@@ -238,10 +214,7 @@
         'ar.ai.applied': 'Change applied to the draft', 'ar.ai.quote': 'About this passage: “{q}”', 'ar.ai.reply': 'I looked at that passage together with the linked sources. Suggested direction: make it measurable, name an owner and cite the source requirement. Want me to apply this as a tracked edit?',
         'ar.ai.comment.added': 'Comment added', 'ar.comment.resolve': 'Resolve', 'ar.comment.resolved': 'Comment resolved', 'ar.comment.reply': 'Reply sent',
         'ar.meta.from': 'Derived from', 'ar.meta.tasks': 'Linked tasks', 'ar.meta.history': 'History', 'ar.meta.comments': 'Comments', 'ar.meta.none.src': 'No source documents linked.', 'ar.meta.none.tasks': 'No linked tasks yet.', 'ar.meta.none.comments': 'No open comments.',
-        'ar.meta.type': 'Details', 'ar.meta.used': 'Used by artifacts', 'ar.meta.generated': 'Generated by',
-        'ar.src.type': 'Type', 'ar.src.size': 'Size', 'ar.src.uploaded': 'Uploaded', 'ar.src.status': 'Status', 'ar.src.download': 'Download', 'ar.src.reindex': 'Re-index', 'ar.src.genfrom': 'Generate from this', 'ar.src.reindexing': 'Re-indexing {n}…',
-        'ar.src.extracted': 'Extracted text', 'ar.src.transcript': 'Transcript', 'ar.src.pages': '{n} pages', 'ar.src.min': '{n} min', 'ar.src.sheet': 'Sheet preview',
-        'ar.up.title': 'Upload source documents', 'ar.up.drop': 'Drop files here or click to browse', 'ar.up.hint': 'PDF, DOCX, XLSX, MD, TXT, audio (m4a, mp3) — up to 200 MB each', 'ar.up.go': 'Upload & index', 'ar.up.none': 'Choose at least one file', 'ar.up.done': '{n} file(s) uploaded — indexing for the Assistant…', 'ar.up.note': 'Files are copied into the project and indexed locally; audio is transcribed by the connected CLI.',
+        'ar.meta.type': 'Details', 'ar.meta.generated': 'Generated by',
         'ar.gen.title': 'Generate artifact', 'ar.gen.tpl': 'Template', 'ar.gen.name': 'Title', 'ar.gen.sources': 'Sources & context', 'ar.gen.cli': 'CLI & model', 'ar.gen.instr': 'Extra instructions (optional)', 'ar.gen.instr.ph': 'e.g. focus on merchant-facing requirements, keep it under 4 pages…', 'ar.gen.go': 'Generate', 'ar.gen.lang': 'Language',
         'ar.gen.s1': 'Reading {n} sources', 'ar.gen.s2': 'Outlining sections', 'ar.gen.s3': 'Drafting content', 'ar.gen.s4': 'Self-review & consistency check', 'ar.gen.s5': 'Saving artifact as Draft',
         'ar.gen.running': 'Running {cli} with this project’s context…', 'ar.gen.done': '“{t}” created as Draft', 'ar.gen.note': 'Generated by {cli} · {model} from {n} sources. Review before approving.',
@@ -254,11 +227,11 @@
       vi: {
         'ar.empty.t': 'Chưa có tài liệu nào được tạo', 'ar.empty.d': 'Tài liệu là các bản Trợ lý soạn từ nguồn của bạn: biên bản họp, BRD, phạm vi, ước tính. Dự án này chưa có tài liệu nào được tạo.', 'ar.empty.list': 'Các tài liệu được tạo sẽ hiện ở đây.', 'ar.empty.cta': 'Tạo tài liệu đầu tiên',
         'ar.empty.rec': 'Nên làm trước: Biên bản họp', 'ar.empty.rec.d': 'Tạo từ transcript cuộc gọi giới thiệu. Mọi tài liệu sau đều dựa trên nó.', 'ar.empty.meta': 'Chọn một tài liệu để xem nguồn, task liên quan, bình luận và lịch sử.', 'ar.empty.ctx': '{n} nguồn',
-        'ar.sg.first1': 'Tóm tắt cuộc gọi giới thiệu', 'ar.sg.first2': 'Soạn câu hỏi discovery', 'ar.grp.docs': 'Tài liệu', 'ar.grp.meet': 'Bản ghi & transcript cuộc họp',
+        'ar.sg.first1': 'Tóm tắt cuộc gọi giới thiệu', 'ar.sg.first2': 'Soạn câu hỏi discovery',
         'ar.tpl.notes': 'Biên bản họp', 'ar.tpl.notes.d': 'Người dự, quyết định, việc cần làm',
-        'ar.upload': 'Tải lên', 'ar.generate': 'Tạo mới', 'ar.search': 'Tìm tài liệu…', 'ar.search.src': 'Tìm nguồn…',
-        'ar.tab.gen': 'Tài liệu đã tạo', 'ar.tab.src': 'Nguồn (đã tải lên)', 'ar.none': 'Không có kết quả phù hợp.',
-        'ar.new': 'Mới', 'ar.indexing': 'Đang lập chỉ mục…', 'ar.indexed': 'Đã lập chỉ mục', 'ar.used': 'Dùng trong {n}',
+        'ar.upload': 'Tải lên', 'ar.generate': 'Tạo mới', 'ar.search': 'Tìm tài liệu…',
+        'ar.none': 'Không có kết quả phù hợp.',
+        'ar.new': 'Mới',
         'ar.st.draft': 'Bản nháp', 'ar.st.review': 'Đang review', 'ar.st.approved': 'Đã duyệt', 'ar.status': 'Trạng thái',
         'ar.mode.preview': 'Xem trước', 'ar.mode.edit': 'Sửa markdown', 'ar.mode.diff': 'So với bản trước',
         'ar.version': 'Phiên bản', 'ar.versions': 'Lịch sử phiên bản', 'ar.latest': 'mới nhất', 'ar.by': 'bởi', 'ar.assistant': 'Trợ lý',
@@ -274,10 +247,7 @@
         'ar.ai.applied': 'Đã áp dụng thay đổi vào bản nháp', 'ar.ai.quote': 'Về đoạn này: “{q}”', 'ar.ai.reply': 'Mình đã xem đoạn này cùng các nguồn liên quan. Hướng đề xuất: làm cho đo lường được, chỉ định người phụ trách và dẫn nguồn yêu cầu gốc. Bạn muốn mình áp dụng thành một chỉnh sửa có theo dõi không?',
         'ar.ai.comment.added': 'Đã thêm bình luận', 'ar.comment.resolve': 'Đã xử lý', 'ar.comment.resolved': 'Đã đánh dấu xử lý bình luận', 'ar.comment.reply': 'Đã gửi phản hồi',
         'ar.meta.from': 'Được tạo từ', 'ar.meta.tasks': 'Task liên quan', 'ar.meta.history': 'Lịch sử', 'ar.meta.comments': 'Bình luận', 'ar.meta.none.src': 'Chưa liên kết tài liệu nguồn.', 'ar.meta.none.tasks': 'Chưa có task liên quan.', 'ar.meta.none.comments': 'Không có bình luận đang mở.',
-        'ar.meta.type': 'Chi tiết', 'ar.meta.used': 'Được dùng bởi tài liệu', 'ar.meta.generated': 'Tạo bởi',
-        'ar.src.type': 'Loại', 'ar.src.size': 'Dung lượng', 'ar.src.uploaded': 'Tải lên', 'ar.src.status': 'Trạng thái', 'ar.src.download': 'Tải xuống', 'ar.src.reindex': 'Lập chỉ mục lại', 'ar.src.genfrom': 'Tạo tài liệu từ nguồn này', 'ar.src.reindexing': 'Đang lập chỉ mục lại {n}…',
-        'ar.src.extracted': 'Văn bản trích xuất', 'ar.src.transcript': 'Bản ghi lời thoại', 'ar.src.pages': '{n} trang', 'ar.src.min': '{n} phút', 'ar.src.sheet': 'Xem trước bảng tính',
-        'ar.up.title': 'Tải lên tài liệu nguồn', 'ar.up.drop': 'Kéo thả file vào đây hoặc bấm để chọn', 'ar.up.hint': 'PDF, DOCX, XLSX, MD, TXT, âm thanh (m4a, mp3) — tối đa 200 MB mỗi file', 'ar.up.go': 'Tải lên & lập chỉ mục', 'ar.up.none': 'Hãy chọn ít nhất một file', 'ar.up.done': 'Đã tải lên {n} file — đang lập chỉ mục cho Trợ lý…', 'ar.up.note': 'File được sao chép vào dự án và lập chỉ mục cục bộ; âm thanh được CLI đã kết nối chuyển thành văn bản.',
+        'ar.meta.type': 'Chi tiết', 'ar.meta.generated': 'Tạo bởi',
         'ar.gen.title': 'Tạo tài liệu', 'ar.gen.tpl': 'Mẫu', 'ar.gen.name': 'Tiêu đề', 'ar.gen.sources': 'Nguồn & ngữ cảnh', 'ar.gen.cli': 'CLI & model', 'ar.gen.instr': 'Hướng dẫn thêm (tuỳ chọn)', 'ar.gen.instr.ph': 'VD: tập trung vào yêu cầu phía merchant, giữ dưới 4 trang…', 'ar.gen.go': 'Tạo', 'ar.gen.lang': 'Ngôn ngữ',
         'ar.gen.s1': 'Đọc {n} nguồn', 'ar.gen.s2': 'Lập dàn ý các phần', 'ar.gen.s3': 'Soạn nội dung', 'ar.gen.s4': 'Tự rà soát & kiểm tra nhất quán', 'ar.gen.s5': 'Lưu tài liệu ở trạng thái Draft',
         'ar.gen.running': 'Đang chạy {cli} với ngữ cảnh của dự án…', 'ar.gen.done': 'Đã tạo “{t}” ở trạng thái Draft', 'ar.gen.note': 'Tạo bởi {cli} · {model} từ {n} nguồn. Hãy xem lại trước khi duyệt.',
@@ -500,38 +470,8 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
         a.cm = (a.comments || []).map(c => Object.assign({ done: false }, c));
       }); }
 
-      /* sources */
-      const SRC_LOTUS = [
-        { id: 'rfp', kind: 'pdf', icon: 'file-text', name: 'RFP – Lotus Merchant Portal.pdf', size: '2.4 MB', meta: 38, date: '2026-08-12', by: 'ME', used: ['brd', 'scope', 'sow', 'c4'], pv: { type: 'text', paras: ['Lotus Financial Group invites proposals for a self-service Merchant Portal supporting onboarding, KYC submission, settlement statements and API webhooks.', '4.1 The portal shall validate merchant business licenses against the national registry before an application can be approved.', '5.0 Access shall be role-based. At minimum the roles Owner, Finance and Developer must be supported.', '6.0 Payout and dispute events shall be delivered to merchant endpoints with automatic retry.'] } },
-        { id: 'rec-kickoff', kind: 'audio', icon: 'audio-lines', name: 'Kickoff recording 2026-08-14.m4a', size: '46 MB', meta: 48, date: '2026-08-14', by: 'ME', used: ['meeting-kickoff', 'brd', 'scope'], pv: { type: 'audio', lines: [['00:41', 'Sponsor', 'Today onboarding a merchant takes nine days on average, mostly waiting on documents.'], ['03:12', 'Finance Ops', 'Finance reconciles settlements in spreadsheets every Monday. Fourteen people are involved.'], ['07:55', 'Compliance', 'For KYC we must keep every decision for seven years, with who decided and when.'], ['12:30', 'You', 'Understood. We propose a self-service portal; Release 1 before the January peak.'], ['21:04', 'You', 'Let us separate must-haves from nice-to-haves so we can fix the first-release boundary.']] } },
-        { id: 'process-doc', kind: 'doc', icon: 'file-type-2', name: 'Current merchant onboarding process.docx', size: '312 KB', meta: 9, date: '2026-08-13', by: 'ME', used: ['brd', 'spec-kyc'], pv: { type: 'text', paras: ['Step 1. Merchant e-mails the sales representative with business license and tax ID.', 'Step 2. Operations re-types the data into the core system and the CRM.', 'Step 3. Compliance reviews the documents offline and replies by e-mail within 3–5 days.'] } },
-        { id: 'volume-forecast', kind: 'sheet', icon: 'sheet', name: 'Merchant volume forecast 2026.xlsx', size: '88 KB', meta: 3, date: '2026-08-16', by: 'ME', used: ['estimation', 'spec-settlement'], pv: { type: 'sheet', head: ['Quarter', 'Merchants', 'Tx / day', 'Settlement rows'], rows: [['Q3 2026', '1,020', '41,000', '310,000'], ['Q4 2026', '1,200', '58,000', '440,000'], ['Q1 2027', '1,480', '71,000', '520,000'], ['Q2 2027', '1,760', '89,000', '655,000']] } },
-        { id: 'ekyc-circular', kind: 'pdf', icon: 'file-text', name: 'State Bank e-KYC circular.pdf', size: '1.1 MB', meta: 22, date: '2026-08-15', by: 'ME', used: ['brd', 'spec-kyc'], pv: { type: 'text', paras: ['Article 7. Remote identification of corporate customers requires a verified legal representative and a valid business registration.', 'Article 11. Records of identification decisions shall be retained for no less than seven years.'] } },
-        { id: 'legacy-api', kind: 'pdf', icon: 'file-text', name: 'Legacy settlement API reference.pdf', size: '960 KB', meta: 41, date: '2026-08-20', by: 'ME', used: ['c4', 'adr-004', 'test-strategy'], pv: { type: 'text', paras: ['GET /v2/settlements?merchantId=&from=&to= returns paginated settlement batches (max 500 rows).', 'Authentication is by OAuth2 client credentials issued per partner. Rate limit: 60 requests per minute.'] } },
-        { id: 'interview-fin', kind: 'audio', icon: 'audio-lines', name: 'Finance Ops interview.m4a', size: '31 MB', meta: 32, date: '2026-08-18', by: 'ME', used: ['meeting-kickoff', 'brd', 'spec-settlement'], pv: { type: 'audio', lines: [['01:20', 'Finance Ops', 'The weekly reconciliation takes two analysts almost a full day.'], ['09:48', 'Finance Ops', 'Disputes arrive by phone; we have no single list of open disputes.'], ['17:05', 'You', 'If merchants could export statements themselves, would that remove most requests?'], ['17:21', 'Finance Ops', 'Yes, CSV and Excel would cover almost everything.']] } },
-      ];
-
       /* ================= per-project datasets (lifecycle states) ================= */
-      const mkSrc = (id, kind, name, size, meta, date, grp, paras, used) => ({ id, kind, icon: { pdf: 'file-text', doc: 'file-type-2', sheet: 'sheet', audio: 'audio-lines', transcript: 'captions', md: 'notebook-pen', image: 'image' }[kind], name, size, meta, date, by: 'ME', used: used || [], grp,
-        pv: kind === 'sheet' ? { type: 'sheet', head: paras[0], rows: paras.slice(1) } : (kind === 'audio' || kind === 'transcript') ? { type: 'audio', lines: paras } : { type: 'text', paras } });
-      const lines = (...a) => a;
-
-      /* ---------- Saigon Logistics TMS: Initial just started — sources only, nothing generated ---------- */
-      const SRC_SAIGON = [
-        mkSrc('rfp', 'pdf', 'RFP – Transport Management System.pdf', '1.8 MB', 26, '2026-11-17', 'docs', ['Saigon Logistics Co. invites proposals for a Transport Management System covering order intake, dispatch, trip tracking and proof of delivery.', 'Scope of the pilot: 140 trucks across three depots (Ho Chi Minh City, Da Nang, Hanoi). Integration with the existing ERP is expected.', 'Timeline: pilot decision by Q1 2027.']),
-        mkSrc('dispatch-xlsx', 'sheet', 'Current dispatch process.xlsx', '214 KB', 4, '2026-11-18', 'docs', [['Depot', 'Trucks', 'Trips / day', 'Dispatchers'], ['Ho Chi Minh City', '78', '112', '6'], ['Da Nang', '31', '38', '2'], ['Hanoi', '31', '44', '3']]),
-        mkSrc('intro-call', 'transcript', 'Intro call transcript.vtt', '58 KB', 42, '2026-11-19', 'meet', lines(['00:35', 'Ops Director', 'We assign trucks by phone and Excel. Double-bookings happen several times a week.'], ['06:10', 'Ops Director', 'Customers call the dispatch desk all day to ask where their goods are.'], ['14:22', 'You', 'How many trucks and depots are we talking about for Release 1?'], ['14:40', 'Ops Director', 'About 140 trucks across three depots: Ho Chi Minh City, Da Nang and Hanoi.'], ['29:05', 'You', 'Let us schedule a workshop with the dispatch team to walk through a real day.'])),
-      ];
-
       /* ---------- VietHealth Telemedicine: scoping ---------- */
-      const SRC_VH = [
-        mkSrc('ops-overview', 'pdf', 'Clinic operations overview.pdf', '3.1 MB', 18, '2026-10-26', 'docs', ['VietHealth operates 12 clinics in Ho Chi Minh City with about 85 doctors and 1,900 consultations per day in clinic.', 'Front-desk registration and waiting are the main sources of patient complaints (average wait: 25 minutes).'], ['brd']),
-        mkSrc('journey-map', 'image', 'Patient journey map.png', '1.2 MB', 1, '2026-10-27', 'docs', ['Journey map (summary): book appointment, receive reminder, check in, wait, consult, receive prescription, pay, follow-up.', 'Pain points marked: waiting time, prescription collection, missed follow-ups for chronic patients.'], ['brd', 'meeting-notes']),
-        mkSrc('his-spec', 'doc', 'Current HIS integration spec.docx', '640 KB', 24, '2026-10-30', 'docs', ['The HIS exposes a REST read API for patient demographics, visit history and lab results (OAuth2 client credentials).', 'Write access for visit notes is not documented. Vendor contact for integration: HIS support desk.'], ['brd', 'scope']),
-        mkSrc('kickoff-vtt', 'transcript', 'Kickoff transcript.vtt', '71 KB', 52, '2026-10-28', 'meet', lines(['02:10', 'Sponsor', 'We want patients to see a doctor without travelling to the clinic for follow-ups.'], ['11:45', 'Medical director', 'Chronic-care follow-ups are where we lose patients; 30% skip them.'], ['23:20', 'You', 'Patient data must stay in Vietnam, correct?'], ['23:31', 'IT lead', 'Yes, Decree 13 applies, and our HIS is on premises.']), ['meeting-notes']),
-        mkSrc('workshop-m4a', 'audio', 'Clinical workflow workshop.m4a', '88 MB', 95, '2026-11-04', 'meet', lines(['05:12', 'Medical director', 'First visits stay in the clinic. Video is for follow-ups.'], ['31:40', 'Clinic ops lead', 'Doctors need the patient history in front of them during the call.'], ['58:03', 'Medical director', 'A doctor must sign every prescription. We need a paper fallback.']), ['meeting-notes', 'brd']),
-        mkSrc('itsec-notes', 'md', 'IT security session notes.md', '9 KB', 2, '2026-11-18', 'meet', ['Attendees: IT security & compliance lead, clinic operations lead.', 'Records stay in Vietnam and every access is logged. MFA for doctors and staff. Security review of the video provider before signing.', 'Insights not extracted yet.'], []),
-      ];
       const ART_VH = [
         { id: 'meeting-notes', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff & clinical workshop', src: ['kickoff-vtt', 'workshop-m4a', 'journey-map'], tasks: [],
           vers: [['AI', '2026-10-30', 'Generated from the kickoff transcript'], ['AI', '2026-11-05', 'Added the clinical workflow workshop'], ['ME', '2026-11-12', 'Confirmed action items with the client']],
@@ -559,15 +499,6 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
       ];
 
       /* ---------- Mekong Retail: Initial done, Scaffolding in progress ---------- */
-      const SRC_MK = [
-        mkSrc('rfp', 'pdf', 'RFP – Mekong Omnichannel.pdf', '2.9 MB', 34, '2026-07-15', 'docs', ['Mekong Retail JSC seeks to unify stock, orders and loyalty across 60 stores, the web shop and the mobile app.', 'The existing Spring Boot platform must be extended, not replaced.'], ['brd', 'scope', 'sow']),
-        mkSrc('arch-overview', 'pdf', 'Current architecture overview.pdf', '1.4 MB', 29, '2026-08-19', 'docs', ['Order and inventory services run as a Java 21 / Spring Boot monolith on Azure. Stock sync with stores is a nightly batch.', 'The POS is vendor-managed and exposes REST endpoints for stock decrements and loyalty lookup. No push events.'], ['c4', 'adr-001', 'adr-004']),
-        mkSrc('pos-erp-spec', 'doc', 'POS and ERP integration spec.docx', '780 KB', 18, '2026-08-20', 'docs', ['POST /stock/decrement and GET /loyalty/{customerId} are the only supported POS endpoints. Rate limit: 50 requests per second.', 'ERP posts purchase orders nightly through SFTP.'], ['brd', 'adr-004']),
-        mkSrc('store-process', 'doc', 'Store operations process.docx', '420 KB', 11, '2026-08-05', 'docs', ['Click-and-collect orders are printed at 08:00 and 14:00, picked by store staff and held for three days.'], ['brd', 'scope']),
-        mkSrc('stock-sheet', 'sheet', 'Stock sync volumes 2026.xlsx', '96 KB', 3, '2026-08-21', 'docs', [['Month', 'SKUs', 'Stock events / day', 'Peak factor'], ['Aug 2026', '48,000', '420,000', '1.4x'], ['Oct 2026', '52,000', '510,000', '1.6x'], ['Nov 2026 (forecast)', '55,000', '1,500,000', '3.0x']], ['adr-004', 'estimation']),
-        mkSrc('kickoff-m4a', 'audio', 'Kickoff recording 2026-07-21.m4a', '52 MB', 55, '2026-07-21', 'meet', lines(['03:10', 'Head of omnichannel', 'Eight percent of our online orders are cancelled because the stock was wrong.'], ['19:44', 'Store ops lead', 'Store staff cannot see online reservations when they serve walk-in customers.'], ['41:12', 'You', 'So we extend the platform instead of rebuilding it, correct?'], ['41:25', 'Head of omnichannel', 'Correct. Phase 1 must be live before the mid-year sale.']), ['meeting-notes', 'brd']),
-        mkSrc('store-interview', 'audio', 'Store operations interview.m4a', '36 MB', 40, '2026-08-05', 'meet', lines(['02:30', 'Store ops lead', 'We pick click-and-collect orders from printed lists twice a day.'], ['17:05', 'Store ops lead', 'A tablet with a pick list and a two-hour pickup promise would change our day.']), ['brd']),
-      ];
       const ART_MK = [
         { id: 'meeting-notes', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff 2026-07-21', src: ['kickoff-m4a', 'store-interview'], tasks: [],
           vers: [['AI', '2026-07-23', 'Generated from the kickoff recording'], ['ME', '2026-07-30', 'Added store operations interview and action owners']],
@@ -618,14 +549,6 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
       ];
 
       /* ---------- Atlas HR Suite: full lifecycle incl. SDLC ---------- */
-      const SRC_AT = [
-        mkSrc('process-map', 'pdf', 'Atlas HR process map.pdf', '2.2 MB', 21, '2026-01-13', 'docs', ['Core HR, leave, attendance, payroll and onboarding processes as run today, with owners and handoffs.', 'Employee data is split across three spreadsheets and the legacy HR tool.'], ['brd', 'scope']),
-        mkSrc('data-dict', 'sheet', 'Legacy HR tool data dictionary.xlsx', '180 KB', 6, '2026-01-27', 'docs', [['Entity', 'Fields', 'Records', 'Quality'], ['Employee', '64', '2,412', 'Good'], ['Contract', '28', '3,106', 'Fair'], ['Leave balance', '12', '2,412', 'Fair'], ['Payroll history', '41', '28,900', 'Good']], ['brd', 'repo-structure']),
-        mkSrc('napas', 'pdf', 'NAPAS bank file format v3.pdf', '740 KB', 16, '2026-02-16', 'docs', ['Header, detail and trailer records; amounts in VND without decimals; maximum 5,000 detail lines per file.', 'Files are rejected if the trailer checksum does not match the sum of detail amounts.'], ['brd', 'spec-payroll']),
-        mkSrc('closing', 'doc', 'Payroll closing checklist.docx', '210 KB', 5, '2026-02-17', 'docs', ['Days 1 to 3: collect attendance and leave. Days 4 to 6: calculate and review. Day 7: bank file and payment.'], ['estimation', 'spec-payroll']),
-        mkSrc('kickoff-m4a', 'audio', 'Kickoff recording 2026-01-12.m4a', '41 MB', 45, '2026-01-12', 'meet', lines(['02:15', 'HR director', 'Payroll errors reach about three percent of employees every month.'], ['15:40', 'IT lead', 'Salary and identity data must not leave the Atlas Group network.']), ['meeting-notes', 'brd']),
-        mkSrc('payroll-ws', 'audio', 'Leave and attendance interview.m4a', '28 MB', 35, '2026-02-02', 'meet', lines(['04:22', 'HR director', 'When an approver is on leave the whole chain stops.']), ['spec-leave']),
-      ];
       const ART_AT = [
         { id: 'meeting-notes', ph: 'initial', icon: 'mic', st: 'approved', title: 'Meeting notes – Kickoff 2026-01-12', src: ['kickoff-m4a'], tasks: [],
           vers: [['AI', '2026-01-14', 'Generated from the kickoff recording'], ['ME', '2026-01-16', 'Added action owners']],
@@ -679,20 +602,19 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
       /* ---------- selection per project ---------- */
       const PID = PC.project().id;
       const SETS = {
-        'saigon-tms': { art: [], src: SRC_SAIGON, sel: null },
-        'viethealth': { art: ART_VH, src: SRC_VH, sel: 'brd' },
-        'mekong': { art: ART_MK, src: SRC_MK, sel: 'adr-004' },
-        'lotus-pay': { art: ART_LOTUS, src: SRC_LOTUS, sel: 'spec-settlement' },
-        'atlas-hr': { art: ART_AT, src: SRC_AT, sel: 'release-notes' },
+        'saigon-tms': { art: [], sel: null },
+        'viethealth': { art: ART_VH, sel: 'brd' },
+        'mekong': { art: ART_MK, sel: 'adr-004' },
+        'lotus-pay': { art: ART_LOTUS, sel: 'spec-settlement' },
+        'atlas-hr': { art: ART_AT, sel: 'release-notes' },
       };
       const SET = SETS[PID] || SETS['lotus-pay'];
-      const ART = SET.art, SRC = SET.src;
-      SRC_LOTUS.forEach(s => { s.grp = (s.kind === 'audio') ? 'meet' : 'docs'; });
+      const ART = SET.art, SRC = PC.sources();
       finalize(ART);
       const byId = id => ART.find(a => a.id === id);
 
-      const KIND_TILE = { pdf: 'pdf', doc: 'doc', sheet: 'sheet', audio: 'audio', md: 'md', transcript: 'md' };
       const srcById = id => SRC.find(s => s.id === id);
+      const srcTile = (s, px) => `<span class="file-tile ${PC.srcKind(s.kind).tile}" style="width:${px}px;height:${px}px"><i data-lucide="${PC.srcKind(s.kind).icon}" class="icon-sm"></i></span>`;
 
       const TPL = [
         { id: 'notes', icon: 'mic', ph: 'initial', name: 'Meeting notes', secs: ['Attendees', 'Key discussion points', 'Decisions', 'Action items'] },
@@ -707,7 +629,7 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
       ];
 
       /* ================= state ================= */
-      const state = { tab: 'artifacts', sel: SET.sel, ver: null, mode: 'preview', q: '', srcSel: SRC[0].id, closed: {}, draft: {}, meta: true, genSeq: 0 };
+      const state = { sel: SET.sel, ver: null, mode: 'preview', q: '', closed: {}, draft: {}, meta: true, genSeq: 0 };
       const cur = () => byId(state.sel);
       const PNAME = PC.project().name.split(' — ')[0];
       const verIdx = a => state.ver == null ? a.vers.length - 1 : state.ver;
@@ -779,23 +701,14 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
       function stBadge(st) { return `<span class="st-dot ${st}"></span>${PC.t('ar.st.' + st)}`; }
       function renderList() {
         const el = $('#lp-list'), q = state.q.trim().toLowerCase();
-        $('#cnt-art').textContent = ART.length; $('#cnt-src').textContent = SRC.length;
-        $$('.lp .tab').forEach(t => t.classList.toggle('is-active', t.dataset.tab === state.tab));
-        $('#lp-q').placeholder = PC.t(state.tab === 'artifacts' ? 'ar.search' : 'ar.search.src');
-        if (state.tab === 'artifacts') {
-          let html = '';
-          PH.forEach(ph => {
-            const items = ART.filter(a => a.ph === ph && (!q || a.title.toLowerCase().includes(q)));
-            if (!items.length) return;
-            html += `<div class="grp ph-c-${ph} ${state.closed[ph] && !q ? 'is-closed' : ''}"><button class="grp-h" data-grp="${ph}"><span class="pdot"></span>${PC.t('phase.' + ph)}<span class="count">${items.length}</span><i data-lucide="chevron-down" class="icon-sm chev"></i></button><div class="grp-items">
-              ${items.map(a => `<button class="it ${state.sel === a.id ? 'is-active' : ''}" data-id="${a.id}"><span class="file-tile ${a.icon === 'mic' ? 'audio' : ''}"><i data-lucide="${a.icon}" class="icon-sm"></i></span><span class="grow"><span class="t truncate" style="display:block">${esc(a.title)}</span><span class="s">v${a.vers.length}<span class="text-faint">·</span>${stBadge(a.st)}</span></span>${a.fresh ? `<span class="badge badge-purple new">${PC.t('ar.new')}</span>` : ''}</button>`).join('')}</div></div>`;
-          });
-          el.innerHTML = html || (!ART.length ? `<div class="lp-empty"><div class="empty-icon" style="margin:0 auto var(--space-3)"><i data-lucide="sparkles"></i></div><b style="display:block;color:var(--fg-strong);margin-bottom:4px">${PC.t('ar.empty.t')}</b>${PC.t('ar.empty.list')}<div style="margin-top:var(--space-3)"><button class="btn btn-ai btn-sm" data-first="1"><i data-lucide="sparkles"></i>${PC.t('ar.empty.cta')}</button></div></div>` : `<div class="lp-empty">${PC.t('ar.none')}</div>`);
-        } else {
-          const items = SRC.filter(s => !q || s.name.toLowerCase().includes(q));
-          const srcIt = s => `<button class="it src-it ${state.srcSel === s.id ? 'is-active' : ''}" data-src-id="${s.id}"><span class="file-tile ${KIND_TILE[s.kind] || ''}"><i data-lucide="${s.icon}"></i></span><span class="grow"><span class="t truncate" style="display:block">${esc(s.name)}</span><span class="s">${s.size}<span class="text-faint">·</span>${s.indexing ? `<span class="spinner" style="width:10px;height:10px;border-width:1.5px"></span>${PC.t('ar.indexing')}` : PC.t('ar.used', { n: s.used.length })}</span></span></button>`;
-          el.innerHTML = items.length ? [['docs', 'ar.grp.docs'], ['meet', 'ar.grp.meet']].map(([g, k]) => { const its = items.filter(x => (x.grp || 'docs') === g); return its.length ? `<div class="lp-sub">${PC.t(k)}<span>${its.length}</span></div>` + its.map(srcIt).join('') : ''; }).join('') : `<div class="lp-empty">${PC.t('ar.none')}</div>`;
-        }
+        let html = '';
+        PH.forEach(ph => {
+          const items = ART.filter(a => a.ph === ph && (!q || a.title.toLowerCase().includes(q)));
+          if (!items.length) return;
+          html += `<div class="grp ph-c-${ph} ${state.closed[ph] && !q ? 'is-closed' : ''}"><button class="grp-h" data-grp="${ph}"><span class="pdot"></span>${PC.t('phase.' + ph)}<span class="count">${items.length}</span><i data-lucide="chevron-down" class="icon-sm chev"></i></button><div class="grp-items">
+            ${items.map(a => `<button class="it ${state.sel === a.id ? 'is-active' : ''}" data-id="${a.id}"><span class="file-tile ${a.icon === 'mic' ? 'audio' : ''}"><i data-lucide="${a.icon}" class="icon-sm"></i></span><span class="grow"><span class="t truncate" style="display:block">${esc(a.title)}</span><span class="s">v${a.vers.length}<span class="text-faint">·</span>${stBadge(a.st)}</span></span>${a.fresh ? `<span class="badge badge-purple new">${PC.t('ar.new')}</span>` : ''}</button>`).join('')}</div></div>`;
+        });
+        el.innerHTML = html || (!ART.length ? `<div class="lp-empty"><div class="empty-icon" style="margin:0 auto var(--space-3)"><i data-lucide="sparkles"></i></div><b style="display:block;color:var(--fg-strong);margin-bottom:4px">${PC.t('ar.empty.t')}</b>${PC.t('ar.empty.list')}<div style="margin-top:var(--space-3)"><button class="btn btn-ai btn-sm" data-first="1"><i data-lucide="sparkles"></i>${PC.t('ar.empty.cta')}</button></div></div>` : `<div class="lp-empty">${PC.t('ar.none')}</div>`);
         PC.refresh(el);
       }
 
@@ -804,13 +717,12 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
         return `<div class="segmented" id="seg">${[['preview', 'eye'], ['edit', 'file-pen-line'], ['diff', 'git-compare']].map(([m, ic]) => `<button data-mode="${m}" title="${PC.t('ar.mode.' + m)}" class="${state.mode === m ? 'is-active' : ''}"><i data-lucide="${ic}" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.mode.' + m)}</span></button>`).join('')}</div>`;
       }
       function renderCenter() {
-        if (state.tab === 'sources') return renderSource();
         if (!cur()) {
           const cp0 = $('#cp');
           cp0.innerHTML = `<div class="cp-body"><div class="ar-empty"><div class="box"><span class="empty-icon"><i data-lucide="sparkles"></i></span><h3>${PC.t('ar.empty.t')}</h3><p class="text-muted" style="margin:0">${PC.t('ar.empty.d')}</p>
-            <div class="row gap-2 wrap" style="justify-content:center"><button class="btn btn-ai" id="btn-first"><i data-lucide="sparkles"></i>${PC.t('ar.empty.cta')}</button><button class="btn btn-secondary" id="btn-up-empty"><i data-lucide="upload"></i>${PC.t('ar.upload')}</button></div>
+            <div class="row gap-2 wrap" style="justify-content:center"><button class="btn btn-ai" id="btn-first"><i data-lucide="sparkles"></i>${PC.t('ar.empty.cta')}</button><a class="btn btn-secondary" href="sources.html?upload=1" style="text-decoration:none"><i data-lucide="upload"></i>${PC.t('ar.upload')}</a></div>
             <div class="rec"><span class="file-tile audio"><i data-lucide="mic" class="icon-sm"></i></span><span class="grow"><b>${PC.t('ar.empty.rec')}</b><span class="text-xs text-subtle" style="display:block">${PC.t('ar.empty.rec.d')}</span></span></div></div></div></div>`;
-          PC.refresh(cp0); $('#btn-first').onclick = () => openGenerate(SRC.length ? SRC[SRC.length - 1].id : null, 'notes'); $('#btn-up-empty').onclick = openUpload; return;
+          PC.refresh(cp0); $('#btn-first').onclick = () => openGenerate(SRC.length ? SRC[SRC.length - 1].id : null, 'notes'); return;
         }
         const a = cur(), vi = verIdx(a), v = a.vers[vi], latest = vi === a.vers.length - 1, dirty = latest && state.draft[a.id] != null && state.draft[a.id] !== a.vers[a.vers.length - 1].md;
         const cp = $('#cp');
@@ -935,89 +847,36 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
         setTimeout(() => PC.toast(PC.t('ar.export.done', { n: esc(name) }), { tone: 'success' }), 1400);
       }
 
-      /* ---- sources viewer ---- */
-      function renderSource() {
-        const s = srcById(state.srcSel), cp = $('#cp');
-        const kindLabel = { pdf: 'PDF', doc: 'DOCX', sheet: 'XLSX', audio: 'Audio (m4a)', md: 'Markdown', transcript: 'Transcript (VTT)', image: 'Image (PNG)' }[s.kind] || s.kind;
-        let pv = '';
-        if (s.pv.type === 'text') pv = `<div class="page"><h4>${PC.t('ar.src.extracted')}</h4>${s.pv.paras.map(p => `<p>${esc(p)}</p>`).join('')}</div>`;
-        else if (s.pv.type === 'sheet') pv = `<div class="page"><h4>${PC.t('ar.src.sheet')}</h4><div class="table-wrap"><table class="table"><thead><tr>${s.pv.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${s.pv.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
-        else pv = `${s.kind === 'audio' ? `<div class="wave">${Array.from({ length: 84 }, (_, i) => `<i class="${i < 22 ? '' : 'p'}" style="height:${12 + Math.abs(Math.sin(i * 1.7) * 30 + Math.cos(i * .6) * 12)}px"></i>`).join('')}</div>` : ''}<div class="page"><h4>${PC.t('ar.src.transcript')}</h4><div class="tx">${s.pv.lines.map(l => `<span class="ts">${l[0]}</span><span class="sp">${l[1]}</span><span>${esc(l[2])}</span>`).join('')}</div></div>`;
-        cp.innerHTML = `<div class="cp-head" style="padding-bottom:var(--space-3)"><div class="row between gap-3"><div class="cp-title"><span class="file-tile ${KIND_TILE[s.kind] || ''}"><i data-lucide="${s.icon}"></i></span><div class="grow" style="min-width:0"><h3 class="truncate">${esc(s.name)}</h3><div class="cp-sub"><span>${kindLabel}</span><span class="text-faint">·</span><span>${s.kind === 'audio' || s.kind === 'transcript' ? PC.t('ar.src.min', { n: s.meta }) : s.kind === 'image' ? '—' : PC.t('ar.src.pages', { n: s.meta })}</span></div></div></div>
-          <div class="row gap-2"><button class="btn btn-secondary btn-sm" id="s-dl"><i data-lucide="download" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.src.download')}</span></button><button class="btn btn-secondary btn-sm" id="s-re"><i data-lucide="refresh-cw" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.src.reindex')}</span></button><button class="btn btn-ai btn-sm" id="s-gen"><i data-lucide="sparkles" class="icon-sm"></i><span class="btn-lbl">${PC.t('ar.src.genfrom')}</span></button></div></div></div>
-          <div class="cp-body"><div class="sv"><div class="sv-meta"><div><div class="l">${PC.t('ar.src.type')}</div><div class="v">${kindLabel}</div></div><div><div class="l">${PC.t('ar.src.size')}</div><div class="v">${s.size}</div></div><div><div class="l">${PC.t('ar.src.uploaded')}</div><div class="v">${longDate(s.date)} · ${esc(who(s.by))}</div></div><div><div class="l">${PC.t('ar.src.status')}</div><div class="v">${s.indexing ? PC.t('ar.indexing') : '<span class="text-success">● ' + PC.t('ar.indexed') + '</span>'}</div></div></div>
-          ${pv}<div class="m-h" style="margin-top:var(--space-5)">${PC.t('ar.meta.used')}</div><div class="row wrap gap-2">${s.used.map(id => byId(id)).filter(Boolean).map(a => `<button class="btn btn-secondary btn-sm" data-open="${a.id}"><i data-lucide="${a.icon}" class="icon-sm"></i>${esc(a.title)}</button>`).join('') || `<span class="m-empty">—</span>`}</div></div></div>`;
-        PC.refresh(cp);
-        $('#s-dl').onclick = () => PC.toast(PC.t('ar.export.done', { n: esc(s.name) }), { tone: 'success' });
-        $('#s-re').onclick = () => { PC.toast(PC.t('ar.src.reindexing', { n: esc(s.name) }), { icon: 'refresh-cw' }); };
-        $('#s-gen').onclick = () => openGenerate(s.id);
-        $$('[data-open]', cp).forEach(b => b.onclick = () => selectArt(b.dataset.open));
-      }
-
       /* ================= META PANE ================= */
       function renderMeta() {
         const el = $('#meta');
-        if (state.tab === 'sources') {
-          const s = srcById(state.srcSel);
-          el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.used')}</div>${s.used.map(id => byId(id)).filter(Boolean).map(a => `<button class="m-row" data-open="${a.id}"><span class="file-tile"><i data-lucide="${a.icon}" class="icon-sm"></i></span><span class="grow"><span class="truncate" style="display:block">${esc(a.title)}</span><span class="s">${PC.t('phase.' + a.ph)} · v${a.vers.length}</span></span></button>`).join('')}</div>`;
-        } else {
-          const a = cur();
-          if (!a) { el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.type')}</div><div class="m-empty">${PC.t('ar.empty.meta')}</div></div>`; PC.refresh(el); return; }
-          const vi = verIdx(a);
-          const open = a.cm.filter(c => !c.done);
-          el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.from')}<span class="badge">${a.src.length}</span></div>${a.src.length ? a.src.map(id => srcById(id)).map(s => `<button class="m-row" data-src-open="${s.id}"><span class="file-tile ${KIND_TILE[s.kind] || ''}"><i data-lucide="${s.icon}" class="icon-sm"></i></span><span class="grow"><span class="truncate" style="display:block">${esc(s.name)}</span><span class="s">${s.size}</span></span></button>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.src')}</div>`}</div>
-            <div class="m-sec"><div class="m-h">${PC.t('ar.meta.tasks')}<span class="badge">${a.tasks.length}</span></div>${a.tasks.length ? a.tasks.map(t => `<a class="m-row" href="task.html"><span class="file-tile" style="background:var(--accent-teal-soft);color:var(--accent-teal-fg)"><i data-lucide="square-check-big" class="icon-sm"></i></span><span class="grow"><span class="truncate" style="display:block">${esc(t[1])}</span><span class="s mono">${t[0]}</span></span></a>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.tasks')}</div>`}</div>
-            <div class="m-sec"><div class="m-h">${PC.t('ar.meta.comments')}<span class="badge">${open.length}</span></div>${open.length ? open.map(c => `<div class="cm"><b>${who(c.who)}</b><q>${esc(c.t)}</q></div>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.comments')}</div>`}</div>
-            <div class="m-sec" style="border-bottom:0"><div class="m-h">${PC.t('ar.meta.history')}</div><ul class="hist">${a.vers.slice().reverse().map(v => `<li class="${v.who === 'AI' ? 'ai' : ''} ${v.v - 1 === vi ? 'cur' : ''}" data-hv="${v.v - 1}"><div class="t">v${v.v} <span class="text-subtle" style="font-weight:400">· ${byLine(v.who)}</span></div><div class="s">${esc(v.note)}</div><div class="s">${longDate(v.date)}</div></li>`).join('')}</ul></div>`;
-        }
+        const a = cur();
+        if (!a) { el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.type')}</div><div class="m-empty">${PC.t('ar.empty.meta')}</div></div>`; PC.refresh(el); return; }
+        const vi = verIdx(a);
+        const open = a.cm.filter(c => !c.done);
+        el.innerHTML = `<div class="m-sec"><div class="m-h">${PC.t('ar.meta.from')}<span class="badge">${a.src.length}</span></div>${a.src.length ? a.src.map(id => srcById(id)).filter(Boolean).map(s => `<a class="m-row" href="sources.html#${s.id}">${srcTile(s, 26)}<span class="grow"><span class="truncate" style="display:block">${esc(s.name)}</span><span class="s">${esc(s.size)}</span></span></a>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.src')}</div>`}</div>
+          <div class="m-sec"><div class="m-h">${PC.t('ar.meta.tasks')}<span class="badge">${a.tasks.length}</span></div>${a.tasks.length ? a.tasks.map(t => `<a class="m-row" href="task.html"><span class="file-tile" style="background:var(--accent-teal-soft);color:var(--accent-teal-fg)"><i data-lucide="square-check-big" class="icon-sm"></i></span><span class="grow"><span class="truncate" style="display:block">${esc(t[1])}</span><span class="s mono">${t[0]}</span></span></a>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.tasks')}</div>`}</div>
+          <div class="m-sec"><div class="m-h">${PC.t('ar.meta.comments')}<span class="badge">${open.length}</span></div>${open.length ? open.map(c => `<div class="cm"><b>${who(c.who)}</b><q>${esc(c.t)}</q></div>`).join('') : `<div class="m-empty">${PC.t('ar.meta.none.comments')}</div>`}</div>
+          <div class="m-sec" style="border-bottom:0"><div class="m-h">${PC.t('ar.meta.history')}</div><ul class="hist">${a.vers.slice().reverse().map(v => `<li class="${v.who === 'AI' ? 'ai' : ''} ${v.v - 1 === vi ? 'cur' : ''}" data-hv="${v.v - 1}"><div class="t">v${v.v} <span class="text-subtle" style="font-weight:400">· ${byLine(v.who)}</span></div><div class="s">${esc(v.note)}</div><div class="s">${longDate(v.date)}</div></li>`).join('')}</ul></div>`;
         PC.refresh(el);
-        $$('[data-open]', el).forEach(b => b.onclick = () => selectArt(b.dataset.open));
-        $$('[data-src-open]', el).forEach(b => b.onclick = () => selectSource(b.dataset.srcOpen));
         $$('[data-hv]', el).forEach(b => b.onclick = () => { const a = cur(), i = +b.dataset.hv; state.ver = i === a.vers.length - 1 ? null : i; renderAll(); });
       }
 
       /* ================= selection & assistant context ================= */
       function setAssistant() {
         const ph = PC.project().name.split(' — ')[0];
-        if (state.tab === 'artifacts') {
-          const a = cur();
-          if (!a) { PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: 'paperclip', label: PC.t('ar.empty.ctx', { n: SRC.length }) }, { icon: 'cpu', label: 'claude-opus-5-5' }]); PC.assistant.setSuggestions([PC.t('ar.sg.first1'), PC.t('ar.sg.first2')]); return; }
-          PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: a.icon, label: a.title + ' · v' + a.vers.length }, { icon: 'cpu', label: 'claude-opus-5-5' }]);
-          PC.assistant.setSuggestions([PC.t('ar.sg.tighten'), PC.t('ar.sg.ac'), PC.t('ar.sg.vi'), PC.t(a.id === 'brd' ? 'ar.sg.trace' : 'ar.sg.summ')]);
-        } else {
-          const s = srcById(state.srcSel);
-          PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: s.icon, label: s.name }, { icon: 'cpu', label: 'claude-opus-5-5' }]);
-          PC.assistant.setSuggestions([PC.t('ar.src.genfrom'), PC.t('ar.sg.summ')]);
-        }
+        const a = cur();
+        if (!a) { PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: 'paperclip', label: PC.t('ar.empty.ctx', { n: SRC.length }) }, { icon: 'cpu', label: 'claude-opus-5-5' }]); PC.assistant.setSuggestions([PC.t('ar.sg.first1'), PC.t('ar.sg.first2')]); return; }
+        PC.assistant.setContext([{ icon: 'folder', label: ph }, { icon: a.icon, label: a.title + ' · v' + a.vers.length }, { icon: 'cpu', label: 'claude-opus-5-5' }]);
+        PC.assistant.setSuggestions([PC.t('ar.sg.tighten'), PC.t('ar.sg.ac'), PC.t('ar.sg.vi'), PC.t(a.id === 'brd' ? 'ar.sg.trace' : 'ar.sg.summ')]);
       }
       function renderAll() { renderList(); renderCenter(); renderMeta(); setAssistant(); }
-      function selectArt(id, fromUrl) { if (!byId(id)) return; if (state.mode === 'edit') captureEdit(cur()); state.tab = 'artifacts'; state.sel = id; state.ver = null; state.q = ''; $('#lp-q').value = ''; state.closed[byId(id).ph] = false; if (!fromUrl) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ } } renderAll(); }
-      function selectSource(id) { state.tab = 'sources'; state.srcSel = id; state.q = ''; $('#lp-q').value = ''; renderAll(); }
+      function selectArt(id, fromUrl) { if (!byId(id)) return; if (state.mode === 'edit') captureEdit(cur()); state.sel = id; state.ver = null; state.q = ''; $('#lp-q').value = ''; state.closed[byId(id).ph] = false; if (!fromUrl) { try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ } } renderAll(); }
       function toggleMeta() { state.meta = !state.meta; $('#ar').classList.toggle('meta-open', state.meta); }
-
-      /* ================= UPLOAD modal ================= */
-      function openUpload() {
-        let files = [];
-        const m = PC.modal({ title: PC.t('ar.up.title'), width: 560,
-          body: `<div class="dropzone" id="dz"><i data-lucide="cloud-upload" class="icon-lg"></i><b style="color:var(--fg-default);font-weight:500">${PC.t('ar.up.drop')}</b><span class="hint">${PC.t('ar.up.hint')}</span></div><input type="file" id="up-in" multiple hidden><div id="up-list"></div><p class="hint" style="margin-top:12px">${PC.t('ar.up.note')}</p>`,
-          actions: [{ label: PC.t('common.cancel'), kind: 'ghost' }, { label: PC.t('ar.up.go'), kind: 'primary', icon: 'upload', onClick: () => {
-            if (!files.length) { PC.toast(PC.t('ar.up.none'), { tone: 'warning', icon: 'triangle-alert' }); return false; }
-            files.forEach(f => SRC.unshift(f)); state.tab = 'sources'; state.srcSel = files[0].id; renderAll(); PC.toast(PC.t('ar.up.done', { n: files.length }), { icon: 'upload' });
-            setTimeout(() => { files.forEach(f => { f.indexing = false; }); renderList(); if (state.tab === 'sources') renderCenter(); }, 2200);
-          } }] });
-        const dz = $('#dz', m.el), inp = $('#up-in', m.el), list = $('#up-list', m.el);
-        const kindOf = n => /\.pdf$/i.test(n) ? 'pdf' : /\.docx?$/i.test(n) ? 'doc' : /\.xlsx?$/i.test(n) ? 'sheet' : /\.(m4a|mp3|wav)$/i.test(n) ? 'audio' : 'doc';
-        const add = names => { names.forEach(n => { const k = kindOf(n); files.push({ id: 'up-' + Date.now() + Math.random().toString(16).slice(2, 6), kind: k, icon: k === 'audio' ? 'audio-lines' : k === 'sheet' ? 'sheet' : 'file-text', name: n, size: (Math.random() * 3 + .2).toFixed(1) + ' MB', meta: k === 'audio' ? 12 : 8, date: '2026-11-23', by: 'ME', used: [], grp: k === 'audio' ? 'meet' : 'docs', indexing: true, pv: k === 'audio' ? { type: 'audio', lines: [['00:05', 'Speaker 1', 'Transcribing…']] } : k === 'sheet' ? { type: 'sheet', head: ['A', 'B'], rows: [['…', '…']] } : { type: 'text', paras: ['Extracting text…'] } }); });
-          list.innerHTML = files.map(f => `<div class="up-file"><span class="file-tile ${KIND_TILE[f.kind] || ''}" style="width:28px;height:28px"><i data-lucide="${f.icon}" class="icon-sm"></i></span><span class="grow truncate">${esc(f.name)}</span><span class="text-xs text-subtle">${f.size}</span></div>`).join(''); PC.refresh(list); };
-        dz.onclick = () => inp.click();
-        inp.onchange = () => add(Array.from(inp.files).map(f => f.name));
-        ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('is-over'); }));
-        ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('is-over'); }));
-        dz.addEventListener('drop', e => add(Array.from(e.dataTransfer.files).map(f => f.name)));
-      }
 
       /* ================= GENERATE modal ================= */
       function openGenerate(srcPreset, tplId) {
+        const preset = srcPreset ? [].concat(srcPreset) : SRC.slice(0, 3).map(x => x.id);
         let tpl = TPL.find(t => t.id === (tplId || (ART.length ? 'brd' : 'notes')));
         const cli = PC.data.cli;
         const m = PC.modal({ title: PC.t('ar.gen.title'), width: 760,
@@ -1028,7 +887,7 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
               <div class="field"><label class="label">${PC.t('ar.gen.name')}</label><input class="input" id="g-title" value=""><div class="hint">${PC.t('ar.gen.lang')}: ${PC.lang === 'vi' ? 'Tiếng Việt' : 'English'}</div></div>
               <div class="field"><label class="label">${PC.t('ar.gen.cli')}</label><select class="select" id="g-cli">${cli.map(c => `<option value="${c.id}">${c.name} · ${c.model}</option>`).join('')}</select></div>
             </div>
-            <div class="field" style="margin-top:16px"><label class="label">${PC.t('ar.gen.sources')}</label><div class="chk-list" id="g-src">${SRC.map(s => `<label><input type="checkbox" value="${s.id}" ${(srcPreset ? s.id === srcPreset : SRC.slice(0, 3).some(x => x.id === s.id)) ? 'checked' : ''} style="accent-color:var(--brand)"><span class="file-tile ${KIND_TILE[s.kind] || ''}" style="width:22px;height:22px"><i data-lucide="${s.icon}" class="icon-sm"></i></span><span class="grow truncate">${esc(s.name)}</span><span class="text-xs text-subtle">${s.size}</span></label>`).join('')}</div></div>
+            <div class="field" style="margin-top:16px"><label class="label">${PC.t('ar.gen.sources')}</label><div class="chk-list" id="g-src">${SRC.filter(s => s.status !== 'failed').map(s => `<label><input type="checkbox" value="${s.id}" ${preset.includes(s.id) ? 'checked' : ''} style="accent-color:var(--brand)">${srcTile(s, 22)}<span class="grow truncate">${esc(s.name)}</span><span class="text-xs text-subtle">${s.size}</span></label>`).join('')}</div></div>
             <div class="field" style="margin-top:16px"><label class="label">${PC.t('ar.gen.instr')}</label><textarea class="textarea" id="g-ins" style="min-height:60px" placeholder="${esc(PC.t('ar.gen.instr.ph'))}"></textarea></div>
           </div>
           <div id="g-run" class="hidden"><div class="row gap-3"><span class="spinner" id="g-spin"></span><b id="g-run-t"></b></div><div class="progress progress-ai" style="margin-top:14px"><span id="g-bar" style="width:4%"></span></div><ul class="gen-steps" id="g-steps"></ul></div>`,
@@ -1053,28 +912,28 @@ Each Must requirement needs at least one passing e2e scenario and sign-off from 
             const md = buildMd(name, `> [!AI] ${PC.t('ar.gen.note', { cli: c.name, model: c.model, n: picked.length })}`, flat, 0);
             const a = { id, ph: tpl.ph, icon: tpl.icon, st: 'draft', title: name, src: picked.filter(x => srcById(x)), tasks: [], fresh: true, cm: [], vers: [{ v: 1, who: 'AI', date: 'now', note: 'Generated with ' + c.name + ' (' + c.model + ')', md }] };
             ART.push(a); picked.forEach(sid => { const s = srcById(sid); if (s) s.used.push(id); });
-            setTimeout(() => { m.close(); state.tab = 'artifacts'; state.q = ''; $('#lp-q').value = ''; state.closed[a.ph] = false; state.sel = id; state.ver = null; state.mode = 'preview'; renderAll(); PC.toast(PC.t('ar.gen.done', { t: esc(name) }), { icon: 'sparkles', tone: 'success' }); try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ } }, 500);
+            setTimeout(() => { m.close(); state.q = ''; $('#lp-q').value = ''; state.closed[a.ph] = false; state.sel = id; state.ver = null; state.mode = 'preview'; renderAll(); PC.toast(PC.t('ar.gen.done', { t: esc(name) }), { icon: 'sparkles', tone: 'success' }); try { history.replaceState(null, '', '#' + id); } catch (e) { /* file:// */ } }, 500);
           }
         }
       }
 
       /* ================= boot ================= */
       PC.onReady(() => {
-        const h = location.hash.slice(1); if (h && byId(h)) state.sel = h;
+        const h = location.hash.slice(1); if (h === 'sources') { location.replace('sources.html'); return; } if (h && byId(h)) state.sel = h;
         $('#lp-list').onclick = e => {
           const g = e.target.closest('[data-grp]'); if (g) { state.closed[g.dataset.grp] = !state.closed[g.dataset.grp]; renderList(); return; }
           const it = e.target.closest('[data-id]'); if (it) return selectArt(it.dataset.id);
           const fb = e.target.closest('[data-first]'); if (fb) return openGenerate(SRC.length ? SRC[SRC.length - 1].id : null, 'notes');
-          const sr = e.target.closest('[data-src-id]'); if (sr) selectSource(sr.dataset.srcId);
         };
-        $$('.lp .tab').forEach(t => t.onclick = () => { if (state.mode === 'edit' && state.tab === 'artifacts') captureEdit(cur()); state.tab = t.dataset.tab; state.q = ''; $('#lp-q').value = ''; renderAll(); });
         $('#lp-q').oninput = e => { state.q = e.target.value; renderList(); };
-        $('#btn-upload').onclick = openUpload; $('#btn-gen').onclick = () => openGenerate();
+        $('#btn-gen').onclick = () => openGenerate();
         // wide canvas: meta pane open by default; narrow: drawer starts closed
         const wrap = $('.ar-wrap'); let wasNarrow = null;
         const fit = () => { const narrow = wrap.clientWidth <= 1100; if (narrow !== wasNarrow) { wasNarrow = narrow; state.meta = !narrow; $('#ar').classList.toggle('meta-open', state.meta); } };
         fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(wrap);
         renderAll();
+        const gen = new URLSearchParams(location.search).get('gen');
+        if (gen) openGenerate(gen.split(',').filter(srcById));
       });
       window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h && byId(h) && h !== state.sel) selectArt(h, true); });
       document.addEventListener('pc:lang', () => { closeBar(); renderAll(); });

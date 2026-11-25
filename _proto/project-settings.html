@@ -288,7 +288,7 @@
         <section class="sec" id="storage" data-sec="storage">
           <div class="sec-head"><h2 data-i18n="ps.n.storage"></h2><p data-i18n="ps.storage.d"></p></div>
           <div class="card" style="overflow:hidden">
-            <div class="st-total"><span class="stat-value" id="st-total">412 MB</span><span class="text-xs text-subtle"><span data-i18n="ps.st.in"></span> <code data-bind="dir"></code></span></div>
+            <div class="st-total"><span class="stat-value" id="st-total">648 MB</span><span class="text-xs text-subtle"><span data-i18n="ps.st.in"></span> <code data-bind="dir"></code></span></div>
             <div class="st-bar" id="st-bar"></div>
             <div class="st-tree" id="st-tree"></div>
             <div class="srow" style="border-top:1px solid var(--border-subtle)"><div class="sinfo"><div class="slabel" data-i18n="ps.st.chat"></div><div class="sdesc" data-i18n="ps.st.chat.d"></div></div><div class="sctl"><span class="badge" id="chat-size">6 MB · 38 chats</span><button class="btn btn-secondary btn-sm" data-act="clear-chats"><i data-lucide="trash-2"></i><span data-i18n="ps.st.chat.clear"></span></button></div></div>
@@ -363,7 +363,7 @@
         'ps.export.d': 'Defaults when you export artifacts from this project.', 'ps.fmt.docx': 'Editable, best for sharing with clients.', 'ps.fmt.pdf': 'Fixed layout for sign-off and archiving.', 'ps.fmt.md': 'Plain text that lives well in git.',
         'ps.ex.dest': 'Export folder', 'ps.ex.dest.d': 'Where exported files are written.', 'ps.ex.cover': 'Include cover page', 'ps.ex.cover.d': 'Add project name, client and version on the first page.', 'ps.ex.ver': 'Add version to file name', 'ps.ex.ver.d': 'e.g. Merchant-BRD-v3.docx',
         'ps.storage.d': 'What this project currently stores in its directory.', 'ps.st.in': 'in',
-        'ps.t.0': 'Project manifest', 'ps.t.1': 'Uploaded documents (inputs)', 'ps.t.2': 'Generated & edited artifacts with versions', 'ps.t.3': 'Tasks, plans, review evidence', 'ps.t.4': 'Assistant chat history', 'ps.t.5': 'Agent run logs & evidence', 'ps.t.6': 'CLI profile per tool: settings, MCP, instructions', 'ps.t.7': 'Git worktrees created by agents', 'ps.t.8': 'Project-level overrides',
+        'ps.t.0': 'Project manifest', 'ps.t.1': 'Uploaded documents (inputs)', 'ps.t.2': 'Generated & edited artifacts with versions', 'ps.t.3': 'Tasks, plans, review evidence', 'ps.t.4': 'Git repository (source code)', 'ps.t.5': 'Assistant chat history', 'ps.t.6': 'Agent run logs & evidence', 'ps.t.7': 'CLI profile per tool: settings, MCP, instructions', 'ps.t.8': 'Git worktrees created by agents', 'ps.t.9': 'Project-level overrides',
         'ps.st.chat': 'Chat history', 'ps.st.chat.d': 'Assistant conversations saved in .procheck\\chats.', 'ps.st.chat.clear': 'Clear history', 'ps.st.chat.t': 'Clear all chat history?', 'ps.st.chat.td': 'Deletes every saved Assistant conversation for this project. Artifacts are not affected.', 'ps.st.chat.done': 'Chat history cleared',
         'ps.st.runs': 'Agent run logs', 'ps.st.runs.d': 'Free space by deleting old run logs and evidence from .procheck\\runs.', 'ps.st.older': 'Older than', 'ps.st.days': 'days', 'ps.st.runs.clear': 'Clear logs', 'ps.st.runs.done': 'Cleared run logs older than {n} days · freed 96 MB',
         'ps.danger.d': 'These actions affect how the project is registered or stored on disk.',
@@ -417,7 +417,7 @@
         'ps.export.d': 'Mặc định khi xuất tài liệu của dự án này.', 'ps.fmt.docx': 'Chỉnh sửa được, hợp để gửi khách hàng.', 'ps.fmt.pdf': 'Bố cục cố định để ký duyệt và lưu trữ.', 'ps.fmt.md': 'Văn bản thuần, phù hợp lưu trong git.',
         'ps.ex.dest': 'Thư mục xuất', 'ps.ex.dest.d': 'Nơi ghi các tệp đã xuất.', 'ps.ex.cover': 'Thêm trang bìa', 'ps.ex.cover.d': 'Thêm tên dự án, khách hàng và phiên bản ở trang đầu.', 'ps.ex.ver': 'Thêm phiên bản vào tên tệp', 'ps.ex.ver.d': 'VD: Merchant-BRD-v3.docx',
         'ps.storage.d': 'Những gì dự án này đang lưu trong thư mục của nó.', 'ps.st.in': 'trong',
-        'ps.t.0': 'Tệp mô tả dự án', 'ps.t.1': 'Tài liệu tải lên (đầu vào)', 'ps.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ps.t.3': 'Task, kế hoạch, bằng chứng review', 'ps.t.4': 'Lịch sử chat với Trợ lý', 'ps.t.5': 'Log và bằng chứng các lượt chạy agent', 'ps.t.6': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ps.t.7': 'Git worktree do agent tạo', 'ps.t.8': 'Ghi đè cấp dự án',
+        'ps.t.0': 'Tệp mô tả dự án', 'ps.t.1': 'Tài liệu tải lên (đầu vào)', 'ps.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ps.t.3': 'Task, kế hoạch, bằng chứng review', 'ps.t.4': 'Git repository (mã nguồn)', 'ps.t.5': 'Lịch sử chat với Trợ lý', 'ps.t.6': 'Log và bằng chứng các lượt chạy agent', 'ps.t.7': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ps.t.8': 'Git worktree do agent tạo', 'ps.t.9': 'Ghi đè cấp dự án',
         'ps.st.chat': 'Lịch sử chat', 'ps.st.chat.d': 'Các cuộc trò chuyện với Trợ lý lưu trong .procheck\\chats.', 'ps.st.chat.clear': 'Xoá lịch sử', 'ps.st.chat.t': 'Xoá toàn bộ lịch sử chat?', 'ps.st.chat.td': 'Xoá mọi cuộc trò chuyện với Trợ lý đã lưu của dự án này. Tài liệu không bị ảnh hưởng.', 'ps.st.chat.done': 'Đã xoá lịch sử chat',
         'ps.st.runs': 'Log lượt chạy agent', 'ps.st.runs.d': 'Giải phóng dung lượng bằng cách xoá log và bằng chứng cũ trong .procheck\\runs.', 'ps.st.older': 'Cũ hơn', 'ps.st.days': 'ngày', 'ps.st.runs.clear': 'Xoá log', 'ps.st.runs.done': 'Đã xoá log cũ hơn {n} ngày · giải phóng 96 MB',
         'ps.danger.d': 'Các thao tác này ảnh hưởng đến cách dự án được đăng ký hoặc lưu trên ổ đĩa.',
@@ -435,8 +435,8 @@
       const P = () => PC.project();
       const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
       const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-fable-5-2'], codex: ['gpt-6-luna', 'gpt-5.6-terra', 'gpt-5.6-luna'] };
-      const PROJ_SIZES = [[0.003, '3 KB'], [86, '86 MB'], [41, '41 MB'], [12, '12 MB'], [6, '6 MB'], [148, '148 MB'], [22, '22 MB'], [94, '94 MB'], [0.001, '1 KB']];
-      const TREE_COL = ['var(--fg-faint)', 'var(--brand)', 'var(--accent-purple)', 'var(--accent-teal)', 'var(--accent-sky)', 'var(--warning)', 'var(--accent-magenta)', 'var(--success)', 'var(--fg-faint)'];
+      const PROJ_SIZES = [[0.003, '3 KB'], [86, '86 MB'], [41, '41 MB'], [12, '12 MB'], [236, '236 MB'], [6, '6 MB'], [148, '148 MB'], [22, '22 MB'], [94, '94 MB'], [0.001, '1 KB']];
+      const TREE_COL = ['var(--fg-faint)', 'var(--brand)', 'var(--accent-purple)', 'var(--accent-teal)', 'var(--fg-muted)', 'var(--accent-sky)', 'var(--warning)', 'var(--accent-magenta)', 'var(--success)', 'var(--fg-faint)'];
       const PROMPTS = {
         initial: 'You are the discovery assistant for {project} ({client}).\nWork in the Initial phase: turn meeting notes and source documents into\nclarifying questions, a BRD, scope and estimates.\nAlways cite the source document and flag assumptions explicitly.',
         release: 'You are the architecture assistant for {project} ({client}).\nWork in the Scaffolding phase: propose the architecture, repository structure,\ninfrastructure and CI/CD pipeline, then generate the scaffold in the linked repo.\nFollow existing conventions; never overwrite files without a diff.',
@@ -539,9 +539,8 @@
         $('st-total').textContent = Math.round(total) + ' MB';
         $('st-bar').innerHTML = PROJ_SIZES.map((x, i) => x[0] > 1 ? `<i style="width:${(x[0] / total) * 100}%;background:${TREE_COL[i]}"></i>` : '').join('');
         $('st-tree').innerHTML = D.storage.project.items.map((it, i) => {
-          const folder = /\\$/.test(it.path);
-          const size = S.chatsCleared && i === 4 ? '0 KB' : PROJ_SIZES[i][1];
-          return `<div class="znode"><i data-lucide="${folder ? 'folder' : 'file-json'}"></i><span class="zp"><i style="background:${TREE_COL[i]}"></i>${PC.esc(it.path.replace('<cli>', '*'))}</span><span class="zs">${size}</span><span class="zd">${tx('ps.t.' + i)}</span></div>`;
+          const size = S.chatsCleared && i === 5 ? '0 KB' : PROJ_SIZES[i][1];
+          return `<div class="znode"><i data-lucide="${PC.storageIcon(it.path)}"></i><span class="zp"><i style="background:${TREE_COL[i]}"></i>${PC.esc(it.path.replace('<cli>', '*'))}</span><span class="zs">${size}</span><span class="zd">${tx('ps.t.' + i)}</span></div>`;
         }).join('');
         $('chat-size').textContent = S.chatsCleared ? '0 KB · 0' : '6 MB · 38 chats';
       }

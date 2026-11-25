@@ -65,6 +65,12 @@ export const AGENT_INSTALL: Record<AgentId, string> = {
   codex: 'npm install -g @openai/codex',
 };
 
+/** Official installation guide of each CLI. */
+export const AGENT_DOCS: Record<AgentId, string> = {
+  claude: 'https://code.claude.com/docs/en/setup',
+  codex: 'https://developers.openai.com/codex/cli',
+};
+
 /**
  * The AI CLI tools (Settings → Agent Integration). `binPath` is the draft value from the
  * settings form; empty or `null` = find the executable on PATH. The desktop app always runs
@@ -95,5 +101,10 @@ export class AgentsService {
   /** Native file picker for the executable; resolves `null` when cancelled. */
   pickBinary(title: string, start: string | null): Promise<string | null> {
     return this.ipc.invoke<string | null>('agents_pick_binary', { title, start });
+  }
+
+  /** Opens the official installation guide of the CLI in the default browser. */
+  openInstallGuide(agent: AgentId): Promise<void> {
+    return this.ipc.invoke<void>('plugin:opener|open_url', { url: AGENT_DOCS[agent] });
   }
 }

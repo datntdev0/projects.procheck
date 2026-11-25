@@ -211,9 +211,11 @@
       project: {
         items: [
           { path: 'procheck.json', desc: 'Project manifest: name, client, phase, linked repo' },
-          { path: 'sources\\', desc: 'Uploaded documents (inputs)' },
+          { path: 'sources\\', desc: 'Uploaded files of any type: documents, recordings, images, data, code (inputs)' },
           { path: 'artifacts\\', desc: 'Generated & edited artifacts with versions' },
           { path: 'board\\', desc: 'Tasks, plans, review evidence' },
+          { path: 'repository\\', desc: 'Git repository with the project source code (when kept inside the project)' },
+          { path: '.procheck\\index\\', desc: 'Text extracted from sources (transcripts, OCR, parsed data) that the CLI reads' },
           { path: '.procheck\\chats\\', desc: 'Assistant chat history' },
           { path: '.procheck\\runs\\', desc: 'Agent run logs & evidence' },
           { path: '.procheck\\cli\\<cli>\\', desc: 'CLI profile per tool: settings, MCP servers, instructions (no credentials)' },
@@ -224,11 +226,11 @@
     },
     currentProjectId: 'lotus-pay',
     projects: [
-      { id: 'lotus-pay', name: 'Lotus Pay — Merchant Portal', short: 'LP', client: 'Lotus Financial Group', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 42 }, color: 'linear-gradient(135deg,#006AFE,#245DB3)', updated: '12 min ago', dir: 'D:\\Projects\\lotus-pay', repo: 'D:\\Projects\\lotus-pay\\repo', artifacts: 18, tasks: 34 },
+      { id: 'lotus-pay', name: 'Lotus Pay — Merchant Portal', short: 'LP', client: 'Lotus Financial Group', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 42 }, color: 'linear-gradient(135deg,#006AFE,#245DB3)', updated: '12 min ago', dir: 'D:\\Projects\\lotus-pay', repo: 'D:\\Projects\\lotus-pay\\repository', artifacts: 18, tasks: 34 },
       { id: 'mekong', name: 'Mekong Retail — Omnichannel', short: 'MR', client: 'Mekong Retail JSC', phase: 'release', progress: { initial: 100, release: 64, sdlc: 0 }, color: 'linear-gradient(135deg,#6A26F1,#006AFE)', updated: '2 h ago', dir: 'D:\\Projects\\mekong-omni', repo: 'D:\\src\\mekong-omni', artifacts: 12, tasks: 0 },
       { id: 'viethealth', name: 'VietHealth Telemedicine', short: 'VH', client: 'VietHealth Clinics', phase: 'initial', progress: { initial: 55, release: 0, sdlc: 0 }, color: 'linear-gradient(135deg,#02CCB3,#006AFE)', updated: 'Yesterday', dir: 'D:\\Projects\\viethealth', repo: null, artifacts: 6, tasks: 0 },
       { id: 'saigon-tms', name: 'Saigon Logistics TMS', short: 'SL', client: 'Saigon Logistics Co.', phase: 'initial', progress: { initial: 10, release: 0, sdlc: 0 }, color: 'linear-gradient(135deg,#FE006A,#6A26F1)', updated: '3 days ago', dir: 'C:\\Users\\me\\Documents\\saigon-tms', repo: null, artifacts: 3, tasks: 0 },
-      { id: 'atlas-hr', name: 'Atlas HR Suite', short: 'AH', client: 'Atlas Group (internal)', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 78 }, color: 'linear-gradient(135deg,#245DB3,#62CCFE)', updated: 'Last week', dir: 'D:\\Projects\\atlas-hr', repo: 'D:\\Projects\\atlas-hr\\repo', artifacts: 24, tasks: 61 },
+      { id: 'atlas-hr', name: 'Atlas HR Suite', short: 'AH', client: 'Atlas Group (internal)', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 78 }, color: 'linear-gradient(135deg,#245DB3,#62CCFE)', updated: 'Last week', dir: 'D:\\Projects\\atlas-hr', repo: 'D:\\Projects\\atlas-hr\\repository', artifacts: 24, tasks: 61 },
     ],
     phases: [
       { id: 'initial', icon: 'compass', color: 'var(--phase-initial)', href: 'initial.html' },
@@ -251,6 +253,7 @@
   PC.cliEnv = function (cli) { return cli === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR'; };
   // Context isolation per launch: cwd = project dir (Assistant) or worktree (agents) + the project's CLI profile
   // (<project dir>\.procheck\cli\<cli>\, no credentials) + only the CLI sessions recorded in this project.
+  PC.storageIcon = path => path.startsWith('repository') ? 'folder-git-2' : /\\$/.test(path) ? 'folder' : path.endsWith('.json') ? 'file-json' : 'file';
   PC.projectCli = function (cli, p) { p = p || PC.project(); return (p.cliRoot ? p.cliRoot + '\\' : p.dir + '\\.procheck\\cli\\') + (cli || 'claude'); };
   // General chats (no project): cwd = an empty scratch dir; the CLI home itself is the profile, history lives in application data.
   PC.general = { id: '__general', dir: '%LOCALAPPDATA%\\Procheck\\scratch', cliRoot: '%LOCALAPPDATA%\\Procheck\\cli', chats: '%LOCALAPPDATA%\\Procheck\\chats' };
@@ -524,6 +527,7 @@
     { group: 'nav.project', items: [
       { id: 'overview', icon: 'layout-dashboard', label: 'nav.overview', href: 'overview.html' },
       { id: 'artifacts', icon: 'files', label: 'nav.artifacts', href: 'artifacts.html', count: () => PC.project().state.counts.artifacts },
+      { id: 'sources', icon: 'folder-input', label: 'nav.sources', href: 'sources.html' },
     ] },
     { group: 'nav.workflow', items: [
       { id: 'initial', icon: 'compass', label: 'nav.initial', href: 'initial.html', phase: 'initial' },
@@ -562,24 +566,10 @@
       <div class="sb-version"><span data-i18n="app.version"></span> <span>${PC.appVersion}</span></div>
     </div>`;
 
-  /* Chats group: recent chats of the current scope + entry points to both scopes.
-     project shell → this project's chats + "General chats"; home shell → general chats.
-     On the Assistant page the page already lists the chats, so the group only switches scope. */
-  function chatItem(pid, c) {
-    return `<a class="nav-item chat-item" href="${href(PC.chats.href(pid, c.id))}" data-action="as-open" data-scope="${pid}" data-chat="${c.id}" title="${PC.esc(c.title)}"><i data-lucide="${c.pinned ? 'pin' : 'message-square'}"></i><span class="truncate">${PC.esc(c.title)}</span><span class="when">${PC.chats.when(c.at)}</span></a>`;
-  }
-  function chatsGroup() {
-    const pid = PC.data.currentProjectId, list = PC.chats.list(pid);
-    const body = list.length ? list.slice(0, 4).map(c => chatItem(pid, c)).join('') : `<div class="nav-empty" data-i18n="nav.chats.empty"></div>`;
-    return `<div class="nav-group nav-chats"><div class="nav-group-title"><span data-i18n="nav.chats"></span>
-      <button type="button" class="btn btn-ghost btn-icon btn-sm" data-action="as-new-open" data-i18n-tip="nav.chats.new"><i data-lucide="plus"></i></button></div>${body}
-      <a class="nav-item" href="${href('assistant.html')}"><i data-lucide="messages-square"></i><span class="truncate" data-i18n="nav.chats.all"></span><span class="count">${list.length}</span></a></div>`;
-  }
-
   function buildProjectSidebar(page) {
     const p = PC.project();
     const nav = NAV.map(g => `<div class="nav-group"><div class="nav-group-title"><span data-i18n="${g.group}"></span></div>
-      ${g.items.map(it => navLink(it, page)).join('')}</div>`).join('') + chatsGroup();
+      ${g.items.map(it => navLink(it, page)).join('')}</div>`).join('');
     return `<aside class="sidebar"><div class="sidebar-inner">
       ${brandHTML()}
       <div class="sb-project">

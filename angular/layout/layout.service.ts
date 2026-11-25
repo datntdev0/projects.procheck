@@ -7,11 +7,12 @@ const ASSISTANT_WIDTH_KEY = 'pc.assistant.width';
 export const ASSISTANT_MIN_W = 300;
 export const ASSISTANT_MAX_W = 720;
 
+/** The assistant panel starts hidden until the user opens it. */
 function readAssistantOpen(): boolean {
   try {
-    return localStorage.getItem(ASSISTANT_KEY) !== 'closed';
+    return localStorage.getItem(ASSISTANT_KEY) === 'open';
   } catch {
-    return true;
+    return false;
   }
 }
 

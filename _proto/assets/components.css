@@ -303,6 +303,12 @@ p { margin: 0 0 var(--space-3); }
 .file-tile.sheet { background: var(--success-soft); color: var(--success-fg); }
 .file-tile.md { background: var(--accent-purple-soft); color: var(--accent-purple); }
 .file-tile.audio { background: var(--accent-magenta-soft); color: var(--accent-magenta); }
+.file-tile.video { background: var(--accent-magenta-soft); color: var(--accent-magenta); }
+.file-tile.slide { background: var(--warning-soft); color: var(--warning-fg); }
+.file-tile.image { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
+.file-tile.design { background: var(--accent-purple-soft); color: var(--accent-purple); }
+.file-tile.email { background: var(--info-soft); color: var(--info-fg); }
+.file-tile.mono, .file-tile.archive { background: var(--bg-surface-3); color: var(--fg-muted); }
 
 /* ---------- Page header (inside canvas) ---------- */
 .page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); flex-wrap: wrap; }

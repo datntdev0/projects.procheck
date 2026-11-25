@@ -353,7 +353,7 @@
         'ap.zone.proj': 'Project data', 'ap.zone.proj.badge': 'One per project', 'ap.zone.proj.root': '<project directory>\\', 'ap.zone.proj.foot': 'The whole directory is the project — copy it, back it up or move it, then open it again from any PC.',
         'ap.a.0': 'App preferences: theme, language, defaults', 'ap.a.1': 'Registry of known project directories (recent list)', 'ap.a.2': 'CLI tool registrations: binary path, default model', 'ap.a.3': 'Application & harness logs', 'ap.a.4': 'Indexes, thumbnails, temp files (safe to delete)',
         'ap.p.0': 'Project manifest: name, client, phase, linked repo', 'ap.p.1': 'Uploaded documents (inputs)', 'ap.p.2': 'Generated & edited artifacts with versions', 'ap.p.3': 'Tasks, plans, review evidence',
-        'ap.p.4': 'Assistant chat history', 'ap.p.5': 'Agent run logs & evidence', 'ap.p.6': 'CLI profile per tool: settings, MCP, instructions', 'ap.p.7': 'Git worktrees created by agents', 'ap.p.8': 'Project-level overrides (CLI, model, harness)',
+        'ap.p.4': 'Git repository with the project source code', 'ap.p.5': 'Assistant chat history', 'ap.p.6': 'Agent run logs & evidence', 'ap.p.7': 'CLI profile per tool: settings, MCP, instructions', 'ap.p.8': 'Git worktrees created by agents', 'ap.p.9': 'Project-level overrides (CLI, model, harness)',
         'ap.reg.add': 'Add existing folder',
         'ap.reg.c.name': 'Project', 'ap.reg.c.dir': 'Directory', 'ap.reg.c.size': 'Size', 'ap.reg.c.last': 'Last opened',
         'ap.reg.reveal': 'Reveal', 'ap.reg.remove': 'Remove from list', 'ap.reg.revealed': 'Revealed {p}',
@@ -410,7 +410,7 @@
         'ap.zone.proj': 'Dữ liệu dự án', 'ap.zone.proj.badge': 'Mỗi dự án một bộ', 'ap.zone.proj.root': '<thư mục dự án>\\', 'ap.zone.proj.foot': 'Cả thư mục chính là dự án — sao chép, sao lưu hoặc di chuyển rồi mở lại trên bất kỳ máy nào.',
         'ap.a.0': 'Tuỳ chọn ứng dụng: giao diện, ngôn ngữ, mặc định', 'ap.a.1': 'Danh sách các thư mục dự án đã biết (mục gần đây)', 'ap.a.2': 'Đăng ký công cụ CLI: đường dẫn, model mặc định', 'ap.a.3': 'Log của ứng dụng và harness', 'ap.a.4': 'Chỉ mục, ảnh thu nhỏ, tệp tạm (xoá an toàn)',
         'ap.p.0': 'Tệp mô tả dự án: tên, khách hàng, giai đoạn, repo liên kết', 'ap.p.1': 'Tài liệu tải lên (đầu vào)', 'ap.p.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'ap.p.3': 'Task, kế hoạch, bằng chứng review',
-        'ap.p.4': 'Lịch sử chat với Trợ lý', 'ap.p.5': 'Log và bằng chứng các lượt chạy agent', 'ap.p.6': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ap.p.7': 'Git worktree do agent tạo', 'ap.p.8': 'Ghi đè ở cấp dự án (CLI, model, harness)',
+        'ap.p.4': 'Git repository chứa mã nguồn dự án', 'ap.p.5': 'Lịch sử chat với Trợ lý', 'ap.p.6': 'Log và bằng chứng các lượt chạy agent', 'ap.p.7': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'ap.p.8': 'Git worktree do agent tạo', 'ap.p.9': 'Ghi đè ở cấp dự án (CLI, model, harness)',
         'ap.reg.add': 'Thêm thư mục có sẵn',
         'ap.reg.c.name': 'Dự án', 'ap.reg.c.dir': 'Thư mục', 'ap.reg.c.size': 'Dung lượng', 'ap.reg.c.last': 'Mở lần cuối',
         'ap.reg.reveal': 'Mở thư mục', 'ap.reg.remove': 'Gỡ khỏi danh sách', 'ap.reg.revealed': 'Đã mở {p}',
@@ -462,7 +462,7 @@
       const SIZES = { 'lotus-pay': '412 MB', 'mekong': '186 MB', 'viethealth': '38 MB', 'saigon-tms': '9 MB', 'atlas-hr': '1.2 GB' };
       const UPD_VI = { '12 min ago': '12 phút trước', '2 h ago': '2 giờ trước', 'Yesterday': 'Hôm qua', '3 days ago': '3 ngày trước', 'Last week': 'Tuần trước' };
       const APP_SIZES = ['4 KB', '2 KB', '3.1 MB', '18 MB', '248 MB'];
-      const PROJ_SIZES = ['3 KB', '86 MB', '41 MB', '12 MB', '6 MB', '148 MB', '22 MB', '94 MB', '1 KB'];
+      const PROJ_SIZES = ['3 KB', '86 MB', '41 MB', '12 MB', '236 MB', '6 MB', '148 MB', '22 MB', '94 MB', '1 KB'];
       const CLI_ICON = { claude: 'bot-message-square', codex: 'terminal-square' };
       const MODELS = { claude: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-fable-5-2'], codex: ['gpt-6-luna', 'gpt-5.6-terra', 'gpt-5.6-luna'] };
       const AUTH = { claude: 'sub', codex: 'key' };
@@ -473,8 +473,7 @@
       const updText = p => PC.lang === 'vi' ? (UPD_VI[p.updated] || p.updated) : p.updated;
       const tx = s => PC.t(s);
       const treeRows = (items, sizes, kind) => items.map((it, i) => {
-        const folder = /\\$/.test(it.path);
-        return `<div class="znode"><i data-lucide="${folder ? 'folder' : it.path.endsWith('.json') ? 'file-json' : 'file'}"></i><span class="zp" title="${PC.esc(it.path)}">${PC.esc(it.path)}</span><span class="zs">${sizes[i]}</span><span class="zd">${tx('ap.' + kind + '.' + i)}</span></div>`;
+        return `<div class="znode"><i data-lucide="${PC.storageIcon(it.path)}"></i><span class="zp" title="${PC.esc(it.path)}">${PC.esc(it.path)}</span><span class="zs">${sizes[i]}</span><span class="zd">${tx('ap.' + kind + '.' + i)}</span></div>`;
       }).join('');
 
       function renderBound() {
