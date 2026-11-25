@@ -5,8 +5,10 @@ use std::path::{Path, PathBuf};
 
 use serde::Serialize;
 
-pub const MAX_SOURCE_BYTES: u64 = 50 * 1024 * 1024;
-pub const SOURCE_EXTENSIONS: [&str; 9] = ["pdf", "docx", "xlsx", "md", "markdown", "vtt", "srt", "txt", "csv"];
+pub mod catalog;
+pub mod kinds;
+
+use kinds::{ReadMode, SourceCategory, SourceKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -22,20 +24,28 @@ pub struct SourceCandidate {
     pub path: String,
     pub name: String,
     pub bytes: u64,
+    pub kind: SourceKind,
+    pub category: SourceCategory,
+    pub mode: ReadMode,
     pub problem: Option<SourceProblem>,
 }
 
+/// Any file can be a source; its kind only sets the size limit and how it will be read.
 pub fn describe(path: &Path) -> SourceCandidate {
+    let kind = SourceKind::of(path);
     let (bytes, problem) = match fs::metadata(path) {
         Err(_) => (0, Some(SourceProblem::NotFound)),
         Ok(meta) if !meta.is_file() => (0, Some(SourceProblem::NotAFile)),
-        Ok(meta) if meta.len() > MAX_SOURCE_BYTES => (meta.len(), Some(SourceProblem::TooLarge)),
+        Ok(meta) if meta.len() > kind.max_bytes() => (meta.len(), Some(SourceProblem::TooLarge)),
         Ok(meta) => (meta.len(), None),
     };
     SourceCandidate {
         path: path.display().to_string(),
         name: path.file_name().unwrap_or_default().to_string_lossy().into_owned(),
         bytes,
+        kind,
+        category: kind.category(),
+        mode: kind.mode(),
         problem,
     }
 }
@@ -99,6 +109,7 @@ mod tests {
 
         let ok = describe(&dir.join("notes.txt"));
         assert_eq!((ok.name.as_str(), ok.bytes, ok.problem), ("notes.txt", 5, None));
+        assert_eq!((ok.kind, ok.mode), (SourceKind::Text, ReadMode::Text));
         assert_eq!(describe(&dir.join("nope.txt")).problem, Some(SourceProblem::NotFound));
         assert_eq!(describe(&dir).problem, Some(SourceProblem::NotAFile));
         fs::remove_dir_all(dir).unwrap();

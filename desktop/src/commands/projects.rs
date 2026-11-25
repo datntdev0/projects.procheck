@@ -11,7 +11,7 @@ use crate::features::projects::create::{self, CreateError, CreateProgress, Direc
 use crate::features::projects::edit::{self, EditError, ProjectUpdate};
 use crate::features::projects::registry::ProjectRegistry;
 use crate::features::projects::repository::{self, RepositoryInfo};
-use crate::features::projects::sources::{self, SOURCE_EXTENSIONS, SourceCandidate};
+use crate::features::projects::sources::{self, SourceCandidate};
 use crate::features::projects::{ProjectItem, describe, vscode};
 use crate::infra::storage::StorageError;
 
@@ -63,10 +63,10 @@ pub fn projects_check_dir(dir: String) -> DirectoryCheck {
     create::check_directory(Path::new(dir.trim()))
 }
 
-/// Native multi-file picker for raw source documents; empty when cancelled.
+/// Native multi-file picker for source files of any type; empty when cancelled.
 #[tauri::command]
 pub async fn projects_pick_sources<R: Runtime>(app: AppHandle<R>, title: Option<String>) -> CommandResult<Vec<SourceCandidate>> {
-    let mut dialog = app.dialog().file().add_filter("Documents", &SOURCE_EXTENSIONS);
+    let mut dialog = app.dialog().file();
     if let Some(title) = title {
         dialog = dialog.set_title(title);
     }

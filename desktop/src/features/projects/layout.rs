@@ -12,6 +12,8 @@ const RUNS_DIR: &str = "runs";
 const CLI_DIR: &str = "cli";
 const WORKTREES_DIR: &str = "worktrees";
 const SETTINGS_FILE: &str = "settings.json";
+const SOURCES_CATALOG_FILE: &str = "sources.json";
+const INDEX_DIR: &str = "index";
 
 /// Well-known locations inside a project directory.
 #[derive(Debug, Clone)]
@@ -63,6 +65,16 @@ impl ProjectDirectories {
 
     pub fn settings_file(&self) -> PathBuf {
         self.procheck_dir().join(SETTINGS_FILE)
+    }
+
+    /// Catalog of the files in `sources\`: kind, category, hash and index state.
+    pub fn sources_catalog(&self) -> PathBuf {
+        self.procheck_dir().join(SOURCES_CATALOG_FILE)
+    }
+
+    /// Text and summaries extracted from sources, one folder per source id.
+    pub fn index_dir(&self) -> PathBuf {
+        self.procheck_dir().join(INDEX_DIR)
     }
 
     /// Folders every new project starts with.
