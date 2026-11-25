@@ -2,6 +2,7 @@ import { test as base } from '@playwright/test';
 
 import { ProjectOverviewPage, ProjectSettingsPage } from '../pages/project.ts';
 import { SettingsPage } from '../pages/settings.ts';
+import { SourcesPage } from '../pages/sources.ts';
 import { ShellPage } from '../pages/shell.ts';
 import { AppSession } from './app.ts';
 import { type Sandbox, createSandbox } from './sandbox.ts';
@@ -11,6 +12,7 @@ export interface Ui {
   settings: SettingsPage;
   overview: ProjectOverviewPage;
   projectSettings: ProjectSettingsPage;
+  sources: SourcesPage;
 }
 
 interface Fixtures {
@@ -56,6 +58,9 @@ export const test = base.extend<Fixtures>({
       },
       get projectSettings() {
         return new ProjectSettingsPage(app.page);
+      },
+      get sources() {
+        return new SourcesPage(app.page);
       },
     });
   },
