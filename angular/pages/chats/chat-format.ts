@@ -1,6 +1,7 @@
 import { AGENT_NAMES } from '@features/agents/agents.service';
 import type { TurnError } from '@features/chats/chats.model';
 import type { AgentId } from '@features/settings/app-settings.model';
+import { dateLocale } from '@shared/format/date';
 import type { I18nService } from '@shared/i18n/i18n.service';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 
@@ -24,13 +25,13 @@ export function dayLabel(iso: string, lang: string, now = new Date()): string {
   const date = new Date(iso);
   const sameDay = date.toDateString() === now.toDateString();
   if (sameDay) return clock(iso);
-  return new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { day: '2-digit', month: 'short' }).format(date);
+  return new Intl.DateTimeFormat(dateLocale(lang), { day: '2-digit', month: 'short' }).format(date);
 }
 
 export function dateTimeLabel(iso: string, lang: string, now = new Date()): string {
   const date = new Date(iso);
   if (date.toDateString() === now.toDateString()) return clock(iso);
-  const day = new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { weekday: 'short', day: '2-digit', month: 'short' }).format(date);
+  const day = new Intl.DateTimeFormat(dateLocale(lang), { weekday: 'short', day: '2-digit', month: 'short' }).format(date);
   return `${day} ${clock(iso)}`;
 }
 

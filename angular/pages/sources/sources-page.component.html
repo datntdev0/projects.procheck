@@ -1,0 +1,216 @@
+<div class="canvas-inner sources-page" data-testid="sources-page">
+  <pc-project-gate>
+    @if (project()) {
+      <div class="page-header">
+        <div>
+          <h1>{{ 'src.title' | t }}</h1>
+          <div class="subtitle">
+            {{ 'src.sub' | t }} <code class="sp-path" data-testid="src-dir">{{ store.dir() }}</code>
+          </div>
+        </div>
+        <div class="row">
+          <button pcButton data-testid="src-open-folder" (click)="store.reveal(null)"><pc-icon name="folder-open" /> {{ 'src.open_folder' | t }}</button>
+        </div>
+      </div>
+
+      @if (store.loadError()) {
+        <pc-alert tone="danger" class="mb-4">
+          {{ 'src.load.failed' | t }}
+          <button pcButton size="sm" (click)="store.reload()">{{ 'src.retry' | t }}</button>
+        </pc-alert>
+      }
+
+      <div class="sp-stats">
+        <div class="sp-stat">
+          <span class="ic"><pc-icon name="files" /></span>
+          <div><div class="v" data-testid="src-stat-files">{{ store.items().length }}</div><div class="l">{{ 'src.st.files' | t }}</div></div>
+        </div>
+        <div class="sp-stat">
+          <span class="ic"><pc-icon name="hard-drive" /></span>
+          <div><div class="v">{{ totalSize() }}</div><div class="l">{{ 'src.st.size' | t }}</div></div>
+        </div>
+        <div class="sp-stat">
+          <span class="ic ok"><pc-icon name="sparkles" /></span>
+          <div>
+            <div class="v">{{ store.readableCount() }}<span class="of">/{{ store.items().length }}</span></div>
+            <div class="l">{{ 'src.st.ready' | t }}</div>
+          </div>
+        </div>
+        <div class="sp-stat">
+          <span class="ic" [class.warn]="store.attentionCount() > 0"><pc-icon name="archive" /></span>
+          <div><div class="v">{{ store.attentionCount() }}</div><div class="l">{{ 'src.st.attn' | t }}</div></div>
+        </div>
+      </div>
+
+      @if (store.selected().size) {
+        <div class="sp-tools">
+          <div class="bulk" data-testid="src-bulk">
+            <b>{{ 'src.sel' | t: { n: store.selected().size } }}</b>
+            <span class="grow"></span>
+            <button pcButton variant="ghost" size="sm" data-testid="src-bulk-remove" (click)="askRemove(selectedIds())">
+              <pc-icon name="trash-2" /> {{ 'src.sel.remove' | t }}
+            </button>
+            <button pcButton variant="ghost" size="sm" [iconOnly]="true" [pcTooltip]="'src.sel.clear' | t" (click)="store.clearSelection()">
+              <pc-icon name="x" />
+            </button>
+          </div>
+        </div>
+      } @else if (store.items().length) {
+        <div class="sp-tools">
+          <div class="input-group sp-search">
+            <pc-icon name="search" />
+            <input pcInput data-testid="src-search" [placeholder]="'src.search' | t" [value]="store.query()" (input)="store.query.set(value($event))" />
+          </div>
+          <div class="fchips">
+            @for (c of chips(); track c) {
+              <button type="button" class="fchip" [class.is-on]="store.category() === c" [attr.data-testid]="'src-cat-' + c" (click)="store.category.set(c)">
+                {{ store.categoryLabel(c) }}<span class="n">{{ store.count(c) }}</span>
+              </button>
+            }
+          </div>
+          <span class="grow"></span>
+          <select class="select sp-status" data-testid="src-status" [value]="store.status()" (change)="setStatus($event)">
+            @for (f of statusFilters; track f) {
+              <option [value]="f" [selected]="store.status() === f">{{ 'src.f.' + f | t }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      @if (!store.items().length && !store.loading() && !store.loadError()) {
+        <div class="card sp-empty" data-testid="src-empty">
+          <span class="empty-icon"><pc-icon name="folder-input" [size]="22" /></span>
+          <h3>{{ 'src.none.t' | t }}</h3>
+          <p>{{ 'src.none.d' | t }}</p>
+          <div class="types">
+            @for (k of sampleKinds; track k) {
+              <span><pc-icon [name]="visual(k).icon" [size]="12" />{{ 'src.k.' + k | t }}</span>
+            }
+          </div>
+        </div>
+      } @else if (store.items().length) {
+        <div class="sp-grid" [class.has-detail]="!!store.open()">
+          <div class="table-wrap">
+            <table class="table" data-testid="src-table">
+              <thead>
+                <tr>
+                  <th class="ck">
+                    <label class="checkbox">
+                      <input
+                        type="checkbox"
+                        data-testid="src-check-all"
+                        [attr.aria-label]="'src.sel.all' | t"
+                        [checked]="store.allVisibleSelected()"
+                        [indeterminate]="store.someVisibleSelected()"
+                        (change)="store.toggleAllVisible(checked($event))"
+                      />
+                    </label>
+                  </th>
+                  @for (col of columns; track col.sort) {
+                    <th [class]="col.cls">
+                      <button type="button" class="th-s" [class.is-on]="store.sort() === col.sort" (click)="store.setSort(col.sort)">
+                        {{ col.label | t }}<pc-icon [name]="sortIcon(col.sort)" [size]="12" />
+                      </button>
+                    </th>
+                  }
+                  <th class="act"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of store.visible(); track s.id) {
+                  <tr
+                    data-testid="src-row"
+                    [attr.data-id]="s.id"
+                    [attr.data-path]="s.path"
+                    [class.is-sel]="store.selected().has(s.id)"
+                    [class.is-open]="store.openId() === s.id"
+                    [class.is-new]="store.fresh().has(s.id)"
+                    [class.is-missing]="s.missing"
+                    (click)="store.toggleOpen(s.id)"
+                  >
+                    <td class="ck" (click)="$event.stopPropagation()">
+                      <label class="checkbox">
+                        <input
+                          type="checkbox"
+                          data-testid="src-check"
+                          [attr.aria-label]="'src.sel.one' | t: { name: name(s) }"
+                          [checked]="store.selected().has(s.id)"
+                          (change)="store.toggleSelected(s.id, checked($event))"
+                        />
+                      </label>
+                    </td>
+                    <td class="c-name">
+                      <div class="nm">
+                        <pc-file-tile [kind]="visual(s.kind).tile" [icon]="visual(s.kind).icon" />
+                        <div style="min-width: 0">
+                          <div class="t truncate" data-testid="src-name">{{ name(s) }}</div>
+                          @if (folder(s)) {
+                            <div class="s truncate"><pc-icon name="folder" [size]="11" />{{ folder(s) }}</div>
+                          }
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="kd">{{ store.kindLabel(s) }}<span class="ext">{{ extension(s) }}</span></span></td>
+                    <td class="c-cat"><span class="text-xs text-muted nowrap" data-testid="src-category">{{ store.categoryLabel(s.category) }}</span></td>
+                    <td class="num"><span class="text-xs nowrap">{{ size(s.bytes) }}</span></td>
+                    <td class="c-date"><span class="text-xs text-muted nowrap">{{ date(s.addedAt) }}</span></td>
+                    <td><pc-source-access [source]="s" /></td>
+                    <td class="act" (click)="$event.stopPropagation()">
+                      <pc-dropdown placement="bottom-end">
+                        <button pcButton pcDropdownTrigger variant="ghost" size="sm" [iconOnly]="true" data-testid="src-row-menu" [attr.aria-label]="'src.menu' | t">
+                          <pc-icon name="ellipsis" />
+                        </button>
+                        <pc-menu>
+                          <button pcMenuItem [disabled]="!!s.missing" (click)="store.openFile(s)"><pc-icon name="external-link" /> {{ 'src.a.open' | t }}</button>
+                          <button pcMenuItem [disabled]="!!s.missing" (click)="store.reveal(s)"><pc-icon name="folder-search" /> {{ 'src.a.reveal' | t }}</button>
+                          <pc-menu-separator />
+                          <pc-menu-label>{{ 'src.a.cat' | t }}</pc-menu-label>
+                          @for (c of categories; track c) {
+                            <button pcMenuItem [attr.data-testid]="'src-move-' + c" (click)="store.setCategory(s, c)">
+                              <span class="grow">{{ store.categoryLabel(c) }}</span>
+                              @if (s.category === c) {
+                                <pc-icon name="check" />
+                              }
+                            </button>
+                          }
+                          <pc-menu-separator />
+                          <button pcMenuItem class="text-danger" data-testid="src-menu-remove" (click)="askRemove([s.id])"><pc-icon name="trash-2" /> {{ 'src.a.remove' | t }}</button>
+                        </pc-menu>
+                      </pc-dropdown>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            @if (!store.visible().length) {
+              <div class="sp-empty">
+                <p>{{ 'src.none.f' | t }}</p>
+                <button pcButton size="sm" (click)="store.clearFilters()">{{ 'src.none.clear' | t }}</button>
+              </div>
+            }
+          </div>
+          @if (store.open(); as open) {
+            <pc-source-detail [source]="open" (closed)="store.openId.set(null)" (removed)="askRemove([open.id])" />
+          }
+        </div>
+      }
+
+      <pc-dialog [title]="'src.rm.title' | t: { n: pendingRemove().length }" width="min(460px, 100%)" [open]="pendingRemove().length > 0" (openChange)="!$event && pendingRemove.set([])">
+        <p class="text-sm" style="margin: 0">{{ 'src.rm.d' | t }}</p>
+        <div class="up-list">
+          @for (s of pendingSources(); track s.id) {
+            <div class="up-row is-static">
+              <pc-file-tile [kind]="visual(s.kind).tile" [icon]="visual(s.kind).icon" />
+              <span class="truncate">{{ s.path }}</span>
+              <span class="text-xs text-subtle">{{ size(s.bytes) }}</span>
+            </div>
+          }
+        </div>
+        <div pcDialogFooter class="modal-footer">
+          <button pcButton variant="ghost" (click)="pendingRemove.set([])">{{ 'common.cancel' | t }}</button>
+          <button pcButton variant="danger" data-testid="src-remove-confirm" (click)="confirmRemove()"><pc-icon name="trash-2" /> {{ 'src.rm.go' | t }}</button>
+        </div>
+      </pc-dialog>
+    }
+  </pc-project-gate>
+</div>

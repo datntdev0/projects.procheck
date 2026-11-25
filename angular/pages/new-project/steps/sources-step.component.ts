@@ -3,34 +3,19 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { AlertComponent } from '@components/alert/alert.component';
 import { BadgeComponent } from '@components/badge/badge.component';
 import { ButtonComponent } from '@components/button/button.component';
-import { FileKind, FileTileComponent } from '@components/file-tile/file-tile.component';
+import { FileTileComponent } from '@components/file-tile/file-tile.component';
 import { FieldComponent } from '@components/form/field.component';
 import { InputDirective } from '@components/form/input.directive';
 import { IconComponent } from '@components/icon/icon.component';
 import { SpinnerComponent } from '@components/progress/progress.component';
 import { ProjectsService } from '@features/projects/projects.service';
+import { SourceKind, SourceVisual, sourceVisual } from '@features/sources/sources.model';
 import { formatBytes } from '@shared/format/bytes';
 import { I18nService } from '@shared/i18n/i18n.service';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { NewProjectForm } from '../new-project-form';
 import { StepPanelComponent } from './step-panel.component';
-
-const FILE_KINDS: Record<string, FileKind> = {
-  pdf: 'pdf',
-  docx: 'doc',
-  xlsx: 'sheet',
-  csv: 'sheet',
-  md: 'md',
-  markdown: 'md',
-  vtt: 'audio',
-  srt: 'audio',
-};
-
-export function fileKind(name: string): FileKind {
-  const extension = name.split('.').pop()?.toLowerCase() ?? '';
-  return FILE_KINDS[extension] ?? 'doc';
-}
 
 @Component({
   selector: 'pc-np-sources-step',
@@ -59,7 +44,7 @@ export function fileKind(name: string): FileKind {
         <div class="flist" data-testid="np-files">
           @for (file of form.sources(); track file.path) {
             <div class="fitem">
-              <pc-file-tile [kind]="kind(file.name)" />
+              <pc-file-tile [kind]="visual(file.kind).tile" [icon]="visual(file.kind).icon" />
               <div class="grow" style="min-width: 0">
                 <div class="fname truncate">{{ file.name }}</div>
                 <div class="fmeta truncate" [title]="file.path">{{ size(file.bytes) }} · {{ file.path }}</div>
@@ -147,8 +132,8 @@ export class SourcesStepComponent {
     inject(DestroyRef).onDestroy(() => void subscription.then((unlisten) => unlisten()));
   }
 
-  protected kind(name: string): FileKind {
-    return fileKind(name);
+  protected visual(kind: SourceKind): SourceVisual {
+    return sourceVisual(kind);
   }
 
   protected size(bytes: number): string {

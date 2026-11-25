@@ -14,6 +14,7 @@ import { ProjectOverviewPageComponent } from '@pages/project-overview/project-ov
 import { ProjectSettingsPageComponent } from '@pages/project-settings/project-settings-page.component';
 import { ProjectsPageComponent } from '@pages/projects/projects-page.component';
 import { SettingsPageComponent } from '@pages/settings/settings-page.component';
+import { SourcesPageComponent } from '@pages/sources/sources-page.component';
 
 const crumb = (key: TranslationKey): LayoutRouteData => ({ crumb: key });
 const chatsData: LayoutRouteData = { crumb: 'nav.chats.all', hideAssistant: true };
@@ -22,6 +23,7 @@ const chatsData: LayoutRouteData = { crumb: 'nav.chats.all', hideAssistant: true
 const PROJECT_PAGE_COMPONENTS: Partial<Record<string, Type<unknown>>> = {
   overview: ProjectOverviewPageComponent,
   settings: ProjectSettingsPageComponent,
+  sources: SourcesPageComponent,
 };
 
 function projectPageRoute(page: ProjectNavItem): Route {

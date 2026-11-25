@@ -38,14 +38,7 @@ export type ReadyProjectItem = ProjectItem & { manifest: ProjectManifest };
 
 export type DirectoryCheck = 'available' | 'notAbsolute' | 'notDirectory' | 'notEmpty' | 'unreadable';
 
-export type SourceProblem = 'notFound' | 'notAFile' | 'tooLarge';
-
-export interface SourceCandidate {
-  path: string;
-  name: string;
-  bytes: number;
-  problem: SourceProblem | null;
-}
+export type { SourceCandidate, SourceProblem } from '@features/sources/sources.model';
 
 export type RepositoryStatus = 'ready' | 'notFound' | 'notRepository' | 'gitMissing';
 

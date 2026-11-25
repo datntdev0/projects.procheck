@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { IconComponent } from '../icon/icon.component';
 
-export type FileKind = 'pdf' | 'doc' | 'sheet' | 'md' | 'audio';
+export type FileKind = 'pdf' | 'doc' | 'sheet' | 'md' | 'audio' | 'video' | 'slide' | 'image' | 'design' | 'email' | 'mono' | 'archive';
 
 /** Coloured square icon for a file type. */
 @Component({
