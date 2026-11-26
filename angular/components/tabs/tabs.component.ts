@@ -6,7 +6,7 @@ export interface TabItem {
   id: string;
   label: string;
   icon?: string;
-  count?: number;
+  count?: number | string;
 }
 
 /** Underlined tab bar. Renders only the bar; the page switches content on `active`. */

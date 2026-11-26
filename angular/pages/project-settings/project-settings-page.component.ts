@@ -15,9 +15,10 @@ import { ProjectGateComponent } from '../project/project-gate.component';
 import { SectionSpy } from '../settings/section-spy';
 import { ProjectSettingsForm } from './project-settings-form';
 import { ProjectDangerSectionComponent } from './sections/project-danger-section.component';
+import { CustomizationSectionComponent } from './sections/customization/customization-section.component';
 import { ProjectGeneralSectionComponent } from './sections/project-general-section.component';
 
-export type ProjectSettingsSectionId = 'general' | 'danger';
+export type ProjectSettingsSectionId = 'general' | 'customize' | 'danger';
 
 interface ProjectSettingsNavItem {
   id: ProjectSettingsSectionId;
@@ -27,6 +28,7 @@ interface ProjectSettingsNavItem {
 
 const NAV: ProjectSettingsNavItem[] = [
   { id: 'general', label: 'ps.n.general', icon: 'sliders-horizontal' },
+  { id: 'customize', label: 'ps.n.cz', icon: 'wand-sparkles' },
   { id: 'danger', label: 'ps.n.danger', icon: 'triangle-alert' },
 ];
 
@@ -39,11 +41,12 @@ const SAVE_ERRORS: Partial<Record<string, TranslationKey>> = {
   invalidRepository: 'ps.save.repo',
 };
 
-/** Project settings (ported from _proto/project-settings.html): General and Danger zone. */
+/** Project settings (ported from _proto/project-settings.html): General, Customization (per phase) and Danger zone. */
 @Component({
   selector: 'pc-project-settings-page',
   imports: [
     ButtonComponent,
+    CustomizationSectionComponent,
     IconComponent,
     ProjectAvatarComponent,
     ProjectDangerSectionComponent,
