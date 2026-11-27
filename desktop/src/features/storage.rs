@@ -14,12 +14,25 @@ pub enum StorageEntry {
     Logs,
     /// Home folders of the AI CLIs (sign-in, config, sessions).
     Cli,
+    /// Downloaded tools (Git, Claude Code, Codex CLI).
+    Tools,
+    /// Procheck's own git configuration.
+    Git,
     Chats,
     Cache,
 }
 
 impl StorageEntry {
-    pub const ALL: [Self; 6] = [Self::Settings, Self::Projects, Self::Logs, Self::Cli, Self::Chats, Self::Cache];
+    pub const ALL: [Self; 8] = [
+        Self::Settings,
+        Self::Projects,
+        Self::Logs,
+        Self::Cli,
+        Self::Tools,
+        Self::Git,
+        Self::Chats,
+        Self::Cache,
+    ];
 
     pub fn path(self, directories: &AppDirectories) -> PathBuf {
         match self {
@@ -27,13 +40,15 @@ impl StorageEntry {
             Self::Projects => directories.projects_file(),
             Self::Logs => directories.logs_dir(),
             Self::Cli => directories.cli_dir(),
+            Self::Tools => directories.tools_dir(),
+            Self::Git => directories.git_dir(),
             Self::Chats => directories.chats_dir(),
             Self::Cache => directories.cache_dir(),
         }
     }
 
     pub fn is_directory(self) -> bool {
-        matches!(self, Self::Logs | Self::Cli | Self::Chats | Self::Cache)
+        matches!(self, Self::Logs | Self::Cli | Self::Tools | Self::Git | Self::Chats | Self::Cache)
     }
 }
 

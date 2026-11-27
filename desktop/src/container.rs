@@ -15,6 +15,8 @@ const CACHE_DIR: &str = "cache";
 const SCRATCH_DIR: &str = "scratch";
 const CLI_DIR: &str = "cli";
 const CHATS_DIR: &str = "chats";
+const TOOLS_DIR: &str = "tools";
+const GIT_DIR: &str = "git";
 
 /// Well-known locations inside the application data directory
 /// (`%LOCALAPPDATA%\Procheck` by default). Project data never lives here.
@@ -86,5 +88,15 @@ impl AppDirectories {
 
     pub fn chats_dir(&self) -> PathBuf {
         self.root.join(CHATS_DIR)
+    }
+
+    /// Downloaded tools: Git, Claude Code and Codex CLI.
+    pub fn tools_dir(&self) -> PathBuf {
+        self.root.join(TOOLS_DIR)
+    }
+
+    /// Procheck's own git configuration.
+    pub fn git_dir(&self) -> PathBuf {
+        self.root.join(GIT_DIR)
     }
 }

@@ -8,6 +8,7 @@ pub mod projects;
 pub mod settings;
 pub mod sources;
 pub mod storage;
+pub mod tools;
 
 use serde::Serialize;
 

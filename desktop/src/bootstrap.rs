@@ -9,6 +9,7 @@ use crate::features::projects::artifacts::generate::GenerationRuns;
 use crate::features::projects::registry::ProjectRegistry;
 use crate::features::settings::SettingsStore;
 use crate::infra::logger;
+use crate::infra::tools::{self, Layout, service::ToolsService};
 use crate::shared::env;
 
 /// Builds and runs the Tauri application.
@@ -24,7 +25,6 @@ pub fn run() {
             commands::agents::agents_test,
             commands::agents::agents_sign_in,
             commands::agents::agents_sign_out,
-            commands::agents::agents_pick_binary,
             commands::artifacts::artifacts_overview,
             commands::artifacts::artifacts_read,
             commands::artifacts::artifacts_generate,
@@ -73,6 +73,9 @@ pub fn run() {
             commands::sources::sources_reveal,
             commands::storage::storage_overview,
             commands::storage::storage_open,
+            commands::tools::tools_check,
+            commands::tools::tools_install,
+            commands::tools::tools_cancel,
         ])
         .setup(|app| {
             let directories = AppDirectories::resolve(app.handle())?;
@@ -98,6 +101,8 @@ pub fn run() {
             let projects = ProjectRegistry::open(directories.projects_file())
                 .inspect_err(|e| log::error!("could not open the project registry: {e}"))?;
 
+            tools::init(directories.root.clone());
+            app.manage(ToolsService::new(Layout { data_dir: directories.root.clone() }));
             app.manage(directories);
             app.manage(settings);
             app.manage(chats);

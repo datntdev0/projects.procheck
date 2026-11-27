@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "git",
+      "version": "2.56.1",
+      "file": "PortableGit-2.56.1-64-bit.7z.exe",
+      "urls": [
+        "https://github.com/git-for-windows/git/releases/download/v2.56.1.windows.1/PortableGit-2.56.1-64-bit.7z.exe"
+      ],
+      "sha256": "9dd04a608ceb5f6ab32a73709e0ecb159d211da71b697c45ff81f6dd0c6b49c7",
+      "size": 60125512,
+      "format": "7z-sfx",
+      "entry": "cmd/git.exe"
+    },
+    {
+      "id": "claude",
+      "version": "2.1.332",
+      "file": "claude-2.1.332-win32-x64.exe",
+      "urls": [
+        "https://downloads.claude.ai/claude-code-releases/2.1.332/win32-x64/claude.exe"
+      ],
+      "sha256": "e6652f9170a07df45f1db3e0520f1df0f7b385181ff74f70f49398a67b5fd320",
+      "size": 403083424,
+      "format": "raw",
+      "entry": "claude.exe"
+    },
+    {
+      "id": "codex",
+      "version": "0.172.0",
+      "file": "codex-package-0.172.0-x86_64-pc-windows-msvc.tar.gz",
+      "urls": [
+        "https://github.com/openai/codex/releases/download/rust-v0.172.0/codex-package-x86_64-pc-windows-msvc.tar.gz"
+      ],
+      "sha256": "b723674d7caf26a3f55121a02d6cad8f3ac8ddf5860747a6edde1c904cf593af",
+      "size": 218274372,
+      "format": "tar.gz",
+      "entry": "bin/codex.exe"
+    }
+  ]
+}
