@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+use super::artifacts::history;
 use super::layout::ProjectDirectories;
 use super::registry::{ProjectRegistry, RegistryEntry};
 use super::repository::{self, LinkError, RepositoryStatus};
@@ -270,6 +271,12 @@ fn write_project(plan: &Plan, progress: &mut dyn FnMut(CreateProgress)) -> Resul
 
     progress(CreateProgress::Manifest);
     json_file::write(&dirs.manifest_file(), &plan.manifest)?;
+
+    // The project's own git repository holds the versions of its files. Not having git, or failing
+    // to set it up, must not fail the project: it is set up again when it is first needed.
+    if let Err(e) = history::init(&dirs) {
+        log::warn!("could not set up the git repository of {}: {e}", plan.root.display());
+    }
     Ok(())
 }
 

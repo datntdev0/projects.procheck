@@ -16,6 +16,7 @@ const SOURCES_CATALOG_FILE: &str = "sources.json";
 const INDEX_DIR: &str = "index";
 const TEMPLATES_DIR: &str = "templates";
 const INITIAL_PHASE_DIR: &str = "initial";
+const ARTIFACTS_FILE: &str = "artifacts.json";
 
 /// Well-known locations inside a project directory.
 #[derive(Debug, Clone)]
@@ -38,6 +39,16 @@ impl ProjectDirectories {
 
     pub fn artifacts_dir(&self) -> PathBuf {
         self.root.join(ARTIFACTS_DIR)
+    }
+
+    /// Artifacts of the Initial phase, one folder per customization artifact.
+    pub fn initial_artifacts_dir(&self) -> PathBuf {
+        self.artifacts_dir().join(INITIAL_PHASE_DIR)
+    }
+
+    /// Review status of each artifact file.
+    pub fn artifacts_file(&self) -> PathBuf {
+        self.procheck_dir().join(ARTIFACTS_FILE)
     }
 
     pub fn board_dir(&self) -> PathBuf {

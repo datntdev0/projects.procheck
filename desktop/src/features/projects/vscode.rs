@@ -15,6 +15,15 @@ pub fn open_with_cli(folder: &Path) -> io::Result<bool> {
     Ok(true)
 }
 
+/// Starts VS Code on `folder` with `file` open in it. `false` when `code` is not on PATH.
+pub fn open_file_with_cli(folder: &Path, file: &Path) -> io::Result<bool> {
+    let Some(cli) = process::find_on_path(CLI) else {
+        return Ok(false);
+    };
+    process::launch_detached(&cli, [folder.as_os_str(), file.as_os_str()])?;
+    Ok(true)
+}
+
 /// `vscode://file/D:/src/my%20app`: the URL VS Code registers with the OS, used when `code` is not on PATH.
 pub fn protocol_url(folder: &Path) -> String {
     let path = folder.display().to_string().replace('\\', "/");

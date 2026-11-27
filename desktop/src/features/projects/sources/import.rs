@@ -10,6 +10,7 @@ use super::catalog::{self, SourceCatalog, SourceIndex, SourceRecord};
 use super::kinds::{SourceCategory, SourceKind};
 use super::{CopiedFile, SourceCandidate, SourceProblem, copy_hashed, describe_as, hash_file, is_ignored, modified_at, safe_relative};
 use crate::features::chats::now;
+use crate::features::projects::artifacts::history;
 use crate::features::projects::layout::ProjectDirectories;
 use crate::infra::storage::StorageError;
 
@@ -123,6 +124,7 @@ pub fn import(
     let added = records.clone();
     catalog::update(dirs, |catalog| add(catalog, records)).inspect_err(|_| discard(dirs, &added))?;
     log::info!("added {} source(s) to {}", added.len(), dirs.root.display());
+    history::record_sources(dirs, &format!("sources: add {}", describe_records(&added)));
     Ok(added)
 }
 
@@ -142,9 +144,20 @@ pub fn remove(dirs: &ProjectDirectories, ids: &[String]) -> Result<Vec<SourceRec
         }
     }
     let removed = catalog::update(dirs, |catalog| catalog.take(&deleted))?;
+    if !removed.is_empty() {
+        history::record_sources(dirs, &format!("sources: remove {}", describe_records(&removed)));
+    }
     match failure {
         Some(e) => Err(e.into()),
         None => Ok(removed),
+    }
+}
+
+/// The file name of a single record, or the count (`3 files`), for a commit message.
+fn describe_records(records: &[SourceRecord]) -> String {
+    match records {
+        [only] => file_name(Path::new(&only.path)),
+        many => format!("{} files", many.len()),
     }
 }
 

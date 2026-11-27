@@ -11,6 +11,7 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
+use super::artifacts::history;
 use super::edit::{self, EditError};
 use super::layout::ProjectDirectories;
 use super::registry::ProjectRegistry;
@@ -312,6 +313,7 @@ pub fn save(
     log::info!("saved the customization of project {id}");
 
     remove_unreferenced(&dirs, &saved);
+    history::record_settings(&dirs);
     Ok(saved)
 }
 

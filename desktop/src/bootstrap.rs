@@ -5,6 +5,7 @@ use crate::commands;
 use crate::container::AppDirectories;
 use crate::features::chats::runner::ChatRuns;
 use crate::features::chats::store::ChatStore;
+use crate::features::projects::artifacts::generate::GenerationRuns;
 use crate::features::projects::registry::ProjectRegistry;
 use crate::features::settings::SettingsStore;
 use crate::infra::logger;
@@ -24,6 +25,13 @@ pub fn run() {
             commands::agents::agents_sign_in,
             commands::agents::agents_sign_out,
             commands::agents::agents_pick_binary,
+            commands::artifacts::artifacts_overview,
+            commands::artifacts::artifacts_read,
+            commands::artifacts::artifacts_generate,
+            commands::artifacts::artifacts_generate_stop,
+            commands::artifacts::artifacts_set_status,
+            commands::artifacts::artifacts_open_in_vscode,
+            commands::artifacts::artifacts_reveal,
             commands::chats::chats_overview,
             commands::chats::chats_create,
             commands::chats::chats_set_model,
@@ -95,6 +103,7 @@ pub fn run() {
             app.manage(chats);
             app.manage(projects);
             app.manage(ChatRuns::default());
+            app.manage(GenerationRuns::default());
             Ok(())
         })
         .run(tauri::generate_context!())

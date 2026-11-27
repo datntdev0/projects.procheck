@@ -1,5 +1,6 @@
 //! Projects: a project is a directory holding `procheck.json` plus its data folders.
 //! The application data directory only keeps `projects.json`, a registry pointing at them.
+pub mod artifacts;
 pub mod create;
 pub mod customization;
 pub mod edit;
