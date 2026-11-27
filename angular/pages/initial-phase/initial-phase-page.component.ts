@@ -1,17 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 
 import { PhaseChipComponent } from '@components/badge/phase-chip.component';
 import { ButtonComponent } from '@components/button/button.component';
 import { EmptyStateComponent } from '@components/empty-state/empty-state.component';
 import { IconComponent } from '@components/icon/icon.component';
 import { TabItem, TabsComponent } from '@components/tabs/tabs.component';
-import { injectCurrentProject } from '@layout/current-project';
+import { ArtifactsStore } from '@features/projects/artifacts.store';
+import { ProjectsService } from '@features/projects/projects.service';
+import { injectCurrentProject, injectCurrentProjectId } from '@layout/current-project';
 import { I18nService } from '@shared/i18n/i18n.service';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { ProjectGateComponent } from '../project/project-gate.component';
-import { DEFAULT_ARTIFACTS, INITIAL_STEPS, InitialStep, phasePercent } from './initial-steps';
+import { InitialStep, emptySteps, phasePercent, toInitialSteps } from './initial-steps';
 import { PhaseProgressComponent } from './phase-progress.component';
 
 type InitialTab = 'overview' | 'discovery' | 'clarifications' | 'requirements' | 'milestones' | 'estimation';
@@ -27,7 +29,7 @@ const TABS: { id: InitialTab; icon: string }[] = [
 
 /**
  * Initial phase (ported from _proto/initial.html): header, tabs and the Overview's phase progress.
- * UI only for now — steps come from the default workflow with nothing started; other tabs are coming soon.
+ * Steps, artifacts and their statuses come from the project's artifacts (`ArtifactsStore`); other tabs are coming soon.
  */
 @Component({
   selector: 'pc-initial-phase-page',
@@ -42,6 +44,7 @@ const TABS: { id: InitialTab; icon: string }[] = [
     TranslatePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(window:focus)': 'onWindowFocus()' },
   template: `
     <div class="canvas-inner initial-page" data-testid="initial-page">
       <pc-project-gate>
@@ -68,7 +71,7 @@ const TABS: { id: InitialTab; icon: string }[] = [
 
           <div class="tab-panel" role="tabpanel" [attr.data-testid]="'initial-panel-' + tab()">
             @if (tab() === 'overview') {
-              <pc-phase-progress [steps]="steps()" />
+              <pc-phase-progress [projectId]="current.id" [steps]="steps()" />
             } @else {
               <pc-empty-state icon="sparkles" [title]="soonTitle()" [description]="'in.soon.desc' | t" />
             }
@@ -80,18 +83,26 @@ const TABS: { id: InitialTab; icon: string }[] = [
 })
 export class InitialPhasePageComponent {
   private readonly i18n = inject(I18nService);
+  private readonly store = inject(ArtifactsStore);
+  private readonly projects = inject(ProjectsService);
+  private readonly projectId = injectCurrentProjectId();
 
   protected readonly project = injectCurrentProject();
   protected readonly tab = signal<string>('overview');
 
-  /** Default workflow, nothing started yet: Discovery is the current step. */
-  protected readonly steps = computed<InitialStep[]>(() =>
-    INITIAL_STEPS.map((id, i) => ({
-      id,
-      status: i === 0 ? 'current' : 'todo',
-      artifacts: DEFAULT_ARTIFACTS[id].map((a) => ({ id: a.id, name: this.i18n.t(a.name), status: 'not_started' })),
-    })),
-  );
+  /** The steps of the project; before they are known (or without customization) none has artifacts yet. */
+  protected readonly steps = computed<InitialStep[]>(() => {
+    const overview = this.store.overview(this.projectId());
+    return overview?.steps.length ? toInitialSteps(overview.steps) : emptySteps();
+  });
+
+  constructor() {
+    effect(() => {
+      const id = this.projectId();
+      const ready = !!this.project();
+      if (id && ready && this.projects.loaded()) untracked(() => void this.store.load(id));
+    });
+  }
 
   protected readonly tabs = computed<TabItem[]>(() =>
     TABS.map((t) => ({
@@ -101,6 +112,11 @@ export class InitialPhasePageComponent {
       count: t.id === 'overview' ? `${phasePercent(this.steps())}%` : undefined,
     })),
   );
+
+  protected onWindowFocus(): void {
+    const id = this.projectId();
+    if (id && this.project()) void this.store.load(id);
+  }
 
   protected readonly soonTitle = computed(() =>
     this.i18n.t('soon.title', { page: this.i18n.t(`in.tab.${this.tab()}` as TranslationKey) }),

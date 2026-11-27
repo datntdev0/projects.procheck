@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { IconComponent } from '../icon/icon.component';
-import { ToastService, ToastTone } from './toast.service';
+import { ToastAction, ToastService, ToastTone } from './toast.service';
 
 const TONE_COLOR: Record<ToastTone, string | null> = {
   default: null,
@@ -20,6 +20,9 @@ const TONE_COLOR: Record<ToastTone, string | null> = {
       <div class="toast" role="status">
         <pc-icon [name]="toast.icon" [style.color]="color[toast.tone]" />
         <span class="grow">{{ toast.message }}</span>
+        @if (toast.action; as action) {
+          <button type="button" class="btn btn-ghost btn-sm" style="color: inherit; text-decoration: underline" (click)="run(toast.id, action)">{{ action.label }}</button>
+        }
         <button type="button" class="btn btn-ghost btn-sm btn-icon" style="color: inherit" aria-label="Dismiss" (click)="dismiss(toast.id)">
           <pc-icon name="x" [size]="14" />
         </button>
@@ -34,5 +37,10 @@ export class ToastStackComponent {
 
   protected dismiss(id: number): void {
     this.service.dismiss(id);
+  }
+
+  protected run(id: number, action: ToastAction): void {
+    this.service.dismiss(id);
+    action.run();
   }
 }

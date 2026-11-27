@@ -1,5 +1,5 @@
 import type { BadgeTone } from '@components/badge/badge.component';
-import type { TranslationKey } from '@shared/i18n/locales/en';
+import { StepState, combinedStatus } from '@features/projects/artifacts.model';
 
 /** Steps of the Initial phase, in order (see _proto/assets/workflow.js). */
 export const INITIAL_STEPS = ['discovery', 'requirements', 'scope', 'estimation', 'signoff'] as const;
@@ -11,16 +11,28 @@ export type ArtifactStatus = 'not_started' | 'draft' | 'review' | 'approved';
 export interface StepArtifact {
   id: string;
   name: string;
+  /** The least advanced status of its files; `not_started` while it has none. */
   status: ArtifactStatus;
   /** Built on sources that changed since; needs an update. */
   stale?: boolean;
+  /** Highest version among its files. */
   version?: number;
+  /** Number of files in the artifact folder (an artifact can hold several). */
+  files: number;
+  /** The path of the file when the artifact has exactly one. */
+  path: string | null;
+  /** Some file has changes that are not in git yet. */
+  uncommitted: boolean;
 }
 
 export interface InitialStep {
   id: InitialStepId;
   status: StepStatus;
   artifacts: StepArtifact[];
+  /** Some earlier step has not been generated yet. */
+  locked: boolean;
+  /** Files of the step already approved (updating them sends them back to Draft). */
+  approvedFiles: number;
   /** Date the step was completed (ISO), shown on done steps. */
   doneAt?: string | null;
 }
@@ -40,17 +52,39 @@ export const ARTIFACT_ICON: Record<ArtifactStatus, string> = {
   approved: 'circle-check',
 };
 
-/** Default artifacts of each step (Procheck default workflow). */
-export const DEFAULT_ARTIFACTS: Record<InitialStepId, { id: string; name: TranslationKey }[]> = {
-  discovery: [
-    { id: 'meeting', name: 'in.art.meeting' },
-    { id: 'disc', name: 'in.art.disc' },
-  ],
-  requirements: [{ id: 'brd', name: 'in.art.brd' }],
-  scope: [{ id: 'scope', name: 'in.art.scope' }],
-  estimation: [{ id: 'est', name: 'in.art.est' }],
-  signoff: [{ id: 'sow', name: 'in.art.sow' }],
-};
+/** A step before anything is known about the project: no artifacts yet, Discovery is the current one. */
+export function emptySteps(): InitialStep[] {
+  return INITIAL_STEPS.map((id, i) => ({
+    id,
+    status: i === 0 ? 'current' : 'todo',
+    artifacts: [],
+    locked: false,
+    approvedFiles: 0,
+  }));
+}
+
+/** Steps of the Initial phase as the backend reports them (real artifact names, files and statuses). */
+export function toInitialSteps(states: StepState[]): InitialStep[] {
+  return states.map((state) => {
+    const files = state.artifacts.flatMap((a) => a.files);
+    return {
+      id: state.stepId as InitialStepId,
+      status: state.status,
+      locked: state.locked,
+      approvedFiles: files.filter((f) => f.status === 'approved').length,
+      doneAt: state.status === 'done' ? files.map((f) => f.updatedAt).sort().at(-1) : null,
+      artifacts: state.artifacts.map((a) => ({
+        id: a.artifactId,
+        name: a.name,
+        status: combinedStatus(a.files) ?? 'not_started',
+        version: Math.max(0, ...a.files.map((f) => f.version)) || undefined,
+        files: a.files.length,
+        path: a.files.length === 1 ? a.files[0].path : null,
+        uncommitted: a.files.some((f) => f.uncommitted),
+      })),
+    };
+  });
+}
 
 export const isApproved = (artifact: StepArtifact): boolean => artifact.status === 'approved' && !artifact.stale;
 
