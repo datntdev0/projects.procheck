@@ -1,0 +1,53 @@
+// Splash screen (ported from _proto/splash.html): startup check of the bundled tools, outside the app chrome.
+.splash { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--space-8) var(--space-4); box-sizing: border-box; background: var(--bg-canvas); color: var(--fg-default); }
+.splash .sp-corner { position: fixed; top: var(--space-3); right: var(--space-3); display: flex; gap: 2px; }
+
+.splash .sp-brand { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); margin-bottom: var(--space-6); text-align: center; }
+.splash .sp-mark { width: 52px; height: 52px; border-radius: var(--radius-lg); background: var(--brand); display: flex; align-items: center; justify-content: center; }
+.splash .sp-mark img { width: 30px; height: 30px; filter: brightness(0) invert(1); }
+.splash .sp-name { font-size: 20px; font-weight: var(--weight-semibold); color: var(--fg-strong); letter-spacing: -.01em; }
+.splash .sp-ver { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 2px; }
+
+.splash .sp-card { width: min(560px, 100%); }
+.splash .sp-head { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); }
+.splash .st-ic { width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--bg-surface-3); color: var(--fg-muted); }
+.splash .st-ic.brand { background: var(--brand-soft); color: var(--brand-fg); }
+.splash .st-ic.ok { background: var(--success-soft); color: var(--success-fg); }
+.splash .st-ic.err { background: var(--danger-soft); color: var(--danger-fg); }
+.splash .sp-head h1 { font-size: var(--text-md); font-weight: var(--weight-semibold); margin: 0; color: var(--fg-strong); }
+.splash .sp-head p { margin: 3px 0 0; font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.55; }
+
+.splash .tools { list-style: none; margin: 0; padding: 0; }
+.splash .tool { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 4px var(--space-3); align-items: center; padding: 12px var(--space-4); }
+.splash .tool + .tool { border-top: 1px solid var(--border-subtle); }
+.splash .t-ic { width: 32px; height: 32px; border-radius: var(--radius-md); border: 1px solid var(--border-default); display: flex; align-items: center; justify-content: center; color: var(--fg-muted); background: var(--bg-surface); }
+.splash .t-main { min-width: 0; }
+.splash .t-name { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
+.splash .t-role { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 1px; }
+.splash .t-meta { font-size: 11px; color: var(--fg-faint); font-variant-numeric: tabular-nums; }
+.splash .t-st { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--fg-muted); white-space: nowrap; }
+.splash .t-st.ok { color: var(--success-fg); }
+.splash .t-st.err { color: var(--danger-fg); }
+.splash .t-st.wait, .splash .t-st.later { color: var(--fg-subtle); }
+.splash .t-st .spinner { width: 14px; height: 14px; }
+.splash .t-st a { font-weight: var(--weight-medium); }
+.splash .t-prog { grid-column: 2 / 4; display: flex; flex-direction: column; gap: 4px; }
+.splash .t-prog .row-x { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
+.splash .tool.is-dim .t-ic, .splash .tool.is-dim .t-name { opacity: .75; }
+
+// Unmeasurable steps (verifying, extracting, configuring) run an indeterminate bar.
+.progress.indet > span { width: 30% !important; animation: indet 1.1s ease-in-out infinite; transition: none; }
+@keyframes indet { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+
+.splash .sp-err { margin: 0 var(--space-4) var(--space-3); padding: 9px 12px; border-radius: var(--radius-sm); background: var(--danger-soft); color: var(--danger-fg); font-size: var(--text-xs); line-height: 1.5; display: flex; gap: 8px; }
+.splash .sp-err.is-muted { background: var(--bg-surface-3); color: var(--fg-muted); }
+.splash .sp-err pc-icon { flex-shrink: 0; margin-top: 1px; }
+.splash .sp-err code { background: transparent; border: 0; padding: 0; color: inherit; }
+.splash .sp-err-detail { display: block; margin-top: 2px; opacity: .85; overflow-wrap: anywhere; }
+
+.splash .sp-foot { display: flex; align-items: center; gap: var(--space-2); padding: 10px var(--space-4); border-top: 1px solid var(--border-subtle); background: var(--bg-surface-2); }
+.splash .sp-foot .where { font-size: 11px; color: var(--fg-subtle); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.splash .sp-foot .where code { font-size: 11px; background: transparent; border: 0; padding: 0; color: var(--fg-muted); }
+.splash .sp-foot .grow { flex: 1; }
+.splash .sp-note { width: min(560px, 100%); margin-top: var(--space-3); font-size: var(--text-xs); color: var(--fg-subtle); display: flex; gap: 6px; line-height: 1.5; }
+.splash .sp-note pc-icon { flex-shrink: 0; margin-top: 1px; }

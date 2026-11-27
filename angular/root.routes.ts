@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 
+import { toolsGuard } from '@features/tools/tools.guard';
 import { LayoutRouteData } from '@layout/breadcrumbs';
 import { PROJECT_ID_PARAM } from '@layout/current-project';
 import { PROJECT_PAGES, ProjectNavItem } from '@layout/navigation';
@@ -17,6 +18,7 @@ import { ProjectSettingsPageComponent } from '@pages/project-settings/project-se
 import { ProjectsPageComponent } from '@pages/projects/projects-page.component';
 import { SettingsPageComponent } from '@pages/settings/settings-page.component';
 import { SourcesPageComponent } from '@pages/sources/sources-page.component';
+import { SplashPageComponent } from '@pages/splash/splash-page.component';
 
 const crumb = (key: TranslationKey): LayoutRouteData => ({ crumb: key });
 const chatsData: LayoutRouteData = { crumb: 'nav.chats.all', hideAssistant: true };
@@ -36,9 +38,12 @@ function projectPageRoute(page: ProjectNavItem): Route {
 }
 
 export const routes: Routes = [
+  // Outside the app layout: no sidebar or topbar. The layout below sends here until Git is installed.
+  { path: 'splash', component: SplashPageComponent, title: 'Procheck' },
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [toolsGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'projects' },
       { path: 'projects', component: ProjectsPageComponent, title: 'Projects · Procheck' },

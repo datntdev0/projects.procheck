@@ -137,6 +137,11 @@ import {
   LucideFlaskConical,
   LucideDraftingCompass,
   LucideEye,
+  LucideGitBranch,
+  LucideCircleX,
+  LucideRotateCw,
+  LucidePause,
+  LucideWifiOff,
   provideLucideIcons,
 } from '@lucide/angular';
 
@@ -279,6 +284,11 @@ export const APP_ICONS = [
   LucideFlaskConical,
   LucideDraftingCompass,
   LucideEye,
+  LucideGitBranch,
+  LucideCircleX,
+  LucideRotateCw,
+  LucidePause,
+  LucideWifiOff,
 ];
 
 export function provideAppIcons(): Provider {
