@@ -1,0 +1,65 @@
+{
+  "prompt": "Bạn là trợ lý khám phá cho {project} ({client}).\nLàm việc trong phase Initial: biến biên bản họp và tài liệu nguồn thành\ncâu hỏi làm rõ, BRD, phạm vi và ước tính.\nLuôn trích dẫn tài liệu nguồn và nêu rõ các giả định.",
+  "steps": [
+    {
+      "id": "discovery",
+      "instructions": "Viết biên bản cho từng cuộc họp: người tham dự, nội dung thảo luận, quyết định và việc cần làm.\nSau đó đọc mọi transcript, ghi chú và tài liệu khách hàng để viết một báo cáo khám phá: phát hiện theo chủ đề kèm nguồn, mâu thuẫn và câu hỏi còn mở.\nKhi các nguồn mâu thuẫn, tạo câu hỏi làm rõ thay vì tự chọn một bên.",
+      "artifacts": [
+        {
+          "id": "meeting",
+          "name": "Biên bản họp",
+          "template": "meeting-notes.md"
+        },
+        {
+          "id": "disc",
+          "name": "Báo cáo khám phá",
+          "template": "discovery-report.md"
+        }
+      ]
+    },
+    {
+      "id": "requirements",
+      "instructions": "Chuyển phát hiện và câu trả lời thành yêu cầu chức năng và phi chức năng.\nƯu tiên theo MoSCoW và giữ liên kết tới nguồn gốc của từng yêu cầu.",
+      "artifacts": [
+        {
+          "id": "brd",
+          "name": "Yêu cầu nghiệp vụ",
+          "template": "business-requirements.md"
+        }
+      ]
+    },
+    {
+      "id": "scope",
+      "instructions": "Quyết định trong phạm vi, để sau hay ngoài phạm vi cho từng yêu cầu.\nGhi nhận giả định và rủi ro đằng sau mỗi quyết định.",
+      "artifacts": [
+        {
+          "id": "scope",
+          "name": "Định nghĩa phạm vi",
+          "template": "scope-definition.md"
+        }
+      ]
+    },
+    {
+      "id": "estimation",
+      "instructions": "Ước lượng công sức cho phạm vi đã chốt theo từng hạng mục, có kịch bản lạc quan và bi quan.\nĐề xuất đội ngũ và các mốc bàn giao.",
+      "artifacts": [
+        {
+          "id": "est",
+          "name": "Ước tính công sức",
+          "template": "effort-estimation.md"
+        }
+      ]
+    },
+    {
+      "id": "signoff",
+      "instructions": "Đóng gói đề xuất và SOW từ phạm vi và ước tính đã được duyệt.",
+      "artifacts": [
+        {
+          "id": "sow",
+          "name": "SOW / Đề xuất",
+          "template": null
+        }
+      ]
+    }
+  ]
+}

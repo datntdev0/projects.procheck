@@ -1,0 +1,65 @@
+{
+  "prompt": "You are the discovery assistant for {project} ({client}).\nWork in the Initial phase: turn meeting notes and source documents into\nclarifying questions, a BRD, scope and estimates.\nAlways cite the source document and flag assumptions explicitly.",
+  "steps": [
+    {
+      "id": "discovery",
+      "instructions": "Write meeting notes for every meeting: attendees, discussion, decisions and action items.\nThen read every transcript, note and client document and write one discovery report: findings by theme with the source cited, conflicts and open questions.\nWhen sources disagree, raise a clarification question instead of picking one.",
+      "artifacts": [
+        {
+          "id": "meeting",
+          "name": "Meeting notes",
+          "template": "meeting-notes.md"
+        },
+        {
+          "id": "disc",
+          "name": "Discovery report",
+          "template": "discovery-report.md"
+        }
+      ]
+    },
+    {
+      "id": "requirements",
+      "instructions": "Turn the findings and answered questions into functional and non-functional requirements.\nPrioritise them with MoSCoW and keep a link to where each one came from.",
+      "artifacts": [
+        {
+          "id": "brd",
+          "name": "Business requirements",
+          "template": "business-requirements.md"
+        }
+      ]
+    },
+    {
+      "id": "scope",
+      "instructions": "Decide what is in scope, later or out for every requirement.\nRecord the assumptions and risks behind each decision.",
+      "artifacts": [
+        {
+          "id": "scope",
+          "name": "Scope definition",
+          "template": "scope-definition.md"
+        }
+      ]
+    },
+    {
+      "id": "estimation",
+      "instructions": "Size the effort for the agreed scope, by area, with an optimistic and a pessimistic case.\nPropose the team and the delivery milestones.",
+      "artifacts": [
+        {
+          "id": "est",
+          "name": "Effort estimation",
+          "template": "effort-estimation.md"
+        }
+      ]
+    },
+    {
+      "id": "signoff",
+      "instructions": "Package the proposal and the SOW from the approved scope and estimation.",
+      "artifacts": [
+        {
+          "id": "sow",
+          "name": "SOW / Proposal",
+          "template": null
+        }
+      ]
+    }
+  ]
+}
