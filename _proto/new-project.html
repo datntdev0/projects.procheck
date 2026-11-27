@@ -9,24 +9,29 @@
   <script src="assets/app.js"></script>
   <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
+    /* ===== New / open project — enterprise, flat. Page-only styles, semantic tokens only ===== */
     .canvas { container-type: inline-size; }
     .wrap-np { max-width: 1120px; margin: 0 auto; }
 
-    /* stepper */
-    .stepper-bar { padding: var(--space-4) var(--space-5); margin-bottom: var(--space-6); background: var(--gradient-hero), var(--bg-surface); }
-    .stepper .step { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-subtle); }
+    /* stepper: a strip at the top of the wizard panel */
+    .wiz-steps { padding: 12px var(--space-6); border-bottom: 1px solid var(--border-default); }
+    .stepper .step { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-subtle); display: inline-flex; align-items: center; gap: 8px; }
     .stepper .step.is-current { color: var(--fg-strong); }
     .stepper .step.is-done { color: var(--fg-default); }
     .stepper .step:hover .step-label { color: var(--fg-strong); }
+    .stepper .step.is-current .step-index { box-shadow: none; }
 
     /* layout */
     .wiz { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-6); align-items: start; }
-    .aside { position: sticky; top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
-    .panel-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--border-subtle); }
-    .panel-head .ph-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--brand-soft); color: var(--brand-fg); flex-shrink: 0; }
-    .panel-head p { margin: 2px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
-    .panel-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
-    .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border-subtle); background: var(--bg-surface-2); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .aside { position: sticky; top: var(--space-4); }
+    .np-panel { border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); overflow: hidden; }
+    .sec-head { padding: var(--space-4) var(--space-6) 0; }
+    .sec-head h4 { font-size: var(--text-md); margin: 0; }
+    .sec-head p { margin: 2px 0 0; font-size: var(--text-sm); color: var(--fg-muted); }
+    .sec { padding: var(--space-5) var(--space-6); display: flex; flex-direction: column; gap: var(--space-5); }
+    .sec + .sec { border-top: 1px solid var(--border-subtle); }
+    .sec-head + .sec { padding-top: var(--space-4); }
+    .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 10px var(--space-6); border-top: 1px solid var(--border-default); background: var(--bg-surface-2); }
     .fgrid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-4); }
     .s2 { grid-column: span 2; } .s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s6 { grid-column: 1 / -1; }
     .req { color: var(--danger-fg); margin-left: 2px; }
@@ -35,18 +40,23 @@
     .field.has-error .ferr { display: flex; }
     .field.has-error .input { border-color: var(--danger); }
     .field.has-error .input:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 25%, transparent); }
-    .sub-title { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
-    .sub-title h5 { font-size: var(--text-md); }
+    .sub-title { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
+    .sub-title h5 { font-size: var(--text-sm); font-weight: var(--weight-semibold); margin: 0; display: inline-flex; align-items: center; gap: var(--space-2); }
+    /* plain note line (no tinted box) */
+    .note-line { display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.55; }
+    .note-line > svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; color: var(--fg-subtle); }
+    .note-line.ok > svg { color: var(--success-fg); }
+    .note-line.warn > svg { color: var(--warning-fg); }
+    .note-line code { font-size: 11px; }
 
-    /* project directory + tree */
+    /* project directory + tree (plain, no inner box) */
     .dir-row { display: flex; gap: var(--space-2); }
-    .ptree { border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface-2); overflow: hidden; }
-    .ptree-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: 12px; color: var(--fg-strong); font-weight: var(--weight-medium); background: var(--bg-surface); }
-    .ptree-head svg { color: var(--brand-fg); }
-    .ptree-head .badge { margin-left: auto; font-family: var(--font-sans); flex-shrink: 0; }
-    .tbody { position: relative; margin: 8px 0 8px 22px; border-left: 1px solid var(--border-strong); }
-    .tnode { position: relative; display: grid; grid-template-columns: 16px minmax(0, 232px) minmax(0, 1fr); align-items: center; gap: 10px; padding: 6px 14px 6px 20px; font-size: var(--text-xs); }
-    .tnode::before { content: ""; position: absolute; left: 0; top: 50%; width: 12px; border-top: 1px solid var(--border-strong); }
+    .ptree-head { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-family: var(--font-mono); font-size: 12px; color: var(--fg-strong); font-weight: var(--weight-medium); }
+    .ptree-head svg { width: 14px; height: 14px; color: var(--fg-subtle); flex-shrink: 0; }
+    .ptree-head .badge { font-family: var(--font-sans); flex-shrink: 0; }
+    .tbody { position: relative; margin: 2px 0 4px 6px; border-left: 1px solid var(--border-default); }
+    .tnode { position: relative; display: grid; grid-template-columns: 16px minmax(0, 232px) minmax(0, 1fr); align-items: center; gap: 10px; padding: 4px 8px 4px 18px; font-size: var(--text-xs); }
+    .tnode::before { content: ""; position: absolute; left: 0; top: 50%; width: 10px; border-top: 1px solid var(--border-default); }
     .tnode svg { width: 14px; height: 14px; color: var(--fg-subtle); }
     .tnode .tp { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-default); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .tnode.is-hidden .tp { color: var(--fg-muted); }
@@ -55,107 +65,103 @@
     .repo-quick { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-top: 2px; }
     .repo-quick code { font-size: 11px; }
 
-    /* open existing project */
-    .open-wrap { max-width: 860px; margin: 0 auto; }
-    .recent-list { display: flex; flex-direction: column; border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); }
-    .recent-item { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); border: 0; border-bottom: 1px solid var(--border-subtle); background: transparent; text-align: left; cursor: pointer; width: 100%; }
-    .recent-item:last-child { border-bottom: 0; }
-    .recent-item:hover { background: var(--bg-hover); }
-    .recent-item.is-picked { background: var(--brand-soft); }
-    .recent-item .project-avatar { width: 30px; height: 30px; border-radius: 8px; font-size: 11px; }
-    .recent-item .rp { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-subtle); }
-    .detect { border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); overflow: hidden; }
-    .detect-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-subtle); background: var(--gradient-hero), var(--bg-surface); }
-    .detect-head .project-avatar { width: 44px; height: 44px; border-radius: 11px; font-size: 14px; }
-    .detect-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-subtle); }
-    .detect-phases .dp-h { display: flex; justify-content: space-between; font-size: var(--text-xs); margin-bottom: 6px; color: var(--fg-muted); font-weight: var(--weight-medium); }
-    .detect-phases .dp-h b { color: var(--fg-default); font-variant-numeric: tabular-nums; }
-    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--space-6); padding: var(--space-2) var(--space-5); }
-    .fact { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-xs); }
-    .fact .k { color: var(--fg-subtle); white-space: nowrap; }
-    .fact .v { color: var(--fg-default); font-weight: var(--weight-medium); min-width: 0; text-align: right; }
-    .fact .v.mono { font-size: 11px; font-weight: 400; }
-    .checks { padding: var(--space-4) var(--space-5); background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px; }
-    .checks .ck { display: flex; align-items: flex-start; gap: var(--space-2); font-size: var(--text-sm); color: var(--fg-default); }
-    .checks .ck svg { margin-top: 2px; }
-    .checks .ck.ok svg { color: var(--success-fg); } .checks .ck.info svg { color: var(--brand-fg); }
-    .checks .ck code { font-size: 11.5px; background: var(--code-bg); padding: 1px 6px; border-radius: var(--radius-xs); }
-
-    /* selectable cards */
-    .opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+    /* selectable options: flat tiles, nothing boxed inside */
+    .opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
     .opts.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .opt { position: relative; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-5); border: 1.5px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); cursor: pointer; text-align: left; transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast); }
+    .opt { position: relative; display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); cursor: pointer; text-align: left; transition: border-color var(--dur-fast), background var(--dur-fast); }
     .opt:hover { border-color: var(--border-strong); }
-    .opt:focus-visible { box-shadow: var(--shadow-focus); border-radius: var(--radius-lg); }
-    .opt.is-selected { border-color: var(--brand); background: var(--brand-soft); box-shadow: var(--shadow-focus); }
-    .opt .tick { position: absolute; top: 14px; right: 14px; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; color: transparent; background: var(--bg-surface); }
-    .opt .tick svg { width: 12px; height: 12px; stroke-width: 3; }
+    .opt:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+    .opt.is-selected { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 5%, var(--bg-surface)); box-shadow: inset 0 0 0 1px var(--brand); }
+    .opt .tick { position: absolute; top: 14px; right: 14px; width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center; color: transparent; background: var(--bg-surface); }
+    .opt .tick svg { width: 10px; height: 10px; stroke-width: 3.5; }
     .opt.is-selected .tick { background: var(--brand); border-color: var(--brand); color: var(--fg-on-brand); }
-    .opt-ico { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
-    .opt-ico.initial { background: var(--brand-soft); color: var(--phase-initial); }
-    .opt-ico.release { background: var(--accent-purple-soft); color: var(--phase-release); }
-    .opt-ico.sdlc { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
-    .opt.is-selected .opt-ico { background: var(--bg-surface); }
-    .opt h4 { font-size: var(--text-lg); }
-    .opt p { margin: 0; font-size: var(--text-sm); color: var(--fg-muted); line-height: 1.55; }
-    .opt .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: var(--space-1); }
-    .opt-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-lg); cursor: pointer; background: var(--bg-surface); }
-    .opt-row:hover { border-color: var(--border-strong); }
-    .opt-row b { display: block; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
-    .opt-row .hint { display: block; margin-top: 2px; }
+    .opt-top { display: flex; align-items: center; gap: var(--space-2); padding-right: 24px; }
+    .opt-ico { display: inline-flex; flex-shrink: 0; }
+    .opt-ico svg { width: 16px; height: 16px; }
+    .opt-ico.initial { color: var(--brand-fg); } .opt-ico.release { color: var(--accent-purple); } .opt-ico.sdlc { color: var(--accent-teal-fg); }
+    .opt h4 { font-size: var(--text-md); margin: 0; }
+    .opt p { margin: 0; font-size: var(--text-sm); color: var(--fg-muted); line-height: 1.5; }
+    .opt .tags { margin-top: auto; padding-top: var(--space-1); font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.5; }
+    .opt .tags .tag { display: inline; height: auto; padding: 0; border: 0; background: none; border-radius: 0; font-size: inherit; color: inherit; }
+    .opt .tags .tag + .tag::before { content: " · "; color: var(--fg-faint); }
     .opt-row.is-disabled, .field.is-disabled { opacity: .55; pointer-events: none; }
-    .rows { display: flex; flex-direction: column; gap: var(--space-2); }
 
-    /* phase preview */
-    .pv { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
-    .pv > div { padding: 10px 12px; border-radius: var(--radius-md); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); }
-    .pv .bar { height: 4px; border-radius: 4px; background: var(--border-default); margin-bottom: 8px; position: relative; overflow: hidden; }
-    .pv .bar i { position: absolute; inset: 0; border-radius: inherit; }
+    /* phase plan: one ruled row of three columns */
+    .pv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+    .pv .bar { height: 4px; border-radius: 1px; background: var(--bg-surface-3); margin-bottom: 6px; position: relative; overflow: hidden; }
+    .pv .bar i { position: absolute; inset: 0; }
     .pv b { display: block; font-size: var(--text-xs); color: var(--fg-default); font-weight: var(--weight-semibold); }
     .pv span { font-size: var(--text-2xs); color: var(--fg-subtle); }
-    .pv .is-start { border-color: var(--brand); background: var(--brand-soft); }
+    .pv .is-start span { color: var(--brand-fg); font-weight: var(--weight-semibold); }
 
-    /* files */
-    .dropzone { padding: var(--space-6); }
-    .dz-ico { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--brand-fg); }
-    .dropzone.is-over .dz-ico, .dropzone:hover .dz-ico { border-color: var(--brand); }
-    .flist { display: flex; flex-direction: column; border: 1px solid var(--border-default); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); }
-    .fitem { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); border-bottom: 1px solid var(--border-subtle); }
-    .fitem:last-child { border-bottom: 0; }
+    /* files: ruled rows, plain glyphs */
+    .dropzone { padding: var(--space-5); }
+    .dz-ico { display: inline-flex; color: var(--fg-subtle); }
+    .dz-ico svg { width: 22px; height: 22px; }
+    .dropzone.is-over .dz-ico, .dropzone:hover .dz-ico { color: var(--brand-fg); }
+    .flist { display: flex; flex-direction: column; border-top: 1px solid var(--border-subtle); }
+    .fitem { display: flex; align-items: center; gap: var(--space-3); padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }
+    .fitem .file-tile { width: 16px; height: 16px; background: none !important; color: var(--fg-subtle) !important; }
+    .fitem .file-tile svg { width: 16px; height: 16px; }
     .fitem .fname { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-default); }
     .fitem .fmeta { font-size: var(--text-xs); color: var(--fg-subtle); }
     .fitem .progress { width: 120px; height: 4px; }
-    .flist-empty { padding: var(--space-5); text-align: center; font-size: var(--text-sm); color: var(--fg-subtle); }
+    .flist-empty { padding: var(--space-4) 0; font-size: var(--text-sm); color: var(--fg-subtle); border-bottom: 1px solid var(--border-subtle); }
 
     /* ai */
     .cli-card { gap: var(--space-3); }
-    .cli-top { display: flex; align-items: center; gap: var(--space-3); }
-    .cli-logo { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface-3); color: var(--fg-default); }
-    .opt.is-selected .cli-logo { background: var(--bg-surface); color: var(--brand-fg); }
+    .cli-top { display: flex; align-items: center; gap: var(--space-3); padding-right: 24px; }
+    .cli-logo { display: inline-flex; color: var(--fg-muted); flex-shrink: 0; }
+    .cli-logo svg { width: 20px; height: 20px; }
+    .opt.is-selected .cli-logo { color: var(--brand-fg); }
     .cli-meta { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); color: var(--fg-subtle); }
-    .cli-meta code { font-size: 11px; color: var(--fg-muted); }
     .cli-model { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); color: var(--fg-subtle); font-weight: var(--weight-medium); }
     .cli-model .select { width: 100%; }
-    .rev { display: flex; flex-direction: column; }
-    .rev-item { display: flex; align-items: flex-start; gap: var(--space-3); padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-sm); }
-    .rev-item:last-child { border-bottom: 0; }
+    .home-t { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
+    #home-code { border: 0; margin-top: 8px; padding: 8px 12px; }
+    .rev { display: flex; flex-direction: column; border-top: 1px solid var(--border-subtle); }
+    .rev-item { display: flex; align-items: flex-start; gap: var(--space-3); padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-sm); }
     .rev-item > svg { color: var(--success-fg); margin-top: 2px; }
     .rev-item .k { width: 150px; flex-shrink: 0; color: var(--fg-subtle); }
     .rev-item .v { min-width: 0; color: var(--fg-default); word-break: break-word; }
-    .rev-item .v code { font-size: 11.5px; background: var(--code-bg); padding: 1px 6px; border-radius: var(--radius-xs); }
+    .rev-item .v code { font-size: 11.5px; }
 
-    /* summary aside */
-    .sum-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-subtle); }
-    .sum-head .project-avatar { width: 40px; height: 40px; border-radius: 10px; }
-    .sum-rows { padding: var(--space-2) var(--space-5) var(--space-4); }
+    /* summary aside: one panel, tip is its last section */
+    .sum-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); border-bottom: 1px solid var(--border-default); }
+    .sum-head .project-avatar { width: 36px; height: 36px; }
+    .sum-rows { padding: 0 var(--space-4); }
     .sum-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-xs); }
     .sum-row:last-child { border-bottom: 0; }
     .sum-row .k { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-subtle); white-space: nowrap; }
     .sum-row .k svg { width: 13px; height: 13px; }
     .sum-row .v { color: var(--fg-default); font-weight: var(--weight-medium); text-align: right; min-width: 0; }
-    .sum-row .avatar { width: 22px; height: 22px; font-size: 8.5px; }
-    .tip-card { padding: var(--space-4); display: flex; gap: var(--space-3); font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.55; }
-    .tip-card svg { color: var(--accent-purple); margin-top: 1px; }
+    .tip-line { padding: 12px var(--space-4); border-top: 1px solid var(--border-default); background: var(--bg-surface-2); }
+
+    /* open existing project */
+    .open-wrap { max-width: 860px; margin: 0 auto; }
+    .recent-list { display: flex; flex-direction: column; border-top: 1px solid var(--border-subtle); }
+    .recent-item { display: flex; align-items: center; gap: var(--space-3); padding: 8px var(--space-2); border: 0; border-bottom: 1px solid var(--border-subtle); background: transparent; text-align: left; cursor: pointer; width: 100%; font: inherit; color: inherit; }
+    .recent-item:hover { background: var(--bg-hover); }
+    .recent-item.is-picked { background: color-mix(in srgb, var(--brand) 7%, var(--bg-surface)); box-shadow: inset 2px 0 0 var(--brand); }
+    .recent-item .project-avatar { width: 26px; height: 26px; font-size: 10px; }
+    .recent-item .rp { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-subtle); }
+    .detect { display: flex; flex-direction: column; gap: var(--space-4); }
+    .detect-head { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .detect-head .project-avatar { width: 36px; height: 36px; font-size: 13px; }
+    .detect-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+    .detect-phases .dp-h { display: flex; justify-content: space-between; font-size: var(--text-xs); margin-bottom: 6px; color: var(--fg-muted); font-weight: var(--weight-medium); }
+    .detect-phases .dp-h b { color: var(--fg-default); font-variant-numeric: tabular-nums; }
+    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--space-6); border-top: 1px solid var(--border-subtle); }
+    .fact { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-xs); }
+    .fact .k { color: var(--fg-subtle); white-space: nowrap; }
+    .fact .v { color: var(--fg-default); font-weight: var(--weight-medium); min-width: 0; text-align: right; }
+    .fact .v.mono { font-size: 11px; font-weight: 400; }
+    .checks { display: flex; flex-direction: column; gap: 6px; }
+    .checks .ck { display: flex; align-items: flex-start; gap: var(--space-2); font-size: var(--text-sm); color: var(--fg-default); }
+    .checks .ck svg { margin-top: 2px; width: 15px; height: 15px; flex-shrink: 0; }
+    .checks .ck.ok svg { color: var(--success-fg); } .checks .ck.info svg { color: var(--fg-subtle); }
+    .checks .ck code { font-size: 11.5px; }
+    .kicker-l { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: var(--tracking-kicker, .06em); color: var(--fg-subtle); }
 
     /* creating modal */
     .cstep { display: flex; align-items: flex-start; gap: var(--space-3); padding: 8px 0; font-size: var(--text-sm); color: var(--fg-faint); transition: color var(--dur-base); }
@@ -175,35 +181,34 @@
       .s2, .s3, .s4 { grid-column: 1 / -1; }
       .stepper .step-label { display: none; }
       .stepper .step.is-current .step-label { display: inline; }
-      .panel-body, .panel-head, .wiz-foot { padding-left: var(--space-4); padding-right: var(--space-4); }
+      .sec, .sec-head, .wiz-foot, .wiz-steps { padding-left: var(--space-4); padding-right: var(--space-4); }
       .rev-item .k { width: 100px; }
       .tnode { grid-template-columns: 16px minmax(0, 1fr); } .tnode .td { display: none; }
-      .facts { grid-template-columns: minmax(0, 1fr); } .detect-phases { grid-template-columns: minmax(0, 1fr); }
+      .facts { grid-template-columns: minmax(0, 1fr); } .detect-phases, .pv { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
     }
   </style>
 </head>
 <body data-page="new-project" data-shell="home" data-crumb="np.title" data-assistant="closed">
   <main class="canvas"><div class="canvas-inner"><div class="wrap-np">
 
-    <div class="page-header">
-      <div>
-        <div class="crumbs"><a href="index.html" data-i18n="shell.home"></a><i data-lucide="chevron-right" class="icon-sm"></i><span id="h-crumb" data-i18n="np.title"></span></div>
+    <div class="page-head">
+      <div style="min-width:0;flex:1 1 420px">
+        <div class="crumbs text-xs text-subtle row gap-2" style="margin-bottom:6px"><a href="index.html" class="text-subtle" data-i18n="shell.home"></a><i data-lucide="chevron-right" class="icon-sm"></i><span id="h-crumb" data-i18n="np.title"></span></div>
         <h1 id="h-h1" data-i18n="np.h1"></h1>
-        <div class="subtitle" id="h-sub" data-i18n="np.sub"></div>
+        <div class="meta"><span id="h-sub" data-i18n="np.sub"></span></div>
       </div>
-      <a class="btn btn-ghost" href="index.html"><i data-lucide="x"></i><span data-i18n="common.cancel"></span></a>
+      <div class="actions"><a class="btn btn-ghost" href="index.html"><i data-lucide="x"></i><span data-i18n="common.cancel"></span></a></div>
     </div>
 
     <div id="new-flow">
-    <div class="card stepper-bar"><div class="stepper" id="stepper"></div></div>
-
     <div class="wiz">
-      <div class="card" id="wizard">
+      <div class="np-panel" id="wizard">
+        <div class="wiz-steps"><div class="stepper" id="stepper"></div></div>
 
         <!-- STEP 1 · Basics -->
         <section data-panel="1">
-          <div class="panel-head"><span class="ph-ico"><i data-lucide="file-pen-line" class="icon-lg"></i></span><div><h4 data-i18n="np.s1.t"></h4><p data-i18n="np.s1.d"></p></div></div>
-          <div class="panel-body">
+          <div class="sec-head"><h4 data-i18n="np.s1.t"></h4><p data-i18n="np.s1.d"></p></div>
+          <div class="sec">
             <div class="fgrid">
               <div class="field s4" id="f-name">
                 <label class="label" for="name"><span data-i18n="np.name"></span><span class="req">*</span></label>
@@ -246,47 +251,46 @@
               <div class="ferr"><i data-lucide="alert-circle"></i><span id="dir-err"></span></div>
               <div class="hint" data-i18n="np.dir.h"></div>
             </div>
+          </div>
+          <div class="sec">
             <div>
               <div class="sub-title"><h5 data-i18n="np.tree.title"></h5><span class="text-xs text-subtle" data-i18n="np.tree.sub"></span></div>
               <div class="ptree" id="ptree"></div>
-              <div class="alert alert-info" style="margin-top:12px"><i data-lucide="hard-drive"></i><div class="grow text-sm" data-i18n-html="np.tree.note"></div></div>
             </div>
+            <div class="note-line"><i data-lucide="hard-drive"></i><div class="grow" data-i18n-html="np.tree.note"></div></div>
           </div>
         </section>
 
         <!-- STEP 2 · Starting phase -->
         <section data-panel="2" class="hidden">
-          <div class="panel-head"><span class="ph-ico"><i data-lucide="route" class="icon-lg"></i></span><div><h4 data-i18n="np.s2.t"></h4><p data-i18n="np.s2.d"></p></div></div>
-          <div class="panel-body">
+          <div class="sec-head"><h4 data-i18n="np.s2.t"></h4><p data-i18n="np.s2.d"></p></div>
+          <div class="sec">
             <div class="opts" id="phases" role="radiogroup">
               <div class="opt is-selected" role="radio" tabindex="0" aria-checked="true" data-phase="initial">
                 <span class="tick"><i data-lucide="check"></i></span>
-                <span class="opt-ico initial"><i data-lucide="compass" class="icon-lg"></i></span>
-                <h4 data-i18n="np.phase.initial.t"></h4>
+                <div class="opt-top"><span class="opt-ico initial"><i data-lucide="compass"></i></span><h4 data-i18n="np.phase.initial.t"></h4></div>
                 <p data-i18n="np.phase.initial.d"></p>
                 <div class="tags"><span class="tag" data-i18n="np.tag.notes"></span><span class="tag">BRD</span><span class="tag" data-i18n="np.tag.scope"></span><span class="tag" data-i18n="np.tag.estimate"></span><span class="tag">SOW</span></div>
               </div>
               <div class="opt" role="radio" tabindex="0" aria-checked="false" data-phase="release">
                 <span class="tick"><i data-lucide="check"></i></span>
-                <span class="opt-ico release"><i data-lucide="rocket" class="icon-lg"></i></span>
-                <h4 data-i18n="np.phase.release.t"></h4>
+                <div class="opt-top"><span class="opt-ico release"><i data-lucide="rocket"></i></span><h4 data-i18n="np.phase.release.t"></h4></div>
                 <p data-i18n="np.phase.release.d"></p>
                 <div class="tags"><span class="tag" data-i18n="np.tag.arch"></span><span class="tag" data-i18n="np.tag.scaffold"></span><span class="tag">Infra</span><span class="tag">CI/CD</span></div>
               </div>
               <div class="opt" role="radio" tabindex="0" aria-checked="false" data-phase="sdlc">
                 <span class="tick"><i data-lucide="check"></i></span>
-                <span class="opt-ico sdlc"><i data-lucide="infinity" class="icon-lg"></i></span>
-                <h4 data-i18n="np.phase.sdlc.t"></h4>
+                <div class="opt-top"><span class="opt-ico sdlc"><i data-lucide="infinity"></i></span><h4 data-i18n="np.phase.sdlc.t"></h4></div>
                 <p data-i18n="np.phase.sdlc.d"></p>
                 <div class="tags"><span class="tag">Kanban</span><span class="tag">Worktree</span><span class="tag" data-i18n="np.tag.evidence"></span><span class="tag">Pull request</span></div>
               </div>
             </div>
-
+          </div>
+          <div class="sec">
             <div>
               <div class="sub-title"><h5 data-i18n="np.pv.title"></h5></div>
               <div class="pv" id="pv"></div>
             </div>
-
             <div class="fgrid">
               <div class="field s3" id="method-field">
                 <label class="label" for="method" data-i18n="np.method"></label>
@@ -296,33 +300,34 @@
                   <option value="hybrid" data-i18n="np.method.hybrid"></option>
                 </select>
               </div>
-              <div class="field s3" style="justify-content:flex-end"><div class="hint" id="method-hint" style="padding-bottom:10px"></div></div>
+              <div class="field s3" style="justify-content:flex-end"><div class="hint" id="method-hint" style="padding-bottom:8px"></div></div>
             </div>
           </div>
         </section>
 
         <!-- STEP 3 · Sources -->
         <section data-panel="3" class="hidden">
-          <div class="panel-head"><span class="ph-ico"><i data-lucide="folder-input" class="icon-lg"></i></span><div><h4 data-i18n="np.s3.t"></h4><p data-i18n="np.s3.d"></p></div></div>
-          <div class="panel-body">
+          <div class="sec-head"><h4 data-i18n="np.s3.t"></h4><p data-i18n="np.s3.d"></p></div>
+          <div class="sec">
+            <div class="dropzone" id="dz" tabindex="0" role="button">
+              <span class="dz-ico"><i data-lucide="upload-cloud"></i></span>
+              <b style="font-size:var(--text-sm);color:var(--fg-default)" data-i18n="np.drop.t"></b>
+              <span class="text-xs" data-i18n="np.drop.d"></span>
+              <input type="file" id="file-input" multiple class="hidden" accept=".pdf,.doc,.docx,.xlsx,.xls,.md,.txt,.vtt,.srt,.mp3,.wav,.m4a">
+            </div>
             <div>
-              <div class="dropzone" id="dz" tabindex="0" role="button">
-                <span class="dz-ico"><i data-lucide="upload-cloud" class="icon-lg"></i></span>
-                <b style="font-size:var(--text-md);color:var(--fg-default)" data-i18n="np.drop.t"></b>
-                <span class="text-xs" data-i18n="np.drop.d"></span>
-                <input type="file" id="file-input" multiple class="hidden" accept=".pdf,.doc,.docx,.xlsx,.xls,.md,.txt,.vtt,.srt,.mp3,.wav,.m4a">
-              </div>
-              <div class="sub-title mt-4"><h5 data-i18n="np.files.title"></h5></div>
+              <div class="sub-title"><h5 data-i18n="np.files.title"></h5></div>
               <div class="flist" id="flist"></div>
             </div>
-
+          </div>
+          <div class="sec">
             <div class="field" id="f-repo">
-              <div class="sub-title" style="margin-bottom:0"><h5 class="label" style="font-size:var(--text-sm)" data-i18n="np.repo.title"></h5><span class="badge" id="repo-badge"></span></div>
+              <div class="sub-title" style="margin-bottom:0"><h5 class="label" data-i18n="np.repo.title"></h5><span class="badge" id="repo-badge"></span></div>
               <div class="row">
                 <div class="input-group grow"><i data-lucide="folder-git-2"></i><input class="input mono" id="repo" autocomplete="off" data-i18n-placeholder="np.repo.ph"></div>
                 <button class="btn btn-secondary" id="browse" type="button"><i data-lucide="folder-open"></i><span data-i18n="np.repo.browse"></span></button>
               </div>
-              <div class="repo-quick"><button class="btn btn-soft btn-sm" id="repo-inside" type="button"><i data-lucide="corner-down-right"></i><span id="repo-inside-t"></span></button><span class="hint" data-i18n="np.repo.or"></span></div>
+              <div class="repo-quick"><button class="btn btn-ghost btn-sm" id="repo-inside" type="button"><i data-lucide="corner-down-right"></i><span id="repo-inside-t"></span></button><span class="hint" data-i18n="np.repo.or"></span></div>
               <div class="ferr"><i data-lucide="alert-circle"></i><span data-i18n="np.repo.err"></span></div>
               <div class="hint" id="repo-hint"></div>
               <div id="repo-ok"></div>
@@ -332,23 +337,27 @@
 
         <!-- STEP 4 · AI setup -->
         <section data-panel="4" class="hidden">
-          <div class="panel-head"><span class="ph-ico"><i data-lucide="sparkles" class="icon-lg"></i></span><div><h4 data-i18n="np.s4.t"></h4><p data-i18n="np.s4.d"></p></div></div>
-          <div class="panel-body">
+          <div class="sec-head"><h4 data-i18n="np.s4.t"></h4><p data-i18n="np.s4.d"></p></div>
+          <div class="sec">
             <div>
               <div class="sub-title"><h5 data-i18n="np.ai.cli"></h5></div>
               <div class="opts two" id="clis" role="radiogroup"></div>
             </div>
-            <div class="alert alert-info">
+          </div>
+          <div class="sec">
+            <div class="note-line" style="font-size:var(--text-sm)">
               <i data-lucide="shield-check"></i>
-              <div class="grow">
-                <b style="color:var(--fg-strong)" data-i18n="np.ai.home.t"></b>
-                <div class="text-sm text-muted mt-2" style="margin-top:2px" data-i18n-html="np.ai.home.d"></div>
-                <div class="code mt-2" id="home-code" style="margin-top:8px;padding:8px 12px"></div>
+              <div class="grow" style="min-width:0">
+                <div class="home-t" data-i18n="np.ai.home.t"></div>
+                <div class="text-sm text-muted" style="margin-top:2px" data-i18n-html="np.ai.home.d"></div>
+                <div class="code" id="home-code"></div>
               </div>
             </div>
+          </div>
+          <div class="sec">
             <div>
               <div class="sub-title"><h5 data-i18n="np.rev.title"></h5><span class="badge badge-success"><i data-lucide="check"></i><span data-i18n="np.rev.ready"></span></span></div>
-              <div class="card card-flat" style="padding:var(--space-2) var(--space-5);background:var(--bg-surface-2)"><div class="rev" id="review"></div></div>
+              <div class="rev" id="review"></div>
             </div>
           </div>
         </section>
@@ -358,26 +367,26 @@
           <div class="row">
             <span class="text-xs text-subtle" id="step-of"></span>
             <button class="btn btn-primary" id="next" type="button"><span data-i18n="np.next"></span><i data-lucide="arrow-right"></i></button>
-            <button class="btn btn-ai hidden" id="create" type="button"><i data-lucide="sparkles"></i><span data-i18n="np.create"></span></button>
+            <button class="btn btn-ai is-primary hidden" id="create" type="button"><i data-lucide="sparkles"></i><span data-i18n="np.create"></span></button>
           </div>
         </div>
       </div>
 
       <aside class="aside">
-        <div class="card" style="overflow:hidden">
+        <div class="np-panel">
           <div class="sum-head" id="sum-head"></div>
           <div class="sum-rows" id="sum-rows"></div>
+          <div class="tip-line note-line"><i data-lucide="lightbulb"></i><span id="tip"></span></div>
         </div>
-        <div class="card tip-card"><i data-lucide="lightbulb"></i><span id="tip"></span></div>
       </aside>
     </div>
     </div><!-- /new-flow -->
 
     <!-- OPEN EXISTING PROJECT (?mode=open) -->
     <div id="open-flow" class="open-wrap hidden">
-      <div class="card">
-        <div class="panel-head"><span class="ph-ico"><i data-lucide="folder-open" class="icon-lg"></i></span><div><h4 data-i18n="np.open.s.t"></h4><p data-i18n="np.open.s.d"></p></div></div>
-        <div class="panel-body">
+      <div class="np-panel">
+        <div class="sec-head"><h4 data-i18n="np.open.s.t"></h4><p data-i18n="np.open.s.d"></p></div>
+        <div class="sec">
           <div class="field">
             <label class="label" for="o-path" data-i18n="np.open.path"></label>
             <div class="dir-row">
@@ -390,8 +399,8 @@
             <div class="sub-title"><h5 data-i18n="np.open.recent"></h5><span class="text-xs text-subtle" data-i18n="np.open.recent.h"></span></div>
             <div class="recent-list" id="o-recent"></div>
           </div>
-          <div id="o-result"></div>
         </div>
+        <div class="sec" id="o-result"></div>
         <div class="wiz-foot">
           <a class="btn btn-ghost" href="new-project.html"><i data-lucide="folder-plus"></i><span data-i18n="np.open.create"></span></a>
           <div class="row">
@@ -426,7 +435,7 @@
         'np.tree.title': 'What Procheck will create', 'np.tree.sub': 'inside your project directory', 'np.tree.new': 'New',
         'np.tree.note': 'Application-level data — settings, CLI registrations, logs and cache — stays in <code>%LOCALAPPDATA%\\Procheck</code> and is never written into your project.',
         'np.t.0': 'Project manifest: name, client, phase, linked repo', 'np.t.1': 'Uploaded documents (inputs)', 'np.t.2': 'Generated & edited artifacts with versions', 'np.t.3': 'Tasks, plans, review evidence',
-        'np.t.4': 'Git repository with the project source code', 'np.t.5': 'Assistant chat history', 'np.t.6': 'Agent run logs & evidence', 'np.t.7': 'CLI profile per tool: settings, MCP, instructions', 'np.t.8': 'Git worktrees created by agents', 'np.t.9': 'Project-level overrides (CLI, model, harness)',
+        'np.t.4': 'Git repository with the project source code', 'np.t.5': 'Text extracted from sources (transcripts, OCR, parsed data) that the CLI reads', 'np.t.6': 'Assistant chat history', 'np.t.7': 'Agent run logs & evidence', 'np.t.8': 'CLI profile per tool: settings, MCP, instructions', 'np.t.9': 'Git worktrees created by agents', 'np.t.10': 'Project-level overrides (CLI, model, harness)',
         'np.phase.initial.t': 'Initial phase', 'np.phase.initial.d': 'Start with discovery. Upload existing documents; the Assistant consults the initial-phase process and the AI drafts meeting notes, BRD, scope, estimates and SOW.',
         'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Design the architecture and bootstrap the product. Link a repository and AI builds the scaffolding, repo structure, infra and pipelines.',
         'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Run delivery on a Kanban board. Pick a task and plan the solution; the agent works in a git worktree, self-verifies end to end, and you review before a PR.',
@@ -501,7 +510,7 @@
         'np.tree.title': 'Procheck sẽ tạo những gì', 'np.tree.sub': 'bên trong thư mục dự án', 'np.tree.new': 'Mới',
         'np.tree.note': 'Dữ liệu cấp ứng dụng — cài đặt, đăng ký CLI, log và cache — vẫn nằm ở <code>%LOCALAPPDATA%\\Procheck</code> và không bao giờ được ghi vào dự án của bạn.',
         'np.t.0': 'Tệp mô tả dự án: tên, khách hàng, giai đoạn, repo liên kết', 'np.t.1': 'Tài liệu tải lên (đầu vào)', 'np.t.2': 'Tài liệu do AI tạo và chỉnh sửa, có phiên bản', 'np.t.3': 'Task, kế hoạch, bằng chứng review',
-        'np.t.4': 'Git repository chứa mã nguồn dự án', 'np.t.5': 'Lịch sử chat với Trợ lý', 'np.t.6': 'Log và bằng chứng các lượt chạy agent', 'np.t.7': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'np.t.8': 'Git worktree do agent tạo', 'np.t.9': 'Ghi đè ở cấp dự án (CLI, model, harness)',
+        'np.t.4': 'Git repository chứa mã nguồn dự án', 'np.t.5': 'Văn bản trích từ nguồn (transcript, OCR, dữ liệu đã phân tích) để CLI đọc', 'np.t.6': 'Lịch sử chat với Trợ lý', 'np.t.7': 'Log và bằng chứng các lượt chạy agent', 'np.t.8': 'CLI profile cho từng công cụ: settings, MCP, chỉ dẫn', 'np.t.9': 'Git worktree do agent tạo', 'np.t.10': 'Ghi đè ở cấp dự án (CLI, model, harness)',
         'np.phase.initial.t': 'Giai đoạn khởi tạo', 'np.phase.initial.d': 'Bắt đầu từ khảo sát. Tải lên tài liệu có sẵn; Trợ lý tư vấn theo quy trình khởi tạo và AI soạn biên bản họp, BRD, phạm vi, ước lượng và SOW.',
         'np.phase.release.t': 'Scaffolding', 'np.phase.release.d': 'Thiết kế kiến trúc và dựng nền tảng sản phẩm. Liên kết repository để AI tạo scaffolding, cấu trúc repo, hạ tầng và pipeline.',
         'np.phase.sdlc.t': 'SDLC', 'np.phase.sdlc.d': 'Vận hành phát triển trên bảng Kanban. Chọn task và lên giải pháp; agent làm việc trong git worktree, tự kiểm thử end-to-end và bạn review trước khi tạo PR.',
@@ -620,7 +629,7 @@
 
       function renderTree() {
         const items = D.storage.project.items;
-        $('ptree').innerHTML = `<div class="ptree-head"><i data-lucide="folder-open"></i><span class="truncate" title="${PC.esc(dirPath())}">${PC.esc(dirPath())}\\</span><span class="badge badge-brand">${PC.t('np.tree.new')}</span></div><div class="tbody">` +
+        $('ptree').innerHTML = `<div class="ptree-head"><i data-lucide="folder-open"></i><span class="truncate" title="${PC.esc(dirPath())}">${PC.esc(dirPath())}\\</span><span class="badge badge-outline">${PC.t('np.tree.new')}</span></div><div class="tbody">` +
           items.map((it, i) => { const path = it.path.replace('<cli>', S.cli); return `<div class="tnode ${path.startsWith('.procheck') ? 'is-hidden' : ''}"><i data-lucide="${PC.storageIcon(path)}"></i><span class="tp" title="${PC.esc(path)}">${PC.esc(path)}</span><span class="td">${PC.t('np.t.' + i)}</span></div>`; }).join('') + '</div>';
         PC.refresh($('ptree'));
       }
@@ -663,7 +672,7 @@
         const b = $('repo-badge'); b.className = 'badge ' + (req ? 'badge-warning' : 'badge-outline'); b.textContent = PC.t(req ? 'np.repo.req' : 'np.repo.opt');
         $('repo-hint').textContent = PC.t(req ? 'np.repo.hint.req' : 'np.repo.hint.opt');
         $('repo-inside-t').textContent = PC.t('np.repo.inside', { p: repoInside() });
-        $('repo-ok').innerHTML = S.repo.trim() ? `<div class="alert alert-success mt-2" style="margin-top:8px"><i data-lucide="git-branch"></i><span>${PC.t('np.repo.ok')}</span></div>` : '';
+        $('repo-ok').innerHTML = S.repo.trim() ? `<div class="note-line ok" style="margin-top:4px"><i data-lucide="git-branch"></i><span>${PC.t('np.repo.ok')}</span></div>` : '';
         if (S.repo.trim()) $('f-repo').classList.remove('has-error');
         PC.refresh($('repo-ok'));
       }
@@ -867,8 +876,8 @@
       function renderOpenResult() {
         const raw = O.path.trim(), p = findProject(raw), box = $('o-result');
         $('o-open').disabled = !p;
-        if (!raw) { box.innerHTML = `<div class="empty" style="padding:var(--space-8) var(--space-6)"><div class="empty-icon"><i data-lucide="folder-search"></i></div><h4>${PC.t('np.open.empty.t')}</h4><div class="text-sm">${PC.t('np.open.empty.d')}</div></div>`; return; }
-        if (!p) { box.innerHTML = `<div class="alert alert-warning"><i data-lucide="alert-triangle"></i><div><b style="color:var(--fg-strong)">${PC.t('np.open.nf.t')}</b><div class="text-sm text-muted" style="margin-top:2px">${PC.t('np.open.nf.d')}</div></div></div>`; return; }
+        if (!raw) { box.innerHTML = `<div class="empty" style="padding:var(--space-6) var(--space-4)"><div class="empty-icon"><i data-lucide="folder-search"></i></div><h4>${PC.t('np.open.empty.t')}</h4><div class="text-sm">${PC.t('np.open.empty.d')}</div></div>`; return; }
+        if (!p) { box.innerHTML = `<div class="note-line warn" style="font-size:var(--text-sm)"><i data-lucide="alert-triangle"></i><div><b style="color:var(--fg-strong)">${PC.t('np.open.nf.t')}</b><div class="text-muted" style="margin-top:2px">${PC.t('np.open.nf.d')}</div></div></div>`; return; }
         const bars = D.phases.map(ph => `<div><div class="dp-h"><span style="color:${ph.color}">${PC.t('phase.' + ph.id)}</span><b>${p.progress[ph.id]}%</b></div><div class="progress"><span style="width:${p.progress[ph.id]}%;background:${ph.color}"></span></div></div>`).join('');
         const upd = PC.lang === 'vi' ? (UPD_VI[p.updated] || p.updated) : p.updated;
         const hasHome = p.tasks > 0;
@@ -876,12 +885,12 @@
         const ck = (cls, ico, t) => `<div class="ck ${cls}"><i data-lucide="${ico}"></i><span>${t}</span></div>`;
         box.innerHTML = `<div class="detect">
           <div class="detect-head"><div class="project-avatar" style="background:${p.color}">${PC.esc(p.short)}</div>
-            <div class="grow"><div style="font-size:var(--text-lg);font-weight:600;color:var(--fg-strong)">${PC.esc(p.name)}</div><div class="text-xs text-subtle">${PC.esc(p.client)}</div></div>
+            <div class="grow" style="min-width:0"><div style="font-size:var(--text-md);font-weight:600;color:var(--fg-strong)">${PC.esc(p.name)}</div><div class="text-xs text-subtle">${PC.esc(p.client)}</div></div>
             <span class="phase-chip phase-${p.phase}">${PC.t('phase.' + p.phase)}</span>
             <span class="badge badge-success"><i data-lucide="check"></i>${PC.t('np.open.found')}</span></div>
           <div class="detect-phases">${bars}</div>
           <div class="facts">${fact('np.open.f.dir', PC.esc(p.dir), 1)}${fact('np.open.f.repo', p.repo ? PC.esc(p.repo) : `<span class="text-faint">${PC.t('np.open.norepo')}</span>`, !!p.repo)}${fact('np.open.f.art', p.artifacts)}${fact('np.open.f.tasks', p.tasks)}${fact('np.open.f.upd', PC.esc(upd))}${fact('np.open.f.ai', 'Claude Code · claude-opus-5-5')}</div>
-          <div class="checks"><div class="text-xs text-subtle" style="font-weight:600;text-transform:uppercase;letter-spacing:.06em">${PC.t('np.open.c.title')}</div>
+          <div class="checks"><div class="kicker-l">${PC.t('np.open.c.title')}</div>
             ${ck('ok', 'check-circle-2', PC.t('np.open.c.manifest'))}${ck('ok', 'check-circle-2', PC.t('np.open.c.dirs'))}${hasHome ? ck('ok', 'check-circle-2', PC.t('np.open.c.settings')) : ''}
             ${ck('info', 'list-plus', PC.t('np.open.c.reg'))}${ck(hasHome ? 'ok' : 'info', hasHome ? 'check-circle-2' : 'wand-sparkles', PC.t(hasHome ? 'np.open.c.home.ok' : 'np.open.c.home.new'))}</div>
         </div>`;

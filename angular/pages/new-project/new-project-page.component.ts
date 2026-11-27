@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { ButtonComponent } from '@components/button/button.component';
 import { IconComponent } from '@components/icon/icon.component';
+import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { StepperComponent } from '@components/stepper/stepper.component';
 import { ToastService } from '@components/toast/toast.service';
 import { CreateProgress } from '@features/projects/projects.model';
@@ -30,6 +31,7 @@ const STEP_LABELS = ['np.s1', 'np.s2', 'np.s3', 'np.s4'] as const;
     CreateProgressDialogComponent,
     IconComponent,
     NewProjectSummaryComponent,
+    PageHeaderComponent,
     PhaseStepComponent,
     RouterLink,
     SourcesStepComponent,

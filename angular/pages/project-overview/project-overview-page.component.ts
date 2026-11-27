@@ -5,7 +5,7 @@ import { injectCurrentProject } from '@layout/current-project';
 import { ProjectGateComponent } from '../project/project-gate.component';
 import { OverviewHeroComponent } from './overview-hero.component';
 
-/** Project overview (ported from _proto/overview.html; only the header so far). */
+/** Project overview (ported from _proto/overview.html; only the page head so far). */
 @Component({
   selector: 'pc-project-overview-page',
   imports: [OverviewHeroComponent, ProjectGateComponent],

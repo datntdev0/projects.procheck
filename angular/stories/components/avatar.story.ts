@@ -36,8 +36,8 @@ export const ProjectAvatars: Story = {
       <div class="row gap-3">
         <pc-project-avatar short="LP" [size]="22" />
         <pc-project-avatar short="LP" />
-        <pc-project-avatar short="MK" color="linear-gradient(135deg,#6A26F1,#FE006A)" [size]="40" />
-        <pc-project-avatar short="AH" color="linear-gradient(135deg,#02CCB3,#006AFE)" [size]="48" />
+        <pc-project-avatar short="MK" color="#5B2BC4" [size]="40" />
+        <pc-project-avatar short="AH" color="#00796B" [size]="48" />
       </div>`,
   }),
 };

@@ -1,13 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { ButtonComponent } from '@components/button/button.component';
 import { IconComponent } from '@components/icon/icon.component';
+import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
-/** All projects (home). Only the hero is built for now; stats and project lists come later. */
+/** All projects (home). Only the page head is built for now; stats and project lists come later. */
 @Component({
   selector: 'pc-projects-page',
-  imports: [RouterLink, IconComponent, TranslatePipe],
+  imports: [ButtonComponent, IconComponent, PageHeaderComponent, RouterLink, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './projects-page.component.html',
 })

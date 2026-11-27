@@ -9,86 +9,55 @@
   <script src="assets/app.js"></script>
   <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
-    /* ============ Locked phase state (identical block lives in board.html) ============ */
-    .lk { position: relative; min-height: 100%; display: flex; justify-content: center; align-items: flex-start; padding: var(--space-10) var(--space-8) var(--space-12); overflow: hidden; }
-    .lk-bg { position: absolute; inset: 0; padding: var(--space-8); overflow: hidden; pointer-events: none; user-select: none; opacity: .85; filter: blur(1.2px) saturate(.7);
-      -webkit-mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%); mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%); }
-    .lk-wrap { position: relative; z-index: 1; width: min(960px, 100%); display: flex; flex-direction: column; gap: var(--space-3); }
-    .lk-card { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; }
-    .lk-hero { display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-6) var(--space-8) var(--space-5); background: linear-gradient(180deg, color-mix(in srgb, var(--_c) 9%, transparent), transparent); }
-    .lk-ic { position: relative; width: 56px; height: 56px; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--_c); background: color-mix(in srgb, var(--_c) 14%, var(--bg-surface)); border: 1px solid color-mix(in srgb, var(--_c) 28%, transparent); }
-    .lk-ic > svg { width: 24px; height: 24px; }
-    .lk-pad { position: absolute; right: -7px; bottom: -7px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-inverse); color: var(--fg-inverse); border: 2px solid var(--bg-surface); }
-    .lk-pad svg { width: 12px; height: 12px; }
-    .lk-title { margin-top: var(--space-2); }
-    .lk-gate { margin: 4px 0 0; color: var(--fg-muted); font-size: var(--text-sm); }
-    .lk-note { display: flex; gap: var(--space-2); align-items: center; margin: 0 var(--space-8) var(--space-4); padding: 8px 12px; border-radius: var(--radius-md); background: var(--brand-soft); color: var(--fg-default); font-size: var(--text-xs); }
-    .lk-note svg { color: var(--brand-fg); width: 14px; height: 14px; }
-    .lk-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); border-top: 1px solid var(--border-subtle); }
-    @media (max-width: 900px) { .lk-cols { grid-template-columns: minmax(0, 1fr); } .lk-col + .lk-col { border-left: 0 !important; border-top: 1px solid var(--border-subtle); } }
-    .lk-col { padding: var(--space-5) var(--space-8); }
-    .lk-col + .lk-col { border-left: 1px solid var(--border-subtle); }
-    .lk-col h5 { margin-bottom: var(--space-3); }
-    .lk-does { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
-    .lk-does li { display: flex; gap: var(--space-3); font-size: var(--text-sm); line-height: 1.45; color: var(--fg-default); }
-    .lk-does .n { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; font-size: var(--text-2xs); font-weight: var(--weight-semibold); background: color-mix(in srgb, var(--_c) 14%, var(--bg-surface)); color: var(--_c); }
+    /* ============ Locked phase state (identical block lives in scaffolding.html and board.html) ============
+       Flat: page-head + one panel (what the phase does | prerequisites) + previous-phase progress in the panel foot. */
+    .lk { max-width: 1280px; margin: 0 auto; padding: var(--space-6) var(--space-8) var(--space-12); }
+    .lk .page-head h1 { margin: 6px 0 0; }
+    .lk .page-head .meta .badge { height: 20px; }
+    .lk-note { margin-bottom: var(--space-4); }
+    .lk-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+    @media (max-width: 900px) { .lk-cols { grid-template-columns: minmax(0, 1fr); } .lk-col + .lk-col { border-left: 0 !important; border-top: 1px solid var(--border-default); } }
+    .lk-col { min-width: 0; }
+    .lk-col + .lk-col { border-left: 1px solid var(--border-default); }
+    .lk-col .panel-head { min-height: 40px; border-bottom-color: var(--border-subtle); }
+    .lk-col .panel-head h4 { font-size: 13.5px; }
+    .lk-does { list-style: none; margin: 0; padding: 0; }
+    .lk-does li { display: flex; gap: var(--space-3); padding: 10px var(--space-4); font-size: var(--text-sm); line-height: 1.45; color: var(--fg-default); }
+    .lk-does li + li { border-top: 1px solid var(--border-subtle); }
+    .lk-does .n { width: 16px; flex-shrink: 0; font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--fg-subtle); font-variant-numeric: tabular-nums; padding-top: 1px; }
     .lk-pre { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-    .lk-pre li { display: flex; gap: var(--space-3); align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: var(--text-sm); }
-    .lk-pre li:last-child { border-bottom: 0; }
-    .lk-pre li > svg, .lk-pre li > .spinner { margin-top: 2px; }
+    .lk-pre li { display: flex; gap: var(--space-3); align-items: flex-start; padding: 9px var(--space-4); font-size: var(--text-sm); }
+    .lk-pre li + li { border-top: 1px solid var(--border-subtle); }
+    .lk-pre li > svg, .lk-pre li > .spinner { margin-top: 2px; width: 16px; height: 16px; flex-shrink: 0; }
     .lk-pre .tx { flex: 1; min-width: 0; line-height: 1.35; }
     .lk-pre .tx small { display: block; color: var(--fg-subtle); font-size: var(--text-xs); margin-top: 1px; }
-    .lk-pre .st { font-size: var(--text-2xs); font-weight: var(--weight-semibold); white-space: nowrap; padding-top: 3px; }
-    .lk-pre .k-done > svg { color: var(--success); } .lk-pre .k-done .st { color: var(--success-fg); }
-    .lk-pre .k-review > svg, .lk-pre .k-wait > svg { color: var(--warning); } .lk-pre .k-review .st, .lk-pre .k-wait .st { color: var(--warning-fg); }
-    .lk-pre .k-wip > svg { color: var(--brand); } .lk-pre .k-wip .st { color: var(--brand-fg); }
+    .lk-pre .st { font-size: var(--text-xs); font-weight: var(--weight-medium); white-space: nowrap; padding-top: 1px; }
+    .lk-pre .k-done > svg { color: var(--success-fg); } .lk-pre .k-done .st { color: var(--success-fg); }
+    .lk-pre .k-review > svg, .lk-pre .k-wait > svg { color: var(--warning-fg); } .lk-pre .k-review .st, .lk-pre .k-wait .st { color: var(--warning-fg); }
+    .lk-pre .k-wip > svg { color: var(--brand-fg); } .lk-pre .k-wip .st, .lk-pre .k-run .st { color: var(--brand-fg); }
     .lk-pre .k-todo > svg, .lk-pre .k-locked > svg { color: var(--fg-faint); } .lk-pre .k-todo .st, .lk-pre .k-locked .st { color: var(--fg-subtle); }
-    .lk-foot { display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap; padding: var(--space-4) var(--space-8); background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); }
-    .lk-prev { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
-    .lk-prev .cap { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; color: var(--fg-subtle); }
-    .lk-bar .row { font-size: var(--text-xs); }
+    .lk-foot { display: flex; align-items: center; gap: var(--space-3) var(--space-6); flex-wrap: wrap; padding: 12px var(--space-4); border-top: 1px solid var(--border-default); background: var(--bg-surface-2); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .lk-foot .cap { font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-subtle); white-space: nowrap; }
+    .lk-bar { flex: 1 1 260px; min-width: 0; max-width: 420px; }
+    .lk-bar .row { font-size: var(--text-xs); color: var(--fg-muted); }
     .lk-bar .row b { font-variant-numeric: tabular-nums; color: var(--fg-strong); }
     .lk-bar .progress > span { background: var(--_b, var(--brand)); }
-    .lk-cap { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: var(--text-2xs); color: var(--fg-subtle); }
-    .lk-cap svg { width: 12px; height: 12px; }
-    .sk { background: var(--bg-surface-3); border-radius: var(--radius-sm); }
-    .sk-card { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; flex-direction: column; gap: 10px; }
-    .sk-row { display: flex; gap: var(--space-3); align-items: center; }
 
-    /* board-specific additions */
-    .kc-fail { display: flex; flex-direction: column; gap: 8px; padding: 8px; border-radius: var(--radius-sm); background: var(--danger-soft); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); }
-    .kc-fail .hd { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: var(--weight-semibold); color: var(--danger-fg); }
-    .kc-fail .hd svg { width: 13px; height: 13px; }
-    .kc-fail .bt { display: flex; gap: 6px; }
-    .kc-fail .bt .btn { height: 24px; font-size: 11px; padding: 0 8px; }
-    .kcard.is-failed { border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
-    .kc-rework { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-sm); background: var(--warning-soft); border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent); }
-    .kc-rework .hd { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: var(--weight-semibold); color: var(--warning-fg); }
-    .kc-rework .hd svg { width: 13px; height: 13px; }
-    .kc-rework ul { margin: 0; padding-left: 16px; font-size: 10.5px; color: var(--fg-muted); line-height: 1.45; }
-    .kc-rework .progress { height: 5px; background: var(--bg-surface); }
-    .kc-rework .progress > span { background: var(--warning); }
-    .rel { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; margin: var(--space-3) var(--space-6) 0; padding: 10px var(--space-4); border-radius: var(--radius-lg); background: var(--accent-teal-soft); border: 1px solid color-mix(in srgb, var(--accent-teal) 30%, transparent); }
-    .rel .ic { width: 34px; height: 34px; border-radius: var(--radius-md); background: var(--accent-teal); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .rel .tt { min-width: 160px; }
-    .rel .tt b { font-size: var(--text-sm); color: var(--fg-strong); display: block; line-height: 1.25; }
-    .rel .tt small { font-size: var(--text-xs); color: var(--fg-muted); }
-    .rel .bar { flex: 1 1 200px; min-width: 160px; display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); color: var(--fg-muted); }
-    .rel .bar .progress { background: var(--bg-surface); height: 8px; }
-    .rel .bar .progress > span { background: var(--accent-teal); }
-    .rel .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .rel .chip { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: var(--radius-full); background: var(--bg-surface); border: 1px solid var(--border-default); font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-muted); text-decoration: none !important; }
-    .rel .chip svg { width: 12px; height: 12px; }
-    .rel .chip.is-danger { color: var(--danger-fg); border-color: color-mix(in srgb, var(--danger) 35%, transparent); background: var(--danger-soft); }
-    .rel .chip.is-warn { color: var(--warning-fg); border-color: color-mix(in srgb, var(--warning) 35%, transparent); background: var(--warning-soft); }
-
-    /* ---- Board page (tokens only; class prefix bd-/kc- avoids clashes with components.css) ---- */
+    /* ---- Board page (flat; tokens only; class prefix bd-/kc- avoids clashes with components.css) ----
+       Head row + one toolbar row, both divided by rules. Columns are flat surfaces; task cards are the only small cards
+       and carry no inner boxes: run, failure, rework and plan state are plain lines inside the card. */
     .bd { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-    .bd-top { display: flex; align-items: center; gap: var(--space-4); padding: 14px var(--space-6) 0; flex-wrap: wrap; }
-    .bd-top h3 { font-size: var(--text-xl); }
+    .bd-top { display: flex; align-items: center; gap: var(--space-2) var(--space-4); padding: 12px var(--space-6); flex-wrap: wrap; border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
+    .bd-top h3 { font-size: var(--text-xl); display: flex; align-items: center; gap: var(--space-2); }
+    .bd-top h3 > svg { color: var(--fg-subtle); width: 18px; height: 18px; }
+    .bd-meta { display: flex; align-items: center; gap: 4px var(--space-4); flex-wrap: wrap; min-width: 0; font-size: var(--text-xs); color: var(--fg-muted); }
+    .bd-meta > span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .bd-meta svg { width: 13px; height: 13px; color: var(--fg-subtle); }
+    .bd-meta b { color: var(--fg-default); font-weight: var(--weight-semibold); }
     .bd-metrics { font-size: var(--text-xs); font-weight: var(--weight-medium); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
     .bd-goal { font-size: var(--text-xs); color: var(--fg-subtle); display: flex; align-items: center; gap: 6px; min-width: 0; }
-    .bd-toolbar { display: flex; align-items: center; gap: var(--space-2); padding: 12px var(--space-6); border-bottom: 1px solid var(--border-subtle); flex-wrap: wrap; }
+    .bd-goal svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .bd-toolbar { display: flex; align-items: center; gap: var(--space-2); padding: 8px var(--space-6); border-bottom: 1px solid var(--border-default); flex-wrap: wrap; background: var(--bg-surface); }
     .bd-toolbar .input-group { width: 220px; }
     .bd-toolbar .input { height: 30px; font-size: var(--text-xs); }
     .bd-sprint { height: 30px; gap: 6px; font-weight: var(--weight-semibold); }
@@ -97,64 +66,84 @@
     .fbtn.is-on { background: var(--brand-soft); color: var(--brand-fg); border-color: var(--brand-soft-2); }
     .fbtn.is-on .v { color: var(--brand-fg); font-weight: var(--weight-semibold); }
     .bd-sep { width: 1px; height: 20px; background: var(--border-default); margin: 0 4px; }
+
+    /* release readiness: one flat row with a tone stripe, under the toolbar */
+    .rel { display: flex; align-items: center; gap: var(--space-2) var(--space-4); flex-wrap: wrap; padding: 8px var(--space-6); border-bottom: 1px solid var(--border-default); background: var(--bg-surface); box-shadow: inset 3px 0 0 var(--accent-teal); }
+    .rel > svg { color: var(--accent-teal-fg); width: 16px; height: 16px; flex-shrink: 0; }
+    .rel .tt { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; min-width: 0; }
+    .rel .tt b { font-size: var(--text-sm); color: var(--fg-strong); }
+    .rel .tt small { font-size: var(--text-xs); color: var(--fg-subtle); }
+    .rel .bar { flex: 0 1 200px; min-width: 120px; }
+    .rel .bar .progress > span { background: var(--accent-teal); }
+    .rel .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+    .rel .chips .badge { text-decoration: none !important; }
+
     .bd-body { flex: 1; min-height: 0; display: flex; background: var(--bg-canvas); }
     .bd-cols { flex: 1; min-width: 0; display: flex; gap: var(--space-3); padding: var(--space-4) var(--space-6); overflow-x: auto; overflow-y: hidden; align-items: stretch; }
-    .kcol { flex: 1 1 200px; min-width: 200px; display: flex; flex-direction: column; min-height: 0; background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); transition: border-color var(--dur-fast), background var(--dur-fast); }
-    .kcol.is-over { border-color: var(--brand); background: var(--brand-soft); }
-    .kcol-head { display: flex; align-items: center; gap: var(--space-2); padding: 12px 12px 8px; }
-    .kcol-head .ic { color: var(--c, var(--fg-subtle)); width: 15px; height: 15px; }
-    .kcol-head b { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
-    .kcol-count { margin-left: 2px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); padding: 1px 7px; border-radius: 999px; background: var(--bg-surface-3); color: var(--fg-muted); font-variant-numeric: tabular-nums; }
-    .kcol-count.is-full { background: var(--warning-soft); color: var(--warning-fg); }
-    .kcol-bar { height: 2px; margin: 0 12px 8px; border-radius: 2px; background: var(--c, var(--border-default)); opacity: .7; }
-    .kcol-body { flex: 1; min-height: 0; overflow-y: auto; padding: 2px 8px 10px; display: flex; flex-direction: column; gap: 8px; }
-    .kc-empty { border: 1.5px dashed var(--border-default); border-radius: var(--radius-md); padding: var(--space-6) var(--space-3); text-align: center; font-size: var(--text-xs); color: var(--fg-faint); }
-    .kc-ph { border: 1.5px dashed var(--brand); background: var(--brand-soft); border-radius: var(--radius-md); height: 56px; flex-shrink: 0; }
-    .kc-group { font-size: var(--text-2xs); font-weight: var(--weight-semibold); color: var(--fg-subtle); text-transform: uppercase; letter-spacing: .06em; padding: 6px 4px 0; display: flex; align-items: center; gap: 6px; }
+    .kcol { flex: 1 1 200px; min-width: 200px; display: flex; flex-direction: column; min-height: 0; background: var(--bg-surface-2); border-radius: var(--radius-md); border-top: 2px solid var(--c, var(--border-default)); transition: background var(--dur-fast), box-shadow var(--dur-fast); }
+    .kcol.is-over { background: var(--bg-active); box-shadow: inset 0 0 0 1px var(--brand); }
+    .kcol-head { display: flex; align-items: center; gap: var(--space-2); padding: 0 10px; min-height: 38px; border-bottom: 1px solid var(--border-default); }
+    .kcol-head .ic { color: var(--fg-subtle); width: 15px; height: 15px; }
+    .kcol-head b { font-size: 13.5px; font-weight: var(--weight-semibold); color: var(--fg-strong); }
+    .kcol-count { margin-left: 2px; font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
+    .kcol-count.is-full { color: var(--warning-fg); font-weight: var(--weight-semibold); }
+    .kcol-body { flex: 1; min-height: 0; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .kc-empty { border: 1px dashed var(--border-default); border-radius: var(--radius-md); padding: var(--space-6) var(--space-3); text-align: center; font-size: var(--text-xs); color: var(--fg-faint); }
+    .kc-ph { border: 1px dashed var(--brand); background: var(--bg-active); border-radius: var(--radius-md); height: 56px; flex-shrink: 0; }
+    .kc-group { font-size: var(--text-2xs); font-weight: var(--weight-semibold); color: var(--fg-subtle); text-transform: uppercase; letter-spacing: .06em; padding: 6px 2px 0; display: flex; align-items: center; gap: 6px; }
 
-    .kcard { position: relative; background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 10px 12px 10px; box-shadow: var(--shadow-xs); cursor: grab; display: flex; flex-direction: column; gap: 8px; transition: border-color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast); flex-shrink: 0; }
-    .kcard:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+    .kcard { position: relative; background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: 10px 12px; cursor: grab; display: flex; flex-direction: column; gap: 6px; transition: border-color var(--dur-fast); flex-shrink: 0; }
+    .kcard:hover { border-color: var(--border-strong); }
     .kcard:active { cursor: grabbing; }
-    .kcard.dragging { opacity: .35; transform: rotate(1.5deg); }
+    .kcard.dragging { opacity: .35; }
     .kcard.is-new { animation: kcNew 1.6s var(--ease-out); }
-    @keyframes kcNew { 0% { box-shadow: 0 0 0 0 var(--brand); } 30% { box-shadow: var(--shadow-focus); } 100% { box-shadow: var(--shadow-xs); } }
+    @keyframes kcNew { 0% { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); } 100% { box-shadow: 0 0 0 0 transparent; } }
+    .kcard.is-failed { box-shadow: inset 3px 0 0 var(--danger); }
+    .kcard.is-rework { box-shadow: inset 3px 0 0 var(--warning); }
     .kc-top { display: flex; align-items: center; gap: 6px; }
-    .kc-type { width: 20px; height: 20px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .kc-type svg { width: 12px; height: 12px; }
-    .kc-feature { background: var(--brand-soft); color: var(--brand-fg); }
-    .kc-bug { background: var(--danger-soft); color: var(--danger-fg); }
-    .kc-chore { background: var(--bg-surface-3); color: var(--fg-muted); }
+    .kc-type { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--fg-subtle); }
+    .kc-type svg { width: 14px; height: 14px; }
+    .kc-bug { color: var(--danger-fg); }
     .kc-id { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--fg-subtle); }
     .kc-pri { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-2xs); font-weight: var(--weight-medium); }
     .kc-pri svg { width: 14px; height: 14px; }
     .pri-urgent { color: var(--danger-fg); } .pri-high { color: var(--warning-fg); } .pri-medium { color: var(--info-fg); } .pri-low { color: var(--fg-faint); }
     .kc-title { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); line-height: 1.4; }
     .kc-labels { display: flex; flex-wrap: wrap; gap: 4px; }
-    .kc-labels .tag { height: 18px; font-size: 10px; padding: 0 6px; }
-    .kc-art { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; max-width: 100%; height: 22px; padding: 0 8px; border-radius: var(--radius-sm); background: var(--bg-surface-2); border: 1px solid var(--border-subtle); font-size: 10.5px; font-weight: var(--weight-medium); color: var(--fg-muted); text-decoration: none !important; }
-    .kc-art:hover { border-color: var(--brand); color: var(--brand-fg); }
-    .kc-art svg { width: 12px; height: 12px; color: var(--fg-subtle); }
+    .kc-labels .tag { height: 18px; font-size: 10px; padding: 0 5px; border-radius: var(--radius-xs); }
+    .kc-art { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; max-width: 100%; font-size: var(--text-xs); color: var(--fg-muted); text-decoration: none !important; }
+    .kc-art:hover { color: var(--brand-fg); }
+    .kc-art svg { width: 12px; height: 12px; color: var(--fg-subtle); flex-shrink: 0; }
     .kc-art span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .kc-run { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-sm); background: var(--accent-teal-soft); }
-    .kc-run .row { font-size: 11px; color: var(--accent-teal-fg); font-weight: var(--weight-medium); }
-    .kc-run .pct { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: var(--weight-semibold); }
-    .kc-run .progress { height: 5px; background: var(--bg-surface); }
+    /* state lines (no tinted sub-boxes): a rule above, then plain text */
+    .kc-state { display: flex; flex-direction: column; gap: 5px; padding-top: 7px; border-top: 1px solid var(--border-subtle); font-size: var(--text-xs); }
+    .kc-state .hd { display: flex; align-items: center; gap: 6px; font-weight: var(--weight-semibold); }
+    .kc-state .hd svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .kc-state .pct { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: var(--weight-semibold); }
+    .kc-state .progress { height: 4px; }
+    .kc-run .hd { color: var(--fg-default); font-weight: var(--weight-medium); }
     .kc-run .progress > span { background: var(--accent-teal); }
-    .kc-branch { display: flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); overflow: hidden; }
+    .kc-fail .hd { color: var(--danger-fg); }
+    .kc-fail .bt { display: flex; gap: 6px; }
+    .kc-fail .bt .btn { height: 24px; font-size: 11px; padding: 0 8px; }
+    .kc-rework .hd { color: var(--warning-fg); }
+    .kc-rework .sub { color: var(--fg-subtle); }
+    .kc-rework ul { margin: 0; padding-left: 16px; color: var(--fg-muted); line-height: 1.45; }
+    .kc-rework .progress > span { background: var(--warning); }
+    .kc-branch { display: flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 10px; color: var(--fg-subtle); overflow: hidden; }
     .kc-branch svg { width: 11px; height: 11px; flex-shrink: 0; }
     .kc-branch span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .kc-ev { display: flex; flex-wrap: wrap; gap: 4px; }
-    .kc-ev .badge { height: 20px; }
-    .kc-plan { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; font-size: 10.5px; font-weight: var(--weight-medium); color: var(--accent-purple); background: var(--accent-purple-soft); padding: 3px 8px; border-radius: var(--radius-sm); }
-    .kc-plan svg { width: 12px; height: 12px; }
+    .kc-plan { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-muted); }
+    .kc-plan svg { width: 13px; height: 13px; color: var(--accent-purple); }
     .kc-foot { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
     .agent-b { display: inline-flex; align-items: center; gap: 6px; min-width: 0; font-size: 11px; font-weight: var(--weight-medium); color: var(--fg-muted); }
-    .agent-b .avatar { width: 20px; height: 20px; font-size: 8px; border-width: 0; letter-spacing: .02em; }
+    .agent-b .avatar { width: 18px; height: 18px; font-size: 8px; border-width: 0; letter-spacing: .02em; }
     .agent-b span.nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .agent-b .by { color: var(--fg-faint); font-weight: var(--weight-regular); }
-    .ag-claude { background: var(--gradient-ai); }
-    .ag-codex { background: linear-gradient(135deg, var(--kms-teal), var(--kms-blue)); }
-    .kc-foot .pts { margin-left: auto; font-size: 10.5px; font-weight: var(--weight-semibold); color: var(--fg-subtle); background: var(--bg-surface-3); border-radius: 999px; padding: 1px 7px; }
+    .ag-claude { background: var(--brand); color: var(--fg-on-brand); }
+    .ag-codex { background: var(--accent-teal); color: var(--gray-950); }
+    .kc-foot .pts { margin-left: auto; font-size: var(--text-2xs); font-weight: var(--weight-medium); color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
     /* list view */
     .bd-list { flex: 1; min-width: 0; overflow: auto; padding: var(--space-4) var(--space-6) var(--space-8); }
     .bd-list .table tbody tr { cursor: pointer; }
@@ -171,13 +160,13 @@
 </head>
 <body data-assistant="closed" data-page="board" data-shell="project" data-crumb="nav.board">
   <main class="canvas">
-    <div class="canvas-inner flush hidden" id="lockedRoot"></div>
+    <div class="canvas-inner flush hidden" id="lockedRoot" style="height:auto"></div>
     <div class="canvas-inner flush" id="boardRoot">
       <div class="bd">
         <div class="bd-top">
-          <div class="row gap-3"><span class="file-tile" style="background:var(--accent-teal-soft);color:var(--accent-teal-fg)"><i data-lucide="kanban"></i></span><h3 data-i18n="nav.board"></h3></div>
+          <h3><i data-lucide="kanban"></i><span data-i18n="nav.board"></span></h3>
           <button class="btn btn-secondary bd-sprint" id="sprintBtn"><i data-lucide="calendar-range" class="icon-sm"></i><span id="sprintLabel"></span><i data-lucide="chevron-down" class="icon-sm"></i></button>
-          <span class="badge badge-teal"><span class="dot dot-pulse" style="width:6px;height:6px"></span><span id="sprintDay"></span></span><span class="badge" id="sprintPts"></span>
+          <div class="bd-meta"><span><span class="dot dot-pulse" style="width:6px;height:6px"></span><span id="sprintDay"></span></span><span id="sprintPts"></span></div>
           <div class="bd-goal grow"><i data-lucide="target" class="icon-sm"></i><span class="truncate" id="goalText"></span></div>
           <a class="btn btn-ghost btn-sm bd-metrics" href="overview.html#metrics"><i data-lucide="chart-no-axes-combined" class="icon-sm"></i><span data-i18n="board.metrics"></span><i data-lucide="arrow-up-right" class="icon-sm"></i></a>
         </div>
@@ -410,20 +399,20 @@
       const col = t.col;
       let extra = '';
       if (col === 'running' && t.failed) {
-        extra = `<div class="kc-fail"><div class="hd"><i data-lucide="octagon-alert"></i>${T('bd.fail', { p: t.failed.passed, t: t.failed.total })}</div>
+        extra = `<div class="kc-state kc-fail"><div class="hd"><i data-lucide="octagon-alert"></i>${T('bd.fail', { p: t.failed.passed, t: t.failed.total })}</div>
           <div class="kc-branch"><i data-lucide="git-branch"></i><span>${esc(branchOf(t))}</span></div>
           <div class="bt"><button class="btn btn-danger" data-retry="${t.id}"><i data-lucide="rotate-cw" class="icon-sm"></i>${T('bd.retry')}</button><a class="btn btn-secondary" href="task.html?p=${P.id}&id=${t.id}"><i data-lucide="scroll-text" class="icon-sm"></i>${T('bd.logs')}</a></div></div>`;
       } else if (col === 'running' && t.rework) {
         const p = t.progress || 0;
-        extra = `<div class="kc-rework"><div class="hd"><i data-lucide="message-square-diff"></i>${T('bd.rework')}</div>
-          <div class="text-xs text-subtle">${T('bd.attempt', { n: t.rework.attempt })} · ${T('bd.rework.title')}</div>
+        extra = `<div class="kc-state kc-rework"><div class="hd"><i data-lucide="message-square-diff"></i>${T('bd.rework')}</div>
+          <div class="sub">${T('bd.attempt', { n: t.rework.attempt })} · ${T('bd.rework.title')}</div>
           <ul>${t.rework.changes.map(c => `<li>${esc(PC.L(c))}</li>`).join('')}</ul>
-          <div class="row gap-2" style="font-size:11px;color:var(--warning-fg)"><span class="spinner" style="width:11px;height:11px;border-width:1.5px"></span><span data-step="${t.id}">${T('board.step.' + stepFor(p))}</span><span class="pct" data-pct="${t.id}" style="margin-left:auto;font-weight:600">${p}%</span></div>
+          <div class="hd" style="font-weight:500"><span class="spinner" style="width:11px;height:11px;border-width:1.5px"></span><span data-step="${t.id}">${T('board.step.' + stepFor(p))}</span><span class="pct" data-pct="${t.id}">${p}%</span></div>
           <div class="progress"><span data-bar="${t.id}" style="width:${p}%"></span></div>
           <div class="kc-branch"><i data-lucide="git-branch"></i><span>${esc(branchOf(t))}</span></div></div>`;
       } else if (col === 'running') {
         const p = t.progress || 0;
-        extra = `<div class="kc-run"><div class="row gap-2"><span class="spinner" style="width:11px;height:11px;border-width:1.5px"></span><span data-step="${t.id}">${T('board.step.' + stepFor(p))}</span><span class="pct" data-pct="${t.id}">${p}%</span></div>
+        extra = `<div class="kc-state kc-run"><div class="hd"><span class="spinner" style="width:11px;height:11px;border-width:1.5px"></span><span data-step="${t.id}">${T('board.step.' + stepFor(p))}</span><span class="pct" data-pct="${t.id}">${p}%</span></div>
           <div class="progress"><span data-bar="${t.id}" style="width:${p}%"></span></div>
           <div class="kc-branch"><i data-lucide="git-branch"></i><span>${esc(branchOf(t))}</span></div></div>`;
       } else if (col === 'review' && t.ev) {
@@ -433,7 +422,7 @@
       } else if (col === 'done' && t.pr) {
         extra = `<div class="row gap-2"><span class="badge ${t.pr.st === 'merged' ? 'badge-purple' : 'badge-success'}"><i data-lucide="${t.pr.st === 'merged' ? 'git-merge' : 'git-pull-request'}"></i>#${t.pr.n} ${T('board.pr.' + t.pr.st)}</span></div>`;
       }
-      return `<div class="kcard ${t._new ? 'is-new' : ''} ${t.failed && col === 'running' ? 'is-failed' : ''}" draggable="true" data-id="${t.id}">
+      return `<div class="kcard ${t._new ? 'is-new' : ''} ${t.failed && col === 'running' ? 'is-failed' : ''} ${t.rework && col === 'running' && !t.failed ? 'is-rework' : ''}" draggable="true" data-id="${t.id}">
         <div class="kc-top"><span class="kc-type kc-${t.type}" title="${T('board.type.' + t.type)}"><i data-lucide="${TYPES[t.type]}"></i></span><span class="kc-id">${t.id}</span>
           <span class="kc-pri pri-${t.pri}" title="${T('board.pri.' + t.pri)}"><i data-lucide="${PRI[t.pri]}"></i></span></div>
         <div class="kc-title">${esc(t.title)}</div>
@@ -461,7 +450,6 @@
             <span class="kcol-count ${full ? 'is-full' : ''}" ${c.wip ? `title="${T('board.wip', { n: c.wip })}"` : ''}>${c.wip ? total + '/' + c.wip : items.length}</span>
             <span class="grow"></span>${c.id === 'backlog' ? `<button class="btn btn-ghost btn-icon btn-sm" data-act="new" style="width:24px;height:24px"><i data-lucide="plus"></i></button>` : ''}
           </div>
-          <div class="kcol-bar"></div>
           <div class="kcol-body" data-body="${c.id}">${body}</div></section>`;
       }).join('');
       TASKS.forEach(t => delete t._new);
@@ -673,11 +661,11 @@
       if (!R) { el.innerHTML = ''; return; }
       const failed = TASKS.filter(t => t.failed && t.col === 'running').length;
       const rework = TASKS.filter(t => t.rework && t.col === 'running').length;
-      const chips = [`<span class="chip"><i data-lucide="target"></i>${T('bd.release.pts', { d: SD.sprint.done, t: SD.sprint.points })}</span>`];
-      if (failed) chips.push(`<a class="chip is-danger" href="task.html?p=${P.id}&id=${SD.hero.id}"><i data-lucide="octagon-alert"></i>${T('bd.release.blocker', { n: failed })} · ${SD.hero.id}</a>`);
-      if (rework) chips.push(`<span class="chip is-warn"><i data-lucide="message-square-diff"></i>${T('bd.release.changes', { n: rework })} · ${SD.changesRequested.id}</span>`);
-      chips.push(`<span class="chip"><i data-lucide="calendar-check"></i>${T('bd.release.due', { d: PC.lang === 'vi' ? '28/11' : 'Nov 28' })}</span>`);
-      el.innerHTML = `<div class="rel"><span class="ic"><i data-lucide="rocket"></i></span>
+      const chips = [`<span class="badge"><i data-lucide="target"></i>${T('bd.release.pts', { d: SD.sprint.done, t: SD.sprint.points })}</span>`];
+      if (failed) chips.push(`<a class="badge badge-danger" href="task.html?p=${P.id}&id=${SD.hero.id}"><i data-lucide="octagon-alert"></i>${T('bd.release.blocker', { n: failed })} · ${SD.hero.id}</a>`);
+      if (rework) chips.push(`<span class="badge badge-warning"><i data-lucide="message-square-diff"></i>${T('bd.release.changes', { n: rework })} · ${SD.changesRequested.id}</span>`);
+      chips.push(`<span class="badge"><i data-lucide="calendar-check"></i>${T('bd.release.due', { d: PC.lang === 'vi' ? '28/11' : 'Nov 28' })}</span>`);
+      el.innerHTML = `<div class="rel"><i data-lucide="rocket"></i>
         <div class="tt"><b>${T('bd.release', { v: R.name })} · ${T('bd.release.ready', { p: R.readiness })}</b><small>${T('bd.release.sub', { n: SD.sprint.n })}</small></div>
         <div class="bar"><div class="progress"><span style="width:${R.readiness}%"></span></div></div>
         <div class="chips">${chips.join('')}</div></div>`;
@@ -688,38 +676,24 @@
     const PH_META = { release: { icon: 'blocks', c: 'var(--phase-release)', b: 'var(--phase-release)' }, sdlc: { icon: 'infinity', c: 'var(--accent-teal-fg)', b: 'var(--accent-teal)' }, initial: { b: 'var(--phase-initial)' } };
     const LK_ICON = { done: 'check-circle-2', review: 'eye', wip: 'loader-circle', todo: 'circle-dashed', wait: 'hourglass', run: 'loader-circle', locked: 'lock' };
     function lockedHTML(c) {
-      const m = PH_META[c.phase], met = c.pre.filter(r => r.st === 'done').length;
+      const met = c.pre.filter(r => r.st === 'done').length;
       const pre = c.pre.map(r => `<li class="k-${r.st}">${r.st === 'run' ? '<span class="spinner"></span>' : `<i data-lucide="${LK_ICON[r.st]}"></i>`}<span class="tx">${esc(r.label)}${r.detail ? `<small>${esc(r.detail)}</small>` : ''}</span><span class="st">${r.stLabel || T('lk.st.' + r.st)}</span></li>`).join('');
       const prev = c.prev.map(b => `<div class="lk-bar" style="--_b:${PH_META[b.phase].b}"><div class="row between"><span>${T('phase.' + b.phase)} · <b>${b.pct}%</b></span><span class="text-subtle">${esc(b.note)}</span></div><div class="progress" style="margin-top:4px"><span style="width:${b.pct}%"></span></div></div>`).join('');
-      return `<div class="lk" style="--_c:${m.c}">
-        <div class="lk-bg" aria-hidden="true">${c.bg}</div>
-        <div class="lk-wrap">
-          <section class="lk-card">
-            <div class="lk-hero">
-              <div class="lk-ic"><i data-lucide="${m.icon}"></i><span class="lk-pad"><i data-lucide="lock"></i></span></div>
-              <div class="grow"><span class="phase-chip phase-${c.phase}">${T('phase.' + c.phase)}</span><h2 class="lk-title">${T('lk.title', { phase: T('phase.' + c.phase) })}</h2><p class="lk-gate">${esc(c.gate)}</p></div>
-              <span class="badge badge-outline"><i data-lucide="lock"></i>${T('lk.badge')}</span>
-            </div>
-            ${c.note ? `<div class="lk-note"><i data-lucide="sparkles"></i><span>${esc(c.note)}</span></div>` : ''}
-            <div class="lk-cols">
-              <div class="lk-col"><h5>${T('lk.does')}</h5><ul class="lk-does">${c.does.map((d, i) => `<li><span class="n">${i + 1}</span><span>${esc(d)}</span></li>`).join('')}</ul></div>
-              <div class="lk-col"><div class="row between"><h5>${T('lk.pre')}</h5><span class="text-xs text-subtle" style="margin-bottom:12px">${T('lk.met', { n: met, m: c.pre.length })}</span></div><ul class="lk-pre">${pre}</ul></div>
-            </div>
-            <div class="lk-foot">
-              <div class="lk-prev"><span class="cap">${T('lk.prev')}</span>${prev}</div>
-              <div class="row gap-2 wrap"><a class="btn btn-secondary" href="overview.html?p=${P.id}">${T('lk.view')}</a><a class="btn btn-primary btn-lg" href="${c.cta.href}">${esc(c.cta.label)}<i data-lucide="arrow-right"></i></a></div>
-            </div>
-          </section>
-          <div class="lk-cap"><i data-lucide="eye"></i>${T('lk.cap')}</div>
-        </div>
+      return `<div class="lk">
+        <header class="page-head">
+          <div><span class="phase-chip phase-${c.phase}">${T('phase.' + c.phase)}</span><h1>${T('lk.title', { phase: T('phase.' + c.phase) })}</h1>
+            <div class="meta"><span class="badge badge-outline"><i data-lucide="lock"></i>${T('lk.badge')}</span><span>${esc(c.gate)}</span></div></div>
+          <div class="actions"><a class="btn btn-secondary" href="overview.html?p=${P.id}">${T('lk.view')}</a><a class="btn btn-primary" href="${c.cta.href}">${esc(c.cta.label)}<i data-lucide="arrow-right"></i></a></div>
+        </header>
+        ${c.note ? `<div class="alert alert-ai lk-note"><i data-lucide="sparkles"></i><span>${esc(c.note)}</span></div>` : ''}
+        <section class="card">
+          <div class="lk-cols">
+            <div class="lk-col"><div class="panel-head"><h4>${T('lk.does')}</h4></div><ol class="lk-does">${c.does.map((d, i) => `<li><span class="n">${i + 1}.</span><span>${esc(d)}</span></li>`).join('')}</ol></div>
+            <div class="lk-col"><div class="panel-head"><h4>${T('lk.pre')}</h4><span class="text-xs text-subtle">${T('lk.met', { n: met, m: c.pre.length })}</span></div><ul class="lk-pre">${pre}</ul></div>
+          </div>
+          <div class="lk-foot"><span class="cap">${T('lk.prev')}</span>${prev}</div>
+        </section>
       </div>`;
-    }
-    const sk = (w, h, extra) => `<div class="sk" style="width:${w};height:${h};${extra || ''}"></div>`;
-    function boardSkeleton() {
-      const card = h => `<div class="sk-card" style="padding:12px;gap:8px"><div class="sk-row">${sk('20px', '20px')}${sk('46px', '11px')}<span class="grow"></span>${sk('14px', '14px')}</div>${sk('90%', '12px')}${sk('64%', '12px')}<div class="sk-row">${sk('44px', '16px')}${sk('52px', '16px')}</div>${h ? sk('100%', '38px') : ''}</div>`;
-      const cols = [[1, 1, 1, 0], [1, 1, 0], [1, 0], [1, 1], [1], [1, 1, 1]];
-      return `<div class="sk-row" style="margin-bottom:16px">${sk('150px', '28px')}${sk('140px', '30px')}${sk('90px', '24px', 'border-radius:999px')}<span class="grow"></span>${sk('110px', '30px')}</div>
-        <div class="sk-row" style="align-items:stretch;gap:12px">${cols.map(c => `<div style="flex:1;min-width:0;background:var(--bg-surface-2);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:12px;display:flex;flex-direction:column;gap:8px">${sk('55%', '14px')}${c.map(card).join('')}</div>`).join('')}</div>`;
     }
     function solved() { return P.state.scaffolding.status; }
     function lockedPrereqs() {
@@ -760,7 +734,7 @@
         note = T('bd.lk.seed.ok');
       }
       $('boardRoot').classList.add('hidden'); $('lockedRoot').classList.remove('hidden');
-      $('lockedRoot').innerHTML = lockedHTML({ phase: 'sdlc', gate: PC.L(SD.gate), note, does: [T('bd.lk.do1'), T('bd.lk.do2'), T('bd.lk.do3')], pre: lockedPrereqs(), prev, cta, bg: boardSkeleton() });
+      $('lockedRoot').innerHTML = lockedHTML({ phase: 'sdlc', gate: PC.L(SD.gate), note, does: [T('bd.lk.do1'), T('bd.lk.do2'), T('bd.lk.do3')], pre: lockedPrereqs(), prev, cta });
       PC.refresh($('lockedRoot'));
     }
 

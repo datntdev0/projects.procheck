@@ -1,19 +1,15 @@
 <div class="canvas-inner new-project-page" data-testid="new-project-page">
   <div class="wrap-np">
-    <div class="page-header">
-      <div>
-        <h1>{{ 'np.h1' | t }}</h1>
-        <div class="subtitle">{{ 'np.sub' | t }}</div>
-      </div>
-      <a pcButton variant="ghost" routerLink="/projects"><pc-icon name="x" /> {{ 'common.cancel' | t }}</a>
-    </div>
-
-    <div class="card stepper-bar">
-      <pc-stepper [steps]="stepLabels()" [current]="form.step()" />
-    </div>
+    <pc-page-header [title]="'np.h1' | t" [subtitle]="'np.sub' | t">
+      <a pcButton pcPageActions variant="ghost" routerLink="/projects"><pc-icon name="x" /> {{ 'common.cancel' | t }}</a>
+    </pc-page-header>
 
     <div class="wiz">
-      <div class="card">
+      <div class="card np-panel">
+        <div class="wiz-steps">
+          <pc-stepper [steps]="stepLabels()" [current]="form.step()" />
+        </div>
+
         @switch (form.step()) {
           @case (0) {
             <pc-np-basics-step />
@@ -36,7 +32,7 @@
           <div class="row">
             <span class="text-xs text-subtle">{{ 'np.step.of' | t: { a: form.step() + 1, b: stepCount } }}</span>
             @if (isLast()) {
-              <button pcButton variant="ai" type="button" data-testid="np-create" [disabled]="creating()" (click)="create()">
+              <button pcButton variant="ai-primary" type="button" data-testid="np-create" [disabled]="creating()" (click)="create()">
                 <pc-icon name="sparkles" /> {{ 'np.create' | t }}
               </button>
             } @else {

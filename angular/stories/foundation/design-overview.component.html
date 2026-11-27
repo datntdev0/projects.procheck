@@ -25,33 +25,25 @@
   </div>
 </header>
 
-<section class="ds-hero">
-  <div class="ds-hero-inner">
-    <div>
+<div class="ds-head">
+  <div class="page-head">
+    <div style="min-width:0">
       <div class="kicker">Design system · v1.0</div>
-      <h1 class="display" style="margin-top:var(--space-3)"><span class="text-brand">Procheck</span> <span>Design System</span></h1>
-      <p class="lead">The shared language behind every Procheck screen — brand, tokens, components and patterns — built on the KMS Brand Guidelines FY27 and designed for a local, enterprise studio-style desktop app.</p>
-      <div class="ds-hero-meta">
-        <span class="ds-pill"><pc-icon name="palette" [size]="14" />KMS Brand FY27</span>
-        <span class="ds-pill"><pc-icon name="sun-moon" [size]="14" /><span>Light + Dark</span></span>
-        <span class="ds-pill"><pc-icon name="languages" [size]="14" />EN · VI</span>
-        <span class="ds-pill"><pc-icon name="blocks" [size]="14" /><span>Tokens · Components · Patterns</span></span>
-      </div>
-      <div class="ds-hero-cta">
-        <a class="btn btn-primary" href="#foundations" (click)="scrollTo($event, 'foundations')"><span>Start with foundations</span><pc-icon name="arrow-down" /></a>
-        <a class="btn btn-secondary" href="#components" (click)="scrollTo($event, 'components')"><pc-icon name="component" /><span>Browse components</span></a>
+      <h1 style="margin-top:4px">Procheck <span>Design System</span></h1>
+      <p class="lead">The shared language behind every Procheck screen: brand, tokens, components and layout rules for a dense, calm enterprise desktop app. Built on the KMS Brand Guidelines FY27; overview.html is the reference page.</p>
+      <div class="meta">
+        <span><pc-icon name="palette" />KMS Brand FY27</span>
+        <span><pc-icon name="sun-moon" /><span>Light + Dark</span></span>
+        <span><pc-icon name="languages" />EN · VI</span>
+        <span><pc-icon name="blocks" /><span>Tokens · Components · Patterns</span></span>
       </div>
     </div>
-    <div class="ds-art" aria-hidden="true">
-      <div class="ring r1"></div><div class="ring r2"></div>
-      <div class="ring r3"><img src="assets/brand/kms-mark.svg" alt=""></div>
-      <span class="float f1"><span class="phase-chip phase-initial">Initial</span></span>
-      <span class="float f2"><span class="phase-chip phase-release">Scaffolding</span></span>
-      <span class="float f3"><span class="phase-chip phase-sdlc">SDLC</span></span>
-      <span class="float f4"><span class="avatar avatar-ai" style="border:0"><pc-icon name="sparkles" [size]="13" /></span></span>
+    <div class="actions">
+      <a class="btn btn-secondary" href="#components" (click)="scrollTo($event, 'components')"><pc-icon name="component" /><span>Browse components</span></a>
+      <a class="btn btn-primary" href="#layout" (click)="scrollTo($event, 'layout')"><span>Layout principles</span><pc-icon name="arrow-down" /></a>
     </div>
   </div>
-</section>
+</div>
 
 <div class="ds-layout">
   <nav class="ds-toc" aria-label="Table of contents">
@@ -74,11 +66,11 @@
   <div class="ds-block">
     <h3>Design principles</h3>
     <p class="ds-desc">Four ideas guide every decision — from a button radius to a whole screen.</p>
-    <div class="ds-cards">
-      <div class="ds-card"><div class="ico"><pc-icon name="sparkles" /></div><h4>Modern</h4><p>Clean, bright and light on chrome. Generous space, soft shadows and one confident blue.</p></div>
-      <div class="ds-card"><div class="ico purple"><pc-icon name="shield-check" /></div><h4>Professional</h4><p>Precise and calm. Typography, alignment and states are consistent so you can trust what you see.</p></div>
-      <div class="ds-card"><div class="ico teal"><pc-icon name="building-2" /></div><h4>Enterprise</h4><p>Built for clients, audits and long projects: clear status, traceable evidence, no surprises.</p></div>
-      <div class="ds-card"><div class="ico magenta"><pc-icon name="layout-panel-left" /></div><h4>Studio</h4><p>A studio, not a form. Sidebar, topbar, canvas and Assistant stay put while the work changes.</p></div>
+    <div class="panel ds-colpanel">
+      <div><span class="gl"><pc-icon name="sparkles" /></span><h4>Modern</h4><p>Clean, bright and flat. Borders and rules separate surfaces; one confident blue carries action.</p></div>
+      <div><span class="gl"><pc-icon name="shield-check" /></span><h4>Professional</h4><p>Precise and calm. Typography, alignment and states are consistent so you can trust what you see.</p></div>
+      <div><span class="gl"><pc-icon name="building-2" /></span><h4>Enterprise</h4><p>Built for clients, audits and long projects: clear status, traceable evidence, no surprises.</p></div>
+      <div><span class="gl"><pc-icon name="layout-panel-left" /></span><h4>Studio</h4><p>A studio, not a form. Sidebar, topbar, canvas and Assistant stay put while the work changes.</p></div>
     </div>
   </div>
 
@@ -94,7 +86,7 @@
       <div class="ratio-legend">
         <div><b>Neutral</b><span>White and cool gray: canvas, cards, text and borders.</span></div>
         <div><b>Primary blue</b><span>Electric Blue, Dark Blue, Sky: primary actions, links, active navigation, focus.</span></div>
-        <div><b>Accents</b><span>Magenta, Purple, Teal: phases, AI moments, highlights — never large areas.</span></div>
+        <div><b>Accents</b><span>Magenta, Purple, Teal: phase lines, chips and charts — never large areas, never gradients.</span></div>
       </div>
     </div>
   </div>
@@ -111,10 +103,123 @@
   </div>
 </section>
 
-<!-- ============================================================ 02 LOGO -->
+<!-- ================================================== 02 LAYOUT PRINCIPLES -->
+<section class="ds-sec" id="layout">
+  <header class="ds-sec-head">
+    <div class="kicker"><span class="num">02</span><span>Layout</span></div>
+    <h2>Layout principles</h2>
+    <p class="lead">The UI reads as a dense, calm enterprise tool, not a marketing page. These nine rules are binding for every screen; <code>overview.html</code> is the reference implementation.</p>
+  </header>
+
+  <div class="ds-block">
+    <h3>The nine rules</h3>
+    <p class="ds-desc">Each rule with a small do and don’t. When a screen feels busy, check it against this list first.</p>
+    <div class="ds-rules">
+      <div class="lr"><div><h4><span class="lr-n">01</span><span>One level of containers</span></h4><p>A bordered panel (<code>.card</code> / <code>.panel</code>) never contains another bordered box. Split its content with rules: <code>.panel-head</code>, <code>.panel-section</code>, <code>.rows &gt; .row-item</code>.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="sx-p"><div class="sx-head"><div class="sx-l s f"></div></div><div class="sx-row"><div class="sx-l m"></div></div><div class="sx-row"><div class="sx-l"></div></div><div class="sx-row"><div class="sx-l s"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="sx-p"><div class="sx-head"><div class="sx-l s f"></div></div><div class="sx-box"><div class="sx-l m"></div></div><div class="sx-box"><div class="sx-l s"></div></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">02</span><span>Figures go in a strip</span></h4><p>A row of KPIs is one <code>.stat-strip</code> with cells divided by vertical rules. No card and no icon tile per figure.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="sx-p sx-cols" style="--n:4"><div><span class="sx-fig">34</span><div class="sx-l s"></div></div><div><span class="sx-fig">128</span><div class="sx-l s"></div></div><div><span class="sx-fig">96%</span><div class="sx-l s"></div></div><div><span class="sx-fig">2</span><div class="sx-l s"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="sx-grid" style="--n:4"><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--brand-soft);color:var(--brand)"><pc-icon name="list-checks" /></span><span class="sx-fig">34</span></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--accent-purple-soft);color:var(--accent-purple)"><pc-icon name="bot" /></span><span class="sx-fig">128</span></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--accent-teal-soft);color:var(--accent-teal)"><pc-icon name="flask-conical" /></span><span class="sx-fig">96%</span></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--accent-magenta-soft);color:var(--accent-magenta)"><pc-icon name="eye" /></span><span class="sx-fig">2</span></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">03</span><span>Columns, not card grids</span></h4><p>Related items (phases, steps, options) share one panel with columns divided by rules. Repeating entities are table or list rows.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="sx-p sx-cols"><div><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="sx-grid"><div class="sx-p" style="box-shadow:var(--shadow-md)"><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">04</span><span>No gradients, no hero panels, no glow</span></h4><p>Page tops use <code>.page-head</code>: title, meta line, actions and a bottom rule. Shadows only on floating layers (menus, modals, toasts).</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="sx-ph"><div class="grow col" style="gap:5px"><div class="sx-l m f" style="height:9px"></div><div class="sx-l s"></div></div><span class="sx-btn sec"></span><span class="sx-btn" style="margin-left:0"></span></div><div class="sx-l"></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="sx-hero"><div class="sx-l m f" style="height:10px"></div><div class="sx-l s"></div><span class="sx-btn" style="width:64px;height:16px;border-radius:var(--radius-full)"></span></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">05</span><span>Icons are plain glyphs</span></h4><p>No colored square or circle tiles behind icons in lists, headers or stats. Color an icon only when it carries status.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="sx-p"><div class="sx-row"><span class="sx-gl"><pc-icon name="file-text" /></span><div class="sx-l m"></div></div><div class="sx-row"><span class="sx-gl"><pc-icon name="git-branch" /></span><div class="sx-l"></div></div><div class="sx-row"><span class="sx-gl" style="color:var(--danger-fg)"><pc-icon name="circle-x" /></span><div class="sx-l s"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="sx-p"><div class="sx-row"><span class="sx-tile" style="background:var(--brand-soft);color:var(--brand)"><pc-icon name="file-text" /></span><div class="sx-l m"></div></div><div class="sx-row"><span class="sx-tile" style="background:var(--accent-purple-soft);color:var(--accent-purple)"><pc-icon name="git-branch" /></span><div class="sx-l"></div></div><div class="sx-row"><span class="sx-tile" style="background:var(--accent-magenta-soft);color:var(--accent-magenta)"><pc-icon name="circle-x" /></span><div class="sx-l s"></div></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">06</span><span>Status = small square badges</span></h4><p><code>.badge</code> with a 2px radius and a label. Pills only for removable filter chips.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="row"><span class="badge badge-success"><pc-icon name="check" />Passed</span><span class="badge badge-warning">In review</span><span class="badge">Backlog</span></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="row"><span class="sx-pill" style="background:var(--success);color:var(--fg-on-brand)">Passed</span><span class="sx-pill" style="background:var(--warning-soft);color:var(--warning-fg)">In review</span><span class="sx-pill" style="background:var(--bg-surface-3);color:var(--fg-muted)">Backlog</span></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">07</span><span>AI actions are not special-colored</span></h4><p><code>.btn-ai</code> is a secondary button with a brand sparkle; add <code>.is-primary</code> only when it is the page’s main action. Never several primary buttons in one view.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-primary btn-sm">Approve plan</button><button type="button" class="btn btn-ai btn-sm"><pc-icon name="sparkles" />Refine with AI</button></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-primary btn-sm">Approve plan</button><button type="button" class="btn btn-sm" style="background:var(--accent-purple);color:var(--fg-on-brand);border-color:transparent;border-radius:var(--radius-full)"><pc-icon name="sparkles" />Refine with AI</button><button type="button" class="btn btn-primary btn-sm">Export</button></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">08</span><span>Notices are flat bars</span></h4><p><code>.alert-*</code> and focus bars use a 3px tone stripe on the left, never a tinted gradient or glow.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="alert alert-warning"><pc-icon name="triangle-alert" /><div><b>Review required.</b> Inspect the diff before promoting.</div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="sx-tint"><b>Review required.</b> Inspect the diff before promoting.</div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">09</span><span>Compact sizes</span></h4><p>Radius 2–8px (<code>--radius-*</code>), controls 32px (26px small), H1 22px, panel and section titles 13.5px semibold.</p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><pc-icon name="circle-check" /><span>Do</span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-secondary">Default · 32</button><button type="button" class="btn btn-secondary btn-sm">Small · 26</button></div><div class="row"><span class="h1" style="font-size:var(--text-3xl)">H1 22</span><span class="badge">radius 2</span></div></div></div><div class="lr-sp"><span class="lr-tag dont"><pc-icon name="circle-x" /><span>Don’t</span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-secondary sx-big">Large pill · 40</button></div><div class="row"><span style="font-size:var(--text-4xl);font-weight:var(--weight-semibold);color:var(--fg-strong);line-height:1.1">H1 30</span><span style="padding:6px 12px;border:1px solid var(--border-default);border-radius:calc(var(--radius-xl) * 2);background:var(--bg-surface);font-size:var(--text-xs)">radius 16</span></div></div></div></div></div>
+    </div>
+  </div>
+
+  <div class="ds-block" id="l-pagehead">
+    <h3>Page head</h3>
+    <p class="ds-desc"><code>.page-head</code> opens every page: H1, a <code>.meta</code> line with plain glyphs, <code>.actions</code> on the right and a bottom rule. One primary action at most. In Angular: <code>&lt;pc-page-header&gt;</code> with <code>[pcPageMeta]</code> / <code>[pcPageActions]</code>.</p>
+    <div class="ds-demo">
+      <div class="page-head" style="margin-bottom:0">
+        <div style="min-width:0">
+          <h1>Lotus Pay — Merchant Portal</h1>
+          <div class="meta">
+            <span><pc-icon name="folder" /><code class="text-xs">D:\Projects\lotus-pay</code></span>
+            <span><span class="phase-chip phase-release">Scaffolding</span></span>
+            <span><pc-icon name="clock" />Updated 12 min ago</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary"><pc-icon name="upload" />Upload</button>
+          <button type="button" class="btn btn-ai is-primary"><pc-icon name="sparkles" />Generate plan</button>
+        </div>
+      </div>
+    </div>
+    <details class="ds-snip"><summary><pc-icon name="chevron-right" [size]="14" class="chev" /><span>Code</span><button type="button" class="btn btn-ghost btn-sm copy" (click)="copySnippet($event, 26)"><pc-icon name="copy" [size]="14" /><span>Copy</span></button></summary><pre class="code">{{ snippets[26] }}</pre></details>
+  </div>
+
+  <div class="ds-block" id="l-strip">
+    <h3>Stat strip</h3>
+    <p class="ds-desc"><code>.stat-strip</code> holds a row of figures in one bordered strip; set <code>--cols</code>. Cells may be links and get a hover background. In Angular: <code>&lt;pc-stat-strip [cols]="4"&gt;</code> with <code>&lt;pc-stat&gt;</code> cells.</p>
+    <div class="ds-demo bare">
+      <div class="stat-strip" style="--cols:4">
+        <a href="#l-strip" (click)="scrollTo($event, 'layout')"><span class="stat-label">Open tasks</span><span class="stat-value">34</span><span class="stat-sub"><b class="text-success">+6</b> this week</span></a>
+        <a href="#l-strip" (click)="scrollTo($event, 'layout')"><span class="stat-label">Agent runs</span><span class="stat-value">128</span><span class="stat-sub"><b>2</b> running now</span></a>
+        <a href="#l-strip" (click)="scrollTo($event, 'layout')"><span class="stat-label">E2E pass rate</span><span class="stat-value">96<small>%</small></span><span class="stat-sub"><b class="text-success">+3%</b> vs last sprint</span></a>
+        <a href="#l-strip" (click)="scrollTo($event, 'layout')"><span class="stat-label">Awaiting review</span><span class="stat-value">2</span><span class="stat-sub"><b class="text-warning">Needs you</b></span></a>
+      </div>
+    </div>
+    <details class="ds-snip"><summary><pc-icon name="chevron-right" [size]="14" class="chev" /><span>Code</span><button type="button" class="btn btn-ghost btn-sm copy" (click)="copySnippet($event, 27)"><pc-icon name="copy" [size]="14" /><span>Copy</span></button></summary><pre class="code">{{ snippets[27] }}</pre></details>
+  </div>
+
+  <div class="ds-block" id="l-panel">
+    <h3>Panel, rows &amp; key–value</h3>
+    <p class="ds-desc"><code>.panel</code> with <code>.panel-head</code>, divided <code>.rows &gt; .row-item</code> and <code>.panel-foot</code>. Use <code>.panel-section</code> to stack sections and <code>.kv</code> for label–value facts. Nothing inside gets its own border box.</p>
+    <div class="ds-demo tint">
+      <div class="ds-cols c2" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--space-4);align-items:start">
+        <div class="panel">
+          <div class="panel-head"><h3><pc-icon name="bot" class="text-subtle" />Recent agent runs</h3><a class="text-xs" href="#l-panel" (click)="$event.preventDefault()">View all</a></div>
+          <div class="rows">
+            <a class="row-item" href="#l-panel" (click)="$event.preventDefault()"><span class="text-brand" style="display:inline-flex"><span class="spinner" style="width:14px;height:14px;border-width:1.5px"></span></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium);color:var(--fg-strong)">LP-151 · Settlement report export</div><div class="text-xs text-subtle">Claude Code · started 4 min ago</div></div><span class="badge badge-brand">Running</span></a>
+            <a class="row-item" href="#l-panel" (click)="$event.preventDefault()"><span class="text-warning" style="display:inline-flex"><pc-icon name="eye" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium);color:var(--fg-strong)">LP-142 · Merchant KYC upload</div><div class="text-xs text-subtle">Claude Code · e2e 12/12</div></div><span class="badge badge-warning">In review</span></a>
+            <a class="row-item" href="#l-panel" (click)="$event.preventDefault()"><span class="text-danger" style="display:inline-flex"><pc-icon name="circle-x" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium);color:var(--fg-strong)">LP-139 · Login rate limiting</div><div class="text-xs text-subtle">Codex · 2 tests failing</div></div><span class="badge badge-danger">Failed</span></a>
+          </div>
+          <div class="panel-foot"><button type="button" class="btn btn-ghost btn-sm">Dismiss</button><button type="button" class="btn btn-secondary btn-sm"><pc-icon name="kanban" />Open board</button></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Repository</h3><span class="badge badge-success"><pc-icon name="check" />Linked</span></div>
+          <div class="panel-section panel-body">
+            <dl class="kv">
+              <dt>Path</dt><dd><code>D:\Projects\lotus-pay</code></dd>
+              <dt>Branch</dt><dd>main · 3 worktrees</dd>
+              <dt>CLI</dt><dd>Claude Code 2.4.1</dd>
+              <dt>Model</dt><dd>claude-opus-5-5</dd>
+            </dl>
+          </div>
+          <div class="panel-section panel-body text-sm text-muted">Agents work in <code>.procheck\worktrees\</code>; your main branch is never touched.</div>
+        </div>
+      </div>
+    </div>
+    <details class="ds-snip"><summary><pc-icon name="chevron-right" [size]="14" class="chev" /><span>Code</span><button type="button" class="btn btn-ghost btn-sm copy" (click)="copySnippet($event, 28)"><pc-icon name="copy" [size]="14" /><span>Copy</span></button></summary><pre class="code">{{ snippets[28] }}</pre></details>
+  </div>
+
+  <div class="ds-block" id="l-ai">
+    <h3>AI actions</h3>
+    <p class="ds-desc"><code>.btn-ai</code> looks like a secondary button with a brand sparkle. Use <code>.btn-ai.is-primary</code> (<code>pcButton variant="ai-primary"</code>) only when generating is the main action of the page.</p>
+    <div class="ds-demo ds-stack" style="gap:var(--space-5)">
+      <div><div class="ds-label">AI is the main action — .btn-ai.is-primary</div>
+        <div class="ds-row"><button type="button" class="btn btn-secondary"><pc-icon name="upload" />Upload</button><button type="button" class="btn btn-ai is-primary"><pc-icon name="sparkles" />Generate artifacts</button></div></div>
+      <div><div class="ds-label">AI next to another main action — .btn-ai</div>
+        <div class="ds-row"><button type="button" class="btn btn-primary"><pc-icon name="check" />Approve plan</button><button type="button" class="btn btn-ai"><pc-icon name="sparkles" />Refine with AI</button><button type="button" class="btn btn-ai btn-sm"><pc-icon name="sparkles" />Summarize</button></div></div>
+    </div>
+    <details class="ds-snip"><summary><pc-icon name="chevron-right" [size]="14" class="chev" /><span>Code</span><button type="button" class="btn btn-ghost btn-sm copy" (click)="copySnippet($event, 29)"><pc-icon name="copy" [size]="14" /><span>Copy</span></button></summary><pre class="code">{{ snippets[29] }}</pre></details>
+  </div>
+</section>
+
+<!-- ============================================================ 03 LOGO -->
 <section class="ds-sec" id="logo">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">02</span><span>Logo</span></div>
+    <div class="kicker"><span class="num">03</span><span>Logo</span></div>
     <h2>Logo</h2>
     <p class="lead">The Sun Mark and KMS wordmark are the only brand artwork. Use the supplied files; never redraw, recolor or distort them.</p>
   </header>
@@ -179,10 +284,10 @@
   </div>
 </section>
 
-<!-- =========================================================== 03 COLOR -->
+<!-- =========================================================== 04 COLOR -->
 <section class="ds-sec" id="color">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">03</span><span>Color</span></div>
+    <div class="kicker"><span class="num">04</span><span>Color</span></div>
     <h2>Color</h2>
     <p class="lead">Brand primitives never change between themes. Semantic tokens map them to roles and adapt to light and dark.</p>
   </header>
@@ -199,7 +304,7 @@
     </div>
     <div class="ds-label" style="margin-top:var(--space-6)">Secondary accents — 10%</div>
     <div class="brand-grid c3">
-      <div class="bc"><div class="bc-chip" style="background:var(--kms-magenta);color:var(--kms-white)"><b>Magenta</b><div><div class="ct"><em>White ✓</em></div><span>#FE006A</span></div></div><div class="bc-meta"><div class="role">Accent · identity moments, end of the AI gradient</div><span>RGB 254 · 0 · 106</span><span>--kms-magenta</span></div></div>
+      <div class="bc"><div class="bc-chip" style="background:var(--kms-magenta);color:var(--kms-white)"><b>Magenta</b><div><div class="ct"><em>White ✓</em></div><span>#FE006A</span></div></div><div class="bc-meta"><div class="role">Accent · identity moments, charts</div><span>RGB 254 · 0 · 106</span><span>--kms-magenta</span></div></div>
       <div class="bc"><div class="bc-chip" style="background:var(--kms-purple);color:var(--kms-white)"><b>Purple</b><div><div class="ct"><em>White ✓</em></div><span>#6A26F1</span></div></div><div class="bc-meta"><div class="role">Accent · Scaffolding phase, AI</div><span>RGB 106 · 38 · 241</span><span>--kms-purple</span></div></div>
       <div class="bc"><div class="bc-chip" style="background:var(--kms-teal);color:var(--kms-black)"><b>Teal</b><div><div class="ct"><em>White ✗ · use dark</em></div><span>#02CCB3</span></div></div><div class="bc-meta"><div class="role">Accent · SDLC phase</div><span>RGB 2 · 204 · 179</span><span>--kms-teal</span></div></div>
     </div>
@@ -250,48 +355,56 @@
   <div class="ds-block">
     <h3>Status colors</h3>
     <p class="ds-desc">Each status has a solid, a soft background and a readable foreground. Always pair color with an icon or label.</p>
-    <div class="ds-cols c4" style="gap:var(--space-4)">
-      <div class="status-card"><div class="top"><i style="background:var(--success)"></i><i style="background:var(--success-soft)"></i><i style="background:var(--success-fg)"></i></div><div class="body"><h5><span class="dot dot-success"></span>Success</h5><span class="ds-cap">--success · -soft · -fg</span><div class="ds-row"><span class="badge badge-success"><pc-icon name="check" />Passed</span></div></div></div>
-      <div class="status-card"><div class="top"><i style="background:var(--warning)"></i><i style="background:var(--warning-soft)"></i><i style="background:var(--warning-fg)"></i></div><div class="body"><h5><span class="dot dot-warning"></span>Warning</h5><span class="ds-cap">--warning · -soft · -fg</span><div class="ds-row"><span class="badge badge-warning"><pc-icon name="triangle-alert" />Needs review</span></div></div></div>
-      <div class="status-card"><div class="top"><i style="background:var(--danger)"></i><i style="background:var(--danger-soft)"></i><i style="background:var(--danger-fg)"></i></div><div class="body"><h5><span class="dot dot-danger"></span>Danger</h5><span class="ds-cap">--danger · -soft · -fg</span><div class="ds-row"><span class="badge badge-danger"><pc-icon name="x" />Failed</span></div></div></div>
-      <div class="status-card"><div class="top"><i style="background:var(--info)"></i><i style="background:var(--info-soft)"></i><i style="background:var(--info-fg)"></i></div><div class="body"><h5><span class="dot dot-brand"></span>Info</h5><span class="ds-cap">--info · -soft · -fg</span><div class="ds-row"><span class="badge badge-brand"><pc-icon name="info" />Queued</span></div></div></div>
+    <div class="panel ds-colpanel">
+      <div class="status-col"><div class="top"><i style="background:var(--success)"></i><i style="background:var(--success-soft)"></i><i style="background:var(--success-fg)"></i></div><div class="body"><h5><pc-icon name="circle-check" [size]="14" class="text-success" />Success</h5><span class="ds-cap">--success · -soft · -fg</span><div class="ds-row"><span class="badge badge-success"><pc-icon name="check" />Passed</span></div></div></div>
+      <div class="status-col"><div class="top"><i style="background:var(--warning)"></i><i style="background:var(--warning-soft)"></i><i style="background:var(--warning-fg)"></i></div><div class="body"><h5><pc-icon name="triangle-alert" [size]="14" class="text-warning" />Warning</h5><span class="ds-cap">--warning · -soft · -fg</span><div class="ds-row"><span class="badge badge-warning"><pc-icon name="triangle-alert" />Needs review</span></div></div></div>
+      <div class="status-col"><div class="top"><i style="background:var(--danger)"></i><i style="background:var(--danger-soft)"></i><i style="background:var(--danger-fg)"></i></div><div class="body"><h5><pc-icon name="circle-x" [size]="14" class="text-danger" />Danger</h5><span class="ds-cap">--danger · -soft · -fg</span><div class="ds-row"><span class="badge badge-danger"><pc-icon name="x" />Failed</span></div></div></div>
+      <div class="status-col"><div class="top"><i style="background:var(--info)"></i><i style="background:var(--info-soft)"></i><i style="background:var(--info-fg)"></i></div><div class="body"><h5><pc-icon name="info" [size]="14" class="text-brand" />Info</h5><span class="ds-cap">--info · -soft · -fg</span><div class="ds-row"><span class="badge badge-brand"><pc-icon name="info" />Queued</span></div></div></div>
     </div>
   </div>
 
   <div class="ds-block">
     <h3>Phase colors</h3>
     <p class="ds-desc">Each lifecycle phase owns a color used for chips, progress and accents — consistent from sidebar to board.</p>
-    <div class="ds-cols c3">
-      <div class="phase-card" style="--c:var(--phase-initial)"><div class="ph-ico"><pc-icon name="compass" /></div><span class="phase-chip phase-initial">Initial</span><p>Gather client info, upload documents, let the Assistant draft and refine artifacts, then export.</p><div class="progress ph"><span style="width:100%"></span></div><div class="ds-cap" style="margin-top:8px">--phase-initial</div></div>
-      <div class="phase-card" style="--c:var(--phase-release)"><div class="ph-ico"><pc-icon name="blocks" /></div><span class="phase-chip phase-release">Scaffolding</span><p>Define the architecture, connect the local repo and let agents scaffold the project.</p><div class="progress ph"><span style="width:64%"></span></div><div class="ds-cap" style="margin-top:8px">--phase-release</div></div>
-      <div class="phase-card" style="--c:var(--phase-sdlc)"><div class="ph-ico"><pc-icon name="infinity" /></div><span class="phase-chip phase-sdlc">SDLC</span><p>Run the kanban: agents implement tasks in git worktrees, you review the evidence, then promote to a PR.</p><div class="progress ph"><span style="width:42%"></span></div><div class="ds-cap" style="margin-top:8px">--phase-sdlc</div></div>
+    <div class="panel ds-colpanel" style="--cols:3">
+      <div class="phase-col" style="--c:var(--phase-initial)"><div class="ph-top"><span class="ph-gl"><pc-icon name="compass" /></span><span class="phase-chip phase-initial">Initial</span></div><p>Gather client info, upload documents, let the Assistant draft and refine artifacts, then export.</p><div class="progress ph"><span style="width:100%"></span></div><div class="ds-cap">--phase-initial</div></div>
+      <div class="phase-col" style="--c:var(--phase-release)"><div class="ph-top"><span class="ph-gl"><pc-icon name="blocks" /></span><span class="phase-chip phase-release">Scaffolding</span></div><p>Define the architecture, connect the local repo and let agents scaffold the project.</p><div class="progress ph"><span style="width:64%"></span></div><div class="ds-cap">--phase-release</div></div>
+      <div class="phase-col" style="--c:var(--phase-sdlc)"><div class="ph-top"><span class="ph-gl"><pc-icon name="infinity" /></span><span class="phase-chip phase-sdlc">SDLC</span></div><p>Run the kanban: agents implement tasks in git worktrees, you review the evidence, then promote to a PR.</p><div class="progress ph"><span style="width:42%"></span></div><div class="ds-cap">--phase-sdlc</div></div>
     </div>
   </div>
 
   <div class="ds-block">
-    <h3>Gradients</h3>
-    <p class="ds-desc">Brand and hero gradients are decorative. The AI gradient is reserved for AI features.</p>
-    <div class="ds-cols c3">
-      <div class="grad" style="background:var(--gradient-brand)"><b>Brand</b><span>--gradient-brand</span></div>
-      <div class="grad" style="background:var(--gradient-ai)"><b>AI</b><span>--gradient-ai</span></div>
-      <div class="grad hero" style="background-image:var(--gradient-hero)"><b>Hero</b><span>--gradient-hero</span></div>
-    </div>
-    <div class="ds-demo mt-4">
-      <div class="ds-row">
-        <button class="btn btn-ai"><pc-icon name="sparkles" />Generate with AI</button>
-        <span class="avatar avatar-ai"><pc-icon name="sparkles" [size]="13" /></span>
-        <div class="progress progress-ai" style="width:160px"><span style="width:62%"></span></div>
-        <span class="text-gradient" style="font-weight:var(--weight-semibold);font-size:var(--text-lg)">AI Assistant</span>
+    <h3>Gradients — retired</h3>
+    <p class="ds-desc">The enterprise look has no gradients. The tokens remain as flat values so older references still render; do not use them in new work.</p>
+    <div class="ds-cols c2" style="align-items:start">
+      <div class="table-wrap">
+        <table class="table retired">
+          <thead><tr><th>Token</th><th>Resolves to</th><th>Instead use</th></tr></thead>
+          <tbody>
+            <tr><td class="t">--gradient-brand</td><td class="v">flat #245DB3</td><td>--brand or --kms-blue-dark as a flat fill (avatar)</td></tr>
+            <tr><td class="t">--gradient-ai</td><td class="v">flat --brand</td><td>.btn-ai, .avatar-ai, .progress-ai — all flat brand</td></tr>
+            <tr><td class="t">--gradient-hero</td><td class="v">none</td><td>.page-head on the plain canvas</td></tr>
+            <tr><td class="t">.text-gradient</td><td class="v">color: --brand-fg</td><td>.text-brand; no gradient text</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="ds-demo">
+        <div class="ds-label">AI surfaces today</div>
+        <div class="ds-row">
+          <button type="button" class="btn btn-ai"><pc-icon name="sparkles" />Generate with AI</button>
+          <span class="avatar avatar-ai"><pc-icon name="sparkles" [size]="13" /></span>
+          <div class="progress progress-ai" style="width:140px"><span style="width:62%"></span></div>
+        </div>
       </div>
     </div>
-    <div class="ds-note"><b>AI only:</b> <code>--gradient-ai</code> (blue → purple → magenta) marks Assistant, generation and agent moments. Never use it for ordinary buttons, charts or decoration.</div>
+    <div class="ds-note"><b>AI is not special-colored.</b> AI actions use <code>.btn-ai</code>: a secondary button with a brand sparkle. Add <code>.is-primary</code> only when it is the page’s main action. Avatars and progress for AI use flat <code>--brand</code>.</div>
   </div>
 </section>
 
-<!-- ======================================================= 04 TYPOGRAPHY -->
+<!-- ======================================================= 05 TYPOGRAPHY -->
 <section class="ds-sec" id="typography">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">04</span><span>Typography</span></div>
+    <div class="kicker"><span class="num">05</span><span>Typography</span></div>
     <h2>Typography</h2>
     <p class="lead">Poppins carries the brand voice in a calm, geometric style. The app scale adapts the brand scale to dense, everyday UI.</p>
   </header>
@@ -314,19 +427,21 @@
 
   <div class="ds-block">
     <h3>Type scale</h3>
-    <p class="ds-desc">Brand FY27 values on the left, the tokens the app uses on the right. Live samples use the real classes.</p>
+    <p class="ds-desc">Brand FY27 values on the left, the tokens the app uses on the right. Compact scale: H1 22px, panel and section titles 13.5px semibold.</p>
     <div class="table-wrap">
       <table class="table type-table">
         <thead><tr><th>Role</th><th>Brand FY27</th><th>App token</th><th>Live sample</th></tr></thead>
         <tbody>
-          <tr><td>Display</td><td class="spec">32–36 · Regular</td><td class="tok">--text-4xl · 36 / 400</td><td><div class="display">From Idea to Impact</div></td></tr>
-          <tr><td>H1 · Page</td><td class="spec">—</td><td class="tok">--text-3xl · 28 / 600</td><td><h1>Project overview</h1></td></tr>
-          <tr><td>H2 · Section</td><td class="spec">H2 28 · Medium</td><td class="tok">--text-2xl · 22 / 500</td><td><h2>Architecture decisions</h2></td></tr>
-          <tr><td>H3 · Subhead</td><td class="spec">H3 18 · SemiBold</td><td class="tok">--text-xl · 18 / 600</td><td><h3>Sources and artifacts</h3></td></tr>
+          <tr><td>Display</td><td class="spec">32–36 · Regular</td><td class="tok">--text-4xl · 30 / 400</td><td><div class="display">From Idea to Impact</div></td></tr>
+          <tr><td>H1 · Page</td><td class="spec">—</td><td class="tok">--text-3xl · 22 / 600</td><td><h1>Project overview</h1></td></tr>
+          <tr><td>H2 · Section</td><td class="spec">H2 28 · Medium</td><td class="tok">--text-2xl · 18 / 600</td><td><h2>Architecture decisions</h2></td></tr>
+          <tr><td>H3 · Subhead</td><td class="spec">H3 18 · SemiBold</td><td class="tok">--text-xl · 16 / 600</td><td><h3>Sources and artifacts</h3></td></tr>
+          <tr><td>Panel / section title</td><td class="spec">—</td><td class="tok">--text-md · 13.5 / 600 · .panel-head h3</td><td><span class="panel-title">Recent agent runs</span></td></tr>
+          <tr><td>Stat value</td><td class="spec">—</td><td class="tok">22 / 600 · .stat-value</td><td><span class="stat-value">96%</span></td></tr>
           <tr><td>Lead</td><td class="spec">16 · Normal</td><td class="tok">--text-lg · 15 / 400</td><td><p class="lead" style="margin:0">Summarize what the client told us before drafting the vision.</p></td></tr>
           <tr><td>Body</td><td class="spec">11–13 · Light</td><td class="tok">--text-md · 13.5 / 400</td><td><p style="margin:0">The assistant reads every uploaded document and proposes user stories you can edit.</p></td></tr>
           <tr><td>Dense UI</td><td class="spec">—</td><td class="tok">--text-sm · 12.5 / 400–500</td><td><span class="text-sm">Table cells, form labels, menu items, buttons</span></td></tr>
-          <tr><td>Kicker</td><td class="spec">12 · SemiBold caps</td><td class="tok">--text-xs · 11 / 600 · .kicker</td><td><span class="kicker">Initial phase</span></td></tr>
+          <tr><td>Kicker</td><td class="spec">12 · SemiBold caps</td><td class="tok">--text-2xs · 10 / 600 · .kicker</td><td><span class="kicker">Initial phase</span></td></tr>
           <tr><td>Caption</td><td class="spec">8–9 · Light</td><td class="tok">--text-xs · 11 / 300 · .caption</td><td><span class="caption">Updated 12 minutes ago by You</span></td></tr>
           <tr><td>Micro</td><td class="spec">—</td><td class="tok">--text-2xs · 10 / 600</td><td><span style="font-size:var(--text-2xs);font-weight:var(--weight-semibold);color:var(--fg-subtle)">BADGE · META · COUNT</span></td></tr>
         </tbody>
@@ -338,7 +453,7 @@
   <div class="ds-block">
     <h3>Weights</h3>
     <p class="ds-desc">Five weights; most UI uses Regular, Medium and SemiBold.</p>
-    <div class="weights">
+    <div class="panel ds-colpanel weights">
       <div><b style="font-weight:var(--weight-light)">Aa</b><span>Light · 300</span></div>
       <div><b style="font-weight:var(--weight-regular)">Aa</b><span>Regular · 400</span></div>
       <div><b style="font-weight:var(--weight-medium)">Aa</b><span>Medium · 500</span></div>
@@ -359,10 +474,10 @@
   </div>
 </section>
 
-<!-- ============================================================ 05 TOKENS -->
+<!-- ============================================================ 06 TOKENS -->
 <section class="ds-sec" id="tokens">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">05</span><span>Tokens</span></div>
+    <div class="kicker"><span class="num">06</span><span>Tokens</span></div>
     <h2>Spacing, radius, shadow &amp; motion</h2>
     <p class="lead">A 4px grid and a small set of shared values keep layouts predictable.</p>
   </header>
@@ -386,29 +501,29 @@
 
   <div class="ds-block">
     <h3>Radius</h3>
-    <p class="ds-desc">Larger containers get larger radii. Pills are for badges and chips only.</p>
+    <p class="ds-desc">Small, square radii: 2px for badges, 4px for controls, 6px for panels, 8px for modals. Full rounding only for avatars, dots and removable filter chips.</p>
     <div class="ds-demo">
       <div class="rad-grid">
-        <div class="rad"><i style="border-radius:var(--radius-xs)"></i><b>xs</b><span>4px</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-sm)"></i><b>sm</b><span>6px · buttons sm</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-md)"></i><b>md</b><span>8px · inputs, buttons</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-lg)"></i><b>lg</b><span>12px · cards</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-xl)"></i><b>xl</b><span>16px · modals</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-full)"></i><b>full</b><span>999px · badges</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-xs)"></i><b>xs</b><span>2px · badges, chips</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-sm)"></i><b>sm</b><span>4px · small controls</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-md)"></i><b>md</b><span>4px · inputs, buttons, alerts</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-lg)"></i><b>lg</b><span>6px · panels, cards</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-xl)"></i><b>xl</b><span>8px · modals</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-full)"></i><b>full</b><span>999px · avatars, dots, filter chips</span></div>
       </div>
     </div>
   </div>
 
   <div class="ds-block">
     <h3>Elevation</h3>
-    <p class="ds-desc">Shadows are soft and cool; in dark mode they deepen rather than glow. Focus uses a ring, not a shadow.</p>
+    <p class="ds-desc">Surfaces are separated by borders, not shadows: --shadow-xs is none. Shadows appear only on floating layers. Focus uses a ring.</p>
     <div class="ds-demo tint">
       <div class="shd-grid">
-        <div class="shd" style="box-shadow:var(--shadow-xs)">--shadow-xs</div>
-        <div class="shd" style="box-shadow:var(--shadow-sm)">--shadow-sm</div>
-        <div class="shd" style="box-shadow:var(--shadow-md)">--shadow-md</div>
-        <div class="shd" style="box-shadow:var(--shadow-lg)">--shadow-lg</div>
-        <div class="shd" style="box-shadow:var(--shadow-focus)">--shadow-focus</div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-xs)">--shadow-xs</div><span>none · panels and cards use borders</span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-sm)">--shadow-sm</div><span>rare · pressed or dragged items</span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-md)">--shadow-md</div><span>menus, popovers, tooltips</span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-lg)">--shadow-lg</div><span>modals, palette, toasts</span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-focus)">--shadow-focus</div><span>keyboard focus ring</span></div>
       </div>
     </div>
   </div>
@@ -428,24 +543,29 @@
 
   <div class="ds-block">
     <h3>Layout &amp; layering</h3>
-    <p class="ds-desc">Fixed shell dimensions and the z-index ladder.</p>
-    <div class="layout-box">
-      <div><b>OS title bar</b><span>native · not an app token</span></div>
-      <div><b>--topbar-h</b><span>48px</span></div>
-      <div><b>--sidebar-w</b><span>264px</span></div>
-      <div><b>--assistant-w</b><span>380px</span></div>
-      <div><b>--z-dropdown</b><span>50</span></div>
-      <div><b>--z-overlay</b><span>80</span></div>
-      <div><b>--z-modal</b><span>90</span></div>
-      <div><b>--z-toast</b><span>100</span></div>
+    <p class="ds-desc">Fixed shell dimensions, control heights and the z-index ladder.</p>
+    <div class="panel ds-colpanel" style="--cols:2">
+      <dl class="kv">
+        <dt>OS title bar</dt><dd class="text-subtle">native · not an app token</dd>
+        <dt><code>--topbar-h</code></dt><dd>44px</dd>
+        <dt><code>--sidebar-w</code></dt><dd>248px</dd>
+        <dt><code>--assistant-w</code></dt><dd>380px</dd>
+        <dt><code>.btn</code> / <code>.btn-sm</code></dt><dd>32px / 26px</dd>
+      </dl>
+      <dl class="kv">
+        <dt><code>--z-dropdown</code></dt><dd>50</dd>
+        <dt><code>--z-overlay</code></dt><dd>80</dd>
+        <dt><code>--z-modal</code></dt><dd>90</dd>
+        <dt><code>--z-toast</code></dt><dd>100</dd>
+      </dl>
     </div>
   </div>
 </section>
 
-<!-- ========================================================= 06 ICONOGRAPHY -->
+<!-- ========================================================= 07 ICONOGRAPHY -->
 <section class="ds-sec" id="icons">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">06</span><span>Iconography</span></div>
+    <div class="kicker"><span class="num">07</span><span>Iconography</span></div>
     <h2>Iconography</h2>
     <p class="lead">Lucide line icons: simple, consistent, friendly. They inherit text color and never carry meaning alone.</p>
   </header>
@@ -496,10 +616,10 @@
   </div>
 </section>
 
-<!-- ======================================================== 07 COMPONENTS -->
+<!-- ======================================================== 08 COMPONENTS -->
 <section class="ds-sec" id="components">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">07</span><span>Components</span></div>
+    <div class="kicker"><span class="num">08</span><span>Components</span></div>
     <h2>Components</h2>
     <p class="lead">Everything below is rendered with the real classes from components.css — try the states, then switch theme and language.</p>
   </header>
@@ -507,7 +627,7 @@
   <!-- Buttons -->
   <div class="ds-block" id="c-buttons">
     <h3>Buttons</h3>
-    <p class="ds-desc">One primary action per view. Use secondary for the rest, ghost for low emphasis and the AI button only for AI actions.</p>
+    <p class="ds-desc">One primary action per view. Secondary for the rest, ghost for low emphasis. AI actions are secondary buttons with a sparkle; .is-primary only when AI is the main action.</p>
     <div class="ds-demo ds-stack" style="gap:var(--space-6)">
       <div><div class="ds-label">Variants</div>
         <div class="ds-row">
@@ -516,10 +636,15 @@
           <button class="btn btn-soft">Soft</button>
           <button class="btn btn-ghost">Ghost</button>
           <button class="btn btn-danger">Danger</button>
-          <button class="btn btn-ai"><pc-icon name="sparkles" />AI action</button>
+        </div></div>
+      <div><div class="ds-label">AI actions</div>
+        <div class="ds-row">
+          <button class="btn btn-ai"><pc-icon name="sparkles" />Refine with AI</button>
+          <button class="btn btn-ai is-primary"><pc-icon name="sparkles" />Generate artifacts</button>
+          <button class="btn btn-ai btn-sm"><pc-icon name="sparkles" />Summarize</button>
         </div></div>
       <div><div class="ds-label">Sizes</div>
-        <div class="ds-row"><button class="btn btn-primary btn-sm">Small · 28</button><button class="btn btn-primary">Default · 34</button><button class="btn btn-primary btn-lg">Large · 42</button></div></div>
+        <div class="ds-row"><button class="btn btn-secondary btn-sm">Small · 26</button><button class="btn btn-secondary">Default · 32</button><button class="btn btn-secondary btn-lg">Large · 42</button></div></div>
       <div><div class="ds-label">With icons</div>
         <div class="ds-row">
           <button class="btn btn-primary"><pc-icon name="plus" />New project</button>
@@ -576,7 +701,7 @@
   <!-- Badges -->
   <div class="ds-block" id="c-badges">
     <h3>Badges, tags, dots &amp; phase chips</h3>
-    <p class="ds-desc">Compact status and metadata. Color always comes with a label or icon.</p>
+    <p class="ds-desc">Status is a small square badge (2px radius) with a label or icon. Pills are only for removable filter chips.</p>
     <div class="ds-demo ds-stack" style="gap:var(--space-6)">
       <div><div class="ds-label">Badge</div>
         <div class="ds-row">
@@ -601,7 +726,7 @@
   <!-- Avatar + Kbd -->
   <div class="ds-block" id="c-avatar">
     <h3>Avatars &amp; keyboard keys</h3>
-    <p class="ds-desc">You use the brand gradient (initials ME); agents and the Assistant use the AI gradient. There are no avatars for other people. Keys are shown with the kbd element.</p>
+    <p class="ds-desc">You use the dark brand blue (initials ME); agents and the Assistant use flat brand blue. There are no avatars for other people. Keys are shown with the kbd element.</p>
     <div class="ds-demo">
       <div class="ds-row" style="gap:var(--space-8)">
         <div class="ds-row"><span class="avatar avatar-sm">ME</span><span class="avatar">ME</span><span class="avatar avatar-lg">ME</span></div>
@@ -709,13 +834,13 @@
   <!-- Alerts -->
   <div class="ds-block" id="c-alerts">
     <h3>Alerts</h3>
-    <p class="ds-desc">Inline messages. The AI alert uses a gradient border for suggestions from the Assistant.</p>
-    <div class="ds-demo ds-stack" style="gap:var(--space-3)">
+    <p class="ds-desc">Flat bars with a 3px tone stripe on the left. The AI alert uses the plain surface with a brand stripe — never a tinted gradient.</p>
+    <div class="ds-demo bare ds-stack" style="gap:var(--space-3)">
       <div class="alert alert-info"><pc-icon name="info" /><div><b>Heads up.</b> The agent will work in an isolated git worktree. Your main branch is untouched.</div></div>
       <div class="alert alert-success"><pc-icon name="circle-check" /><div><b>All checks passed.</b> 12 of 12 end-to-end tests are green.</div></div>
       <div class="alert alert-warning"><pc-icon name="triangle-alert" /><div><b>Review required.</b> 14 files changed — please inspect the diff before promoting.</div></div>
       <div class="alert alert-danger"><pc-icon name="circle-x" /><div><b>Run failed.</b> Claude Code exited with code 1. Open the log to see what went wrong.</div></div>
-      <div class="alert alert-ai"><pc-icon name="sparkles" style="color:var(--accent-purple)" /><div><b>Suggestion from the Assistant.</b> Two user stories overlap — merge them to keep the backlog clean.</div></div>
+      <div class="alert alert-ai"><pc-icon name="sparkles" class="text-brand" /><div><b>Suggestion from the Assistant.</b> Two user stories overlap — merge them to keep the backlog clean.</div></div>
     </div>
     <details class="ds-snip"><summary><pc-icon name="chevron-right" [size]="14" class="chev" /><span>Code</span><button type="button" class="btn btn-ghost btn-sm copy" (click)="copySnippet($event, 10)"><pc-icon name="copy" [size]="14" /><span>Copy</span></button></summary><pre class="code">{{ snippets[10] }}</pre></details>
   </div>
@@ -737,32 +862,25 @@
 
   <!-- Cards + stat -->
   <div class="ds-block" id="c-cards">
-    <h3>Cards &amp; stats</h3>
-    <p class="ds-desc">Cards group related content. Interactive cards lift on hover; accent cards mark a phase or state.</p>
+    <h3>Cards</h3>
+    <p class="ds-desc">A card is the same flat bordered panel as .panel. Interactive cards change border and surface on hover (no lift); accent cards carry a 3px state edge.</p>
     <div class="ds-demo tint">
-      <div class="ds-cols c3" style="gap:var(--space-5)">
+      <div class="ds-cols c3" style="gap:var(--space-4);align-items:start">
         <div class="card">
-          <div class="card-header"><h5>Vision statement</h5><span class="badge badge-success">Approved</span></div>
+          <div class="card-header"><h4>Vision statement</h4><span class="badge badge-success">Approved</span></div>
           <div class="card-body text-sm text-muted">Give merchants one place to onboard, settle and reconcile payments.</div>
           <div class="card-footer"><button class="btn btn-ghost btn-sm">Edit</button><button class="btn btn-secondary btn-sm">Export</button></div>
         </div>
         <div class="card card-interactive card-pad">
-          <div class="row" style="gap:12px"><span class="file-tile"><pc-icon name="git-branch" /></span><div class="grow"><div class="h5">Interactive card</div><div class="text-xs text-subtle">Hover for elevation</div></div></div>
+          <div class="row" style="gap:10px;align-items:flex-start"><span class="text-subtle" style="display:inline-flex;margin-top:2px"><pc-icon name="git-branch" /></span><div class="grow"><div class="h5">Interactive card</div><div class="text-xs text-subtle">Selectable option or board card. Hover changes border and surface, no lift.</div></div></div>
         </div>
         <div class="card card-accent card-pad" style="--_accent:var(--phase-release)">
           <span class="phase-chip phase-release">Scaffolding</span>
-          <div class="h5" style="margin-top:10px">Accent card</div><div class="text-xs text-subtle">3px phase-colored edge</div>
-        </div>
-      </div>
-      <div class="card card-pad mt-4" style="margin-top:var(--space-5)">
-        <div class="ds-cols c4" style="gap:var(--space-6)">
-          <div class="stat"><span class="stat-label">Open tasks</span><span class="stat-value">34</span><span class="stat-delta text-success">▲ 6 this week</span></div>
-          <div class="stat"><span class="stat-label">Agent runs</span><span class="stat-value">128</span><span class="stat-delta text-muted">2 running now</span></div>
-          <div class="stat"><span class="stat-label">E2E pass rate</span><span class="stat-value">96%</span><span class="stat-delta text-success">▲ 3%</span></div>
-          <div class="stat"><span class="stat-label">Awaiting review</span><span class="stat-value">2</span><span class="stat-delta text-warning">Needs you</span></div>
+          <div class="h5" style="margin-top:10px">Accent card</div><div class="text-xs text-subtle">3px state or phase edge on the left</div>
         </div>
       </div>
     </div>
+    <div class="ds-note"><b>Never a card in a card.</b> components.css flattens <code>.card .card</code> as a safety net — fix the markup instead. Figures belong in a <code>.stat-strip</code>, lists in <code>.rows</code>.</div>
     <details class="ds-snip"><summary><pc-icon name="chevron-right" [size]="14" class="chev" /><span>Code</span><button type="button" class="btn btn-ghost btn-sm copy" (click)="copySnippet($event, 12)"><pc-icon name="copy" [size]="14" /><span>Copy</span></button></summary><pre class="code">{{ snippets[12] }}</pre></details>
   </div>
 
@@ -770,7 +888,7 @@
   <div class="ds-block" id="c-code">
     <h3>Code, terminal &amp; diff</h3>
     <p class="ds-desc">Monospace surfaces. The terminal stays dark in both themes, like a real console.</p>
-    <div class="ds-demo ds-stack" style="gap:var(--space-5)">
+    <div class="ds-demo bare ds-stack" style="gap:var(--space-4)">
       <pre class="code" style="margin:0">$ npm run test:e2e -- --grep "kyc"
 const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/merchant-kyc" {{ '}' }});</pre>
       <div class="terminal" style="white-space:pre"><span class="t-dim">.procheck/worktrees/lp-142</span> <span class="t-cmd">claude --print "Implement LP-142 per plan.md"</span>
@@ -793,16 +911,18 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
 
   <!-- Files -->
   <div class="ds-block" id="c-files">
-    <h3>File tiles &amp; dropzone</h3>
-    <p class="ds-desc">Tiles are tinted by file type. The dropzone highlights while a file is dragged over it.</p>
-    <div class="ds-demo">
-      <div class="ds-cols c2" style="gap:var(--space-6)">
-        <div class="ds-stack" style="gap:var(--space-3)">
-          <div class="row gap-3"><span class="file-tile file-tile-pdf"><pc-icon name="file-text" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Client-brief.pdf</div><div class="text-xs text-subtle">PDF · 2.4 MB</div></div></div>
-          <div class="row gap-3"><span class="file-tile file-tile-doc"><pc-icon name="file-text" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Requirements-v3.docx</div><div class="text-xs text-subtle">Word · 180 KB</div></div></div>
-          <div class="row gap-3"><span class="file-tile file-tile-sheet"><pc-icon name="table" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Feature-matrix.xlsx</div><div class="text-xs text-subtle">Sheet · 64 KB</div></div></div>
-          <div class="row gap-3"><span class="file-tile file-tile-md"><pc-icon name="file-code" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">architecture.md</div><div class="text-xs text-subtle">Markdown · generated</div></div></div>
-          <div class="row gap-3"><span class="file-tile file-tile-audio"><pc-icon name="audio-lines" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">kickoff-meeting.m4a</div><div class="text-xs text-subtle">Audio · 38 min</div></div></div>
+    <h3>File rows &amp; dropzone</h3>
+    <p class="ds-desc">In lists, files are divided rows with a plain glyph and a status badge — no tinted tile per file. The dropzone highlights while a file is dragged over it.</p>
+    <div class="ds-demo tint">
+      <div class="ds-cols c2" style="gap:var(--space-4);align-items:stretch">
+        <div class="panel">
+          <div class="panel-head"><h3>Sources</h3><span class="text-xs text-subtle">4 files</span></div>
+          <div class="rows">
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><pc-icon name="file-text" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Client-brief.pdf</div><div class="text-xs text-subtle">PDF · 2.4 MB</div></div><span class="badge badge-success">Read</span></div>
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><pc-icon name="file-text" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Requirements-v3.docx</div><div class="text-xs text-subtle">Word · 180 KB</div></div><span class="badge badge-success">Read</span></div>
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><pc-icon name="table" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Feature-matrix.xlsx</div><div class="text-xs text-subtle">Sheet · 64 KB</div></div><span class="badge badge-warning">Conflict</span></div>
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><pc-icon name="audio-lines" /></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">kickoff-meeting.m4a</div><div class="text-xs text-subtle">Audio · 38 min</div></div><span class="badge">Queued</span></div>
+          </div>
         </div>
         <div class="dropzone" [class.is-over]="dropOver()" (dragenter)="onDrag($event, true)" (dragover)="onDrag($event, true)" (dragleave)="onDrag($event, false)" (drop)="onDrag($event, false)" (click)="toast('Copied to clipboard', { icon: 'upload' })"><pc-icon name="upload" [size]="20" /><b class="text-sm">Drop client documents here</b><span class="text-xs">PDF, Word, Excel, Markdown, audio — or click to browse</span></div>
       </div>
@@ -837,10 +957,10 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   </div>
 </section>
 
-<!-- =========================================================== 08 PATTERNS -->
+<!-- =========================================================== 09 PATTERNS -->
 <section class="ds-sec" id="patterns">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">08</span><span>Patterns</span></div>
+    <div class="kicker"><span class="num">09</span><span>Patterns</span></div>
     <h2>Patterns</h2>
     <p class="lead">Components combined into the recurring structures of Procheck.</p>
   </header>
@@ -859,8 +979,8 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
       </div>
       <div class="an-legend">
         <div><span class="n">1</span><div><b>OS window chrome (native)</b><span>Drawn by the operating system, not by Procheck. Nothing in the app renders in this strip.</span></div></div>
-        <div><span class="n">2</span><div><b>Sidebar</b><span>Full height. Brand, project card with directory path, phase track, navigation and footer. Follows the theme.</span> <code>--sidebar-w 264</code></div></div>
-        <div><span class="n">3</span><div><b>Topbar</b><span>Breadcrumb Projects / Project ▾ / Page, search (Ctrl K), language, theme and the Assistant toggle. Follows the theme.</span> <code>--topbar-h 48</code></div></div>
+        <div><span class="n">2</span><div><b>Sidebar</b><span>Full height. Brand, project card with directory path, phase track, navigation and footer. Follows the theme.</span> <code>--sidebar-w 248</code></div></div>
+        <div><span class="n">3</span><div><b>Topbar</b><span>Breadcrumb Projects / Project ▾ / Page, search (Ctrl K), language, theme and the Assistant toggle. Follows the theme.</span> <code>--topbar-h 44</code></div></div>
         <div><span class="n">4</span><div><b>Canvas</b><span>The page content. Max 1240px, centered, 32px gutters.</span> <code>max-width 1240</code></div></div>
         <div><span class="n">5</span><div><b>Assistant</b><span>Right panel for chat, context and agent actions. Toggle with Ctrl J.</span> <code>--assistant-w 380 · Ctrl J</code></div></div>
       </div>
@@ -982,15 +1102,15 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   <div class="ds-block" id="p-identity">
     <h3>Agent vs You</h3>
     <p class="ds-desc">Procheck is a single-user desktop app, so there are exactly two kinds of actor: you, and the agents you run. There are no assignees, members, reviewers or teams.</p>
-    <div class="ds-demo">
-      <div class="id-grid">
-        <div class="id-card"><span class="avatar avatar-lg">ME</span><div class="grow"><div class="nm">You</div><div class="ds">Reviews evidence, approves plans, promotes to a PR</div></div></div>
-        @for (a of agents; track a.id) {
-          <div class="id-card"><span class="avatar avatar-lg avatar-ai">{{ a.initials }}</span><div class="grow"><div class="nm">{{ a.name }}</div><div class="ds">CLI agent · isolated HOME · works in a worktree</div></div></div>
-        }
-        <div class="id-card"><span class="avatar avatar-lg avatar-ai"><pc-icon name="sparkles" [size]="17" /></span><div class="grow"><div class="nm">Assistant</div><div class="ds">Chat panel · answers through the connected CLI</div></div></div>
-      </div>
-      <div class="ds-label" style="margin-top:var(--space-6)">In context</div>
+    <div class="panel ds-colpanel id-grid">
+      <div class="id-card"><span class="avatar avatar-lg">ME</span><div class="grow"><div class="nm">You</div><div class="ds">Reviews evidence, approves plans, promotes to a PR</div></div></div>
+      @for (a of agents; track a.id) {
+        <div class="id-card"><span class="avatar avatar-lg avatar-ai">{{ a.initials }}</span><div class="grow"><div class="nm">{{ a.name }}</div><div class="ds">CLI agent · isolated HOME · works in a worktree</div></div></div>
+      }
+      <div class="id-card"><span class="avatar avatar-lg avatar-ai"><pc-icon name="sparkles" [size]="17" /></span><div class="grow"><div class="nm">Assistant</div><div class="ds">Chat panel · answers through the connected CLI</div></div></div>
+    </div>
+    <div class="ds-demo bare" style="margin-top:var(--space-4)">
+      <div class="ds-label">In context</div>
       <div class="id-foot">
         <span class="mono text-subtle">LP-142</span><span class="text-faint">·</span>
         <span>Run by</span><span class="who"><span class="avatar avatar-ai">CC</span>Claude Code</span>
@@ -998,14 +1118,14 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
         <span>Needs review from</span><span class="who"><span class="avatar">ME</span><span>You</span></span>
       </div>
     </div>
-    <div class="ds-cols c2" style="margin-top:var(--space-4)">
-      <div class="ds-card"><h4>Do</h4>
+    <div class="panel ds-colpanel" style="--cols:2;margin-top:var(--space-4)">
+      <div><h4>Do</h4>
         <ul class="ds-list ok" style="margin-top:var(--space-3)">
           <li><pc-icon name="circle-check" /><span>Show “Run by Claude Code” or “Codex” on tasks and runs.</span></li>
           <li><pc-icon name="circle-check" /><span>Say “You” for approvals and reviews.</span></li>
-          <li><pc-icon name="circle-check" /><span>Use the AI gradient for agents and the Assistant only.</span></li>
+          <li><pc-icon name="circle-check" /><span>Mark AI with the sparkle glyph and the flat brand avatar.</span></li>
         </ul></div>
-      <div class="ds-card"><h4>Don’t</h4>
+      <div><h4>Don’t</h4>
         <ul class="ds-list no" style="margin-top:var(--space-3)">
           <li><pc-icon name="circle-x" /><span>Add assignee fields, owner columns or member pickers.</span></li>
           <li><pc-icon name="circle-x" /><span>Show other people’s names, photos or avatar stacks.</span></li>
@@ -1017,7 +1137,7 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   <!-- Assistant -->
   <div class="ds-block">
     <h3>Assistant conversation</h3>
-    <p class="ds-desc">Messages, tool calls, artifact cards and the composer. The AI gradient appears only on the avatar and AI actions.</p>
+    <p class="ds-desc">Messages, tool calls, artifact cards and the composer. AI is marked by the sparkle and the brand avatar, not by special colors.</p>
     <div class="ds-demo tint">
       <div class="ds-cols as-split">
         <div class="as-demo">
@@ -1033,7 +1153,7 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
               <div class="msg-meta"><b>Assistant</b>· 09:13</div>
               <div class="tool-call"><pc-icon name="terminal" />board.list --status=review<pc-icon name="check" style="margin-left:auto;color:var(--success)" /></div>
               <div class="msg-text" style="margin-top:4px"><p><b>2 tasks</b> are finished by the agent and waiting for you:</p><ul><li><b>LP-142</b> Merchant KYC upload — e2e 12/12 passed</li><li><b>LP-151</b> Settlement report export — e2e 5/5 passed</li></ul></div>
-              <a class="msg-card" style="text-decoration:none;color:inherit"><span class="file-tile"><pc-icon name="git-pull-request" /></span><span class="grow"><span class="text-sm" style="font-weight:600;display:block">LP-142 · Merchant KYC upload</span><span class="text-xs text-subtle">Ready for human review</span></span><pc-icon name="arrow-up-right" [size]="14" class="text-faint" /></a>
+              <a class="msg-card" style="text-decoration:none;color:inherit"><span class="text-subtle" style="display:inline-flex"><pc-icon name="git-pull-request" /></span><span class="grow"><span class="text-sm" style="font-weight:600;display:block">LP-142 · Merchant KYC upload</span><span class="text-xs text-subtle">Ready for human review</span></span><pc-icon name="arrow-up-right" [size]="14" class="text-faint" /></a>
             </div></div>
             <div class="msg"><div class="avatar avatar-ai"><pc-icon name="sparkles" [size]="13" /></div><div class="msg-body"><div class="typing"><i></i><i></i><i></i></div></div></div>
           </div>
@@ -1083,7 +1203,7 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
         </div>
         <div class="k-col">
           <div class="k-col-head"><span class="dot dot-teal dot-pulse" style="background:var(--accent-teal);color:var(--accent-teal)"></span>Agent running<span class="badge" style="margin-left:auto">1</span></div>
-          <div class="card card-accent k-card" style="--_accent:var(--gradient-ai)">
+          <div class="card card-accent k-card" style="--_accent:var(--brand)">
             <div class="row between"><span class="k-key">LP-151</span><span class="badge badge-brand"><pc-icon name="git-branch" />lp-151</span></div>
             <div class="k-title">Settlement report export (CSV + PDF)</div>
             <div class="progress progress-ai"><span style="width:58%"></span></div>
@@ -1115,7 +1235,7 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
     <p class="ds-desc">The agent works in an isolated worktree with an isolated HOME. You review the evidence, then promote to a PR.</p>
     <div class="ds-demo flush">
       <div class="card-header" style="border-radius:0">
-        <div class="row gap-3"><span class="avatar avatar-ai" style="border:0"><pc-icon name="bot" [size]="14" /></span><div><div class="h5">LP-142 · Merchant KYC upload</div><div class="text-xs text-subtle">Claude Code 2.4.1 · worktree <span class="ds-code-inline">{{ runWorktree }}</span></div></div></div>
+        <div class="row gap-3"><span class="text-subtle" style="display:inline-flex"><pc-icon name="bot" /></span><div><div class="h5">LP-142 · Merchant KYC upload</div><div class="text-xs text-subtle">Claude Code 2.4.1 · worktree <span class="ds-code-inline">{{ runWorktree }}</span></div></div></div>
         <div class="row gap-2"><span class="badge badge-outline"><pc-icon name="lock" />HOME isolated</span><span class="badge badge-warning">Awaiting review</span></div>
       </div>
       <div class="run">
@@ -1154,12 +1274,12 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   <!-- Phase stepper -->
   <div class="ds-block">
     <h3>Phase stepper</h3>
-    <p class="ds-desc">Initial, Scaffolding and SDLC always appear in this order with their phase color — blue, purple, teal. Each phase has its own screen: initial.html, scaffolding.html, board.html.</p>
+    <p class="ds-desc">Initial, Scaffolding and SDLC share one panel with columns divided by rules, always in this order with a 2px phase line — blue, purple, teal. Each phase has its own screen: initial.html, scaffolding.html, board.html.</p>
     <div class="ds-demo tint">
-      <div class="phases-flow">
-        <div class="pf phase-card" style="--c:var(--phase-initial)"><div class="row between"><div class="ph-ico" style="margin:0"><pc-icon name="compass" /></div><span class="badge badge-success"><pc-icon name="check" /><span>Done</span></span></div><div class="h4" style="margin-top:var(--space-3)">Initial</div><p>Client info gathered, 6 documents uploaded, vision and user stories approved.</p><div class="progress ph"><span style="width:100%"></span></div></div>
-        <div class="pf phase-card" style="--c:var(--phase-release)"><div class="row between"><div class="ph-ico" style="margin:0"><pc-icon name="blocks" /></div><span class="badge badge-purple"><span>In progress</span></span></div><div class="h4" style="margin-top:var(--space-3)">Scaffolding</div><p>Architecture drafted. Repository connected; scaffolding plan awaiting approval.</p><div class="progress ph"><span style="width:64%"></span></div></div>
-        <div class="pf phase-card" style="--c:var(--phase-sdlc)"><div class="row between"><div class="ph-ico" style="margin:0"><pc-icon name="infinity" /></div><span class="badge"><span>Next</span></span></div><div class="h4" style="margin-top:var(--space-3)">SDLC</div><p>Unlocks when scaffolding is approved. The board and agent runs start here.</p><div class="progress ph"><span style="width:0%"></span></div></div>
+      <div class="panel ds-colpanel" style="--cols:3">
+        <div class="phase-col" style="--c:var(--phase-initial)"><div class="ph-top"><span class="ph-gl"><pc-icon name="compass" /></span><span class="h5">Initial</span><span class="badge badge-success"><pc-icon name="check" /><span>Done</span></span></div><p>Client info gathered, 6 documents uploaded, vision and user stories approved.</p><div class="progress ph"><span style="width:100%"></span></div></div>
+        <div class="phase-col" style="--c:var(--phase-release)"><div class="ph-top"><span class="ph-gl"><pc-icon name="blocks" /></span><span class="h5">Scaffolding</span><span class="badge badge-purple"><span>In progress</span></span></div><p>Architecture drafted. Repository connected; scaffolding plan awaiting approval.</p><div class="progress ph"><span style="width:64%"></span></div></div>
+        <div class="phase-col" style="--c:var(--phase-sdlc);background:var(--bg-surface-2)"><div class="ph-top"><span class="ph-gl"><pc-icon name="infinity" /></span><span class="h5">SDLC</span><span class="badge"><span>Next</span></span></div><p>Unlocks when scaffolding is approved. The board and agent runs start here.</p><div class="progress ph"><span style="width:0%"></span></div></div>
       </div>
       <div class="ds-row start" style="margin-top:var(--space-6);gap:var(--space-8)">
         <div class="phase-track" style="margin:0;width:256px">
@@ -1174,10 +1294,10 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   </div>
 </section>
 
-<!-- ========================================================= 09 DARK THEME -->
+<!-- ========================================================= 10 DARK THEME -->
 <section class="ds-sec" id="dark">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">09</span><span>Dark theme</span></div>
+    <div class="kicker"><span class="num">10</span><span>Dark theme</span></div>
     <h2>Dark theme</h2>
     <p class="lead">Deep navy, never black. Colors are lifted just enough to keep their meaning and contrast.</p>
   </header>
@@ -1202,10 +1322,10 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
       <div class="tp" #tpDark><div class="tp-bar"><span><pc-icon name="moon" [size]="14" style="vertical-align:-2px" /> <span>Dark</span></span><span class="ds-cap" style="color:inherit;opacity:.7">data-theme="dark"</span></div><div class="tp-body"><ng-container *ngTemplateOutlet="themeSample" /></div></div>
     </div>
     <ng-template #themeSample>
-      <div class="card"><div class="row between"><span class="ttl">Merchant KYC upload</span><span class="phase-chip phase-sdlc">SDLC</span></div>
-        <p class="text-sm text-muted" style="margin:6px 0 12px">Agent finished in 11 min. 12 of 12 tests passed.</p>
-        <div class="row"><button class="btn btn-primary btn-sm">Promote to PR</button><button class="btn btn-secondary btn-sm">View diff</button><span class="badge badge-success" style="margin-left:auto"><pc-icon name="check" />Passed</span></div></div>
-      <div class="alert alert-ai"><pc-icon name="sparkles" style="color:var(--accent-purple)" /><div class="text-sm">Two stories overlap — merge them?</div></div>
+      <div class="panel"><div class="panel-head"><span class="panel-title">Merchant KYC upload</span><span class="phase-chip phase-sdlc">SDLC</span></div>
+        <div class="panel-body"><p class="text-sm text-muted" style="margin:0">Agent finished in 11 min. 12 of 12 tests passed.</p>
+        <div class="row"><button class="btn btn-primary btn-sm">Promote to PR</button><button class="btn btn-ai btn-sm"><pc-icon name="sparkles" />Explain diff</button><span class="badge badge-success" style="margin-left:auto"><pc-icon name="check" />Passed</span></div></div></div>
+      <div class="alert alert-ai"><pc-icon name="sparkles" class="text-brand" /><div class="text-sm">Two stories overlap — merge them?</div></div>
       <div class="input-group"><pc-icon name="search" /><input class="input" placeholder="Search…"></div>
     </ng-template>
   </div>
@@ -1226,10 +1346,10 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   </div>
 </section>
 
-<!-- ======================================================== 10 ACCESSIBILITY -->
+<!-- ======================================================== 11 ACCESSIBILITY -->
 <section class="ds-sec" id="a11y">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">10</span><span>Accessibility</span></div>
+    <div class="kicker"><span class="num">11</span><span>Accessibility</span></div>
     <h2>Accessibility</h2>
     <p class="lead">Procheck is used for hours at a time. It should be readable, keyboard-friendly and never rely on color alone.</p>
   </header>
@@ -1287,7 +1407,7 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
     <h3>Checklist</h3>
     <p class="ds-desc">Quick rules to apply to every screen.</p>
     <ul class="ds-list">
-      <li><pc-icon name="mouse-pointer-click" /><span><b>Targets.</b> Buttons are 28px (dense) to 42px; icon-only buttons need <code>aria-label</code> and a tooltip.</span></li>
+      <li><pc-icon name="mouse-pointer-click" /><span><b>Targets.</b> Buttons are 26px (dense) to 42px; icon-only buttons need <code>aria-label</code> and a tooltip.</span></li>
       <li><pc-icon name="palette" /><span><b>Color is never alone.</b> Status uses icon + label + color; phases add a text label next to the dot.</span></li>
       <li><pc-icon name="tag" /><span><b>Labels.</b> Every input has a visible <code>label</code>; placeholders never replace it.</span></li>
       <li><pc-icon name="languages" /><span><b>Language.</b> <code>html[lang]</code> follows the EN/VI toggle; allow about 30% more room for Vietnamese strings.</span></li>
@@ -1296,10 +1416,10 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   </div>
 </section>
 
-<!-- ============================================================= 11 VOICE -->
+<!-- ============================================================= 12 VOICE -->
 <section class="ds-sec" id="voice">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">11</span><span>Voice</span></div>
+    <div class="kicker"><span class="num">12</span><span>Voice</span></div>
     <h2>Voice &amp; microcopy</h2>
     <p class="lead">Procheck speaks like a bold, clear, purposeful and approachable partner — a colleague who helps you get from idea to impact.</p>
   </header>
@@ -1314,11 +1434,11 @@ const worktree = await git.worktree.add("lp-142", {{ '{' }} branch: "feature/mer
   <div class="ds-block">
     <h3>Voice principles</h3>
     <p class="ds-desc">Four traits from the KMS brand voice.</p>
-    <div class="ds-cards">
-      <div class="ds-card"><div class="ico"><pc-icon name="megaphone" /></div><h4>Bold</h4><p>Lead with the answer or the next step. Confident verbs, no hedging.</p></div>
-      <div class="ds-card"><div class="ico purple"><pc-icon name="eye" /></div><h4>Clear</h4><p>Short sentences, plain words. Say what happened and what to do.</p></div>
-      <div class="ds-card"><div class="ico teal"><pc-icon name="target" /></div><h4>Purposeful</h4><p>Every word earns its place. Explain the why only when it helps a decision.</p></div>
-      <div class="ds-card"><div class="ico magenta"><pc-icon name="handshake" /></div><h4>Approachable</h4><p>Warm and human, never robotic or jokey. Address the user as “you”.</p></div>
+    <div class="panel ds-colpanel">
+      <div><span class="gl"><pc-icon name="megaphone" /></span><h4>Bold</h4><p>Lead with the answer or the next step. Confident verbs, no hedging.</p></div>
+      <div><span class="gl"><pc-icon name="eye" /></span><h4>Clear</h4><p>Short sentences, plain words. Say what happened and what to do.</p></div>
+      <div><span class="gl"><pc-icon name="target" /></span><h4>Purposeful</h4><p>Every word earns its place. Explain the why only when it helps a decision.</p></div>
+      <div><span class="gl"><pc-icon name="handshake" /></span><h4>Approachable</h4><p>Warm and human, never robotic or jokey. Address the user as “you”.</p></div>
     </div>
   </div>
 

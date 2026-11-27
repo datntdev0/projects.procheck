@@ -46,15 +46,15 @@ const TABS: { id: InitialTab; icon: string }[] = [
     <div class="canvas-inner initial-page" data-testid="initial-page">
       <pc-project-gate>
         @if (project(); as current) {
-          <div class="page-header">
-            <div class="ip-head">
+          <header class="page-head">
+            <div class="grow ip-head">
               <pc-phase-chip phase="initial">{{ 'phase.initial' | t }}</pc-phase-chip>
               <h1 class="mt-2">{{ 'in.title' | t }}</h1>
-              <div class="subtitle">
-                {{ (current.manifest.client ? 'in.sub' : 'in.sub_noclient') | t: { client: current.manifest.client ?? '' } }}
+              <div class="meta">
+                <span>{{ (current.manifest.client ? 'in.sub' : 'in.sub_noclient') | t: { client: current.manifest.client ?? '' } }}</span>
               </div>
             </div>
-            <div class="row gap-2 wrap">
+            <div class="actions">
               <button pcButton type="button" data-testid="initial-export">
                 <pc-icon name="package" />{{ 'in.export' | t }}<pc-icon name="chevron-down" [size]="14" />
               </button>
@@ -62,7 +62,7 @@ const TABS: { id: InitialTab; icon: string }[] = [
                 <pc-icon name="sparkles" />{{ 'in.ask' | t }}
               </button>
             </div>
-          </div>
+          </header>
 
           <pc-tabs class="ph-tabs" [items]="tabs()" [(active)]="tab" data-testid="initial-tabs" />
 

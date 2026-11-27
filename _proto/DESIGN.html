@@ -33,22 +33,10 @@ body { background: var(--bg-canvas); }
 .ds-ctl { display: flex; align-items: center; gap: var(--space-2); }
 .ds-ctl-label { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: var(--tracking-kicker); color: var(--fg-faint); }
 
-/* ---------- Hero ---------- */
-.ds-hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--border-subtle); }
-.ds-hero::before { content: ""; position: absolute; inset: 0; background: var(--gradient-hero); pointer-events: none; }
-.ds-hero-inner { position: relative; max-width: 1480px; margin: 0 auto; padding: var(--space-16) var(--space-8) var(--space-12); display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--space-12); align-items: center; }
-.ds-hero .display { font-size: var(--text-4xl); line-height: 1.12; max-width: 14em; }
-.ds-hero .lead { max-width: 38em; margin-top: var(--space-4); }
-.ds-hero-meta { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-6); }
-.ds-hero-cta { display: flex; gap: var(--space-3); margin-top: var(--space-8); flex-wrap: wrap; }
-.ds-art { position: relative; height: 300px; display: flex; align-items: center; justify-content: center; }
-.ds-art .ring { position: absolute; border-radius: 50%; border: 1px solid var(--brand-soft-2); background: var(--brand-soft); }
-.ds-art .ring.r1 { width: 300px; height: 300px; opacity: .45; }
-.ds-art .ring.r2 { width: 214px; height: 214px; opacity: .7; }
-.ds-art .ring.r3 { width: 132px; height: 132px; background: var(--kms-white); border-color: var(--border-default); box-shadow: var(--shadow-md); opacity: 1; display: flex; align-items: center; justify-content: center; padding: 28px; }
-.ds-art .ring.r3 img { width: 100%; height: 100%; }
-.ds-art .float { position: absolute; box-shadow: var(--shadow-md); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-full); padding: 4px; }
-.ds-art .f1 { top: 22px; left: 8%; } .ds-art .f2 { right: 4%; top: 86px; } .ds-art .f3 { bottom: 26px; left: 16%; } .ds-art .f4 { bottom: 54px; right: 14%; }
+/* ---------- Page head (flat: no hero, no gradient) ---------- */
+.ds-head { max-width: 1480px; margin: 0 auto; padding: var(--space-8) var(--space-8) 0; }
+.ds-head .page-head { margin-bottom: 0; }
+.ds-head .lead { font-size: var(--text-md); max-width: 62em; margin: 6px 0 0; }
 
 /* ---------- Layout ---------- */
 .ds-layout { display: grid; grid-template-columns: 224px minmax(0, 1fr); gap: var(--space-12); max-width: 1480px; margin: 0 auto; padding: 0 var(--space-8); }
@@ -62,29 +50,33 @@ body { background: var(--bg-canvas); }
 .ds-main { min-width: 0; max-width: 1120px; padding-bottom: 120px; }
 
 /* ---------- Sections ---------- */
-.ds-sec { padding-top: var(--space-16); }
-.ds-sec + .ds-sec { margin-top: var(--space-16); border-top: 1px solid var(--border-subtle); }
-.ds-sec:first-child { padding-top: var(--space-12); }
+.ds-sec { padding-top: var(--space-10); }
+.ds-sec + .ds-sec { margin-top: var(--space-10); border-top: 1px solid var(--border-default); }
+.ds-sec:first-child { padding-top: var(--space-8); }
 .ds-sec-head { max-width: 760px; margin-bottom: var(--space-8); }
 .ds-sec-head .kicker { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
 .ds-sec-head .kicker .num { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 20px; padding: 0 6px; border-radius: var(--radius-xs); background: var(--brand-soft); font-family: var(--font-mono); }
-.ds-sec-head h2 { font-size: var(--text-3xl); font-weight: var(--weight-medium); letter-spacing: -0.015em; }
-.ds-sec-head .lead { margin-top: var(--space-3); margin-bottom: 0; }
-.ds-block { margin-top: var(--space-12); }
-.ds-block:first-of-type { margin-top: var(--space-8); }
-.ds-block > h3 { font-size: var(--text-xl); }
+.ds-sec-head h2 { font-size: var(--text-2xl); font-weight: var(--weight-semibold); letter-spacing: -0.01em; }
+.ds-sec-head .lead { margin-top: var(--space-2); margin-bottom: 0; font-size: var(--text-md); }
+.ds-sec-head { margin-bottom: var(--space-6); }
+.ds-block { margin-top: var(--space-10); }
+.ds-block:first-of-type { margin-top: var(--space-6); }
+.ds-block > h3 { font-size: var(--text-md); }
 .ds-block > .ds-desc { margin: 6px 0 var(--space-5); color: var(--fg-muted); font-size: var(--text-sm); max-width: 760px; line-height: var(--leading-relaxed); }
 .ds-block > h3 + .ds-demo, .ds-block > h3 + .sw-grid { margin-top: var(--space-4); }
 .ds-sub { margin: var(--space-6) 0 var(--space-3); font-size: var(--text-xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: var(--tracking-kicker); color: var(--fg-subtle); }
-.ds-note { margin-top: var(--space-4); padding: var(--space-3) var(--space-4); border-left: 3px solid var(--brand); background: var(--brand-soft); border-radius: 0 var(--radius-md) var(--radius-md) 0; font-size: var(--text-sm); color: var(--fg-default); }
+.ds-note { margin-top: var(--space-4); padding: 10px var(--space-4); border: 1px solid var(--border-default); border-left: 3px solid var(--brand); background: var(--bg-surface); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--fg-default); }
 .ds-note b { color: var(--fg-strong); }
 
 /* ---------- Demo + snippet ---------- */
 .ds-demo { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); padding: var(--space-6); }
-.ds-demo.tint { background: var(--bg-app); }
+.ds-demo.tint { background: var(--bg-app); border-color: transparent; }
+.ds-demo.bare { background: none; border: 0; padding: 0; border-radius: 0; }
 .ds-demo.flush { padding: 0; overflow: hidden; }
+.ds-demo.tint:has(+ .ds-snip), .ds-demo.bare:has(+ .ds-snip) { border-radius: var(--radius-lg); }
 .ds-demo:has(+ .ds-snip) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-.ds-snip { border: 1px solid var(--border-default); border-top: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg); background: var(--bg-surface-2); }
+.ds-snip { border: 1px solid var(--border-default); border-radius: var(--radius-lg); margin-top: var(--space-3); background: var(--bg-surface-2); }
+.ds-demo:not(.tint):not(.bare) + .ds-snip { border-top: 0; border-radius: 0 0 var(--radius-lg) var(--radius-lg); margin-top: 0; }
 .ds-snip summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px var(--space-4); font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-subtle); user-select: none; }
 .ds-snip summary::-webkit-details-marker { display: none; }
 .ds-snip summary:hover { color: var(--fg-default); }
@@ -102,26 +94,63 @@ body { background: var(--bg-canvas); }
 .ds-cap { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--fg-subtle); }
 .ds-label { font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: var(--tracking-kicker); color: var(--fg-faint); margin-bottom: var(--space-2); }
 .ds-code-inline { font-family: var(--font-mono); font-size: 0.92em; padding: 1px 6px; border-radius: var(--radius-xs); background: var(--bg-surface-3); color: var(--fg-default); }
-.ds-pill { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: var(--radius-full); border: 1px solid var(--border-default); background: var(--bg-surface); font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--fg-muted); }
-.ds-pill svg { color: var(--brand-fg); }
 .ds-menu-static { position: static; width: 240px; box-shadow: var(--shadow-md); }
 
 /* splits */
 .as-split { grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: var(--space-8); align-items: start; }
 .cs-split { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: center; }
 
-/* ---------- Principles / generic cards ---------- */
-.ds-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space-4); }
-.ds-card { padding: var(--space-5); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); }
-.ds-card .ico { width: 38px; height: 38px; border-radius: var(--radius-md); background: var(--brand-soft); color: var(--brand-fg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4); }
-.ds-card .ico.purple { background: var(--accent-purple-soft); color: var(--accent-purple); }
-.ds-card .ico.teal { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
-.ds-card .ico.magenta { background: var(--accent-magenta-soft); color: var(--accent-magenta); }
-.ds-card h4 { margin-bottom: 6px; }
-.ds-card p { font-size: var(--text-sm); color: var(--fg-muted); margin: 0; line-height: var(--leading-relaxed); }
+/* ---------- Column panel: one panel, columns divided by rules (no card grid, no icon tiles) ---------- */
+.ds-colpanel { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); overflow: hidden; }
+.ds-colpanel > * { padding: var(--space-4); min-width: 0; }
+.ds-colpanel > * + * { border-left: 1px solid var(--border-subtle); }
+.ds-colpanel .gl { display: inline-flex; color: var(--fg-subtle); margin-bottom: var(--space-2); }
+.ds-colpanel h4 { font-size: var(--text-md); margin-bottom: 4px; }
+.ds-colpanel p { font-size: var(--text-sm); color: var(--fg-muted); margin: 0; line-height: var(--leading-relaxed); }
+
+/* ---------- Layout rules: do / don't specimens ---------- */
+.lr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: var(--space-4) var(--space-8); padding: var(--space-5) 0; align-items: start; }
+.lr + .lr { border-top: 1px solid var(--border-subtle); }
+.lr-n { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-faint); margin-right: 8px; }
+.lr h4 { font-size: var(--text-md); display: flex; align-items: baseline; }
+.lr p { margin: 4px 0 0; font-size: var(--text-sm); color: var(--fg-muted); line-height: var(--leading-relaxed); }
+.lr p code { font-size: 11.5px; color: var(--brand-fg); }
+.lr-ex { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+.lr-sp { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.lr-tag { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: var(--tracking-kicker); }
+.lr-tag svg { width: 12px; height: 12px; }
+.lr-tag.do { color: var(--success-fg); } .lr-tag.dont { color: var(--danger-fg); }
+.lr-stage { background: var(--bg-app); border-radius: var(--radius-md); padding: var(--space-3); min-height: 96px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+/* schematic pieces */
+.sx-p { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md); overflow: hidden; }
+.sx-l { height: 6px; width: 80%; border-radius: 1px; background: var(--border-strong); }
+.sx-l.s { width: 40%; } .sx-l.m { width: 65%; } .sx-l.f { background: var(--fg-faint); }
+.sx-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; }
+.sx-row + .sx-row { border-top: 1px solid var(--border-subtle); }
+.sx-head { padding: 6px 8px; border-bottom: 1px solid var(--border-default); }
+.sx-box { margin: 6px 8px; padding: 6px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 4px; }
+.sx-grid { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 6px; }
+.sx-cols { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); }
+.sx-cols > div { padding: 8px; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.sx-cols > div + div { border-left: 1px solid var(--border-subtle); }
+.sx-grid > .sx-p { padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+.sx-fig { font-size: 13px; font-weight: var(--weight-semibold); color: var(--fg-strong); line-height: 1; }
+.sx-tile { width: 18px; height: 18px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sx-tile svg { width: 11px; height: 11px; }
+.sx-gl { display: inline-flex; color: var(--fg-subtle); flex-shrink: 0; } .sx-gl svg { width: 13px; height: 13px; }
+.sx-hero { border-radius: var(--radius-xl); padding: 12px; background: linear-gradient(120deg, var(--brand-soft), var(--accent-purple-soft)); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: 6px; }
+.sx-ph { display: flex; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-default); }
+.sx-ph .sx-btn { margin-left: auto; }
+.sx-btn { height: 14px; width: 40px; border-radius: var(--radius-xs); background: var(--brand); flex-shrink: 0; }
+.sx-btn.sec { background: var(--bg-surface); border: 1px solid var(--border-strong); }
+.sx-pill { display: inline-flex; align-items: center; height: 20px; padding: 0 10px; border-radius: var(--radius-full); font-size: var(--text-2xs); font-weight: var(--weight-semibold); }
+.sx-tint { padding: 10px 12px; border-radius: var(--radius-xl); background: linear-gradient(90deg, var(--warning-soft), var(--accent-magenta-soft)); box-shadow: var(--shadow-md); font-size: var(--text-xs); color: var(--fg-default); }
+.sx-big { --_h: 40px; border-radius: var(--radius-full) !important; padding: 0 var(--space-5) !important; }
+.lr-stage .alert { padding: 8px 10px; font-size: var(--text-xs); }
+.lr-stage .row { flex-wrap: wrap; }
 
 /* ---------- 60/30/10 ---------- */
-.ratio { display: flex; height: 88px; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-default); }
+.ratio { display: flex; height: 72px; border-radius: var(--radius-sm); overflow: hidden; }
 .ratio > div { display: flex; flex-direction: column; justify-content: flex-end; padding: var(--space-3) var(--space-4); font-size: var(--text-xs); font-weight: var(--weight-semibold); min-width: 0; }
 .ratio .r60 { flex: 60; background: var(--gray-50); color: var(--gray-900); }
 .ratio .r30 { flex: 30; background: var(--kms-blue); color: var(--kms-white); }
@@ -172,7 +201,7 @@ body { background: var(--bg-canvas); }
 .bc-chip b { font-size: var(--text-lg); font-weight: var(--weight-semibold); line-height: 1.2; }
 .bc-chip span { font-family: var(--font-mono); font-size: var(--text-xs); opacity: .9; }
 .bc-chip .ct { display: flex; gap: 6px; font-size: var(--text-2xs); font-family: var(--font-sans); font-weight: var(--weight-semibold); }
-.bc-chip .ct em { font-style: normal; padding: 1px 6px; border-radius: var(--radius-full); border: 1px solid currentColor; opacity: .85; }
+.bc-chip .ct em { font-style: normal; padding: 1px 6px; border-radius: var(--radius-xs); border: 1px solid currentColor; opacity: .85; }
 .bc-meta { padding: var(--space-3) var(--space-4); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--fg-subtle); display: grid; gap: 2px; border-top: 1px solid var(--border-subtle); }
 .bc-meta .role { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--fg-muted); margin-bottom: 4px; }
 .scale { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-default); background: var(--bg-surface); }
@@ -193,18 +222,21 @@ body { background: var(--bg-canvas); }
 .sw-meta { padding: 8px 10px; border-top: 1px solid var(--border-subtle); display: grid; gap: 1px; }
 .sw-name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-default); overflow-wrap: anywhere; }
 .sw-val { font-family: var(--font-mono); font-size: 10px; color: var(--fg-subtle); overflow-wrap: anywhere; }
-.grad { height: 120px; border-radius: var(--radius-lg); padding: var(--space-4); display: flex; flex-direction: column; justify-content: flex-end; color: var(--kms-white); border: 1px solid var(--border-default); }
-.grad b { font-size: var(--text-md); } .grad span { font-family: var(--font-mono); font-size: var(--text-2xs); opacity: .85; }
-.grad.hero { color: var(--fg-default); background-color: var(--bg-canvas); }
-.status-card { border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); overflow: hidden; }
-.status-card .top { display: flex; height: 48px; }
-.status-card .top i { flex: 1; display: block; }
-.status-card .body { padding: var(--space-4); display: grid; gap: var(--space-3); }
-.status-card h5 { display: flex; align-items: center; gap: 8px; }
-.phase-card { border: 1px solid var(--border-default); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--bg-surface); position: relative; overflow: hidden; }
-.phase-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--c); }
-.phase-card .ph-ico { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--bg-surface-2); color: var(--c); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3); border: 1px solid var(--border-subtle); }
-.phase-card p { font-size: var(--text-sm); color: var(--fg-muted); margin: 8px 0 var(--space-4); }
+.status-col { padding: 0 !important; display: flex; flex-direction: column; }
+.status-col .top { display: flex; height: 36px; border-bottom: 1px solid var(--border-subtle); }
+.status-col .top i { flex: 1; display: block; }
+.status-col .body { padding: var(--space-3) var(--space-4) var(--space-4); display: grid; gap: var(--space-2); }
+.status-col h5 { display: flex; align-items: center; gap: 8px; }
+.phase-col { position: relative; display: flex; flex-direction: column; gap: var(--space-2); }
+.phase-col::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: var(--c); }
+.phase-col .ph-top { display: flex; align-items: center; gap: var(--space-2); }
+.phase-col .ph-gl { display: inline-flex; color: var(--c); }
+.phase-col .ph-gl svg { width: 18px; height: 18px; }
+.phase-col .h5 { flex: 1; min-width: 0; }
+.phase-col p { font-size: var(--text-sm); color: var(--fg-muted); margin: 0 0 var(--space-2); }
+.retired td { vertical-align: middle; }
+.retired .t { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-default); white-space: nowrap; }
+.retired .v { font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); }
 .progress.ph > span { background: var(--c); }
 
 /* ---------- Typography ---------- */
@@ -214,8 +246,7 @@ body { background: var(--bg-canvas); }
 .type-table td, .type-table th { vertical-align: middle; }
 .type-table .spec { font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); white-space: nowrap; }
 .type-table .tok { font-family: var(--font-mono); font-size: 11px; color: var(--brand-fg); white-space: nowrap; }
-.weights { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-3); }
-.weights > div { padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface-2); }
+.weights { --cols: 5; }
 .weights b { display: block; font-size: 32px; line-height: 1.1; color: var(--fg-strong); }
 .weights span { display: block; margin-top: 6px; font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--fg-subtle); }
 
@@ -230,30 +261,29 @@ body { background: var(--bg-canvas); }
 .rad b { display: block; font-size: var(--text-xs); color: var(--fg-default); font-weight: var(--weight-semibold); }
 .rad span { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--fg-subtle); }
 .shd-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-5); }
-.shd { height: 92px; border-radius: var(--radius-lg); background: var(--bg-surface); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-muted); border: 1px solid var(--border-subtle); }
+.shd-item { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.shd { height: 80px; border-radius: var(--radius-lg); background: var(--bg-surface); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-muted); border: 1px solid var(--border-default); }
+.shd-item span { font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.4; }
 .motion-track { position: relative; height: 36px; border-radius: var(--radius-full); background: var(--bg-surface-3); padding: 4px; }
 .motion-track i { display: block; width: 28px; height: 28px; border-radius: 50%; background: var(--brand); box-shadow: var(--shadow-sm); transition: margin-left var(--_d) var(--ease-out); }
 .motion-item:hover .motion-track i, .motion-item:focus-within .motion-track i { margin-left: calc(100% - 28px); }
 .motion-item { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: var(--space-4); align-items: center; }
-.layout-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3); }
-.layout-box > div { padding: var(--space-3) var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); }
-.layout-box b { display: block; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--brand-fg); font-weight: var(--weight-medium); }
-.layout-box span { font-size: var(--text-xs); color: var(--fg-subtle); }
+.kv code { font-size: var(--text-xs); color: var(--brand-fg); }
 
 /* ---------- Iconography ---------- */
-.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--space-2); }
-.icon-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: var(--space-4) var(--space-2) var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); cursor: pointer; color: var(--fg-default); transition: border-color var(--dur-fast), background var(--dur-fast), color var(--dur-fast); }
-.icon-cell:hover { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-fg); }
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 0; }
+.icon-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: var(--space-3) var(--space-2); border: 0; border-radius: var(--radius-md); background: none; cursor: pointer; color: var(--fg-default); transition: background var(--dur-fast), color var(--dur-fast); }
+.icon-cell:hover { background: var(--bg-hover); color: var(--brand-fg); }
 .icon-cell svg { width: 20px; height: 20px; }
 .icon-cell span { font-family: var(--font-mono); font-size: 10px; color: var(--fg-subtle); text-align: center; overflow-wrap: anywhere; line-height: 1.25; }
 .icon-sizes { display: flex; align-items: flex-end; gap: var(--space-8); flex-wrap: wrap; }
 .icon-sizes > div { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.icon-box { width: 64px; height: 64px; border-radius: var(--radius-md); background: var(--bg-surface-2); border: 1px dashed var(--border-strong); display: flex; align-items: center; justify-content: center; color: var(--brand-fg); }
+.icon-box { width: 56px; height: 56px; border-radius: var(--radius-sm); background: var(--bg-surface-2); display: flex; align-items: center; justify-content: center; color: var(--fg-default); }
 
 /* ---------- Component bits ---------- */
 .cmp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-6); }
 .kanban { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); align-items: start; }
-.k-col { background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
+.k-col { background: var(--bg-surface-3); border-radius: var(--radius-lg); padding: var(--space-2); display: flex; flex-direction: column; gap: var(--space-2); }
 .k-col-head { display: flex; align-items: center; gap: 8px; padding: 4px 6px 6px; font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--fg-muted); }
 .k-card { padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
 .k-key { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--fg-subtle); }
@@ -275,13 +305,12 @@ body { background: var(--bg-canvas); }
 .run-steps .t { color: var(--fg-strong); font-weight: var(--weight-medium); }
 .run-steps .m { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 1px; }
 .run-steps .time { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--fg-faint); }
-.ev { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
-.ev > div { border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: var(--space-3); background: var(--bg-surface-2); }
+.ev { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.ev > div { padding: var(--space-2) var(--space-3); }
+.ev > div:first-child { padding-left: 0; }
+.ev > div + div { border-left: 1px solid var(--border-subtle); }
 .ev b { display: block; font-size: var(--text-xl); color: var(--fg-strong); font-weight: var(--weight-semibold); line-height: 1.2; font-variant-numeric: tabular-nums; }
 .ev span { font-size: var(--text-2xs); color: var(--fg-subtle); }
-.phases-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); position: relative; }
-.pf { position: relative; }
-.pf:not(:last-child)::after { content: ""; position: absolute; top: 44px; right: calc(var(--space-4) * -1); width: var(--space-4); height: 2px; background: var(--border-strong); }
 
 /* ---------- Anatomy ---------- */
 .an { display: grid; grid-template-columns: 188px minmax(0, 1fr) 232px; grid-template-rows: 28px 40px 320px; grid-template-areas: "os os os" "side top top" "side canvas assist"; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-app); box-shadow: var(--shadow-md); }
@@ -307,8 +336,10 @@ body { background: var(--bg-canvas); }
 .an-top .ic { width: 16px; height: 16px; border-radius: 5px; background: var(--bg-surface-3); flex-shrink: 0; }
 .an-canvas { grid-area: canvas; background: var(--bg-canvas); padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 .an-canvas .h { height: 14px; width: 40%; border-radius: 4px; background: var(--fg-faint); opacity: .5; }
-.an-canvas .row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.an-canvas .row3 > i { height: 62px; border-radius: var(--radius-md); background: var(--bg-surface); border: 1px solid var(--border-default); display: block; }
+.an-canvas .h { box-shadow: 0 10px 0 -9px var(--border-default); }
+.an-canvas .row3 { display: grid; grid-template-columns: repeat(3, 1fr); border-radius: var(--radius-md); background: var(--bg-surface); border: 1px solid var(--border-default); }
+.an-canvas .row3 > i { height: 44px; display: block; }
+.an-canvas .row3 > i + i { border-left: 1px solid var(--border-subtle); }
 .an-canvas .big { flex: 1; border-radius: var(--radius-md); border: 1px solid var(--border-default); background: var(--bg-surface); }
 .an-assist { grid-area: assist; background: var(--bg-surface); border-left: 1px solid var(--border-default); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 .an-assist .b { height: 38px; border-radius: 4px 12px 12px 12px; background: var(--bg-surface-3); }
@@ -329,10 +360,10 @@ body { background: var(--bg-canvas); }
 
 /* ---------- Dark theme preview ---------- */
 .theme-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
-.tp { border-radius: var(--radius-lg); border: 1px solid var(--border-default); overflow: hidden; background: var(--bg-app); color: var(--fg-default); }
+.tp { border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-app); color: var(--fg-default); }
 .tp-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px var(--space-4); background: var(--bg-topbar); color: var(--fg-default); border-bottom: 1px solid var(--border-default); font-size: var(--text-xs); font-weight: var(--weight-semibold); }
 .tp-body { padding: var(--space-4); display: grid; gap: var(--space-3); background: var(--bg-canvas); }
-.tp-body .card { padding: var(--space-4); }
+.tp-body .panel-body { display: grid; gap: var(--space-2); }
 .tp .ttl { font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--fg-strong); }
 .map td .chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--border-strong); vertical-align: -3px; margin-right: 6px; }
 .map td.v { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); white-space: nowrap; }
@@ -355,9 +386,8 @@ body { background: var(--bg-canvas); }
 .ds-sb .nav { overflow: visible; flex: none; }
 .st-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
 .st-card { border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); overflow: hidden; min-width: 0; }
-.st-head { display: flex; align-items: center; gap: 12px; padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface-2); }
-.st-head .ico { width: 34px; height: 34px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; background: var(--brand-soft); color: var(--brand-fg); flex-shrink: 0; }
-.st-card.project .st-head .ico { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
+.st-head { display: flex; align-items: center; gap: 10px; padding: 10px var(--space-4); border-bottom: 1px solid var(--border-default); }
+.st-head .ico { display: inline-flex; color: var(--fg-subtle); flex-shrink: 0; }
 .st-head .ttl { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
 .st-head .root { font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); overflow-wrap: anywhere; }
 .st-tree { list-style: none; margin: 0; padding: var(--space-2) var(--space-4) var(--space-3); }
@@ -367,12 +397,12 @@ body { background: var(--bg-canvas); }
 .st-tree .p { display: block; font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-strong); overflow-wrap: anywhere; }
 .st-tree .d { display: block; margin-top: 1px; color: var(--fg-subtle); }
 .st-tree li.in { padding-left: 10px; border-left: 2px solid var(--accent-teal-soft); }
-.id-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-3); }
-.id-card { display: flex; align-items: center; gap: 12px; padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); min-width: 0; }
+.id-grid { --cols: 4; }
+.id-card { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .id-card .nm { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--fg-strong); }
 .id-card .ds { font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.4; }
 .id-foot { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; font-size: var(--text-xs); color: var(--fg-muted); }
-.id-foot .who { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px 0 3px; border-radius: var(--radius-full); border: 1px solid var(--border-default); background: var(--bg-surface); color: var(--fg-default); font-weight: var(--weight-medium); }
+.id-foot .who { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-default); font-weight: var(--weight-medium); }
 .id-foot .who .avatar { width: 20px; height: 20px; font-size: 8px; border: 0; }
 .ds-list.ok li > svg { color: var(--success-fg); }
 .ds-list.no li > svg { color: var(--danger-fg); }
@@ -392,10 +422,10 @@ body { background: var(--bg-canvas); }
 .voice-table .dont { color: var(--fg-subtle); text-decoration: line-through; text-decoration-color: var(--danger); text-decoration-thickness: 1px; }
 .voice-table .lang { font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-kicker); color: var(--fg-faint); display: block; margin-bottom: 2px; }
 .voice-table td > div + div { margin-top: 10px; }
-.quote { padding: var(--space-8); border-radius: var(--radius-xl); background: var(--gradient-brand); color: var(--kms-white); display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
-.quote .q { font-size: var(--text-4xl); font-weight: var(--weight-regular); letter-spacing: -0.02em; line-height: 1.15; margin: 0; }
-.quote .q small { display: block; margin-top: 8px; font-size: var(--text-md); opacity: .85; letter-spacing: 0; }
-.quote img { width: 72px; height: 72px; background: var(--kms-white); border-radius: var(--radius-lg); padding: 10px; }
+.quote { padding: var(--space-2) 0 var(--space-2) var(--space-5); border-left: 3px solid var(--brand); display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
+.quote .q { font-size: var(--text-3xl); font-weight: var(--weight-medium); letter-spacing: -0.01em; line-height: 1.2; margin: 0; color: var(--fg-strong); }
+.quote .q small { display: block; margin-top: 6px; font-size: var(--text-md); font-weight: var(--weight-regular); color: var(--fg-muted); letter-spacing: 0; }
+.quote img { width: 40px; height: 40px; }
 
 .ds-footer { margin-top: var(--space-16); padding-top: var(--space-6); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; font-size: var(--text-xs); color: var(--fg-subtle); }
 
@@ -406,15 +436,16 @@ body { background: var(--bg-canvas); }
   .an { grid-template-columns: 150px minmax(0, 1fr) 190px; }
 }
 @media (max-width: 1000px) {
-  .ds-hero-inner { grid-template-columns: 1fr; padding: var(--space-10) var(--space-5); }
-  .ds-art { display: none; }
+  .ds-head { padding: var(--space-6) var(--space-5) 0; }
+  .lr { grid-template-columns: 1fr; }
+  .ds-colpanel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ds-colpanel > * { border-left: 0 !important; border-top: 1px solid var(--border-subtle); }
   .ds-layout { grid-template-columns: 1fr; padding: 0 var(--space-5); gap: 0; }
   .ds-toc { position: sticky; top: 56px; z-index: 50; display: flex; align-items: center; gap: 4px; overflow-x: auto; padding: 8px 0; max-height: none; background: color-mix(in srgb, var(--bg-canvas) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-subtle); }
   .ds-toc-title { display: none; }
   .ds-toc a { flex-shrink: 0; }
   .ds-sec { padding-top: var(--space-12); }
-  .ds-cols.c3, .ds-cols.c4, .kanban, .phases-flow, .weights { grid-template-columns: 1fr; }
-  .pf:not(:last-child)::after { display: none; }
+  .ds-cols.c3, .ds-cols.c4, .kanban { grid-template-columns: 1fr; }
   .run { grid-template-columns: 1fr; } .run-side { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
   .type-hero, .theme-pair, .ds-cols.c2, .as-split, .cs-split { grid-template-columns: 1fr; }
   .rad-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -432,7 +463,8 @@ body { background: var(--bg-canvas); }
   .ratio-legend { grid-template-columns: 1fr; }
   .ev { grid-template-columns: 1fr; }
   .ds-sec-head h2 { font-size: var(--text-2xl); }
-  .ds-hero .display { font-size: var(--text-3xl); }
+  .ds-colpanel, .lr-ex { grid-template-columns: 1fr; }
+  .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .type-glyph { font-size: 80px; }
   .stepper { overflow-x: auto; padding-bottom: 6px; } .step { white-space: nowrap; }
   .ds-stack > *, .run-main > *, .ds-demo > * { min-width: 0; max-width: 100%; }
@@ -502,48 +534,41 @@ body { background: var(--bg-canvas); }
   </div>
 </header>
 
-<section class="ds-hero">
-  <div class="ds-hero-inner">
-    <div>
+<div class="ds-head">
+  <div class="page-head">
+    <div style="min-width:0">
       <div class="kicker" data-i18n="ds.hero.kicker"></div>
-      <h1 class="display" style="margin-top:var(--space-3)"><span class="text-brand">Procheck</span> <span data-i18n="ds.hero.title"></span></h1>
+      <h1 style="margin-top:4px">Procheck <span data-i18n="ds.hero.title"></span></h1>
       <p class="lead" data-i18n="ds.hero.lead"></p>
-      <div class="ds-hero-meta">
-        <span class="ds-pill"><i data-lucide="palette" class="icon-sm"></i>KMS Brand FY27</span>
-        <span class="ds-pill"><i data-lucide="sun-moon" class="icon-sm"></i><span data-i18n="ds.hero.p2"></span></span>
-        <span class="ds-pill"><i data-lucide="languages" class="icon-sm"></i>EN · VI</span>
-        <span class="ds-pill"><i data-lucide="blocks" class="icon-sm"></i><span data-i18n="ds.hero.p4"></span></span>
-      </div>
-      <div class="ds-hero-cta">
-        <a class="btn btn-primary" href="#foundations"><span data-i18n="ds.hero.cta1"></span><i data-lucide="arrow-down"></i></a>
-        <a class="btn btn-secondary" href="#components"><i data-lucide="component"></i><span data-i18n="ds.hero.cta2"></span></a>
+      <div class="meta">
+        <span><i data-lucide="palette"></i>KMS Brand FY27</span>
+        <span><i data-lucide="sun-moon"></i><span data-i18n="ds.hero.p2"></span></span>
+        <span><i data-lucide="languages"></i>EN · VI</span>
+        <span><i data-lucide="blocks"></i><span data-i18n="ds.hero.p4"></span></span>
       </div>
     </div>
-    <div class="ds-art" aria-hidden="true">
-      <div class="ring r1"></div><div class="ring r2"></div>
-      <div class="ring r3"><img src="assets/kms-mark.svg" alt=""></div>
-      <span class="float f1"><span class="phase-chip phase-initial" data-i18n="phase.initial"></span></span>
-      <span class="float f2"><span class="phase-chip phase-release" data-i18n="phase.release"></span></span>
-      <span class="float f3"><span class="phase-chip phase-sdlc" data-i18n="phase.sdlc"></span></span>
-      <span class="float f4"><span class="avatar avatar-ai" style="border:0"><i data-lucide="sparkles" style="width:13px;height:13px"></i></span></span>
+    <div class="actions">
+      <a class="btn btn-secondary" href="#components"><i data-lucide="component"></i><span data-i18n="ds.hero.cta2"></span></a>
+      <a class="btn btn-primary" href="#layout"><span data-i18n="ds.hero.cta1"></span><i data-lucide="arrow-down"></i></a>
     </div>
   </div>
-</section>
+</div>
 
 <div class="ds-layout">
   <nav class="ds-toc" aria-label="Table of contents">
     <div class="ds-toc-title" data-i18n="ds.toc"></div>
     <a href="#foundations"><span class="n">01</span><span data-i18n="ds.s1.k"></span></a>
-    <a href="#logo"><span class="n">02</span><span data-i18n="ds.s2.k"></span></a>
-    <a href="#color"><span class="n">03</span><span data-i18n="ds.s3.k"></span></a>
-    <a href="#typography"><span class="n">04</span><span data-i18n="ds.s4.k"></span></a>
-    <a href="#tokens"><span class="n">05</span><span data-i18n="ds.s5.k"></span></a>
-    <a href="#icons"><span class="n">06</span><span data-i18n="ds.s6.k"></span></a>
-    <a href="#components"><span class="n">07</span><span data-i18n="ds.s7.k"></span></a>
-    <a href="#patterns"><span class="n">08</span><span data-i18n="ds.s8.k"></span></a>
-    <a href="#dark"><span class="n">09</span><span data-i18n="ds.s9.k"></span></a>
-    <a href="#a11y"><span class="n">10</span><span data-i18n="ds.s10.k"></span></a>
-    <a href="#voice"><span class="n">11</span><span data-i18n="ds.s11.k"></span></a>
+    <a href="#layout"><span class="n">02</span><span data-i18n="ds.L.k"></span></a>
+    <a href="#logo"><span class="n">03</span><span data-i18n="ds.s2.k"></span></a>
+    <a href="#color"><span class="n">04</span><span data-i18n="ds.s3.k"></span></a>
+    <a href="#typography"><span class="n">05</span><span data-i18n="ds.s4.k"></span></a>
+    <a href="#tokens"><span class="n">06</span><span data-i18n="ds.s5.k"></span></a>
+    <a href="#icons"><span class="n">07</span><span data-i18n="ds.s6.k"></span></a>
+    <a href="#components"><span class="n">08</span><span data-i18n="ds.s7.k"></span></a>
+    <a href="#patterns"><span class="n">09</span><span data-i18n="ds.s8.k"></span></a>
+    <a href="#dark"><span class="n">10</span><span data-i18n="ds.s9.k"></span></a>
+    <a href="#a11y"><span class="n">11</span><span data-i18n="ds.s10.k"></span></a>
+    <a href="#voice"><span class="n">12</span><span data-i18n="ds.s11.k"></span></a>
   </nav>
 
   <main class="ds-main">
@@ -559,11 +584,11 @@ body { background: var(--bg-canvas); }
   <div class="ds-block">
     <h3 data-i18n="ds.s1.b1.t"></h3>
     <p class="ds-desc" data-i18n="ds.s1.b1.d"></p>
-    <div class="ds-cards">
-      <div class="ds-card"><div class="ico"><i data-lucide="sparkles"></i></div><h4 data-i18n="ds.s1.p1.t"></h4><p data-i18n="ds.s1.p1.d"></p></div>
-      <div class="ds-card"><div class="ico purple"><i data-lucide="shield-check"></i></div><h4 data-i18n="ds.s1.p2.t"></h4><p data-i18n="ds.s1.p2.d"></p></div>
-      <div class="ds-card"><div class="ico teal"><i data-lucide="building-2"></i></div><h4 data-i18n="ds.s1.p3.t"></h4><p data-i18n="ds.s1.p3.d"></p></div>
-      <div class="ds-card"><div class="ico magenta"><i data-lucide="layout-panel-left"></i></div><h4 data-i18n="ds.s1.p4.t"></h4><p data-i18n="ds.s1.p4.d"></p></div>
+    <div class="panel ds-colpanel">
+      <div><span class="gl"><i data-lucide="sparkles"></i></span><h4 data-i18n="ds.s1.p1.t"></h4><p data-i18n="ds.s1.p1.d"></p></div>
+      <div><span class="gl"><i data-lucide="shield-check"></i></span><h4 data-i18n="ds.s1.p2.t"></h4><p data-i18n="ds.s1.p2.d"></p></div>
+      <div><span class="gl"><i data-lucide="building-2"></i></span><h4 data-i18n="ds.s1.p3.t"></h4><p data-i18n="ds.s1.p3.d"></p></div>
+      <div><span class="gl"><i data-lucide="layout-panel-left"></i></span><h4 data-i18n="ds.s1.p4.t"></h4><p data-i18n="ds.s1.p4.d"></p></div>
     </div>
   </div>
 
@@ -596,10 +621,156 @@ body { background: var(--bg-canvas); }
   </div>
 </section>
 
+<!-- ======================================================= 02 LAYOUT PRINCIPLES -->
+<section class="ds-sec" id="layout">
+  <header class="ds-sec-head">
+    <div class="kicker"><span class="num">02</span><span data-i18n="ds.L.k"></span></div>
+    <h2 data-i18n="ds.L.t"></h2>
+    <p class="lead" data-i18n-html="ds.L.d"></p>
+  </header>
+
+  <div class="ds-block">
+    <h3 data-i18n="ds.L.b1.t"></h3>
+    <p class="ds-desc" data-i18n="ds.L.b1.d"></p>
+    <div class="ds-rules">
+      <div class="lr"><div><h4><span class="lr-n">01</span><span data-i18n="ds.L.r1.t"></span></h4><p data-i18n-html="ds.L.r1.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="sx-p"><div class="sx-head"><div class="sx-l s f"></div></div><div class="sx-row"><div class="sx-l m"></div></div><div class="sx-row"><div class="sx-l"></div></div><div class="sx-row"><div class="sx-l s"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="sx-p"><div class="sx-head"><div class="sx-l s f"></div></div><div class="sx-box"><div class="sx-l m"></div></div><div class="sx-box"><div class="sx-l s"></div></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">02</span><span data-i18n="ds.L.r2.t"></span></h4><p data-i18n-html="ds.L.r2.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="sx-p sx-cols" style="--n:4"><div><span class="sx-fig">34</span><div class="sx-l s"></div></div><div><span class="sx-fig">128</span><div class="sx-l s"></div></div><div><span class="sx-fig">96%</span><div class="sx-l s"></div></div><div><span class="sx-fig">2</span><div class="sx-l s"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="sx-grid" style="--n:4"><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--brand-soft);color:var(--brand)"><i data-lucide="list-checks"></i></span><span class="sx-fig">34</span></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--accent-purple-soft);color:var(--accent-purple)"><i data-lucide="bot"></i></span><span class="sx-fig">128</span></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--accent-teal-soft);color:var(--accent-teal)"><i data-lucide="flask-conical"></i></span><span class="sx-fig">96%</span></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><span class="sx-tile" style="background:var(--accent-magenta-soft);color:var(--accent-magenta)"><i data-lucide="eye"></i></span><span class="sx-fig">2</span></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">03</span><span data-i18n="ds.L.r3.t"></span></h4><p data-i18n-html="ds.L.r3.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="sx-p sx-cols"><div><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="sx-grid"><div class="sx-p" style="box-shadow:var(--shadow-md)"><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div><div class="sx-p" style="box-shadow:var(--shadow-md)"><div class="sx-l s f"></div><div class="sx-l"></div><div class="sx-l m"></div></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">04</span><span data-i18n="ds.L.r4.t"></span></h4><p data-i18n-html="ds.L.r4.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="sx-ph"><div class="grow col" style="gap:5px"><div class="sx-l m f" style="height:9px"></div><div class="sx-l s"></div></div><span class="sx-btn sec"></span><span class="sx-btn" style="margin-left:0"></span></div><div class="sx-l"></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="sx-hero"><div class="sx-l m f" style="height:10px"></div><div class="sx-l s"></div><span class="sx-btn" style="width:64px;height:16px;border-radius:var(--radius-full)"></span></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">05</span><span data-i18n="ds.L.r5.t"></span></h4><p data-i18n-html="ds.L.r5.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="sx-p"><div class="sx-row"><span class="sx-gl"><i data-lucide="file-text"></i></span><div class="sx-l m"></div></div><div class="sx-row"><span class="sx-gl"><i data-lucide="git-branch"></i></span><div class="sx-l "></div></div><div class="sx-row"><span class="sx-gl" style="color:var(--danger-fg)"><i data-lucide="circle-x"></i></span><div class="sx-l s"></div></div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="sx-p"><div class="sx-row"><span class="sx-tile" style="background:var(--brand-soft);color:var(--brand)"><i data-lucide="file-text"></i></span><div class="sx-l m"></div></div><div class="sx-row"><span class="sx-tile" style="background:var(--accent-purple-soft);color:var(--accent-purple)"><i data-lucide="git-branch"></i></span><div class="sx-l "></div></div><div class="sx-row"><span class="sx-tile" style="background:var(--accent-magenta-soft);color:var(--accent-magenta)"><i data-lucide="circle-x"></i></span><div class="sx-l s"></div></div></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">06</span><span data-i18n="ds.L.r6.t"></span></h4><p data-i18n-html="ds.L.r6.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="row"><span class="badge badge-success"><i data-lucide="check"></i>Passed</span><span class="badge badge-warning">In review</span><span class="badge">Backlog</span></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="row"><span class="sx-pill" style="background:var(--success);color:var(--fg-on-brand)">Passed</span><span class="sx-pill" style="background:var(--warning-soft);color:var(--warning-fg)">In review</span><span class="sx-pill" style="background:var(--bg-surface-3);color:var(--fg-muted)">Backlog</span></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">07</span><span data-i18n="ds.L.r7.t"></span></h4><p data-i18n-html="ds.L.r7.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-primary btn-sm">Approve plan</button><button type="button" class="btn btn-ai btn-sm"><i data-lucide="sparkles"></i>Refine with AI</button></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-primary btn-sm">Approve plan</button><button type="button" class="btn btn-sm" style="background:var(--accent-purple);color:var(--fg-on-brand);border-color:transparent;border-radius:var(--radius-full)"><i data-lucide="sparkles"></i>Refine with AI</button><button type="button" class="btn btn-primary btn-sm">Export</button></div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">08</span><span data-i18n="ds.L.r8.t"></span></h4><p data-i18n-html="ds.L.r8.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="alert alert-warning"><i data-lucide="triangle-alert"></i><div><b>Review required.</b> Inspect the diff before promoting.</div></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="sx-tint"><b>Review required.</b> Inspect the diff before promoting.</div></div></div></div></div>
+      <div class="lr"><div><h4><span class="lr-n">09</span><span data-i18n="ds.L.r9.t"></span></h4><p data-i18n-html="ds.L.r9.d"></p></div>
+        <div class="lr-ex"><div class="lr-sp"><span class="lr-tag do"><i data-lucide="circle-check"></i><span data-i18n="ds.id.do"></span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-secondary">Default · 32</button><button type="button" class="btn btn-secondary btn-sm">Small · 26</button></div><div class="row"><span class="h1" style="font-size:var(--text-3xl)">H1 22</span><span class="badge">radius 2</span></div></div></div><div class="lr-sp"><span class="lr-tag dont"><i data-lucide="circle-x"></i><span data-i18n="ds.id.dont"></span></span><div class="lr-stage"><div class="row"><button type="button" class="btn btn-secondary sx-big">Large pill · 40</button></div><div class="row"><span style="font-size:var(--text-4xl);font-weight:var(--weight-semibold);color:var(--fg-strong);line-height:1.1">H1 30</span><span style="padding:6px 12px;border:1px solid var(--border-default);border-radius:calc(var(--radius-xl) * 2);background:var(--bg-surface);font-size:var(--text-xs)">radius 16</span></div></div></div></div></div>
+    </div>
+  </div>
+
+  <div class="ds-block" id="l-pagehead">
+    <h3 data-i18n="ds.L.b2.t"></h3>
+    <p class="ds-desc" data-i18n-html="ds.L.b2.d"></p>
+    <div class="ds-demo">
+      <div class="page-head" style="margin-bottom:0">
+        <div style="min-width:0">
+          <h1>Lotus Pay — Merchant Portal</h1>
+          <div class="meta">
+            <span><i data-lucide="folder"></i><code class="text-xs">D:\Projects\lotus-pay</code></span>
+            <span><span class="phase-chip phase-release" data-i18n="phase.release"></span></span>
+            <span><i data-lucide="clock"></i>Updated 12 min ago</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary"><i data-lucide="upload"></i>Upload</button>
+          <button type="button" class="btn btn-ai is-primary"><i data-lucide="sparkles"></i>Generate plan</button>
+        </div>
+      </div>
+    </div>
+    <script type="text/plain" data-snip>
+<div class="page-head">
+  <div>
+    <h1>Lotus Pay — Merchant Portal</h1>                       <!-- H1 22px · no hero, no gradient -->
+    <div class="meta"><span><i data-lucide="folder"></i>D:\Projects\lotus-pay</span><span>…</span></div>
+  </div>
+  <div class="actions"><button class="btn btn-secondary">Upload</button><button class="btn btn-primary">Main action</button></div>
+</div>
+    </script>
+  </div>
+
+  <div class="ds-block" id="l-strip">
+    <h3 data-i18n="ds.L.b3.t"></h3>
+    <p class="ds-desc" data-i18n-html="ds.L.b3.d"></p>
+    <div class="ds-demo bare">
+      <div class="stat-strip" style="--cols:4">
+        <a href="#l-strip"><span class="stat-label">Open tasks</span><span class="stat-value">34</span><span class="stat-sub"><b class="text-success">+6</b> this week</span></a>
+        <a href="#l-strip"><span class="stat-label">Agent runs</span><span class="stat-value">128</span><span class="stat-sub"><b>2</b> running now</span></a>
+        <a href="#l-strip"><span class="stat-label">E2E pass rate</span><span class="stat-value">96<small>%</small></span><span class="stat-sub"><b class="text-success">+3%</b> vs last sprint</span></a>
+        <a href="#l-strip"><span class="stat-label">Awaiting review</span><span class="stat-value">2</span><span class="stat-sub"><b class="text-warning">Needs you</b></span></a>
+      </div>
+    </div>
+    <script type="text/plain" data-snip>
+<div class="stat-strip" style="--cols:4">                       <!-- one bordered strip; cells divided by rules -->
+  <a href="board.html"><span class="stat-label">Open tasks</span><span class="stat-value">34</span><span class="stat-sub"><b>+6</b> this week</span></a>
+  …
+</div>
+    </script>
+  </div>
+
+  <div class="ds-block" id="l-panel">
+    <h3 data-i18n="ds.L.b4.t"></h3>
+    <p class="ds-desc" data-i18n-html="ds.L.b4.d"></p>
+    <div class="ds-demo tint">
+      <div class="ds-cols c2" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--space-4);align-items:start">
+        <div class="panel">
+          <div class="panel-head"><h3><i data-lucide="bot" class="text-subtle"></i>Recent agent runs</h3><a class="text-xs" href="#l-panel">View all</a></div>
+          <div class="rows">
+            <a class="row-item" href="#l-panel"><span class="text-brand" style="display:inline-flex"><span class="spinner" style="width:14px;height:14px;border-width:1.5px"></span></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium);color:var(--fg-strong)">LP-151 · Settlement report export</div><div class="text-xs text-subtle">Claude Code · started 4 min ago</div></div><span class="badge badge-brand">Running</span></a>
+            <a class="row-item" href="#l-panel"><span class="text-warning" style="display:inline-flex"><i data-lucide="eye"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium);color:var(--fg-strong)">LP-142 · Merchant KYC upload</div><div class="text-xs text-subtle">Claude Code · e2e 12/12</div></div><span class="badge badge-warning">In review</span></a>
+            <a class="row-item" href="#l-panel"><span class="text-danger" style="display:inline-flex"><i data-lucide="circle-x"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium);color:var(--fg-strong)">LP-139 · Login rate limiting</div><div class="text-xs text-subtle">Codex · 2 tests failing</div></div><span class="badge badge-danger">Failed</span></a>
+          </div>
+          <div class="panel-foot"><button type="button" class="btn btn-ghost btn-sm">Dismiss</button><button type="button" class="btn btn-secondary btn-sm"><i data-lucide="kanban"></i>Open board</button></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Repository</h3><span class="badge badge-success"><i data-lucide="check"></i>Linked</span></div>
+          <div class="panel-section panel-body">
+            <dl class="kv">
+              <dt>Path</dt><dd><code>D:\Projects\lotus-pay</code></dd>
+              <dt>Branch</dt><dd>main · 3 worktrees</dd>
+              <dt>CLI</dt><dd>Claude Code 2.4.1</dd>
+              <dt>Model</dt><dd>claude-opus-5-5</dd>
+            </dl>
+          </div>
+          <div class="panel-section panel-body text-sm text-muted">Agents work in <code>.procheck\worktrees\</code>; your main branch is never touched.</div>
+        </div>
+      </div>
+    </div>
+    <script type="text/plain" data-snip>
+<div class="section-head"><h3>Recent agent runs</h3><a href="…">View all</a></div>   <!-- optional title above a panel -->
+<div class="panel">
+  <div class="panel-head"><h3>Recent agent runs</h3><a href="…">View all</a></div>
+  <div class="rows">                                                <!-- rows are divided, never boxed -->
+    <a class="row-item" href="…"><i data-lucide="eye"></i><div class="grow">LP-142 · Merchant KYC upload</div><span class="badge badge-warning">In review</span></a>
+  </div>
+  <div class="panel-foot"><button class="btn btn-secondary btn-sm">Open board</button></div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>Repository</h3></div>
+  <div class="panel-section panel-body">
+    <dl class="kv"><dt>Path</dt><dd>D:\Projects\lotus-pay</dd><dt>Branch</dt><dd>main</dd></dl>
+  </div>
+  <div class="panel-section panel-body">…</div>                   <!-- sections split by a rule -->
+</div>
+    </script>
+  </div>
+
+  <div class="ds-block" id="l-ai">
+    <h3 data-i18n="ds.L.b5.t"></h3>
+    <p class="ds-desc" data-i18n-html="ds.L.b5.d"></p>
+    <div class="ds-demo ds-stack" style="gap:var(--space-5)">
+      <div><div class="ds-label" data-i18n="ds.L.ai1"></div>
+        <div class="ds-row"><button type="button" class="btn btn-secondary"><i data-lucide="upload"></i>Upload</button><button type="button" class="btn btn-ai is-primary"><i data-lucide="sparkles"></i>Generate artifacts</button></div></div>
+      <div><div class="ds-label" data-i18n="ds.L.ai2"></div>
+        <div class="ds-row"><button type="button" class="btn btn-primary"><i data-lucide="check"></i>Approve plan</button><button type="button" class="btn btn-ai"><i data-lucide="sparkles"></i>Refine with AI</button><button type="button" class="btn btn-ai btn-sm"><i data-lucide="sparkles"></i>Summarize</button></div></div>
+    </div>
+    <script type="text/plain" data-snip>
+<button class="btn btn-ai"><i data-lucide="sparkles"></i>Refine with AI</button>                  <!-- secondary + brand sparkle -->
+<button class="btn btn-ai is-primary"><i data-lucide="sparkles"></i>Generate artifacts</button>  <!-- only when it is THE main action -->
+    </script>
+  </div>
+</section>
+
 <!-- ============================================================ 02 LOGO -->
 <section class="ds-sec" id="logo">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">02</span><span data-i18n="ds.s2.k"></span></div>
+    <div class="kicker"><span class="num">03</span><span data-i18n="ds.s2.k"></span></div>
     <h2 data-i18n="ds.s2.t"></h2>
     <p class="lead" data-i18n="ds.s2.d"></p>
   </header>
@@ -667,7 +838,7 @@ body { background: var(--bg-canvas); }
 <!-- =========================================================== 03 COLOR -->
 <section class="ds-sec" id="color">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">03</span><span data-i18n="ds.s3.k"></span></div>
+    <div class="kicker"><span class="num">04</span><span data-i18n="ds.s3.k"></span></div>
     <h2 data-i18n="ds.s3.t"></h2>
     <p class="lead" data-i18n="ds.s3.d"></p>
   </header>
@@ -727,38 +898,46 @@ body { background: var(--bg-canvas); }
   <div class="ds-block">
     <h3 data-i18n="ds.s3.b4.t"></h3>
     <p class="ds-desc" data-i18n="ds.s3.b4.d"></p>
-    <div class="ds-cols c4" style="gap:var(--space-4)">
-      <div class="status-card"><div class="top"><i style="background:var(--success)"></i><i style="background:var(--success-soft)"></i><i style="background:var(--success-fg)"></i></div><div class="body"><h5><span class="dot dot-success"></span>Success</h5><span class="ds-cap">--success · -soft · -fg</span><div class="ds-row"><span class="badge badge-success"><i data-lucide="check"></i>Passed</span></div></div></div>
-      <div class="status-card"><div class="top"><i style="background:var(--warning)"></i><i style="background:var(--warning-soft)"></i><i style="background:var(--warning-fg)"></i></div><div class="body"><h5><span class="dot dot-warning"></span>Warning</h5><span class="ds-cap">--warning · -soft · -fg</span><div class="ds-row"><span class="badge badge-warning"><i data-lucide="triangle-alert"></i>Needs review</span></div></div></div>
-      <div class="status-card"><div class="top"><i style="background:var(--danger)"></i><i style="background:var(--danger-soft)"></i><i style="background:var(--danger-fg)"></i></div><div class="body"><h5><span class="dot dot-danger"></span>Danger</h5><span class="ds-cap">--danger · -soft · -fg</span><div class="ds-row"><span class="badge badge-danger"><i data-lucide="x"></i>Failed</span></div></div></div>
-      <div class="status-card"><div class="top"><i style="background:var(--info)"></i><i style="background:var(--info-soft)"></i><i style="background:var(--info-fg)"></i></div><div class="body"><h5><span class="dot dot-brand"></span>Info</h5><span class="ds-cap">--info · -soft · -fg</span><div class="ds-row"><span class="badge badge-brand"><i data-lucide="info"></i>Queued</span></div></div></div>
+    <div class="panel ds-colpanel">
+      <div class="status-col"><div class="top"><i style="background:var(--success)"></i><i style="background:var(--success-soft)"></i><i style="background:var(--success-fg)"></i></div><div class="body"><h5><i data-lucide="circle-check" class="icon-sm text-success"></i>Success</h5><span class="ds-cap">--success · -soft · -fg</span><div class="ds-row"><span class="badge badge-success"><i data-lucide="check"></i>Passed</span></div></div></div>
+      <div class="status-col"><div class="top"><i style="background:var(--warning)"></i><i style="background:var(--warning-soft)"></i><i style="background:var(--warning-fg)"></i></div><div class="body"><h5><i data-lucide="triangle-alert" class="icon-sm text-warning"></i>Warning</h5><span class="ds-cap">--warning · -soft · -fg</span><div class="ds-row"><span class="badge badge-warning"><i data-lucide="triangle-alert"></i>Needs review</span></div></div></div>
+      <div class="status-col"><div class="top"><i style="background:var(--danger)"></i><i style="background:var(--danger-soft)"></i><i style="background:var(--danger-fg)"></i></div><div class="body"><h5><i data-lucide="circle-x" class="icon-sm text-danger"></i>Danger</h5><span class="ds-cap">--danger · -soft · -fg</span><div class="ds-row"><span class="badge badge-danger"><i data-lucide="x"></i>Failed</span></div></div></div>
+      <div class="status-col"><div class="top"><i style="background:var(--info)"></i><i style="background:var(--info-soft)"></i><i style="background:var(--info-fg)"></i></div><div class="body"><h5><i data-lucide="info" class="icon-sm text-brand"></i>Info</h5><span class="ds-cap">--info · -soft · -fg</span><div class="ds-row"><span class="badge badge-brand"><i data-lucide="info"></i>Queued</span></div></div></div>
     </div>
   </div>
 
   <div class="ds-block">
     <h3 data-i18n="ds.s3.b5.t"></h3>
     <p class="ds-desc" data-i18n="ds.s3.b5.d"></p>
-    <div class="ds-cols c3">
-      <div class="phase-card" style="--c:var(--phase-initial)"><div class="ph-ico"><i data-lucide="compass"></i></div><span class="phase-chip phase-initial" data-i18n="phase.initial"></span><p data-i18n="ds.s3.ph1"></p><div class="progress ph"><span style="width:100%"></span></div><div class="ds-cap" style="margin-top:8px">--phase-initial</div></div>
-      <div class="phase-card" style="--c:var(--phase-release)"><div class="ph-ico"><i data-lucide="blocks"></i></div><span class="phase-chip phase-release" data-i18n="phase.release"></span><p data-i18n="ds.s3.ph2"></p><div class="progress ph"><span style="width:64%"></span></div><div class="ds-cap" style="margin-top:8px">--phase-release</div></div>
-      <div class="phase-card" style="--c:var(--phase-sdlc)"><div class="ph-ico"><i data-lucide="infinity"></i></div><span class="phase-chip phase-sdlc" data-i18n="phase.sdlc"></span><p data-i18n="ds.s3.ph3"></p><div class="progress ph"><span style="width:42%"></span></div><div class="ds-cap" style="margin-top:8px">--phase-sdlc</div></div>
+    <div class="panel ds-colpanel" style="--cols:3">
+      <div class="phase-col" style="--c:var(--phase-initial)"><div class="ph-top"><span class="ph-gl"><i data-lucide="compass"></i></span><span class="phase-chip phase-initial" data-i18n="phase.initial"></span></div><p data-i18n="ds.s3.ph1"></p><div class="progress ph"><span style="width:100%"></span></div><div class="ds-cap">--phase-initial</div></div>
+      <div class="phase-col" style="--c:var(--phase-release)"><div class="ph-top"><span class="ph-gl"><i data-lucide="blocks"></i></span><span class="phase-chip phase-release" data-i18n="phase.release"></span></div><p data-i18n="ds.s3.ph2"></p><div class="progress ph"><span style="width:64%"></span></div><div class="ds-cap">--phase-release</div></div>
+      <div class="phase-col" style="--c:var(--phase-sdlc)"><div class="ph-top"><span class="ph-gl"><i data-lucide="infinity"></i></span><span class="phase-chip phase-sdlc" data-i18n="phase.sdlc"></span></div><p data-i18n="ds.s3.ph3"></p><div class="progress ph"><span style="width:42%"></span></div><div class="ds-cap">--phase-sdlc</div></div>
     </div>
   </div>
 
   <div class="ds-block">
     <h3 data-i18n="ds.s3.b6.t"></h3>
     <p class="ds-desc" data-i18n="ds.s3.b6.d"></p>
-    <div class="ds-cols c3">
-      <div class="grad" style="background:var(--gradient-brand)"><b>Brand</b><span>--gradient-brand</span></div>
-      <div class="grad" style="background:var(--gradient-ai)"><b>AI</b><span>--gradient-ai</span></div>
-      <div class="grad hero" style="background-image:var(--gradient-hero)"><b>Hero</b><span>--gradient-hero</span></div>
-    </div>
-    <div class="ds-demo mt-4">
-      <div class="ds-row">
-        <button class="btn btn-ai"><i data-lucide="sparkles"></i>Generate with AI</button>
-        <span class="avatar avatar-ai"><i data-lucide="sparkles" style="width:13px;height:13px"></i></span>
-        <div class="progress progress-ai" style="width:160px"><span style="width:62%"></span></div>
-        <span class="text-gradient" style="font-weight:var(--weight-semibold);font-size:var(--text-lg)">AI Assistant</span>
+    <div class="ds-cols c2" style="align-items:start">
+      <div class="table-wrap">
+        <table class="table retired">
+          <thead><tr><th data-i18n="ds.s9.th.token"></th><th data-i18n="ds.s3.g.now"></th><th data-i18n="ds.s3.g.use"></th></tr></thead>
+          <tbody>
+            <tr><td class="t">--gradient-brand</td><td class="v">flat #245DB3</td><td data-i18n="ds.s3.g.u1"></td></tr>
+            <tr><td class="t">--gradient-ai</td><td class="v">flat --brand</td><td data-i18n="ds.s3.g.u2"></td></tr>
+            <tr><td class="t">--gradient-hero</td><td class="v">none</td><td data-i18n="ds.s3.g.u3"></td></tr>
+            <tr><td class="t">.text-gradient</td><td class="v">color: --brand-fg</td><td data-i18n="ds.s3.g.u4"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="ds-demo">
+        <div class="ds-label" data-i18n="ds.s3.g.ai"></div>
+        <div class="ds-row">
+          <button type="button" class="btn btn-ai"><i data-lucide="sparkles"></i>Generate with AI</button>
+          <span class="avatar avatar-ai"><i data-lucide="sparkles" style="width:13px;height:13px"></i></span>
+          <div class="progress progress-ai" style="width:140px"><span style="width:62%"></span></div>
+        </div>
       </div>
     </div>
     <div class="ds-note" data-i18n-html="ds.s3.note3"></div>
@@ -768,7 +947,7 @@ body { background: var(--bg-canvas); }
 <!-- ======================================================= 04 TYPOGRAPHY -->
 <section class="ds-sec" id="typography">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">04</span><span data-i18n="ds.s4.k"></span></div>
+    <div class="kicker"><span class="num">05</span><span data-i18n="ds.s4.k"></span></div>
     <h2 data-i18n="ds.s4.t"></h2>
     <p class="lead" data-i18n="ds.s4.d"></p>
   </header>
@@ -796,14 +975,16 @@ body { background: var(--bg-canvas); }
       <table class="table type-table">
         <thead><tr><th data-i18n="ds.s4.th.role"></th><th data-i18n="ds.s4.th.brand"></th><th data-i18n="ds.s4.th.token"></th><th data-i18n="ds.s4.th.sample"></th></tr></thead>
         <tbody>
-          <tr><td>Display</td><td class="spec">32–36 · Regular</td><td class="tok">--text-4xl · 36 / 400</td><td><div class="display">From Idea to Impact</div></td></tr>
-          <tr><td>H1 · Page</td><td class="spec">—</td><td class="tok">--text-3xl · 28 / 600</td><td><h1>Project overview</h1></td></tr>
-          <tr><td>H2 · Section</td><td class="spec">H2 28 · Medium</td><td class="tok">--text-2xl · 22 / 500</td><td><h2>Architecture decisions</h2></td></tr>
-          <tr><td>H3 · Subhead</td><td class="spec">H3 18 · SemiBold</td><td class="tok">--text-xl · 18 / 600</td><td><h3>Sources and artifacts</h3></td></tr>
+          <tr><td>Display</td><td class="spec">32–36 · Regular</td><td class="tok">--text-4xl · 30 / 400</td><td><div class="display">From Idea to Impact</div></td></tr>
+          <tr><td>H1 · Page</td><td class="spec">—</td><td class="tok">--text-3xl · 22 / 600</td><td><h1>Project overview</h1></td></tr>
+          <tr><td>H2 · Section</td><td class="spec">H2 28 · Medium</td><td class="tok">--text-2xl · 18 / 600</td><td><h2>Architecture decisions</h2></td></tr>
+          <tr><td>H3 · Subhead</td><td class="spec">H3 18 · SemiBold</td><td class="tok">--text-xl · 16 / 600</td><td><h3>Sources and artifacts</h3></td></tr>
+          <tr><td>Panel / section title</td><td class="spec">—</td><td class="tok">--text-md · 13.5 / 600 · .panel-head h3</td><td><span class="panel-title">Recent agent runs</span></td></tr>
+          <tr><td>Stat value</td><td class="spec">—</td><td class="tok">22 / 600 · .stat-value</td><td><span class="stat-value">96%</span></td></tr>
           <tr><td>Lead</td><td class="spec">16 · Normal</td><td class="tok">--text-lg · 15 / 400</td><td><p class="lead" style="margin:0">Summarize what the client told us before drafting the vision.</p></td></tr>
           <tr><td>Body</td><td class="spec">11–13 · Light</td><td class="tok">--text-md · 13.5 / 400</td><td><p style="margin:0">The assistant reads every uploaded document and proposes user stories you can edit.</p></td></tr>
           <tr><td>Dense UI</td><td class="spec">—</td><td class="tok">--text-sm · 12.5 / 400–500</td><td><span class="text-sm">Table cells, form labels, menu items, buttons</span></td></tr>
-          <tr><td>Kicker</td><td class="spec">12 · SemiBold caps</td><td class="tok">--text-xs · 11 / 600 · .kicker</td><td><span class="kicker">Initial phase</span></td></tr>
+          <tr><td>Kicker</td><td class="spec">12 · SemiBold caps</td><td class="tok">--text-2xs · 10 / 600 · .kicker</td><td><span class="kicker">Initial phase</span></td></tr>
           <tr><td>Caption</td><td class="spec">8–9 · Light</td><td class="tok">--text-xs · 11 / 300 · .caption</td><td><span class="caption">Updated 12 minutes ago by You</span></td></tr>
           <tr><td>Micro</td><td class="spec">—</td><td class="tok">--text-2xs · 10 / 600</td><td><span style="font-size:var(--text-2xs);font-weight:var(--weight-semibold);color:var(--fg-subtle)">BADGE · META · COUNT</span></td></tr>
         </tbody>
@@ -815,7 +996,7 @@ body { background: var(--bg-canvas); }
   <div class="ds-block">
     <h3 data-i18n="ds.s4.b3.t"></h3>
     <p class="ds-desc" data-i18n="ds.s4.b3.d"></p>
-    <div class="weights">
+    <div class="panel ds-colpanel weights">
       <div><b style="font-weight:var(--weight-light)">Aa</b><span>Light · 300</span></div>
       <div><b style="font-weight:var(--weight-regular)">Aa</b><span>Regular · 400</span></div>
       <div><b style="font-weight:var(--weight-medium)">Aa</b><span>Medium · 500</span></div>
@@ -839,7 +1020,7 @@ body { background: var(--bg-canvas); }
 <!-- ============================================================ 05 TOKENS -->
 <section class="ds-sec" id="tokens">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">05</span><span data-i18n="ds.s5.k"></span></div>
+    <div class="kicker"><span class="num">06</span><span data-i18n="ds.s5.k"></span></div>
     <h2 data-i18n="ds.s5.t"></h2>
     <p class="lead" data-i18n="ds.s5.d"></p>
   </header>
@@ -866,12 +1047,12 @@ body { background: var(--bg-canvas); }
     <p class="ds-desc" data-i18n="ds.s5.b2.d"></p>
     <div class="ds-demo">
       <div class="rad-grid">
-        <div class="rad"><i style="border-radius:var(--radius-xs)"></i><b>xs</b><span>4px</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-sm)"></i><b>sm</b><span>6px · buttons sm</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-md)"></i><b>md</b><span>8px · inputs, buttons</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-lg)"></i><b>lg</b><span>12px · cards</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-xl)"></i><b>xl</b><span>16px · modals</span></div>
-        <div class="rad"><i style="border-radius:var(--radius-full)"></i><b>full</b><span>999px · badges</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-xs)"></i><b>xs</b><span>2px · badges, chips</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-sm)"></i><b>sm</b><span>4px · small controls</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-md)"></i><b>md</b><span>4px · inputs, buttons, alerts</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-lg)"></i><b>lg</b><span>6px · panels, cards</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-xl)"></i><b>xl</b><span>8px · modals</span></div>
+        <div class="rad"><i style="border-radius:var(--radius-full)"></i><b>full</b><span>999px · avatars, dots, filter chips</span></div>
       </div>
     </div>
   </div>
@@ -881,11 +1062,11 @@ body { background: var(--bg-canvas); }
     <p class="ds-desc" data-i18n="ds.s5.b3.d"></p>
     <div class="ds-demo tint">
       <div class="shd-grid">
-        <div class="shd" style="box-shadow:var(--shadow-xs)">--shadow-xs</div>
-        <div class="shd" style="box-shadow:var(--shadow-sm)">--shadow-sm</div>
-        <div class="shd" style="box-shadow:var(--shadow-md)">--shadow-md</div>
-        <div class="shd" style="box-shadow:var(--shadow-lg)">--shadow-lg</div>
-        <div class="shd" style="box-shadow:var(--shadow-focus)">--shadow-focus</div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-xs)">--shadow-xs</div><span data-i18n="ds.shd.xs"></span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-sm)">--shadow-sm</div><span data-i18n="ds.shd.sm"></span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-md)">--shadow-md</div><span data-i18n="ds.shd.md"></span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-lg)">--shadow-lg</div><span data-i18n="ds.shd.lg"></span></div>
+        <div class="shd-item"><div class="shd" style="box-shadow:var(--shadow-focus)">--shadow-focus</div><span data-i18n="ds.shd.focus"></span></div>
       </div>
     </div>
   </div>
@@ -906,15 +1087,20 @@ body { background: var(--bg-canvas); }
   <div class="ds-block">
     <h3 data-i18n="ds.s5.b5.t"></h3>
     <p class="ds-desc" data-i18n="ds.s5.b5.d"></p>
-    <div class="layout-box">
-      <div><b data-i18n="ds.lay.os"></b><span data-i18n="ds.lay.os.d"></span></div>
-      <div><b>--topbar-h</b><span>48px</span></div>
-      <div><b>--sidebar-w</b><span>264px</span></div>
-      <div><b>--assistant-w</b><span>380px</span></div>
-      <div><b>--z-dropdown</b><span>50</span></div>
-      <div><b>--z-overlay</b><span>80</span></div>
-      <div><b>--z-modal</b><span>90</span></div>
-      <div><b>--z-toast</b><span>100</span></div>
+    <div class="panel ds-colpanel" style="--cols:2">
+      <dl class="kv">
+        <dt data-i18n="ds.lay.os"></dt><dd class="text-subtle" data-i18n="ds.lay.os.d"></dd>
+        <dt><code>--topbar-h</code></dt><dd>44px</dd>
+        <dt><code>--sidebar-w</code></dt><dd>248px</dd>
+        <dt><code>--assistant-w</code></dt><dd>380px</dd>
+        <dt><code>.btn</code> / <code>.btn-sm</code></dt><dd>32px / 26px</dd>
+      </dl>
+      <dl class="kv">
+        <dt><code>--z-dropdown</code></dt><dd>50</dd>
+        <dt><code>--z-overlay</code></dt><dd>80</dd>
+        <dt><code>--z-modal</code></dt><dd>90</dd>
+        <dt><code>--z-toast</code></dt><dd>100</dd>
+      </dl>
     </div>
   </div>
 </section>
@@ -922,7 +1108,7 @@ body { background: var(--bg-canvas); }
 <!-- ========================================================= 06 ICONOGRAPHY -->
 <section class="ds-sec" id="icons">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">06</span><span data-i18n="ds.s6.k"></span></div>
+    <div class="kicker"><span class="num">07</span><span data-i18n="ds.s6.k"></span></div>
     <h2 data-i18n="ds.s6.t"></h2>
     <p class="lead" data-i18n="ds.s6.d"></p>
   </header>
@@ -970,7 +1156,7 @@ PC.refresh(container);
 <!-- ======================================================== 07 COMPONENTS -->
 <section class="ds-sec" id="components">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">07</span><span data-i18n="ds.s7.k"></span></div>
+    <div class="kicker"><span class="num">08</span><span data-i18n="ds.s7.k"></span></div>
     <h2 data-i18n="ds.s7.t"></h2>
     <p class="lead" data-i18n="ds.s7.d"></p>
   </header>
@@ -987,10 +1173,15 @@ PC.refresh(container);
           <button class="btn btn-soft">Soft</button>
           <button class="btn btn-ghost">Ghost</button>
           <button class="btn btn-danger">Danger</button>
-          <button class="btn btn-ai"><i data-lucide="sparkles"></i>AI action</button>
+        </div></div>
+      <div><div class="ds-label" data-i18n="ds.lbl.ai"></div>
+        <div class="ds-row">
+          <button class="btn btn-ai"><i data-lucide="sparkles"></i>Refine with AI</button>
+          <button class="btn btn-ai is-primary"><i data-lucide="sparkles"></i>Generate artifacts</button>
+          <button class="btn btn-ai btn-sm"><i data-lucide="sparkles"></i>Summarize</button>
         </div></div>
       <div><div class="ds-label" data-i18n="ds.lbl.sizes"></div>
-        <div class="ds-row"><button class="btn btn-primary btn-sm">Small · 28</button><button class="btn btn-primary">Default · 34</button><button class="btn btn-primary btn-lg">Large · 42</button></div></div>
+        <div class="ds-row"><button class="btn btn-secondary btn-sm">Small · 26</button><button class="btn btn-secondary">Default · 32</button><button class="btn btn-secondary btn-lg">Large · 42</button></div></div>
       <div><div class="ds-label" data-i18n="ds.lbl.icon"></div>
         <div class="ds-row">
           <button class="btn btn-primary"><i data-lucide="plus"></i>New project</button>
@@ -1008,8 +1199,10 @@ PC.refresh(container);
         </div></div>
     </div>
     <script type="text/plain" data-snip>
-<button class="btn btn-primary">Primary</button>      <!-- btn-secondary | btn-soft | btn-ghost | btn-danger | btn-ai -->
-<button class="btn btn-primary btn-sm">Small</button> <!-- btn-sm 28 · default 34 · btn-lg 42 -->
+<button class="btn btn-primary">Primary</button>      <!-- btn-secondary | btn-soft | btn-ghost | btn-danger -->
+<button class="btn btn-primary btn-sm">Small</button> <!-- btn-sm 26 · default 32 · btn-lg 42 (rare) -->
+<button class="btn btn-ai"><i data-lucide="sparkles"></i>Refine with AI</button>          <!-- AI = secondary + sparkle -->
+<button class="btn btn-ai is-primary"><i data-lucide="sparkles"></i>Generate</button>     <!-- only as the page's main action -->
 <button class="btn btn-primary"><i data-lucide="plus"></i>New project</button>
 <button class="btn btn-secondary btn-icon" aria-label="Settings"><i data-lucide="settings"></i></button>
 <div class="btn-group"><button class="btn btn-secondary">Day</button>…</div>
@@ -1235,15 +1428,15 @@ PC.refresh(container);
   <div class="ds-block" id="c-alerts">
     <h3 data-i18n="ds.c.alerts"></h3>
     <p class="ds-desc" data-i18n="ds.c.alerts.d"></p>
-    <div class="ds-demo ds-stack" style="gap:var(--space-3)">
+    <div class="ds-demo bare ds-stack" style="gap:var(--space-3)">
       <div class="alert alert-info"><i data-lucide="info"></i><div><b>Heads up.</b> The agent will work in an isolated git worktree. Your main branch is untouched.</div></div>
       <div class="alert alert-success"><i data-lucide="circle-check"></i><div><b>All checks passed.</b> 12 of 12 end-to-end tests are green.</div></div>
       <div class="alert alert-warning"><i data-lucide="triangle-alert"></i><div><b>Review required.</b> 14 files changed — please inspect the diff before promoting.</div></div>
       <div class="alert alert-danger"><i data-lucide="circle-x"></i><div><b>Run failed.</b> Claude Code exited with code 1. Open the log to see what went wrong.</div></div>
-      <div class="alert alert-ai"><i data-lucide="sparkles" style="color:var(--accent-purple)"></i><div><b>Suggestion from the Assistant.</b> Two user stories overlap — merge them to keep the backlog clean.</div></div>
+      <div class="alert alert-ai"><i data-lucide="sparkles" class="text-brand"></i><div><b>Suggestion from the Assistant.</b> Two user stories overlap — merge them to keep the backlog clean.</div></div>
     </div>
     <script type="text/plain" data-snip>
-<div class="alert alert-info">            <!-- alert-success | alert-warning | alert-danger | alert-ai (AI gradient border) -->
+<div class="alert alert-info">            <!-- alert-success | alert-warning | alert-danger | alert-ai (surface + brand stripe) -->
   <i data-lucide="info"></i>
   <div><b>Title.</b> Message.</div>
 </div>
@@ -1277,38 +1470,31 @@ PC.refresh(container);
     <h3 data-i18n="ds.c.cards"></h3>
     <p class="ds-desc" data-i18n="ds.c.cards.d"></p>
     <div class="ds-demo tint">
-      <div class="ds-cols c3" style="gap:var(--space-5)">
+      <div class="ds-cols c3" style="gap:var(--space-4);align-items:start">
         <div class="card">
-          <div class="card-header"><h5>Vision statement</h5><span class="badge badge-success">Approved</span></div>
+          <div class="card-header"><h4>Vision statement</h4><span class="badge badge-success">Approved</span></div>
           <div class="card-body text-sm text-muted">Give merchants one place to onboard, settle and reconcile payments.</div>
           <div class="card-footer"><button class="btn btn-ghost btn-sm">Edit</button><button class="btn btn-secondary btn-sm">Export</button></div>
         </div>
         <div class="card card-interactive card-pad">
-          <div class="row" style="gap:12px"><span class="file-tile"><i data-lucide="git-branch"></i></span><div class="grow"><div class="h5">Interactive card</div><div class="text-xs text-subtle">Hover for elevation</div></div></div>
+          <div class="row" style="gap:10px;align-items:flex-start"><span class="text-subtle" style="display:inline-flex;margin-top:2px"><i data-lucide="git-branch"></i></span><div class="grow"><div class="h5">Interactive card</div><div class="text-xs text-subtle">Selectable option or board card. Hover changes border and surface, no lift.</div></div></div>
         </div>
         <div class="card card-accent card-pad" style="--_accent:var(--phase-release)">
           <span class="phase-chip phase-release" data-i18n="phase.release"></span>
-          <div class="h5" style="margin-top:10px">Accent card</div><div class="text-xs text-subtle">3px phase-colored edge</div>
-        </div>
-      </div>
-      <div class="card card-pad mt-4" style="margin-top:var(--space-5)">
-        <div class="ds-cols c4" style="gap:var(--space-6)">
-          <div class="stat"><span class="stat-label">Open tasks</span><span class="stat-value">34</span><span class="stat-delta text-success">▲ 6 this week</span></div>
-          <div class="stat"><span class="stat-label">Agent runs</span><span class="stat-value">128</span><span class="stat-delta text-muted">2 running now</span></div>
-          <div class="stat"><span class="stat-label">E2E pass rate</span><span class="stat-value">96%</span><span class="stat-delta text-success">▲ 3%</span></div>
-          <div class="stat"><span class="stat-label">Awaiting review</span><span class="stat-value">2</span><span class="stat-delta text-warning">Needs you</span></div>
+          <div class="h5" style="margin-top:10px">Accent card</div><div class="text-xs text-subtle">3px state or phase edge on the left</div>
         </div>
       </div>
     </div>
+    <div class="ds-note" data-i18n-html="ds.c.cards.note"></div>
     <script type="text/plain" data-snip>
-<div class="card">
-  <div class="card-header"><h5>Title</h5><span class="badge">Meta</span></div>
+<div class="card">                                    <!-- same as .panel: flat, 1px border, radius 6 -->
+  <div class="card-header"><h4>Title</h4><span class="badge">Meta</span></div>
   <div class="card-body">…</div>
   <div class="card-footer"><button class="btn btn-secondary btn-sm">Action</button></div>
 </div>
 <div class="card card-interactive card-pad">…</div>
 <div class="card card-accent card-pad" style="--_accent:var(--phase-release)">…</div>
-<div class="stat"><span class="stat-label">Open tasks</span><span class="stat-value">34</span><span class="stat-delta text-success">▲ 6</span></div>
+<!-- never .card inside .card: use .panel-section / .rows inside, .stat-strip for figures -->
     </script>
   </div>
 
@@ -1316,7 +1502,7 @@ PC.refresh(container);
   <div class="ds-block" id="c-code">
     <h3 data-i18n="ds.c.code"></h3>
     <p class="ds-desc" data-i18n="ds.c.code.d"></p>
-    <div class="ds-demo ds-stack" style="gap:var(--space-5)">
+    <div class="ds-demo bare ds-stack" style="gap:var(--space-4)">
       <pre class="code" style="margin:0">$ npm run test:e2e -- --grep "kyc"
 const worktree = await git.worktree.add("lp-142", { branch: "feature/merchant-kyc" });</pre>
       <div class="terminal" style="white-space:pre"><span class="t-dim">.procheck/worktrees/lp-142</span> <span class="t-cmd">claude --print "Implement LP-142 per plan.md"</span>
@@ -1349,20 +1535,22 @@ const worktree = await git.worktree.add("lp-142", { branch: "feature/merchant-ky
   <div class="ds-block" id="c-files">
     <h3 data-i18n="ds.c.files"></h3>
     <p class="ds-desc" data-i18n="ds.c.files.d"></p>
-    <div class="ds-demo">
-      <div class="ds-cols c2" style="gap:var(--space-6)">
-        <div class="ds-stack" style="gap:var(--space-3)">
-          <div class="row gap-3"><span class="file-tile pdf"><i data-lucide="file-text"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Client-brief.pdf</div><div class="text-xs text-subtle">PDF · 2.4 MB</div></div></div>
-          <div class="row gap-3"><span class="file-tile doc"><i data-lucide="file-text"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Requirements-v3.docx</div><div class="text-xs text-subtle">Word · 180 KB</div></div></div>
-          <div class="row gap-3"><span class="file-tile sheet"><i data-lucide="table"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Feature-matrix.xlsx</div><div class="text-xs text-subtle">Sheet · 64 KB</div></div></div>
-          <div class="row gap-3"><span class="file-tile md"><i data-lucide="file-code"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">architecture.md</div><div class="text-xs text-subtle">Markdown · generated</div></div></div>
-          <div class="row gap-3"><span class="file-tile audio"><i data-lucide="audio-lines"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">kickoff-meeting.m4a</div><div class="text-xs text-subtle">Audio · 38 min</div></div></div>
+    <div class="ds-demo tint">
+      <div class="ds-cols c2" style="gap:var(--space-4);align-items:stretch">
+        <div class="panel">
+          <div class="panel-head"><h3>Sources</h3><span class="text-xs text-subtle">5 files</span></div>
+          <div class="rows">
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><i data-lucide="file-text"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Client-brief.pdf</div><div class="text-xs text-subtle">PDF · 2.4 MB</div></div><span class="badge badge-success">Read</span></div>
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><i data-lucide="file-text"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Requirements-v3.docx</div><div class="text-xs text-subtle">Word · 180 KB</div></div><span class="badge badge-success">Read</span></div>
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><i data-lucide="table"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">Feature-matrix.xlsx</div><div class="text-xs text-subtle">Sheet · 64 KB</div></div><span class="badge badge-warning">Conflict</span></div>
+            <div class="row-item"><span class="text-subtle" style="display:inline-flex"><i data-lucide="audio-lines"></i></span><div class="grow"><div class="text-sm" style="font-weight:var(--weight-medium)">kickoff-meeting.m4a</div><div class="text-xs text-subtle">Audio · 38 min</div></div><span class="badge">Queued</span></div>
+          </div>
         </div>
         <div class="dropzone" id="dz-demo"><i data-lucide="upload" class="icon-lg"></i><b class="text-sm">Drop client documents here</b><span class="text-xs">PDF, Word, Excel, Markdown, audio — or click to browse</span></div>
       </div>
     </div>
     <script type="text/plain" data-snip>
-<span class="file-tile pdf"><i data-lucide="file-text"></i></span>   <!-- doc | sheet | md | audio -->
+<div class="row-item"><i data-lucide="file-text"></i><div class="grow">Client-brief.pdf</div></div>   <!-- in lists: plain glyph, no colored tile -->
 <div class="dropzone">                                               <!-- toggle .is-over on dragover -->
   <i data-lucide="upload" class="icon-lg"></i>
   <b>Drop client documents here</b><span>PDF, Word, Excel …</span>
@@ -1411,7 +1599,7 @@ PC.toast('Saved', { tone: 'success' });          // tone: success | warning | da
 <!-- =========================================================== 08 PATTERNS -->
 <section class="ds-sec" id="patterns">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">08</span><span data-i18n="ds.s8.k"></span></div>
+    <div class="kicker"><span class="num">09</span><span data-i18n="ds.s8.k"></span></div>
     <h2 data-i18n="ds.s8.t"></h2>
     <p class="lead" data-i18n="ds.s8.d"></p>
   </header>
@@ -1430,8 +1618,8 @@ PC.toast('Saved', { tone: 'success' });          // tone: success | warning | da
       </div>
       <div class="an-legend">
         <div><span class="n">1</span><div><b data-i18n="ds.an1.t"></b><span data-i18n="ds.an1.d"></span></div></div>
-        <div><span class="n">2</span><div><b data-i18n="ds.an2.t"></b><span data-i18n="ds.an2.d"></span> <code>--sidebar-w 264</code></div></div>
-        <div><span class="n">3</span><div><b data-i18n="ds.an3.t"></b><span data-i18n="ds.an3.d"></span> <code>--topbar-h 48</code></div></div>
+        <div><span class="n">2</span><div><b data-i18n="ds.an2.t"></b><span data-i18n="ds.an2.d"></span> <code>--sidebar-w 248</code></div></div>
+        <div><span class="n">3</span><div><b data-i18n="ds.an3.t"></b><span data-i18n="ds.an3.d"></span> <code>--topbar-h 44</code></div></div>
         <div><span class="n">4</span><div><b data-i18n="ds.an4.t"></b><span data-i18n="ds.an4.d"></span> <code>max-width 1240</code></div></div>
         <div><span class="n">5</span><div><b data-i18n="ds.an5.t"></b><span data-i18n="ds.an5.d"></span> <code>--assistant-w 380 · Ctrl J</code></div></div>
       </div>
@@ -1569,9 +1757,9 @@ PC.cliFlags('claude')             // launch flags that load that profile; the si
   <div class="ds-block" id="p-identity">
     <h3 data-i18n="ds.p.id"></h3>
     <p class="ds-desc" data-i18n="ds.p.id.d"></p>
-    <div class="ds-demo">
-      <div class="id-grid" id="id-demo"></div>
-      <div class="ds-label" style="margin-top:var(--space-6)" data-i18n="ds.id.ex"></div>
+    <div class="panel ds-colpanel id-grid" id="id-demo"></div>
+    <div class="ds-demo bare" style="margin-top:var(--space-4)">
+      <div class="ds-label" data-i18n="ds.id.ex"></div>
       <div class="id-foot">
         <span class="mono text-subtle">LP-142</span><span class="text-faint">·</span>
         <span data-i18n="ds.id.runby"></span><span class="who"><span class="avatar avatar-ai">CC</span>Claude Code</span>
@@ -1579,14 +1767,14 @@ PC.cliFlags('claude')             // launch flags that load that profile; the si
         <span data-i18n="ds.id.revby"></span><span class="who"><span class="avatar">ME</span><span data-i18n="as.you"></span></span>
       </div>
     </div>
-    <div class="ds-cols c2" style="margin-top:var(--space-4)">
-      <div class="ds-card"><h4 data-i18n="ds.id.do"></h4>
+    <div class="panel ds-colpanel" style="--cols:2;margin-top:var(--space-4)">
+      <div><h4 data-i18n="ds.id.do"></h4>
         <ul class="ds-list ok" style="margin-top:var(--space-3)">
           <li><i data-lucide="circle-check"></i><span data-i18n="ds.id.do1"></span></li>
           <li><i data-lucide="circle-check"></i><span data-i18n="ds.id.do2"></span></li>
           <li><i data-lucide="circle-check"></i><span data-i18n="ds.id.do3"></span></li>
         </ul></div>
-      <div class="ds-card"><h4 data-i18n="ds.id.dont"></h4>
+      <div><h4 data-i18n="ds.id.dont"></h4>
         <ul class="ds-list no" style="margin-top:var(--space-3)">
           <li><i data-lucide="circle-x"></i><span data-i18n="ds.id.no1"></span></li>
           <li><i data-lucide="circle-x"></i><span data-i18n="ds.id.no2"></span></li>
@@ -1618,7 +1806,7 @@ PC.cliFlags('claude')             // launch flags that load that profile; the si
               <div class="msg-meta"><b>Assistant</b>· 09:13</div>
               <div class="tool-call"><i data-lucide="terminal"></i>board.list --status=review<i data-lucide="check" style="margin-left:auto;color:var(--success)"></i></div>
               <div class="msg-text" style="margin-top:4px"><p><b>2 tasks</b> are finished by the agent and waiting for you:</p><ul><li><b>LP-142</b> Merchant KYC upload — e2e 12/12 passed</li><li><b>LP-151</b> Settlement report export — e2e 5/5 passed</li></ul></div>
-              <a class="msg-card" style="text-decoration:none;color:inherit"><span class="file-tile"><i data-lucide="git-pull-request"></i></span><span class="grow"><span class="text-sm" style="font-weight:600;display:block">LP-142 · Merchant KYC upload</span><span class="text-xs text-subtle">Ready for human review</span></span><i data-lucide="arrow-up-right" class="icon-sm text-faint"></i></a>
+              <a class="msg-card" style="text-decoration:none;color:inherit"><span class="text-subtle" style="display:inline-flex"><i data-lucide="git-pull-request"></i></span><span class="grow"><span class="text-sm" style="font-weight:600;display:block">LP-142 · Merchant KYC upload</span><span class="text-xs text-subtle">Ready for human review</span></span><i data-lucide="arrow-up-right" class="icon-sm text-faint"></i></a>
             </div></div>
             <div class="msg"><div class="avatar avatar-ai"><i data-lucide="sparkles" style="width:13px;height:13px"></i></div><div class="msg-body"><div class="typing"><i></i><i></i><i></i></div></div></div>
           </div>
@@ -1651,7 +1839,7 @@ PC.cliFlags('claude')             // launch flags that load that profile; the si
     <div class="msg-meta"><b>Assistant</b>· 09:13</div>
     <div class="tool-call"><i data-lucide="terminal"></i>board.list --status=review</div>
     <div class="msg-text"><p>…</p></div>
-    <a class="msg-card"><span class="file-tile"><i data-lucide="git-pull-request"></i></span>…</a>
+    <a class="msg-card"><i data-lucide="git-pull-request"></i>…</a>
   </div>
 </div>
 <div class="msg user"><div class="avatar avatar-sm">ME</div><div class="msg-body"><div class="msg-text">…</div></div></div>
@@ -1685,7 +1873,7 @@ PC.assistant.reply('Here is a first pass…');
         </div>
         <div class="k-col">
           <div class="k-col-head"><span class="dot dot-teal dot-pulse" style="background:var(--accent-teal);color:var(--accent-teal)"></span>Agent running<span class="badge" style="margin-left:auto">1</span></div>
-          <div class="card card-accent k-card" style="--_accent:var(--gradient-ai)">
+          <div class="card card-accent k-card" style="--_accent:var(--brand)">
             <div class="row between"><span class="k-key">LP-151</span><span class="badge badge-brand"><i data-lucide="git-branch"></i>lp-151</span></div>
             <div class="k-title">Settlement report export (CSV + PDF)</div>
             <div class="progress progress-ai"><span style="width:58%"></span></div>
@@ -1711,7 +1899,7 @@ PC.assistant.reply('Here is a first pass…');
     <script type="text/plain" data-snip>
 <div class="k-col">
   <div class="k-col-head"><span class="dot dot-warning"></span>In review</div>
-  <div class="card card-interactive k-card">                    <!-- card-accent + --_accent for state edge -->
+  <div class="card card-interactive k-card">                    <!-- cards sit directly on the column background · card-accent + --_accent for state edge -->
     <div class="row between"><span class="k-key">LP-142</span><span class="badge badge-success">e2e 12/12</span></div>
     <div class="k-title">Merchant KYC upload</div>
     <div class="k-foot"><span class="state"><span class="dot dot-warning"></span>Needs your review</span><span class="avatar">ME</span></div>
@@ -1727,7 +1915,7 @@ PC.assistant.reply('Here is a first pass…');
     <p class="ds-desc" data-i18n="ds.p.run.d"></p>
     <div class="ds-demo flush">
       <div class="card-header" style="border-radius:0">
-        <div class="row gap-3"><span class="avatar avatar-ai" style="border:0"><i data-lucide="bot" style="width:14px;height:14px"></i></span><div><div class="h5">LP-142 · Merchant KYC upload</div><div class="text-xs text-subtle">Claude Code 2.4.1 · worktree <span class="ds-code-inline" id="run-wt"></span></div></div></div>
+        <div class="row gap-3"><span class="text-subtle" style="display:inline-flex"><i data-lucide="bot"></i></span><div><div class="h5">LP-142 · Merchant KYC upload</div><div class="text-xs text-subtle">Claude Code 2.4.1 · worktree <span class="ds-code-inline" id="run-wt"></span></div></div></div>
         <div class="row gap-2"><span class="badge badge-outline"><i data-lucide="folder-lock"></i>Project-scoped</span><span class="badge badge-warning">Awaiting review</span></div>
       </div>
       <div class="run">
@@ -1765,7 +1953,7 @@ PC.assistant.reply('Here is a first pass…');
 <ol class="run-steps">
   <li class="is-done"><span class="ic"><i data-lucide="check"></i></span>…</li>   <!-- is-done | is-run | (queued) -->
 </ol>
-<div class="ev"><div><b>12/12</b><span>e2e tests</span></div>…</div>
+<div class="ev"><div><b>12/12</b><span>e2e tests</span></div>…</div>   <!-- figures divided by rules, no boxes -->
 <button class="btn btn-primary"><i data-lucide="git-pull-request"></i>Promote to PR</button>
     </script>
   </div>
@@ -1775,10 +1963,10 @@ PC.assistant.reply('Here is a first pass…');
     <h3 data-i18n="ds.p.phase"></h3>
     <p class="ds-desc" data-i18n="ds.p.phase.d"></p>
     <div class="ds-demo tint">
-      <div class="phases-flow">
-        <div class="pf phase-card" style="--c:var(--phase-initial)"><div class="row between"><div class="ph-ico" style="margin:0"><i data-lucide="compass"></i></div><span class="badge badge-success"><i data-lucide="check"></i><span data-i18n="ds.st.done"></span></span></div><div class="h4" style="margin-top:var(--space-3)" data-i18n="phase.initial"></div><p data-i18n="ds.ph1.d"></p><div class="progress ph"><span style="width:100%"></span></div></div>
-        <div class="pf phase-card" style="--c:var(--phase-release)"><div class="row between"><div class="ph-ico" style="margin:0"><i data-lucide="blocks"></i></div><span class="badge badge-purple"><span data-i18n="ds.st.current"></span></span></div><div class="h4" style="margin-top:var(--space-3)" data-i18n="phase.release"></div><p data-i18n="ds.ph2.d"></p><div class="progress ph"><span style="width:64%"></span></div></div>
-        <div class="pf phase-card" style="--c:var(--phase-sdlc)"><div class="row between"><div class="ph-ico" style="margin:0"><i data-lucide="infinity"></i></div><span class="badge"><span data-i18n="ds.st.next"></span></span></div><div class="h4" style="margin-top:var(--space-3)" data-i18n="phase.sdlc"></div><p data-i18n="ds.ph3.d"></p><div class="progress ph"><span style="width:0%"></span></div></div>
+      <div class="panel ds-colpanel" style="--cols:3">
+        <div class="phase-col" style="--c:var(--phase-initial)"><div class="ph-top"><span class="ph-gl"><i data-lucide="compass"></i></span><span class="h5" data-i18n="phase.initial"></span><span class="badge badge-success"><i data-lucide="check"></i><span data-i18n="ds.st.done"></span></span></div><p data-i18n="ds.ph1.d"></p><div class="progress ph"><span style="width:100%"></span></div></div>
+        <div class="phase-col" style="--c:var(--phase-release)"><div class="ph-top"><span class="ph-gl"><i data-lucide="blocks"></i></span><span class="h5" data-i18n="phase.release"></span><span class="badge badge-purple"><span data-i18n="ds.st.current"></span></span></div><p data-i18n="ds.ph2.d"></p><div class="progress ph"><span style="width:64%"></span></div></div>
+        <div class="phase-col" style="--c:var(--phase-sdlc);background:var(--bg-surface-2)"><div class="ph-top"><span class="ph-gl"><i data-lucide="infinity"></i></span><span class="h5" data-i18n="phase.sdlc"></span><span class="badge"><span data-i18n="ds.st.next"></span></span></div><p data-i18n="ds.ph3.d"></p><div class="progress ph"><span style="width:0%"></span></div></div>
       </div>
       <div class="ds-row start" style="margin-top:var(--space-6);gap:var(--space-8)">
         <div class="phase-track" style="margin:0;width:256px">
@@ -1790,10 +1978,12 @@ PC.assistant.reply('Here is a first pass…');
       </div>
     </div>
     <script type="text/plain" data-snip>
-<div class="phase-card" style="--c:var(--phase-release)">   <!-- page-level helper; --c = phase token -->
-  <div class="ph-ico"><i data-lucide="blocks"></i></div>
-  <h4>Scaffolding</h4>
-  <div class="progress ph"><span style="width:64%"></span></div>
+<div class="panel ds-colpanel" style="--cols:3">               <!-- one panel, phase columns divided by rules -->
+  <div class="phase-col" style="--c:var(--phase-release)">     <!-- 2px phase line on top; plain glyph, no icon tile -->
+    <div class="ph-top"><span class="ph-gl"><i data-lucide="blocks"></i></span><span class="h5">Scaffolding</span></div>
+    <div class="progress ph"><span style="width:64%"></span></div>
+  </div>
+  …
 </div>
 
 <div class="phase-track">                                       <!-- sidebar compact version (shell.css) -->
@@ -1806,7 +1996,7 @@ PC.assistant.reply('Here is a first pass…');
 <!-- ========================================================= 09 DARK THEME -->
 <section class="ds-sec" id="dark">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">09</span><span data-i18n="ds.s9.k"></span></div>
+    <div class="kicker"><span class="num">10</span><span data-i18n="ds.s9.k"></span></div>
     <h2 data-i18n="ds.s9.t"></h2>
     <p class="lead" data-i18n="ds.s9.d"></p>
   </header>
@@ -1831,10 +2021,10 @@ PC.assistant.reply('Here is a first pass…');
       <div class="tp" id="tp-dark"><div class="tp-bar"><span><i data-lucide="moon" class="icon-sm" style="vertical-align:-2px"></i> <span data-i18n="theme.dark"></span></span><span class="ds-cap" style="color:inherit;opacity:.7">data-theme="dark"</span></div><div class="tp-body"></div></div>
     </div>
     <template id="tp-tpl">
-      <div class="card"><div class="row between"><span class="ttl">Merchant KYC upload</span><span class="phase-chip phase-sdlc" data-i18n="phase.sdlc"></span></div>
-        <p class="text-sm text-muted" style="margin:6px 0 12px">Agent finished in 11 min. 12 of 12 tests passed.</p>
-        <div class="row"><button class="btn btn-primary btn-sm">Promote to PR</button><button class="btn btn-secondary btn-sm">View diff</button><span class="badge badge-success" style="margin-left:auto"><i data-lucide="check"></i>Passed</span></div></div>
-      <div class="alert alert-ai"><i data-lucide="sparkles" style="color:var(--accent-purple)"></i><div class="text-sm">Two stories overlap — merge them?</div></div>
+      <div class="panel"><div class="panel-head"><span class="panel-title">Merchant KYC upload</span><span class="phase-chip phase-sdlc" data-i18n="phase.sdlc"></span></div>
+        <div class="panel-body"><p class="text-sm text-muted" style="margin:0">Agent finished in 11 min. 12 of 12 tests passed.</p>
+        <div class="row"><button class="btn btn-primary btn-sm">Promote to PR</button><button class="btn btn-ai btn-sm"><i data-lucide="sparkles"></i>Explain diff</button><span class="badge badge-success" style="margin-left:auto"><i data-lucide="check"></i>Passed</span></div></div></div>
+      <div class="alert alert-ai"><i data-lucide="sparkles" class="text-brand"></i><div class="text-sm">Two stories overlap — merge them?</div></div>
       <div class="input-group"><i data-lucide="search"></i><input class="input" placeholder="Search…"></div>
     </template>
   </div>
@@ -1854,7 +2044,7 @@ PC.assistant.reply('Here is a first pass…');
 <!-- ======================================================== 10 ACCESSIBILITY -->
 <section class="ds-sec" id="a11y">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">10</span><span data-i18n="ds.s10.k"></span></div>
+    <div class="kicker"><span class="num">11</span><span data-i18n="ds.s10.k"></span></div>
     <h2 data-i18n="ds.s10.t"></h2>
     <p class="lead" data-i18n="ds.s10.d"></p>
   </header>
@@ -1918,7 +2108,7 @@ PC.assistant.reply('Here is a first pass…');
 <!-- ============================================================= 11 VOICE -->
 <section class="ds-sec" id="voice">
   <header class="ds-sec-head">
-    <div class="kicker"><span class="num">11</span><span data-i18n="ds.s11.k"></span></div>
+    <div class="kicker"><span class="num">12</span><span data-i18n="ds.s11.k"></span></div>
     <h2 data-i18n="ds.s11.t"></h2>
     <p class="lead" data-i18n="ds.s11.d"></p>
   </header>
@@ -1933,11 +2123,11 @@ PC.assistant.reply('Here is a first pass…');
   <div class="ds-block">
     <h3 data-i18n="ds.s11.b1.t"></h3>
     <p class="ds-desc" data-i18n="ds.s11.b1.d"></p>
-    <div class="ds-cards">
-      <div class="ds-card"><div class="ico"><i data-lucide="megaphone"></i></div><h4 data-i18n="ds.v1.t"></h4><p data-i18n="ds.v1.d"></p></div>
-      <div class="ds-card"><div class="ico purple"><i data-lucide="eye"></i></div><h4 data-i18n="ds.v2.t"></h4><p data-i18n="ds.v2.d"></p></div>
-      <div class="ds-card"><div class="ico teal"><i data-lucide="target"></i></div><h4 data-i18n="ds.v3.t"></h4><p data-i18n="ds.v3.d"></p></div>
-      <div class="ds-card"><div class="ico magenta"><i data-lucide="handshake"></i></div><h4 data-i18n="ds.v4.t"></h4><p data-i18n="ds.v4.d"></p></div>
+    <div class="panel ds-colpanel">
+      <div><span class="gl"><i data-lucide="megaphone"></i></span><h4 data-i18n="ds.v1.t"></h4><p data-i18n="ds.v1.d"></p></div>
+      <div><span class="gl"><i data-lucide="eye"></i></span><h4 data-i18n="ds.v2.t"></h4><p data-i18n="ds.v2.d"></p></div>
+      <div><span class="gl"><i data-lucide="target"></i></span><h4 data-i18n="ds.v3.t"></h4><p data-i18n="ds.v3.d"></p></div>
+      <div><span class="gl"><i data-lucide="handshake"></i></span><h4 data-i18n="ds.v4.t"></h4><p data-i18n="ds.v4.d"></p></div>
     </div>
   </div>
 
@@ -1982,21 +2172,21 @@ PC.i18n.extend({
   en: {
     'ds.doc': `Design System`, 'ds.toc': `On this page`, 'ds.code': `Code`, 'ds.copy': `Copy`, 'ds.copied': `Copied`,
     'ds.hero.kicker': `Design system · v1.0`, 'ds.hero.title': `Design System`,
-    'ds.hero.lead': `The shared language behind every Procheck screen — brand, tokens, components and patterns — built on the KMS Brand Guidelines FY27 and designed for a local, enterprise studio-style desktop app.`,
+    'ds.hero.lead': `The shared language behind every Procheck screen: brand, tokens, components and layout rules for a dense, calm enterprise desktop app. Built on the KMS Brand Guidelines FY27; overview.html is the reference page.`,
     'ds.hero.p2': `Light + Dark`, 'ds.hero.p4': `Tokens · Components · Patterns`,
-    'ds.hero.cta1': `Start with foundations`, 'ds.hero.cta2': `Browse components`,
+    'ds.hero.cta1': `Layout principles`, 'ds.hero.cta2': `Browse components`,
 
     'ds.s1.k': `Foundations`, 'ds.s1.t': `Brand foundations`,
     'ds.s1.d': `Procheck is a KMS Technology sub-brand. It inherits the Sun Mark, the Poppins typeface and the blue palette, then adapts them to dense, daily-use software.`,
     'ds.s1.b1.t': `Design principles`, 'ds.s1.b1.d': `Four ideas guide every decision — from a button radius to a whole screen.`,
-    'ds.s1.p1.t': `Modern`, 'ds.s1.p1.d': `Clean, bright and light on chrome. Generous space, soft shadows and one confident blue.`,
+    'ds.s1.p1.t': `Modern`, 'ds.s1.p1.d': `Clean, bright and flat. Borders and rules separate surfaces; one confident blue carries action.`,
     'ds.s1.p2.t': `Professional`, 'ds.s1.p2.d': `Precise and calm. Typography, alignment and states are consistent so you can trust what you see.`,
     'ds.s1.p3.t': `Enterprise`, 'ds.s1.p3.d': `Built for clients, audits and long projects: clear status, traceable evidence, no surprises.`,
     'ds.s1.p4.t': `Studio`, 'ds.s1.p4.d': `A studio, not a form. Sidebar, topbar, canvas and Assistant stay put while the work changes.`,
     'ds.s1.b2.t': `60 / 30 / 10 color rule`, 'ds.s1.b2.d': `Neutrals carry the interface, blue carries meaning and action, accents are rare moments of delight and identity.`,
     'ds.s1.r60': `Neutral`, 'ds.s1.r60d': `White and cool gray: canvas, cards, text and borders.`,
     'ds.s1.r30': `Primary blue`, 'ds.s1.r30d': `Electric Blue, Dark Blue, Sky: primary actions, links, active navigation, focus.`,
-    'ds.s1.r10': `Accents`, 'ds.s1.r10d': `Magenta, Purple, Teal: phases, AI moments, highlights — never large areas.`,
+    'ds.s1.r10': `Accents`, 'ds.s1.r10d': `Magenta, Purple, Teal: phase lines, chips and charts — never large areas, never gradients.`,
     'ds.s1.b3.t': `Imagery & surfaces`, 'ds.s1.b3.d': `Bright, minimal and optimistic — the Sun Mark stands for brightness and growth.`,
     'ds.s1.i1': `<b>Bright by default.</b> The light theme uses a white canvas on a cool gray app background.`,
     'ds.s1.i2': `<b>No solid black.</b> The dark theme uses deep navy surfaces instead of pure black, as the brand guide advises against black backgrounds.`,
@@ -2022,7 +2212,7 @@ PC.i18n.extend({
     'ds.s3.main': `Main — 30%`, 'ds.s3.acc': `Secondary accents — 10%`, 'ds.s3.neu': `Neutrals — 60%`,
     'ds.s3.role.primary': `Primary · actions, links, focus`, 'ds.s3.role.dark': `Hover and pressed states, deep surfaces`,
     'ds.s3.role.sky': `Highlights, charts, dark-mode links`, 'ds.s3.role.skylight': `Soft backgrounds and illustration`,
-    'ds.s3.role.magenta': `Accent · identity moments, end of the AI gradient`, 'ds.s3.role.purple': `Accent · Scaffolding phase, AI`,
+    'ds.s3.role.magenta': `Accent · identity moments, charts`, 'ds.s3.role.purple': `Accent · Scaffolding phase, AI`,
     'ds.s3.role.teal': `Accent · SDLC phase`, 'ds.s3.role.white': `Canvas, cards, text on blue`,
     'ds.s3.role.gray': `Secondary text (brand gray)`, 'ds.s3.role.black': `Maximum-emphasis text only`,
     'ds.s3.note1': `<b>Pairing rule.</b> White text on Sky Blue, Light Sky and Teal fails contrast — use dark text on them, or use their soft tokens as backgrounds.`,
@@ -2035,14 +2225,14 @@ PC.i18n.extend({
     'ds.s3.ph1': `Gather client info, upload documents, let the Assistant draft and refine artifacts, then export.`,
     'ds.s3.ph2': `Define the architecture, connect the local repo and let agents scaffold the project.`,
     'ds.s3.ph3': `Run the kanban: agents implement tasks in git worktrees, you review the evidence, then promote to a PR.`,
-    'ds.s3.b6.t': `Gradients`, 'ds.s3.b6.d': `Brand and hero gradients are decorative. The AI gradient is reserved for AI features.`,
-    'ds.s3.note3': `<b>AI only:</b> <code>--gradient-ai</code> (blue → purple → magenta) marks Assistant, generation and agent moments. Never use it for ordinary buttons, charts or decoration.`,
+    'ds.s3.b6.t': `Gradients — retired`, 'ds.s3.b6.d': `The enterprise look has no gradients. The tokens remain as flat values so older references still render; do not use them in new work.`,
+    'ds.s3.note3': `<b>AI is not special-colored.</b> AI actions use <code>.btn-ai</code>: a secondary button with a brand sparkle. Add <code>.is-primary</code> only when it is the page’s main action. Avatars and progress for AI use flat <code>--brand</code>.`,
 
     'ds.s4.k': `Typography`, 'ds.s4.t': `Typography`,
     'ds.s4.d': `Poppins carries the brand voice in a calm, geometric style. The app scale adapts the brand scale to dense, everyday UI.`,
     'ds.s4.b1.t': `Typeface`, 'ds.s4.b1.d': `Poppins is primary, then Be Vietnam Pro (for Vietnamese diacritics), Oak Grotesk (the brand guide’s web fallback) and system fonts. JetBrains Mono is used for code.`,
     'ds.s4.note': `<b>Vietnamese:</b> the Google Fonts build of Poppins has no Vietnamese subset, so <code>--font-sans</code> falls back to <b>Be Vietnam Pro</b> for stacked diacritics (ạ, ể, ớ…) — a similar geometric face, so the glyphs stay even.`,
-    'ds.s4.b2.t': `Type scale`, 'ds.s4.b2.d': `Brand FY27 values on the left, the tokens the app uses on the right. Live samples use the real classes.`,
+    'ds.s4.b2.t': `Type scale`, 'ds.s4.b2.d': `Brand FY27 values on the left, the tokens the app uses on the right. Compact scale: H1 22px, panel and section titles 13.5px semibold.`,
     'ds.s4.th.role': `Role`, 'ds.s4.th.brand': `Brand FY27`, 'ds.s4.th.token': `App token`, 'ds.s4.th.sample': `Live sample`,
     'ds.s4.note2': `Brand body copy is <i>Light</i> at 11–13 pt for print. On screen, Procheck uses Regular at 13.5px for legibility; Light is reserved for captions.`,
     'ds.s4.b3.t': `Weights`, 'ds.s4.b3.d': `Five weights; most UI uses Regular, Medium and SemiBold.`,
@@ -2051,11 +2241,11 @@ PC.i18n.extend({
     'ds.s5.k': `Tokens`, 'ds.s5.t': `Spacing, radius, shadow & motion`,
     'ds.s5.d': `A 4px grid and a small set of shared values keep layouts predictable.`,
     'ds.s5.b1.t': `Spacing`, 'ds.s5.b1.d': `Use the 4px scale for padding, gaps and margins. Between sections, prefer 32–64px.`,
-    'ds.s5.b2.t': `Radius`, 'ds.s5.b2.d': `Larger containers get larger radii. Pills are for badges and chips only.`,
-    'ds.s5.b3.t': `Elevation`, 'ds.s5.b3.d': `Shadows are soft and cool; in dark mode they deepen rather than glow. Focus uses a ring, not a shadow.`,
+    'ds.s5.b2.t': `Radius`, 'ds.s5.b2.d': `Small, square radii: 2px for badges, 4px for controls, 6px for panels, 8px for modals. Full rounding only for avatars, dots and removable filter chips.`,
+    'ds.s5.b3.t': `Elevation`, 'ds.s5.b3.d': `Surfaces are separated by borders, not shadows: --shadow-xs is none. Shadows appear only on floating layers. Focus uses a ring.`,
     'ds.s5.b4.t': `Motion`, 'ds.s5.b4.d': `Fast, quiet and purposeful. Hover or focus a row to preview the duration.`,
     'ds.s5.hover': `hover or focus to play`,
-    'ds.s5.b5.t': `Layout & layering`, 'ds.s5.b5.d': `Fixed shell dimensions and the z-index ladder.`,
+    'ds.s5.b5.t': `Layout & layering`, 'ds.s5.b5.d': `Fixed shell dimensions, control heights and the z-index ladder.`,
 
     'ds.s6.k': `Iconography`, 'ds.s6.t': `Iconography`,
     'ds.s6.d': `Lucide line icons: simple, consistent, friendly. They inherit text color and never carry meaning alone.`,
@@ -2066,20 +2256,20 @@ PC.i18n.extend({
 
     'ds.s7.k': `Components`, 'ds.s7.t': `Components`,
     'ds.s7.d': `Everything below is rendered with the real classes from components.css — try the states, then switch theme and language.`,
-    'ds.c.buttons': `Buttons`, 'ds.c.buttons.d': `One primary action per view. Use secondary for the rest, ghost for low emphasis and the AI button only for AI actions.`,
+    'ds.c.buttons': `Buttons`, 'ds.c.buttons.d': `One primary action per view. Secondary for the rest, ghost for low emphasis. AI actions are secondary buttons with a sparkle; .is-primary only when AI is the main action.`,
     'ds.c.forms': `Form controls`, 'ds.c.forms.d': `Labels are always visible. Helper text sits below; errors replace it in the danger color.`,
-    'ds.c.badges': `Badges, tags, dots & phase chips`, 'ds.c.badges.d': `Compact status and metadata. Color always comes with a label or icon.`,
-    'ds.c.avatar': `Avatars & keyboard keys`, 'ds.c.avatar.d': `You use the brand gradient (initials ME); agents and the Assistant use the AI gradient. There are no avatars for other people. Keys are shown with the kbd element.`,
+    'ds.c.badges': `Badges, tags, dots & phase chips`, 'ds.c.badges.d': `Status is a small square badge (2px radius) with a label or icon. Pills are only for removable filter chips.`,
+    'ds.c.avatar': `Avatars & keyboard keys`, 'ds.c.avatar.d': `You use the dark brand blue (initials ME); agents and the Assistant use flat brand blue. There are no avatars for other people. Keys are shown with the kbd element.`,
     'ds.c.tabs': `Tabs`, 'ds.c.tabs.d': `Switch between views of the same content. The active tab gets a 2px brand underline.`,
     'ds.c.table': `Table`, 'ds.c.table.d': `Dense, scannable rows with a quiet header and hover highlight.`,
     'ds.c.list': `List & menu`, 'ds.c.list.d': `Lists for navigation, menus for actions. The menu is positioned by PC.popover at runtime.`,
     'ds.c.progress': `Progress, spinner & skeleton`, 'ds.c.progress.d': `Use progress for known work, spinner for unknown, skeleton while content loads.`,
     'ds.c.stepper': `Stepper`, 'ds.c.stepper.d': `Wizards such as New project. Completed steps fill with the brand color.`,
-    'ds.c.alerts': `Alerts`, 'ds.c.alerts.d': `Inline messages. The AI alert uses a gradient border for suggestions from the Assistant.`,
+    'ds.c.alerts': `Alerts`, 'ds.c.alerts.d': `Flat bars with a 3px tone stripe on the left. The AI alert uses the plain surface with a brand stripe — never a tinted gradient.`,
     'ds.c.empty': `Empty state`, 'ds.c.empty.d': `Say what is missing and offer the next step.`,
-    'ds.c.cards': `Cards & stats`, 'ds.c.cards.d': `Cards group related content. Interactive cards lift on hover; accent cards mark a phase or state.`,
+    'ds.c.cards': `Cards`, 'ds.c.cards.d': `A card is the same flat bordered panel as .panel. Interactive cards change border and surface on hover (no lift); accent cards carry a 3px state edge.`,
     'ds.c.code': `Code, terminal & diff`, 'ds.c.code.d': `Monospace surfaces. The terminal stays dark in both themes, like a real console.`,
-    'ds.c.files': `File tiles & dropzone`, 'ds.c.files.d': `Tiles are tinted by file type. The dropzone highlights while a file is dragged over it.`,
+    'ds.c.files': `File rows & dropzone`, 'ds.c.files.d': `In lists, files are divided rows with a plain glyph and a status badge — no tinted tile per file. The dropzone highlights while a file is dragged over it.`,
     'ds.c.overlays': `Modal, toast & tooltip`, 'ds.c.overlays.d': `Overlays are triggered through the PC helpers so behaviour stays consistent.`,
     'ds.lbl.variants': `Variants`, 'ds.lbl.sizes': `Sizes`, 'ds.lbl.icon': `With icons`, 'ds.lbl.states': `States`, 'ds.lbl.group': `Group & block`,
     'ds.c.openmodal': `Open modal`, 'ds.c.openpal': `Open command palette`,
@@ -2094,15 +2284,15 @@ PC.i18n.extend({
     'ds.an3.t': `Topbar`, 'ds.an3.d': `Breadcrumb Projects / Project ▾ / Page, search (Ctrl K), language, theme and the Assistant toggle. Follows the theme.`,
     'ds.an4.t': `Canvas`, 'ds.an4.d': `The page content. Max 1240px, centered, 32px gutters.`,
     'ds.an5.t': `Assistant`, 'ds.an5.d': `Right panel for chat, context and agent actions. Toggle with Ctrl J.`,
-    'ds.p.assist': `Assistant conversation`, 'ds.p.assist.d': `Messages, tool calls, artifact cards and the composer. The AI gradient appears only on the avatar and AI actions.`,
+    'ds.p.assist': `Assistant conversation`, 'ds.p.assist.d': `Messages, tool calls, artifact cards and the composer. AI is marked by the sparkle and the brand avatar, not by special colors.`,
     'ds.as.l1': `<b>Context chips</b> show the project, branch and model an answer is based on.`,
     'ds.as.l2': `<b>Tool calls</b> are monospace one-liners with a status icon — transparent, never hidden.`,
     'ds.as.l3': `<b>Artifact cards</b> link results back to the work: tasks, documents, runs.`,
     'ds.as.l4': `<b>User bubbles</b> use the soft brand tint; the Assistant speaks on the plain surface.`,
     'ds.as.l5': `<b>Modes</b> — Ask, Edit artifact, Agent — decide what the composer is allowed to do.`,
-    'ds.p.kanban': `Kanban card`, 'ds.p.kanban.d': `A task card shows its key, title and evidence, and which agent ran it. You appear only where a review is waiting on you. There are no assignees.`,
+    'ds.p.kanban': `Kanban card`, 'ds.p.kanban.d': `Board columns are the only place for small cards, and they sit directly on the column background. A card shows key, title, evidence and the agent that ran it. There are no assignees.`,
     'ds.p.run': `Agent run status`, 'ds.p.run.d': `The agent works in an isolated worktree with the project’s CLI profile, using your shared CLI sign-in. You review the evidence, then promote to a PR.`,
-    'ds.p.phase': `Phase stepper`, 'ds.p.phase.d': `Initial, Scaffolding and SDLC always appear in this order with their phase color — blue, purple, teal. Each phase has its own screen: initial.html, scaffolding.html, board.html.`,
+    'ds.p.phase': `Phase stepper`, 'ds.p.phase.d': `Initial, Scaffolding and SDLC share one panel with columns divided by rules, always in this order with a 2px phase line — blue, purple, teal. Each phase has its own screen: initial.html, scaffolding.html, board.html.`,
     'ds.st.done': `Done`, 'ds.st.current': `In progress`, 'ds.st.next': `Next`,
     'ds.ph1.d': `Client info gathered, 6 documents uploaded, vision and user stories approved.`,
     'ds.ph2.d': `Architecture drafted. Repository connected; scaffolding plan awaiting approval.`,
@@ -2131,7 +2321,7 @@ PC.i18n.extend({
     'ds.key.note': `Ctrl J is wired on app pages (data-shell is not none).`, 'ds.key.palette': `Open command palette`, 'ds.key.assistant': `Toggle the Assistant panel`, 'ds.key.close': `Close dialog, menu or palette`,
     'ds.key.nav': `Move and choose in the palette`, 'ds.key.send': `Send message / new line in composer`, 'ds.key.tab': `Move focus forward / back`,
     'ds.s10.b4.t': `Checklist`, 'ds.s10.b4.d': `Quick rules to apply to every screen.`,
-    'ds.a.l1': `<b>Targets.</b> Buttons are 28px (dense) to 42px; icon-only buttons need <code>aria-label</code> and a tooltip.`,
+    'ds.a.l1': `<b>Targets.</b> Buttons are 26px (dense) to 42px; icon-only buttons need <code>aria-label</code> and a tooltip.`,
     'ds.a.l2': `<b>Color is never alone.</b> Status uses icon + label + color; phases add a text label next to the dot.`,
     'ds.a.l3': `<b>Labels.</b> Every input has a visible <code>label</code>; placeholders never replace it.`,
     'ds.a.l4': `<b>Language.</b> <code>html[lang]</code> follows the EN/VI toggle; allow about 30% more room for Vietnamese strings.`,
@@ -2158,21 +2348,21 @@ PC.i18n.extend({
   vi: {
     'ds.doc': `Design System`, 'ds.toc': `Trong trang này`, 'ds.code': `Mã`, 'ds.copy': `Sao chép`, 'ds.copied': `Đã sao chép`,
     'ds.hero.kicker': `Design system · v1.0`, 'ds.hero.title': `Design System`,
-    'ds.hero.lead': `Ngôn ngữ chung cho mọi màn hình Procheck — thương hiệu, token, component và pattern — xây dựng trên KMS Brand Guidelines FY27 cho một ứng dụng desktop cục bộ, dạng studio dành cho doanh nghiệp.`,
+    'ds.hero.lead': `Ngôn ngữ chung cho mọi màn hình Procheck: thương hiệu, token, component và quy tắc bố cục cho một ứng dụng desktop doanh nghiệp gọn, điềm tĩnh. Xây dựng trên KMS Brand Guidelines FY27; overview.html là trang tham chiếu.`,
     'ds.hero.p2': `Sáng + Tối`, 'ds.hero.p4': `Token · Component · Pattern`,
-    'ds.hero.cta1': `Bắt đầu từ nền tảng`, 'ds.hero.cta2': `Xem các component`,
+    'ds.hero.cta1': `Nguyên tắc bố cục`, 'ds.hero.cta2': `Xem các component`,
 
     'ds.s1.k': `Nền tảng`, 'ds.s1.t': `Nền tảng thương hiệu`,
     'ds.s1.d': `Procheck là thương hiệu con của KMS Technology. Sản phẩm kế thừa Sun Mark, phông Poppins và bảng màu xanh, rồi điều chỉnh cho phần mềm dùng hằng ngày với mật độ thông tin cao.`,
     'ds.s1.b1.t': `Nguyên tắc thiết kế`, 'ds.s1.b1.d': `Bốn ý tưởng dẫn dắt mọi quyết định — từ độ bo góc của một nút đến cả một màn hình.`,
-    'ds.s1.p1.t': `Hiện đại`, 'ds.s1.p1.d': `Gọn gàng, sáng và ít trang trí. Khoảng trắng thoáng, đổ bóng nhẹ và một sắc xanh tự tin.`,
+    'ds.s1.p1.t': `Hiện đại`, 'ds.s1.p1.d': `Gọn, sáng và phẳng. Viền và đường kẻ tách các bề mặt; một sắc xanh tự tin dẫn dắt hành động.`,
     'ds.s1.p2.t': `Chuyên nghiệp`, 'ds.s1.p2.d': `Chính xác và điềm tĩnh. Chữ, căn lề và trạng thái nhất quán để bạn tin tưởng vào những gì mình thấy.`,
     'ds.s1.p3.t': `Doanh nghiệp`, 'ds.s1.p3.d': `Dành cho khách hàng, kiểm toán và dự án dài hạn: trạng thái rõ ràng, bằng chứng truy vết được, không có bất ngờ.`,
     'ds.s1.p4.t': `Studio`, 'ds.s1.p4.d': `Một studio, không phải một biểu mẫu. Sidebar, topbar, canvas và Trợ lý luôn cố định trong khi công việc thay đổi.`,
     'ds.s1.b2.t': `Quy tắc màu 60 / 30 / 10`, 'ds.s1.b2.d': `Màu trung tính tạo nên giao diện, màu xanh mang ý nghĩa và hành động, màu nhấn chỉ xuất hiện ở những khoảnh khắc đặc biệt.`,
     'ds.s1.r60': `Trung tính`, 'ds.s1.r60d': `Trắng và xám lạnh: canvas, thẻ, chữ và viền.`,
     'ds.s1.r30': `Xanh chủ đạo`, 'ds.s1.r30d': `Electric Blue, Dark Blue, Sky: hành động chính, liên kết, mục điều hướng đang chọn, focus.`,
-    'ds.s1.r10': `Màu nhấn`, 'ds.s1.r10d': `Magenta, Purple, Teal: các giai đoạn, khoảnh khắc AI, điểm nhấn — không dùng cho vùng lớn.`,
+    'ds.s1.r10': `Màu nhấn`, 'ds.s1.r10d': `Hồng, tím, xanh ngọc: đường giai đoạn, chip và biểu đồ — không dùng cho mảng lớn, không dùng gradient.`,
     'ds.s1.b3.t': `Hình ảnh và bề mặt`, 'ds.s1.b3.d': `Sáng, tối giản và lạc quan — Sun Mark tượng trưng cho ánh sáng và sự tăng trưởng.`,
     'ds.s1.i1': `<b>Mặc định là sáng.</b> Giao diện sáng dùng canvas trắng trên nền ứng dụng xám lạnh.`,
     'ds.s1.i2': `<b>Không dùng nền đen đặc.</b> Giao diện tối dùng bề mặt xanh navy đậm thay cho đen thuần, theo khuyến nghị của brand guide.`,
@@ -2198,7 +2388,7 @@ PC.i18n.extend({
     'ds.s3.main': `Màu chính — 30%`, 'ds.s3.acc': `Màu nhấn phụ — 10%`, 'ds.s3.neu': `Màu trung tính — 60%`,
     'ds.s3.role.primary': `Chính · hành động, liên kết, focus`, 'ds.s3.role.dark': `Trạng thái hover/pressed, bề mặt đậm`,
     'ds.s3.role.sky': `Điểm nhấn, biểu đồ, liên kết ở giao diện tối`, 'ds.s3.role.skylight': `Nền nhạt và minh hoạ`,
-    'ds.s3.role.magenta': `Màu nhấn · điểm nhận diện, cuối gradient AI`, 'ds.s3.role.purple': `Màu nhấn · giai đoạn Scaffolding, AI`,
+    'ds.s3.role.magenta': `Màu nhấn · điểm nhận diện, biểu đồ`, 'ds.s3.role.purple': `Màu nhấn · giai đoạn Scaffolding, AI`,
     'ds.s3.role.teal': `Màu nhấn · giai đoạn SDLC`, 'ds.s3.role.white': `Canvas, thẻ, chữ trên nền xanh`,
     'ds.s3.role.gray': `Chữ phụ (xám thương hiệu)`, 'ds.s3.role.black': `Chỉ dùng cho chữ cần nhấn mạnh tối đa`,
     'ds.s3.note1': `<b>Quy tắc ghép màu.</b> Chữ trắng trên Sky Blue, Light Sky và Teal không đạt độ tương phản — hãy dùng chữ tối, hoặc dùng token soft làm nền.`,
@@ -2211,14 +2401,14 @@ PC.i18n.extend({
     'ds.s3.ph1': `Thu thập thông tin khách hàng, tải tài liệu, để Trợ lý soạn và chỉnh sửa tài liệu, rồi xuất bản.`,
     'ds.s3.ph2': `Xác định kiến trúc, kết nối repo cục bộ và để agent dựng khung dự án.`,
     'ds.s3.ph3': `Vận hành kanban: agent triển khai task trong git worktree, bạn xem bằng chứng, rồi đẩy lên PR.`,
-    'ds.s3.b6.t': `Gradient`, 'ds.s3.b6.d': `Gradient thương hiệu và hero chỉ để trang trí. Gradient AI dành riêng cho các tính năng AI.`,
-    'ds.s3.note3': `<b>Chỉ cho AI:</b> <code>--gradient-ai</code> (xanh → tím → hồng) đánh dấu Trợ lý, tạo nội dung và agent. Không dùng cho nút thường, biểu đồ hay trang trí.`,
+    'ds.s3.b6.t': `Gradient — đã ngừng dùng`, 'ds.s3.b6.d': `Giao diện doanh nghiệp không dùng gradient. Các token vẫn còn dưới dạng giá trị phẳng để tham chiếu cũ vẫn hiển thị; không dùng chúng cho thiết kế mới.`,
+    'ds.s3.note3': `<b>AI không có màu riêng.</b> Hành động AI dùng <code>.btn-ai</code>: nút secondary với biểu tượng lấp lánh màu brand. Chỉ thêm <code>.is-primary</code> khi đó là hành động chính của trang. Avatar và tiến trình AI dùng <code>--brand</code> phẳng.`,
 
     'ds.s4.k': `Kiểu chữ`, 'ds.s4.t': `Kiểu chữ`,
     'ds.s4.d': `Poppins mang giọng điệu thương hiệu với phong cách hình học, điềm tĩnh. Thang chữ của ứng dụng điều chỉnh từ thang thương hiệu cho giao diện dày thông tin dùng hằng ngày.`,
     'ds.s4.b1.t': `Phông chữ`, 'ds.s4.b1.d': `Poppins là phông chính, tiếp theo là Be Vietnam Pro (cho dấu tiếng Việt), Oak Grotesk (phông dự phòng web theo brand guide) và phông hệ thống. JetBrains Mono dùng cho code.`,
     'ds.s4.note': `<b>Tiếng Việt:</b> bản Poppins trên Google Fonts không có bộ ký tự tiếng Việt, nên <code>--font-sans</code> dự phòng bằng <b>Be Vietnam Pro</b> cho các dấu chồng (ạ, ể, ớ…) — một phông hình học tương tự nên chữ vẫn đều.`,
-    'ds.s4.b2.t': `Thang chữ`, 'ds.s4.b2.d': `Giá trị theo Brand FY27 bên trái, token mà ứng dụng sử dụng bên phải. Mẫu hiển thị dùng đúng class thật.`,
+    'ds.s4.b2.t': `Thang chữ`, 'ds.s4.b2.d': `Giá trị Brand FY27 bên trái, token ứng dụng dùng bên phải. Thang chữ gọn: H1 22px, tiêu đề panel và mục 13.5px semibold.`,
     'ds.s4.th.role': `Vai trò`, 'ds.s4.th.brand': `Brand FY27`, 'ds.s4.th.token': `Token ứng dụng`, 'ds.s4.th.sample': `Mẫu trực tiếp`,
     'ds.s4.note2': `Văn bản thân của brand là <i>Light</i> cỡ 11–13 pt cho bản in. Trên màn hình, Procheck dùng Regular 13.5px để dễ đọc; Light chỉ dành cho chú thích.`,
     'ds.s4.b3.t': `Độ đậm`, 'ds.s4.b3.d': `Năm độ đậm; phần lớn giao diện dùng Regular, Medium và SemiBold.`,
@@ -2227,11 +2417,11 @@ PC.i18n.extend({
     'ds.s5.k': `Token`, 'ds.s5.t': `Khoảng cách, bo góc, đổ bóng & chuyển động`,
     'ds.s5.d': `Lưới 4px và một bộ giá trị dùng chung giúp bố cục luôn nhất quán.`,
     'ds.s5.b1.t': `Khoảng cách`, 'ds.s5.b1.d': `Dùng thang 4px cho padding, gap và margin. Giữa các phần nên dùng 32–64px.`,
-    'ds.s5.b2.t': `Bo góc`, 'ds.s5.b2.d': `Container càng lớn thì bo góc càng lớn. Dạng viên thuốc chỉ dành cho badge và chip.`,
-    'ds.s5.b3.t': `Độ nổi`, 'ds.s5.b3.d': `Đổ bóng nhẹ và lạnh; ở giao diện tối bóng đậm hơn thay vì phát sáng. Focus dùng vòng sáng, không dùng bóng.`,
+    'ds.s5.b2.t': `Bo góc`, 'ds.s5.b2.d': `Bo góc nhỏ, vuông vức: 2px cho badge, 4px cho control, 6px cho panel, 8px cho modal. Bo tròn hoàn toàn chỉ cho avatar, chấm và chip lọc có thể xoá.`,
+    'ds.s5.b3.t': `Độ nổi`, 'ds.s5.b3.d': `Các bề mặt được tách bằng viền, không bằng bóng: --shadow-xs là none. Bóng chỉ xuất hiện trên lớp nổi. Focus dùng vòng sáng.`,
     'ds.s5.b4.t': `Chuyển động`, 'ds.s5.b4.d': `Nhanh, nhẹ nhàng và có mục đích. Rê chuột hoặc focus vào một dòng để xem trước thời lượng.`,
     'ds.s5.hover': `rê chuột hoặc focus để xem`,
-    'ds.s5.b5.t': `Bố cục & lớp hiển thị`, 'ds.s5.b5.d': `Kích thước cố định của khung ứng dụng và thang z-index.`,
+    'ds.s5.b5.t': `Bố cục & lớp hiển thị`, 'ds.s5.b5.d': `Kích thước cố định của khung ứng dụng, chiều cao control và thang z-index.`,
 
     'ds.s6.k': `Biểu tượng`, 'ds.s6.t': `Biểu tượng`,
     'ds.s6.d': `Icon dạng nét của Lucide: đơn giản, nhất quán, thân thiện. Icon kế thừa màu chữ và không bao giờ truyền đạt ý nghĩa một mình.`,
@@ -2242,20 +2432,20 @@ PC.i18n.extend({
 
     'ds.s7.k': `Component`, 'ds.s7.t': `Component`,
     'ds.s7.d': `Mọi thứ bên dưới được hiển thị bằng class thật từ components.css — hãy thử các trạng thái, rồi đổi giao diện và ngôn ngữ.`,
-    'ds.c.buttons': `Nút`, 'ds.c.buttons.d': `Mỗi màn hình chỉ có một hành động chính. Dùng secondary cho các hành động còn lại, ghost cho mức nhấn thấp và nút AI chỉ cho hành động AI.`,
+    'ds.c.buttons': `Nút`, 'ds.c.buttons.d': `Mỗi màn hình chỉ một hành động chính. Secondary cho phần còn lại, ghost cho mức nhấn thấp. Hành động AI là nút secondary có biểu tượng lấp lánh; chỉ dùng .is-primary khi AI là hành động chính.`,
     'ds.c.forms': `Điều khiển biểu mẫu`, 'ds.c.forms.d': `Nhãn luôn hiển thị. Văn bản hướng dẫn nằm bên dưới; khi có lỗi, thông báo lỗi thay thế bằng màu danger.`,
-    'ds.c.badges': `Badge, tag, chấm trạng thái & chip giai đoạn`, 'ds.c.badges.d': `Trạng thái và siêu dữ liệu gọn nhẹ. Màu sắc luôn đi kèm nhãn hoặc icon.`,
-    'ds.c.avatar': `Avatar & phím tắt`, 'ds.c.avatar.d': `Bạn dùng gradient thương hiệu (chữ cái ME); agent và Trợ lý dùng gradient AI. Không có avatar cho người khác. Phím được hiển thị bằng phần tử kbd.`,
+    'ds.c.badges': `Badge, tag, chấm trạng thái & chip giai đoạn`, 'ds.c.badges.d': `Trạng thái là badge vuông nhỏ (bo 2px) kèm nhãn hoặc icon. Dạng viên thuốc chỉ dành cho chip lọc có thể xoá.`,
+    'ds.c.avatar': `Avatar & phím tắt`, 'ds.c.avatar.d': `Bạn dùng xanh brand đậm (chữ cái ME); agent và Trợ lý dùng xanh brand phẳng. Không có avatar cho người khác. Phím được hiển thị bằng phần tử kbd.`,
     'ds.c.tabs': `Tab`, 'ds.c.tabs.d': `Chuyển giữa các chế độ xem của cùng một nội dung. Tab đang chọn có gạch chân brand 2px.`,
     'ds.c.table': `Bảng`, 'ds.c.table.d': `Các dòng gọn, dễ quét mắt với tiêu đề nhẹ nhàng và làm nổi khi rê chuột.`,
     'ds.c.list': `Danh sách & menu`, 'ds.c.list.d': `Danh sách dùng để điều hướng, menu dùng cho hành động. Menu được PC.popover định vị khi chạy.`,
     'ds.c.progress': `Tiến độ, spinner & skeleton`, 'ds.c.progress.d': `Dùng progress cho việc biết trước thời lượng, spinner khi không biết, skeleton khi nội dung đang tải.`,
     'ds.c.stepper': `Stepper`, 'ds.c.stepper.d': `Dùng cho wizard như Tạo dự án mới. Bước đã xong được tô màu brand.`,
-    'ds.c.alerts': `Thông báo`, 'ds.c.alerts.d': `Thông báo nội tuyến. Alert AI dùng viền gradient cho các gợi ý từ Trợ lý.`,
+    'ds.c.alerts': `Thông báo`, 'ds.c.alerts.d': `Thanh phẳng với vạch màu 3px bên trái. Alert AI dùng nền thường với vạch màu brand — không bao giờ dùng gradient.`,
     'ds.c.empty': `Trạng thái trống`, 'ds.c.empty.d': `Nói rõ đang thiếu gì và gợi ý bước tiếp theo.`,
-    'ds.c.cards': `Thẻ & số liệu`, 'ds.c.cards.d': `Thẻ gom nhóm nội dung liên quan. Thẻ tương tác nổi lên khi rê chuột; thẻ accent đánh dấu giai đoạn hoặc trạng thái.`,
+    'ds.c.cards': `Thẻ`, 'ds.c.cards.d': `Thẻ là cùng một panel phẳng có viền như .panel. Thẻ tương tác đổi viền và nền khi rê chuột (không nổi lên); thẻ accent có cạnh trạng thái 3px.`,
     'ds.c.code': `Code, terminal & diff`, 'ds.c.code.d': `Các bề mặt monospace. Terminal luôn tối ở cả hai giao diện, như một console thật.`,
-    'ds.c.files': `Ô tệp & vùng kéo thả`, 'ds.c.files.d': `Ô tệp được pha màu theo loại tệp. Vùng kéo thả sáng lên khi bạn kéo tệp vào.`,
+    'ds.c.files': `Dòng tệp & vùng kéo thả`, 'ds.c.files.d': `Trong danh sách, tệp là các dòng được kẻ phân cách với icon thường và badge trạng thái — không có ô màu cho mỗi tệp. Vùng kéo thả sáng lên khi bạn kéo tệp vào.`,
     'ds.c.overlays': `Modal, toast & tooltip`, 'ds.c.overlays.d': `Lớp phủ được gọi qua các hàm PC để hành vi luôn nhất quán.`,
     'ds.lbl.variants': `Biến thể`, 'ds.lbl.sizes': `Kích thước`, 'ds.lbl.icon': `Kèm icon`, 'ds.lbl.states': `Trạng thái`, 'ds.lbl.group': `Nhóm & toàn chiều rộng`,
     'ds.c.openmodal': `Mở modal`, 'ds.c.openpal': `Mở command palette`,
@@ -2270,15 +2460,15 @@ PC.i18n.extend({
     'ds.an3.t': `Topbar`, 'ds.an3.d': `Breadcrumb Dự án / Dự án ▾ / Trang, tìm kiếm (Ctrl K), ngôn ngữ, giao diện và nút bật/tắt Trợ lý. Đổi theo giao diện sáng/tối.`,
     'ds.an4.t': `Canvas`, 'ds.an4.d': `Nội dung trang. Tối đa 1240px, căn giữa, lề 32px.`,
     'ds.an5.t': `Trợ lý`, 'ds.an5.d': `Panel bên phải cho chat, ngữ cảnh và hành động của agent. Bật/tắt bằng Ctrl J.`,
-    'ds.p.assist': `Hội thoại với Trợ lý`, 'ds.p.assist.d': `Tin nhắn, lệnh công cụ, thẻ tài liệu và khung soạn thảo. Gradient AI chỉ xuất hiện ở avatar và hành động AI.`,
+    'ds.p.assist': `Hội thoại với Trợ lý`, 'ds.p.assist.d': `Tin nhắn, lời gọi công cụ, thẻ tài liệu và ô soạn. AI được đánh dấu bằng biểu tượng lấp lánh và avatar brand, không bằng màu riêng.`,
     'ds.as.l1': `<b>Context chip</b> cho biết dự án, nhánh và model mà câu trả lời dựa vào.`,
     'ds.as.l2': `<b>Lệnh công cụ</b> là một dòng monospace kèm icon trạng thái — minh bạch, không ẩn.`,
     'ds.as.l3': `<b>Thẻ tài liệu</b> dẫn kết quả về công việc: task, tài liệu, lượt chạy.`,
     'ds.as.l4': `<b>Bong bóng của người dùng</b> dùng màu brand nhạt; Trợ lý nói trên nền thường.`,
     'ds.as.l5': `<b>Chế độ</b> — Hỏi, Sửa tài liệu, Agent — quyết định composer được phép làm gì.`,
-    'ds.p.kanban': `Thẻ Kanban`, 'ds.p.kanban.d': `Thẻ task hiển thị mã, tiêu đề, bằng chứng và agent đã chạy nó. Bạn chỉ xuất hiện khi có review đang chờ bạn. Không có người được giao việc.`,
+    'ds.p.kanban': `Thẻ Kanban`, 'ds.p.kanban.d': `Cột board là nơi duy nhất dùng thẻ nhỏ, và thẻ nằm trực tiếp trên nền cột. Thẻ hiển thị mã, tiêu đề, bằng chứng và agent đã chạy. Không có người được giao việc.`,
     'ds.p.run': `Trạng thái lượt chạy agent`, 'ds.p.run.d': `Agent làm việc trong worktree cô lập với CLI profile của dự án, dùng chung phiên đăng nhập CLI. Bạn xem bằng chứng rồi đẩy lên PR.`,
-    'ds.p.phase': `Stepper giai đoạn`, 'ds.p.phase.d': `Khởi tạo, Scaffolding và SDLC luôn xuất hiện theo thứ tự này cùng màu giai đoạn — xanh dương, tím, xanh ngọc. Mỗi giai đoạn có màn hình riêng: initial.html, scaffolding.html, board.html.`,
+    'ds.p.phase': `Stepper giai đoạn`, 'ds.p.phase.d': `Khởi tạo, Scaffolding và SDLC chung một panel, các cột phân cách bằng đường kẻ, luôn theo thứ tự này với đường giai đoạn 2px — xanh dương, tím, xanh ngọc. Mỗi giai đoạn có màn hình riêng: initial.html, scaffolding.html, board.html.`,
     'ds.st.done': `Hoàn tất`, 'ds.st.current': `Đang thực hiện`, 'ds.st.next': `Tiếp theo`,
     'ds.ph1.d': `Đã thu thập thông tin khách hàng, tải 6 tài liệu, duyệt vision và user story.`,
     'ds.ph2.d': `Đã soạn kiến trúc. Đã kết nối repository; kế hoạch dựng khung đang chờ duyệt.`,
@@ -2307,7 +2497,7 @@ PC.i18n.extend({
     'ds.key.note': `Ctrl J hoạt động trên các trang ứng dụng (data-shell khác none).`, 'ds.key.palette': `Mở command palette`, 'ds.key.assistant': `Bật/tắt panel Trợ lý`, 'ds.key.close': `Đóng hộp thoại, menu hoặc palette`,
     'ds.key.nav': `Di chuyển và chọn trong palette`, 'ds.key.send': `Gửi tin nhắn / xuống dòng trong composer`, 'ds.key.tab': `Chuyển focus tiến / lùi`,
     'ds.s10.b4.t': `Danh sách kiểm tra`, 'ds.s10.b4.d': `Các quy tắc nhanh áp dụng cho mọi màn hình.`,
-    'ds.a.l1': `<b>Vùng nhấn.</b> Nút cao từ 28px (dày) đến 42px; nút chỉ có icon cần <code>aria-label</code> và tooltip.`,
+    'ds.a.l1': `<b>Vùng nhấn.</b> Nút cao từ 26px (dày) đến 42px; nút chỉ có icon cần <code>aria-label</code> và tooltip.`,
     'ds.a.l2': `<b>Không chỉ dùng màu.</b> Trạng thái dùng icon + nhãn + màu; giai đoạn có thêm nhãn chữ cạnh chấm màu.`,
     'ds.a.l3': `<b>Nhãn.</b> Mọi ô nhập đều có <code>label</code> hiển thị; placeholder không thay thế nhãn.`,
     'ds.a.l4': `<b>Ngôn ngữ.</b> <code>html[lang]</code> theo nút chuyển EN/VI; chừa thêm khoảng 30% chỗ cho chuỗi tiếng Việt.`,
@@ -2368,7 +2558,7 @@ PC.i18n.extend({
     'ds.id.do': `Do`, 'ds.id.dont': `Don’t`,
     'ds.id.do1': `Show “Run by Claude Code” or “Codex” on tasks and runs.`,
     'ds.id.do2': `Say “You” for approvals and reviews.`,
-    'ds.id.do3': `Use the AI gradient for agents and the Assistant only.`,
+    'ds.id.do3': `Mark AI with the sparkle glyph and the flat brand avatar.`,
     'ds.id.no1': `Add assignee fields, owner columns or member pickers.`,
     'ds.id.no2': `Show other people’s names, photos or avatar stacks.`,
     'ds.id.no3': `Mention teams, reviewers or invitations.`,
@@ -2408,12 +2598,114 @@ PC.i18n.extend({
     'ds.id.do': `Nên`, 'ds.id.dont': `Không nên`,
     'ds.id.do1': `Hiển thị “Chạy bởi Claude Code” hoặc “Codex” trên task và lượt chạy.`,
     'ds.id.do2': `Dùng “Bạn” cho việc duyệt và review.`,
-    'ds.id.do3': `Chỉ dùng gradient AI cho agent và Trợ lý.`,
+    'ds.id.do3': `Đánh dấu AI bằng biểu tượng lấp lánh và avatar brand phẳng.`,
     'ds.id.no1': `Thêm trường người được giao, cột chủ sở hữu hay bộ chọn thành viên.`,
     'ds.id.no2': `Hiển thị tên, ảnh hay chồng avatar của người khác.`,
     'ds.id.no3': `Nhắc tới nhóm, người duyệt hay lời mời.`,
 
     'ds.as.l6': `<b>Lịch sử</b> được lưu theo từng dự án tại <code>&lt;thư mục dự án&gt;\\.procheck\\chats\\</code>, không lưu trong dữ liệu ứng dụng.`
+  }
+});
+
+/* ------------------------------------------- layout principles (enterprise, flat) */
+PC.i18n.extend({
+  en: {
+    'ds.L.k': `Layout`,
+    'ds.L.t': `Layout principles`,
+    'ds.L.d': `The UI reads as a dense, calm enterprise tool, not a marketing page. These nine rules are binding for every screen; <code>overview.html</code> is the reference implementation.`,
+    'ds.L.b1.t': `The nine rules`,
+    'ds.L.b1.d': `Each rule with a small do and don’t. When a screen feels busy, check it against this list first.`,
+    'ds.L.r1.t': `One level of containers`,
+    'ds.L.r1.d': `A bordered panel (<code>.card</code> / <code>.panel</code>) never contains another bordered box. Split its content with rules: <code>.panel-head</code>, <code>.panel-section</code>, <code>.rows &gt; .row-item</code>.`,
+    'ds.L.r2.t': `Figures go in a strip`,
+    'ds.L.r2.d': `A row of KPIs is one <code>.stat-strip</code> with cells divided by vertical rules. No card and no icon tile per figure.`,
+    'ds.L.r3.t': `Columns, not card grids`,
+    'ds.L.r3.d': `Related items (phases, steps, options) share one panel with columns divided by rules. Repeating entities are table or list rows.`,
+    'ds.L.r4.t': `No gradients, no hero panels, no glow`,
+    'ds.L.r4.d': `Page tops use <code>.page-head</code>: title, meta line, actions and a bottom rule. Shadows only on floating layers (menus, modals, toasts).`,
+    'ds.L.r5.t': `Icons are plain glyphs`,
+    'ds.L.r5.d': `No colored square or circle tiles behind icons in lists, headers or stats. Color an icon only when it carries status.`,
+    'ds.L.r6.t': `Status = small square badges`,
+    'ds.L.r6.d': `<code>.badge</code> with a 2px radius and a label. Pills only for removable filter chips.`,
+    'ds.L.r7.t': `AI actions are not special-colored`,
+    'ds.L.r7.d': `<code>.btn-ai</code> is a secondary button with a brand sparkle; add <code>.is-primary</code> only when it is the page’s main action. Never several primary buttons in one view.`,
+    'ds.L.r8.t': `Notices are flat bars`,
+    'ds.L.r8.d': `<code>.alert-*</code> and focus bars use a 3px tone stripe on the left, never a tinted gradient or glow.`,
+    'ds.L.r9.t': `Compact sizes`,
+    'ds.L.r9.d': `Radius 2–8px (<code>--radius-*</code>), controls 32px (26px small), H1 22px, panel and section titles 13.5px semibold.`,
+    'ds.L.b2.t': `Page head`,
+    'ds.L.b2.d': `<code>.page-head</code> opens every page: H1, a <code>.meta</code> line with plain glyphs, <code>.actions</code> on the right and a bottom rule. One primary action at most.`,
+    'ds.L.b3.t': `Stat strip`,
+    'ds.L.b3.d': `<code>.stat-strip</code> holds a row of figures in one bordered strip; set <code>--cols</code>. Cells may be links and get a hover background.`,
+    'ds.L.b4.t': `Panel, rows & key–value`,
+    'ds.L.b4.d': `<code>.panel</code> with <code>.panel-head</code>, divided <code>.rows &gt; .row-item</code> and <code>.panel-foot</code>. Use <code>.panel-section</code> to stack sections and <code>.kv</code> for label–value facts. Nothing inside gets its own border box.`,
+    'ds.L.b5.t': `AI actions`,
+    'ds.L.b5.d': `<code>.btn-ai</code> looks like a secondary button with a brand sparkle. Use <code>.btn-ai.is-primary</code> only when generating is the main action of the page.`,
+    'ds.L.ai1': `AI is the main action — .btn-ai.is-primary`,
+    'ds.L.ai2': `AI next to another main action — .btn-ai`,
+    'ds.lbl.ai': `AI actions`,
+    'ds.s3.g.now': `Resolves to`,
+    'ds.s3.g.use': `Instead use`,
+    'ds.s3.g.u1': `--brand or --kms-blue-dark as a flat fill (avatar)`,
+    'ds.s3.g.u2': `.btn-ai, .avatar-ai, .progress-ai — all flat brand`,
+    'ds.s3.g.u3': `.page-head on the plain canvas`,
+    'ds.s3.g.u4': `.text-brand; no gradient text`,
+    'ds.s3.g.ai': `AI surfaces today`,
+    'ds.shd.xs': `none · panels and cards use borders`,
+    'ds.shd.sm': `rare · pressed or dragged items`,
+    'ds.shd.md': `menus, popovers, tooltips`,
+    'ds.shd.lg': `modals, palette, toasts`,
+    'ds.shd.focus': `keyboard focus ring`,
+    'ds.c.cards.note': `<b>Never a card in a card.</b> components.css flattens <code>.card .card</code> as a safety net — fix the markup instead. Figures belong in a <code>.stat-strip</code>, lists in <code>.rows</code>.`
+  },
+  vi: {
+    'ds.L.k': `Bố cục`,
+    'ds.L.t': `Nguyên tắc bố cục`,
+    'ds.L.d': `Giao diện là một công cụ doanh nghiệp gọn và điềm tĩnh, không phải trang marketing. Chín quy tắc này áp dụng bắt buộc cho mọi màn hình; <code>overview.html</code> là bản tham chiếu.`,
+    'ds.L.b1.t': `Chín quy tắc`,
+    'ds.L.b1.d': `Mỗi quy tắc kèm ví dụ nên và không nên. Khi màn hình trông rối, hãy đối chiếu với danh sách này trước.`,
+    'ds.L.r1.t': `Chỉ một cấp container`,
+    'ds.L.r1.d': `Một panel có viền (<code>.card</code> / <code>.panel</code>) không bao giờ chứa hộp có viền khác. Chia nội dung bằng đường kẻ: <code>.panel-head</code>, <code>.panel-section</code>, <code>.rows &gt; .row-item</code>.`,
+    'ds.L.r2.t': `Số liệu nằm trong một dải`,
+    'ds.L.r2.d': `Một hàng KPI là một <code>.stat-strip</code>, các ô phân cách bằng đường kẻ dọc. Không thẻ và không ô icon cho mỗi số liệu.`,
+    'ds.L.r3.t': `Chia cột, không lưới thẻ`,
+    'ds.L.r3.d': `Các mục liên quan (giai đoạn, bước, tuỳ chọn) chung một panel, các cột phân cách bằng đường kẻ. Thực thể lặp lại là dòng bảng hoặc danh sách.`,
+    'ds.L.r4.t': `Không gradient, không hero, không phát sáng`,
+    'ds.L.r4.d': `Đầu trang dùng <code>.page-head</code>: tiêu đề, dòng meta, hành động và đường kẻ dưới. Đổ bóng chỉ cho lớp nổi (menu, modal, toast).`,
+    'ds.L.r5.t': `Icon là nét thường`,
+    'ds.L.r5.d': `Không có ô vuông hay tròn tô màu sau icon trong danh sách, tiêu đề hay số liệu. Chỉ tô màu icon khi nó mang trạng thái.`,
+    'ds.L.r6.t': `Trạng thái = badge vuông nhỏ`,
+    'ds.L.r6.d': `<code>.badge</code> bo 2px kèm nhãn. Dạng viên thuốc chỉ cho chip lọc có thể xoá.`,
+    'ds.L.r7.t': `Hành động AI không có màu riêng`,
+    'ds.L.r7.d': `<code>.btn-ai</code> là nút secondary với biểu tượng lấp lánh màu brand; chỉ thêm <code>.is-primary</code> khi đó là hành động chính của trang. Không bao giờ có nhiều nút primary trong một màn hình.`,
+    'ds.L.r8.t': `Thông báo là thanh phẳng`,
+    'ds.L.r8.d': `<code>.alert-*</code> và thanh focus dùng vạch màu 3px bên trái, không bao giờ dùng gradient hay phát sáng.`,
+    'ds.L.r9.t': `Kích thước gọn`,
+    'ds.L.r9.d': `Bo góc 2–8px (<code>--radius-*</code>), control cao 32px (nhỏ 26px), H1 22px, tiêu đề panel và mục 13.5px semibold.`,
+    'ds.L.b2.t': `Đầu trang`,
+    'ds.L.b2.d': `<code>.page-head</code> mở đầu mọi trang: H1, dòng <code>.meta</code> với icon thường, <code>.actions</code> bên phải và đường kẻ dưới. Tối đa một hành động chính.`,
+    'ds.L.b3.t': `Dải số liệu`,
+    'ds.L.b3.d': `<code>.stat-strip</code> chứa một hàng số liệu trong một dải có viền; đặt <code>--cols</code>. Ô có thể là liên kết và đổi nền khi rê chuột.`,
+    'ds.L.b4.t': `Panel, dòng & cặp khoá–giá trị`,
+    'ds.L.b4.d': `<code>.panel</code> với <code>.panel-head</code>, các dòng <code>.rows &gt; .row-item</code> có kẻ phân cách và <code>.panel-foot</code>. Dùng <code>.panel-section</code> để xếp các mục và <code>.kv</code> cho cặp nhãn–giá trị. Không phần nào bên trong có hộp viền riêng.`,
+    'ds.L.b5.t': `Hành động AI`,
+    'ds.L.b5.d': `<code>.btn-ai</code> trông như nút secondary với biểu tượng lấp lánh màu brand. Chỉ dùng <code>.btn-ai.is-primary</code> khi tạo nội dung là hành động chính của trang.`,
+    'ds.L.ai1': `AI là hành động chính — .btn-ai.is-primary`,
+    'ds.L.ai2': `AI bên cạnh một hành động chính khác — .btn-ai`,
+    'ds.lbl.ai': `Hành động AI`,
+    'ds.s3.g.now': `Giá trị thực`,
+    'ds.s3.g.use': `Thay bằng`,
+    'ds.s3.g.u1': `--brand hoặc --kms-blue-dark tô phẳng (avatar)`,
+    'ds.s3.g.u2': `.btn-ai, .avatar-ai, .progress-ai — đều brand phẳng`,
+    'ds.s3.g.u3': `.page-head trên nền canvas thường`,
+    'ds.s3.g.u4': `.text-brand; không dùng chữ gradient`,
+    'ds.s3.g.ai': `Bề mặt AI hiện nay`,
+    'ds.shd.xs': `none · panel và thẻ dùng viền`,
+    'ds.shd.sm': `hiếm · mục đang nhấn hoặc kéo`,
+    'ds.shd.md': `menu, popover, tooltip`,
+    'ds.shd.lg': `modal, palette, toast`,
+    'ds.shd.focus': `vòng focus bàn phím`,
+    'ds.c.cards.note': `<b>Không bao giờ đặt thẻ trong thẻ.</b> components.css làm phẳng <code>.card .card</code> như lưới an toàn — hãy sửa mã HTML. Số liệu thuộc về <code>.stat-strip</code>, danh sách thuộc về <code>.rows</code>.`
   }
 });
 
@@ -2613,7 +2905,7 @@ PC.i18n.extend({
   function buildStorage() {
     const el = document.getElementById('storage-demo'); if (!el) return;
     const S = PC.data.storage;
-    const row = (it, key, inside) => '<li class="' + (inside ? 'in' : '') + '"><i data-lucide="' + (/\\$/.test(it.path) ? 'folder' : 'file-json') + '"></i><div><span class="p">' + PC.esc(it.path) + '</span><span class="d" data-i18n="' + key + '"></span></div></li>';
+    const row = (it, key, inside) => '<li class="' + (inside ? 'in' : '') + '"><i data-lucide="' + (/\\$/.test(it.path) ? 'folder' : 'file-json') + '"></i><div><span class="p">' + PC.esc(it.path) + '</span><span class="d">' + PC.esc(it.desc || PC.t(key)) + '</span></div></li>';
     const card = (cls, icon, titleKey, root, items, prefix) => '<div class="st-card ' + cls + '"><div class="st-head"><span class="ico"><i data-lucide="' + icon + '"></i></span><div class="grow"><div class="ttl" data-i18n="' + titleKey + '"></div><div class="root">' + PC.esc(root) + '</div></div></div><ul class="st-tree">' +
       items.map((it, i) => row(it, prefix + i, it.path.indexOf('.procheck') === 0)).join('') + '</ul></div>';
     el.innerHTML = card('st-app', 'hard-drive', 'storage.app', S.app.root, S.app.items, 'ds.sa.') +

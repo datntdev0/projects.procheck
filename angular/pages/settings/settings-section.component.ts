@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * One section of the settings page: heading, optional description, then the projected body.
+ * One section of the settings page: a single flat panel whose head carries the title, optional description
+ * and group action; the projected body (setting rows, ruled sections) sits directly inside the panel.
  * The host carries the section id so the in-page navigation can scroll to it.
  * ```html
  * <pc-settings-section sectionId="general" [title]="…" [description]="…">
  *   <div pcSettingsSectionActions>…</div>
- *   <pc-card>…</pc-card>
+ *   <pc-setting-row …>…</pc-setting-row>
  * </pc-settings-section>
  * ```
  */
@@ -20,16 +21,18 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     '[attr.data-testid]': "'settings-section-' + sectionId()",
   },
   template: `
-    <div class="sec-head">
-      <div>
-        <h2>{{ title() }}</h2>
-        @if (description()) {
-          <p>{{ description() }}</p>
-        }
+    <div class="card sec-panel">
+      <div class="panel-head">
+        <div class="sec-t">
+          <h2>{{ title() }}</h2>
+          @if (description()) {
+            <p>{{ description() }}</p>
+          }
+        </div>
+        <ng-content select="[pcSettingsSectionActions]" />
       </div>
-      <ng-content select="[pcSettingsSectionActions]" />
+      <ng-content />
     </div>
-    <ng-content />
   `,
 })
 export class SettingsSectionComponent {
@@ -38,7 +41,7 @@ export class SettingsSectionComponent {
   readonly description = input('');
 }
 
-/** A label / description on the left and a control on the right, inside a settings card. */
+/** A ruled row inside a settings panel: label / description on the left, control on the right. */
 @Component({
   selector: 'pc-setting-row',
   changeDetection: ChangeDetectionStrategy.OnPush,

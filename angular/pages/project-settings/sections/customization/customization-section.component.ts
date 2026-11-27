@@ -43,76 +43,74 @@ const nextKey = (): string => `a${++keySeq}`;
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <pc-settings-section sectionId="customize" [title]="'ps.n.cz' | t" [description]="'ps.cz.d' | t">
-      <div class="card cz-card">
-        <pc-tabs class="cz-tabs" [items]="tabs()" [(active)]="activeTab" data-testid="ps-cz-tabs" />
+    <pc-settings-section class="cz-sec" sectionId="customize" [title]="'ps.n.cz' | t" [description]="'ps.cz.d' | t">
+      <pc-tabs class="cz-tabs" [items]="tabs()" [(active)]="activeTab" data-testid="ps-cz-tabs" />
 
-        @let def = phase();
-        @let config = current();
-        <div class="cz-body" [attr.data-testid]="'ps-cz-panel-' + def.id">
-          <div class="fl-bar">
-            <span class="text-xs text-subtle" data-testid="ps-fl-summary">{{ 'ps.fl.sum' | t: { a: artifactCount(), t: templateCount() } }}</span>
-            <span class="grow"></span>
-            <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-fl-reset" (click)="resetOpen.set(true)">
-              <pc-icon name="rotate-ccw" />{{ 'ps.fl.reset' | t }}
-            </button>
-            <a pcButton size="sm" [routerLink]="['/projects', projectId(), def.segment]">
-              <pc-icon name="external-link" />{{ 'ps.cz.open.' + def.id | t }}
-            </a>
-          </div>
+      @let def = phase();
+      @let config = current();
+      <div class="cz-body" [attr.data-testid]="'ps-cz-panel-' + def.id">
+        <div class="fl-bar">
+          <span class="text-xs text-subtle" data-testid="ps-fl-summary">{{ 'ps.fl.sum' | t: { a: artifactCount(), t: templateCount() } }}</span>
+          <span class="grow"></span>
+          <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-fl-reset" (click)="resetOpen.set(true)">
+            <pc-icon name="rotate-ccw" />{{ 'ps.fl.reset' | t }}
+          </button>
+          <a pcButton size="sm" [routerLink]="['/projects', projectId(), def.segment]">
+            <pc-icon name="external-link" />{{ 'ps.cz.open.' + def.id | t }}
+          </a>
+        </div>
 
-          <div class="cz-prompt">
-            <div class="fs-block-head">
-              <div class="sinfo">
-                <div class="slabel">{{ 'ps.cz.prompt' | t }}</div>
-                <div class="sdesc">{{ 'ps.cz.prompt.d' | t }}</div>
-              </div>
-              @if (config.prompt !== null) {
-                <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-cz-prompt-reset" (click)="setPrompt(null)">
-                  <pc-icon name="rotate-ccw" />{{ 'ps.fl.instr.reset' | t }}
-                </button>
-              }
+        <div class="cz-prompt">
+          <div class="fs-block-head">
+            <div class="sinfo">
+              <div class="slabel">{{ 'ps.cz.prompt' | t }}</div>
+              <div class="sdesc">{{ 'ps.cz.prompt.d' | t }}</div>
             </div>
-            <textarea
-              pcInput
-              class="prompt"
-              spellcheck="false"
-              data-testid="ps-cz-prompt"
-              [value]="config.prompt ?? (def.prompt | t)"
-              (input)="setPrompt(text($event))"
-            ></textarea>
+            @if (config.prompt !== null) {
+              <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-cz-prompt-reset" (click)="setPrompt(null)">
+                <pc-icon name="rotate-ccw" />{{ 'ps.fl.instr.reset' | t }}
+              </button>
+            }
           </div>
-
-          <div class="cz-steps-h">
-            <span class="slabel">{{ 'ps.cz.steps.' + def.id | t }}</span>
-            <span class="sdesc">{{ 'ps.cz.steps.' + def.id + '.d' | t }}</span>
-          </div>
-
-          @for (step of config.steps; track step.id; let i = $index) {
-            <pc-step-config-card
-              [definition]="def.steps[i]"
-              [step]="step"
-              [index]="i"
-              [optional]="def.optional"
-              [artifactsHint]="'ps.cz.arts.d.' + def.id"
-              [instructionText]="step.instructions ?? (def.steps[i].instructions | t)"
-              [open]="openStep()[def.id] === step.id"
-              (openChange)="setOpen(step.id, $event)"
-              (instructionsChange)="patchStep(step.id, { instructions: $event })"
-              (resetInstructions)="patchStep(step.id, { instructions: null })"
-              (offChange)="patchStep(step.id, { off: $event })"
-              (addArtifact)="addArtifact(step.id)"
-              (renameArtifact)="patchArtifact(step.id, $event.index, { name: $event.name })"
-              (attachTemplate)="attach(step.id, $event.index, $event.file)"
-              (removeTemplate)="patchArtifact(step.id, $event, { template: null })"
-              (removeArtifact)="removeArtifact(step.id, $event)"
-            />
-          }
+          <textarea
+            pcInput
+            class="prompt"
+            spellcheck="false"
+            data-testid="ps-cz-prompt"
+            [value]="config.prompt ?? (def.prompt | t)"
+            (input)="setPrompt(text($event))"
+          ></textarea>
         </div>
-        <div class="note-row">
-          <pc-icon name="info" [size]="14" />
-          <span>{{ 'ps.fl.note' | t }}</span>
+
+        <div class="cz-steps-h">
+          <span class="slabel">{{ 'ps.cz.steps.' + def.id | t }}</span>
+          <span class="sdesc">{{ 'ps.cz.steps.' + def.id + '.d' | t }}</span>
         </div>
+
+        @for (step of config.steps; track step.id; let i = $index) {
+          <pc-step-config-card
+            [definition]="def.steps[i]"
+            [step]="step"
+            [index]="i"
+            [optional]="def.optional"
+            [artifactsHint]="'ps.cz.arts.d.' + def.id"
+            [instructionText]="step.instructions ?? (def.steps[i].instructions | t)"
+            [open]="openStep()[def.id] === step.id"
+            (openChange)="setOpen(step.id, $event)"
+            (instructionsChange)="patchStep(step.id, { instructions: $event })"
+            (resetInstructions)="patchStep(step.id, { instructions: null })"
+            (offChange)="patchStep(step.id, { off: $event })"
+            (addArtifact)="addArtifact(step.id)"
+            (renameArtifact)="patchArtifact(step.id, $event.index, { name: $event.name })"
+            (attachTemplate)="attach(step.id, $event.index, $event.file)"
+            (removeTemplate)="patchArtifact(step.id, $event, { template: null })"
+            (removeArtifact)="removeArtifact(step.id, $event)"
+          />
+        }
+      </div>
+      <div class="note-row">
+        <pc-icon name="info" [size]="14" />
+        <span>{{ 'ps.fl.note' | t }}</span>
       </div>
     </pc-settings-section>
 

@@ -1,26 +1,21 @@
 <div class="canvas-inner settings-page" data-testid="settings-page">
-  <header class="ap-head">
-    <div>
-      <div class="kicker"><pc-icon name="settings" [size]="14" /><span>{{ 'set.kicker' | t }}</span></div>
-      <h1>{{ 'set.title' | t }}</h1>
-      <div class="ap-scope">
-        @if (settingsFile(); as path) {
-          <pc-icon name="file-json" [size]="14" />
-          <span>{{ 'set.stored' | t }}</span>
-          <code data-testid="settings-file">{{ path }}</code>
-          <span class="sep">—</span>
-          <span>{{ 'set.applies.short' | t }}</span>
-        } @else {
-          <pc-icon name="monitor" [size]="14" />
-          <span>{{ 'set.applies' | t }}</span>
-        }
-      </div>
-    </div>
-    <button pcButton type="button" data-testid="open-data-folder" (click)="openDataFolder()">
+  <pc-page-header [title]="'set.title' | t">
+    <span pcPageMeta>
+      @if (settingsFile(); as path) {
+        <pc-icon name="file-json" [size]="14" />
+        <span>{{ 'set.stored' | t }}</span>
+        <code data-testid="settings-file">{{ path }}</code>
+        <span>{{ 'set.applies.short' | t }}</span>
+      } @else {
+        <pc-icon name="monitor" [size]="14" />
+        <span>{{ 'set.applies' | t }}</span>
+      }
+    </span>
+    <button pcPageActions pcButton type="button" data-testid="open-data-folder" (click)="openDataFolder()">
       <pc-icon name="folder-open" />
       {{ 'set.openfolder' | t }}
     </button>
-  </header>
+  </pc-page-header>
 
   <div class="set-wrap">
     <nav class="set-nav" [attr.aria-label]="'set.title' | t" data-testid="settings-nav">

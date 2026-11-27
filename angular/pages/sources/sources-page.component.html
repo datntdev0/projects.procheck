@@ -1,18 +1,11 @@
 <div class="canvas-inner sources-page" data-testid="sources-page">
   <pc-project-gate>
     @if (project()) {
-      <div class="page-header">
-        <div>
-          <h1>{{ 'src.title' | t }}</h1>
-          <div class="subtitle">
-            {{ 'src.sub' | t }} <code class="sp-path" data-testid="src-dir">{{ store.dir() }}</code>
-          </div>
-        </div>
-        <div class="row">
-          <button pcButton data-testid="src-open-folder" (click)="store.reveal(null)"><pc-icon name="folder-open" /> {{ 'src.open_folder' | t }}</button>
-          <button pcButton variant="primary" data-testid="src-upload" (click)="upload.show()"><pc-icon name="upload" /> {{ 'src.upload' | t }}</button>
-        </div>
-      </div>
+      <pc-page-header [title]="'src.title' | t">
+        <span pcPageMeta>{{ 'src.sub' | t }} <code class="sp-path" data-testid="src-dir">{{ store.dir() }}</code></span>
+        <button pcPageActions pcButton data-testid="src-open-folder" (click)="store.reveal(null)"><pc-icon name="folder-open" /> {{ 'src.open_folder' | t }}</button>
+        <button pcPageActions pcButton variant="primary" data-testid="src-upload" (click)="upload.show()"><pc-icon name="upload" /> {{ 'src.upload' | t }}</button>
+      </pc-page-header>
 
       @if (store.loadError()) {
         <pc-alert tone="danger" class="mb-4">
@@ -21,25 +14,22 @@
         </pc-alert>
       }
 
-      <div class="sp-stats">
-        <div class="sp-stat">
-          <span class="ic"><pc-icon name="files" /></span>
-          <div><div class="v" data-testid="src-stat-files">{{ store.items().length }}</div><div class="l">{{ 'src.st.files' | t }}</div></div>
+      <div class="stat-strip sp-stats">
+        <div>
+          <span class="stat-label">{{ 'src.st.files' | t }}</span>
+          <span class="stat-value" data-testid="src-stat-files">{{ store.items().length }}</span>
         </div>
-        <div class="sp-stat">
-          <span class="ic"><pc-icon name="hard-drive" /></span>
-          <div><div class="v">{{ totalSize() }}</div><div class="l">{{ 'src.st.size' | t }}</div></div>
+        <div>
+          <span class="stat-label">{{ 'src.st.size' | t }}</span>
+          <span class="stat-value">{{ totalSize() }}</span>
         </div>
-        <div class="sp-stat">
-          <span class="ic ok"><pc-icon name="sparkles" /></span>
-          <div>
-            <div class="v">{{ store.readableCount() }}<span class="of">/{{ store.items().length }}</span></div>
-            <div class="l">{{ 'src.st.ready' | t }}</div>
-          </div>
+        <div>
+          <span class="stat-label">{{ 'src.st.ready' | t }}</span>
+          <span class="stat-value">{{ store.readableCount() }}<small> / {{ store.items().length }}</small></span>
         </div>
-        <div class="sp-stat">
-          <span class="ic" [class.warn]="store.attentionCount() > 0"><pc-icon name="archive" /></span>
-          <div><div class="v">{{ store.attentionCount() }}</div><div class="l">{{ 'src.st.attn' | t }}</div></div>
+        <div [class.is-warn]="store.attentionCount() > 0">
+          <span class="stat-label">{{ 'src.st.attn' | t }}</span>
+          <span class="stat-value">{{ store.attentionCount() }}</span>
         </div>
       </div>
 

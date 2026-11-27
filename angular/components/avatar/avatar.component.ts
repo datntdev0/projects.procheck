@@ -4,7 +4,7 @@ import { IconComponent } from '../icon/icon.component';
 
 export type AvatarSize = 'sm' | 'md' | 'lg';
 
-/** Person ("You") or AI avatar. AI avatars use the AI gradient and a sparkles glyph. */
+/** Person ("You") or AI avatar. AI avatars use the brand color and a sparkles glyph. */
 @Component({
   selector: 'pc-avatar',
   imports: [IconComponent],

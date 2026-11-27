@@ -1,11 +1,40 @@
 /* ---------- Page header (inside canvas) ---------- */
-.page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); flex-wrap: wrap; }
+.page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); padding-bottom: var(--space-4); border-bottom: 1px solid var(--border-default); flex-wrap: wrap; }
 .page-header .crumbs { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--fg-subtle); margin-bottom: 6px; }
 .page-header .crumbs a { color: var(--fg-subtle); }
 .page-header .subtitle { color: var(--fg-muted); font-size: var(--text-sm); margin-top: 4px; }
 
 /* ---------- Section ---------- */
 .section { margin-bottom: var(--space-8); }
-.section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); }
-.section-title h3, .section-title h4 { font-size: var(--text-md); font-weight: var(--weight-semibold); }
+.section-title, .section-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); min-height: 28px; }
+.section-title h3, .section-title h4, .section-head h3, .section-head h4 { font-size: var(--text-md); font-weight: var(--weight-semibold); display: flex; align-items: center; gap: var(--space-2); }
+.section-head .sub { font-size: var(--text-xs); color: var(--fg-subtle); font-weight: var(--weight-regular); }
+
+/* ---------- Enterprise layout primitives ----------
+   page-head:  flat page title row (no hero, no gradient, no icon tile).
+   stat-strip: one bordered row of figures divided by rules, instead of one card per figure.
+   rows:       divided list rows inside a single panel; rows never get their own border box.
+   kv:         label/value grid for properties. */
+.page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; padding-bottom: var(--space-4); margin-bottom: var(--space-5); border-bottom: 1px solid var(--border-default); }
+.page-head > .grow { flex: 1 1 420px; min-width: 0; } /* keep actions beside a long subtitle */
+.page-head h1 { font-size: var(--text-3xl); }
+.page-head .meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px var(--space-4); margin-top: 6px; font-size: var(--text-sm); color: var(--fg-muted); }
+.page-head .meta > span { display: inline-flex; align-items: center; gap: 6px; }
+.page-head .meta svg { width: 14px; height: 14px; color: var(--fg-subtle); }
+.page-head .actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.stat-strip { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--bg-surface); }
+.stat-strip > * { padding: 12px var(--space-4); min-width: 0; color: inherit; text-decoration: none !important; display: flex; flex-direction: column; gap: 2px; }
+.stat-strip > * + * { border-left: 1px solid var(--border-subtle); }
+.stat-strip > a:hover { background: var(--bg-hover); }
+.stat-strip .stat-label { font-size: var(--text-xs); color: var(--fg-subtle); font-weight: var(--weight-medium); }
+.stat-strip .stat-value { font-size: 22px; line-height: 1.2; }
+.stat-strip .stat-value small { font-size: var(--text-sm); font-weight: var(--weight-regular); color: var(--fg-subtle); }
+.stat-strip .stat-sub { font-size: var(--text-xs); color: var(--fg-subtle); }
+.stat-strip .stat-sub b { font-weight: var(--weight-semibold); color: var(--fg-default); }
+.rows { display: flex; flex-direction: column; }
+.rows > .row-item { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); color: inherit; text-decoration: none !important; min-width: 0; }
+.rows > .row-item + .row-item { border-top: 1px solid var(--border-subtle); }
+.rows > a.row-item:hover { background: var(--bg-hover); }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px var(--space-5); font-size: var(--text-sm); margin: 0; }
+.kv dt { color: var(--fg-subtle); } .kv dd { margin: 0; color: var(--fg-default); min-width: 0; }
 

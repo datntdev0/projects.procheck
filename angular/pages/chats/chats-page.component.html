@@ -36,7 +36,7 @@
   <div #thread class="thread" role="log" aria-live="polite">
     @if (empty()) {
       <div class="hero" data-testid="chat-empty">
-        <div class="orb"><pc-icon name="sparkles" [size]="26" /></div>
+        <div class="orb"><pc-icon name="sparkles" [size]="24" /></div>
         <h2>{{ 'ch.empty.title' | t }}</h2>
         <p>{{ scope() === null ? ('ch.empty.sub' | t) : ('ch.empty.sub.project' | t: { project: scopeView().name }) }}</p>
         <div class="sg-grid">

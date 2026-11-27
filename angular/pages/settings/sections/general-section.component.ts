@@ -21,45 +21,43 @@ import { SETTINGS_SECTION } from '../settings-section.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-settings-section sectionId="general" [title]="'set.n.general' | t" [description]="'set.general.d' | t">
-      <div class="card">
-        <pc-setting-row [label]="'set.gen.parent' | t" [description]="'set.gen.parent.d' | t">
-          <input
-            pcInput
-            class="mono"
-            data-testid="setting-default-project-dir"
-            [invalid]="form.invalidField() === 'defaultProjectDir'"
-            [placeholder]="'set.gen.parent.ph' | t"
-            [value]="form.value().general.defaultProjectDir"
-            (input)="form.patchGeneral({ defaultProjectDir: $any($event.target).value })"
-          />
-          <button pcButton type="button" data-testid="setting-browse-project-dir" (click)="browse()">
-            <pc-icon name="folder-open" />
-            {{ 'set.browse' | t }}
-          </button>
-        </pc-setting-row>
+      <pc-setting-row [label]="'set.gen.parent' | t" [description]="'set.gen.parent.d' | t">
+        <input
+          pcInput
+          class="mono"
+          data-testid="setting-default-project-dir"
+          [invalid]="form.invalidField() === 'defaultProjectDir'"
+          [placeholder]="'set.gen.parent.ph' | t"
+          [value]="form.value().general.defaultProjectDir"
+          (input)="form.patchGeneral({ defaultProjectDir: $any($event.target).value })"
+        />
+        <button pcButton type="button" data-testid="setting-browse-project-dir" (click)="browse()">
+          <pc-icon name="folder-open" />
+          {{ 'set.browse' | t }}
+        </button>
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'set.gen.startup' | t" [description]="'set.gen.startup.d' | t">
-          <select
-            pcInput
-            class="sm"
-            data-testid="setting-on-startup"
-            [value]="form.value().general.onStartup"
-            (change)="form.patchGeneral({ onStartup: $any($event.target).value })"
-          >
-            @for (view of startupViews; track view) {
-              <option [value]="view" [selected]="view === form.value().general.onStartup">{{ 'set.gen.startup.' + view | t }}</option>
-            }
-          </select>
-        </pc-setting-row>
+      <pc-setting-row [label]="'set.gen.startup' | t" [description]="'set.gen.startup.d' | t">
+        <select
+          pcInput
+          class="sm"
+          data-testid="setting-on-startup"
+          [value]="form.value().general.onStartup"
+          (change)="form.patchGeneral({ onStartup: $any($event.target).value })"
+        >
+          @for (view of startupViews; track view) {
+            <option [value]="view" [selected]="view === form.value().general.onStartup">{{ 'set.gen.startup.' + view | t }}</option>
+          }
+        </select>
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'shell.theme' | t" [description]="'set.theme.d' | t">
-          <pc-segmented data-testid="setting-theme" [options]="themeOptions()" [value]="theme.preference()" (valueChange)="setTheme($event)" />
-        </pc-setting-row>
+      <pc-setting-row [label]="'shell.theme' | t" [description]="'set.theme.d' | t">
+        <pc-segmented data-testid="setting-theme" [options]="themeOptions()" [value]="theme.preference()" (valueChange)="setTheme($event)" />
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'shell.lang' | t" [description]="'set.lang.d' | t">
-          <pc-segmented data-testid="setting-language" [options]="langOptions()" [value]="i18n.lang()" (valueChange)="setLang($event)" />
-        </pc-setting-row>
-      </div>
+      <pc-setting-row [label]="'shell.lang' | t" [description]="'set.lang.d' | t">
+        <pc-segmented data-testid="setting-language" [options]="langOptions()" [value]="i18n.lang()" (valueChange)="setLang($event)" />
+      </pc-setting-row>
     </pc-settings-section>
   `,
 })

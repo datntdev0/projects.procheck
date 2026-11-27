@@ -10,6 +10,9 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
  * </pc-card>
  * ```
  * Use `padded` for a simple card without header/body/footer.
+ *
+ * Never put a card inside a card: inside one, split content with rules
+ * (`.panel-section`, `.rows > .row-item`). Nested cards are rendered flat as a safety net.
  */
 @Component({
   selector: 'pc-card',

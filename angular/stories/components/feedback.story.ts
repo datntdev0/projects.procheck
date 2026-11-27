@@ -44,7 +44,7 @@ export const Alerts: Story = {
         <pc-alert tone="warning" title="2 blocking questions">Answer them before the scope can be finalized.</pc-alert>
         <pc-alert tone="danger" title="Agent run failed">6 of 9 e2e checks failed in the worktree.</pc-alert>
         <pc-alert tone="ai" title="Assistant suggestion">Draft user stories from the latest meeting transcript.
-          <button pcAlertActions pcButton variant="soft" size="sm">Draft</button>
+          <button pcAlertActions pcButton variant="ai" size="sm"><pc-icon name="sparkles" /> Draft</button>
         </pc-alert>
       </div>`,
   }),

@@ -21,60 +21,58 @@ import { SETTINGS_SECTION } from '../settings-section.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-settings-section sectionId="diagnostics" [title]="'set.n.diagnostics' | t" [description]="'set.diag.d' | t">
-      <div class="card">
-        <pc-setting-row [label]="'set.log.level' | t" [description]="'set.log.level.d' | t">
-          <select
-            pcInput
-            class="sm"
-            data-testid="setting-log-level"
-            [value]="form.value().diagnostics.logLevel"
-            (change)="setLevel($any($event.target).value)"
-          >
-            @for (level of levels; track level) {
-              <option [value]="level" [selected]="level === form.value().diagnostics.logLevel">{{ 'set.log.level.' + level | t }}</option>
-            }
-          </select>
-        </pc-setting-row>
+      <pc-setting-row [label]="'set.log.level' | t" [description]="'set.log.level.d' | t">
+        <select
+          pcInput
+          class="sm"
+          data-testid="setting-log-level"
+          [value]="form.value().diagnostics.logLevel"
+          (change)="setLevel($any($event.target).value)"
+        >
+          @for (level of levels; track level) {
+            <option [value]="level" [selected]="level === form.value().diagnostics.logLevel">{{ 'set.log.level.' + level | t }}</option>
+          }
+        </select>
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'set.log.ret' | t" [description]="'set.log.ret.d' | t">
-          <select
-            pcInput
-            class="sm"
-            data-testid="setting-log-retention"
-            [value]="form.value().diagnostics.logRetentionDays"
-            (change)="setRetention($any($event.target).value)"
-          >
-            @for (days of retentionChoices(); track days) {
-              <option [value]="days" [selected]="days === form.value().diagnostics.logRetentionDays">{{ 'set.log.days' | t: { n: days } }}</option>
-            }
-          </select>
-        </pc-setting-row>
+      <pc-setting-row [label]="'set.log.ret' | t" [description]="'set.log.ret.d' | t">
+        <select
+          pcInput
+          class="sm"
+          data-testid="setting-log-retention"
+          [value]="form.value().diagnostics.logRetentionDays"
+          (change)="setRetention($any($event.target).value)"
+        >
+          @for (days of retentionChoices(); track days) {
+            <option [value]="days" [selected]="days === form.value().diagnostics.logRetentionDays">{{ 'set.log.days' | t: { n: days } }}</option>
+          }
+        </select>
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'set.log.folder' | t">
-          <div pcSettingDescription class="sdesc" data-testid="logs-summary">
-            @if (logs(); as summary) {
-              <code>{{ summary.dir }}</code> · {{ size(summary.bytes) }} · {{ 'set.log.files' | t: { n: summary.files } }}
-            } @else {
-              {{ 'set.log.folder.d' | t }}
-            }
-          </div>
-          <button pcButton type="button" data-testid="open-logs" (click)="openLogs()">
-            <pc-icon name="folder-open" />
-            {{ 'set.log.open' | t }}
-          </button>
-        </pc-setting-row>
+      <pc-setting-row [label]="'set.log.folder' | t">
+        <div pcSettingDescription class="sdesc" data-testid="logs-summary">
+          @if (logs(); as summary) {
+            <code>{{ summary.dir }}</code> · {{ size(summary.bytes) }} · {{ 'set.log.files' | t: { n: summary.files } }}
+          } @else {
+            {{ 'set.log.folder.d' | t }}
+          }
+        </div>
+        <button pcButton size="sm" type="button" data-testid="open-logs" (click)="openLogs()">
+          <pc-icon name="folder-open" />
+          {{ 'set.log.open' | t }}
+        </button>
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'set.log.export' | t" [description]="'set.log.export.d' | t">
-          <button pcButton type="button" data-testid="export-diagnostics" [disabled]="exporting()" (click)="exportBundle()">
-            @if (exporting()) {
-              <span class="spinner" aria-hidden="true"></span>
-            } @else {
-              <pc-icon name="package-open" />
-            }
-            {{ 'set.log.export.btn' | t }}
-          </button>
-        </pc-setting-row>
-      </div>
+      <pc-setting-row [label]="'set.log.export' | t" [description]="'set.log.export.d' | t">
+        <button pcButton size="sm" type="button" data-testid="export-diagnostics" [disabled]="exporting()" (click)="exportBundle()">
+          @if (exporting()) {
+            <span class="spinner" aria-hidden="true"></span>
+          } @else {
+            <pc-icon name="package-open" />
+          }
+          {{ 'set.log.export.btn' | t }}
+        </button>
+      </pc-setting-row>
     </pc-settings-section>
   `,
 })

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { ButtonComponent } from '@components/button/button.component';
 import { IconComponent } from '@components/icon/icon.component';
+import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { ToastService } from '@components/toast/toast.service';
 import { AppSettingsService } from '@features/settings/app-settings.service';
 import { StorageService } from '@features/storage/storage.service';
@@ -23,6 +24,7 @@ import { SETTINGS_NAV, SETTINGS_SECTION_IDS, SettingsSectionId } from './setting
   imports: [
     ButtonComponent,
     IconComponent,
+    PageHeaderComponent,
     TranslatePipe,
     AboutSectionComponent,
     GeneralSectionComponent,

@@ -42,12 +42,12 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
   host: { class: 'cli-card', '[attr.data-testid]': "'agent-' + agent()", '[attr.data-state]': 'state()' },
   template: `
     <div class="cli-head">
-      <span class="cli-logo"><pc-icon [name]="icon()" [size]="20" /></span>
+      <pc-icon class="cli-glyph" [name]="icon()" [size]="16" />
       <div class="cli-title">
         <div class="cname">
           {{ name() }}
           @if (isDefault()) {
-            <pc-badge tone="brand" data-testid="agent-default-badge"><pc-icon name="star" [size]="12" />{{ 'set.ag.default' | t }}</pc-badge>
+            <pc-badge tone="brand" data-testid="agent-default-badge">{{ 'set.ag.default' | t }}</pc-badge>
           }
         </div>
         <div class="cli-stat" data-testid="agent-status">
@@ -85,7 +85,7 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
             <pc-icon name="log-out" />{{ 'set.ag.signout' | t }}
           </button>
         } @else if (state() === 'signedOut') {
-          <button pcButton variant="primary" size="sm" type="button" data-testid="agent-sign-in" [disabled]="busy()" (click)="signIn()">
+          <button pcButton size="sm" type="button" data-testid="agent-sign-in" [disabled]="busy()" (click)="signIn()">
             @if (signingIn()) {
               <span class="spinner" aria-hidden="true"></span>{{ 'set.ag.signingin' | t }}
             } @else {
@@ -124,9 +124,9 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
       </div>
     </div>
 
-    <div class="cli-fields">
-      <div class="cli-field">
-        <label class="mini-label" [for]="'agent-bin-' + agent()">{{ 'set.ag.bin' | t }}</label>
+    <dl class="cli-kv">
+      <dt><label [for]="'agent-bin-' + agent()">{{ 'set.ag.bin' | t }}</label></dt>
+      <dd>
         <div class="cli-bin">
           <input
             pcInput
@@ -138,7 +138,7 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
             [value]="draft().binPath"
             (input)="form.patchAgent(agent(), { binPath: $any($event.target).value })"
           />
-          <button pcButton size="sm" type="button" data-testid="agent-browse" (click)="browse()">
+          <button pcButton variant="ghost" size="sm" type="button" data-testid="agent-browse" (click)="browse()">
             <pc-icon name="folder-open" />{{ 'set.browse' | t }}
           </button>
         </div>
@@ -156,28 +156,10 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
             }
           }
         </div>
-      </div>
+      </dd>
 
-      <div class="cli-field">
-        <label class="mini-label" [for]="'agent-model-' + agent()">{{ 'set.ag.model' | t }}</label>
-        <select
-          pcInput
-          [id]="'agent-model-' + agent()"
-          data-testid="agent-model"
-          [value]="draft().model"
-          (change)="form.patchAgent(agent(), { model: $any($event.target).value })"
-        >
-          <option value="" [selected]="draft().model === ''">{{ 'set.ag.model.default' | t }}</option>
-          @for (m of models(); track m.id) {
-            <option [value]="m.id" [selected]="m.id === draft().model">{{ m.label }}</option>
-          }
-        </select>
-      </div>
-    </div>
-
-    <div class="cli-auth-row">
-      <div class="mini-label">{{ 'set.ag.auth' | t }}</div>
-      <div class="cli-auth" data-testid="agent-auth">
+      <dt>{{ 'set.ag.auth' | t }}</dt>
+      <dd class="cli-auth" data-testid="agent-auth">
         @if (status()?.auth; as auth) {
           @if (auth.signedIn) {
             <pc-badge tone="success"><pc-icon name="check" [size]="12" />{{ 'set.ag.signed' | t }}</pc-badge>
@@ -191,19 +173,33 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
             <span class="cli-auth-d">—</span>
           }
         }
-      </div>
-    </div>
+      </dd>
 
-    @if (status()?.home; as home) {
-      <div class="cli-home-row">
-        <div class="mini-label">{{ 'set.ag.home' | t }}</div>
-        <div class="cli-home" data-testid="agent-home" [title]="home">
-          <pc-icon name="folder" [size]="14" />
-          <span class="cli-home-path">{{ home }}</span>
-        </div>
-        <div class="cli-hint">{{ 'set.ag.home.d' | t: { env: homeVar() } }}</div>
-      </div>
-    }
+      <dt><label [for]="'agent-model-' + agent()">{{ 'set.ag.model' | t }}</label></dt>
+      <dd>
+        <select
+          pcInput
+          class="cli-model"
+          [id]="'agent-model-' + agent()"
+          data-testid="agent-model"
+          [value]="draft().model"
+          (change)="form.patchAgent(agent(), { model: $any($event.target).value })"
+        >
+          <option value="" [selected]="draft().model === ''">{{ 'set.ag.model.default' | t }}</option>
+          @for (m of models(); track m.id) {
+            <option [value]="m.id" [selected]="m.id === draft().model">{{ m.label }}</option>
+          }
+        </select>
+      </dd>
+
+      @if (status()?.home; as home) {
+        <dt>{{ 'set.ag.home' | t }}</dt>
+        <dd>
+          <span class="path" data-testid="agent-home" [title]="home">{{ home }}</span>
+          <span class="cli-hint">{{ 'set.ag.home.d' | t: { env: homeVar() } }}</span>
+        </dd>
+      }
+    </dl>
 
     <pc-dialog [(open)]="confirmSignOut" [title]="'set.ag.signout.t' | t: { name: name() }" width="min(460px, 100%)">
       <p class="text-sm" style="margin: 0">{{ 'set.ag.signout.d' | t: { name: name() } }}</p>
@@ -401,12 +397,10 @@ export class AgentCardComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-settings-section sectionId="agents" [title]="'set.n.agents' | t" [description]="'set.ag.d' | t">
-      <div class="card cli-list">
-        @for (agent of agents; track agent) {
-          <pc-agent-card [agent]="agent" />
-        }
-        <div class="note-row"><pc-icon name="info" [size]="14" /><span>{{ 'set.ag.note' | t }}</span></div>
-      </div>
+      @for (agent of agents; track agent) {
+        <pc-agent-card [agent]="agent" />
+      }
+      <div class="note-row"><pc-icon name="info" [size]="14" /><span>{{ 'set.ag.note' | t }}</span></div>
     </pc-settings-section>
   `,
 })

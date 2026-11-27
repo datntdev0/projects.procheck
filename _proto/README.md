@@ -25,6 +25,20 @@ Open `index.html` in a browser (double-click works; `npx serve _proto` is nicer)
 | Theme | Follows OS by default; Light / Dark override (persisted). |
 | Brand | KMS Brand FY27 — Poppins, Electric Blue `#006AFE`, Dark Blue `#245DB3`, Sky `#62CCFE`, accents Magenta `#FE006A` · Purple `#6A26F1` · Teal `#02CCB3`; 60/30/10. Procheck sub-brand = KMS Sun Mark + "Procheck". |
 
+## Visual direction — enterprise, flat (binding)
+
+The UI reads as a dense, calm enterprise tool, not a marketing page. `overview.html` is the reference implementation.
+
+1. **One level of containers.** A bordered panel (`.card` / `.panel`) never contains another bordered box. Inside a panel, split content with rules: `.panel-head`, `.panel-section`, `.rows > .row-item`, `border-top: 1px solid var(--border-subtle)`. `components.css` flattens `.card .card` as a safety net, but don't rely on it: fix the markup.
+2. **Figures go in a strip, not in cards.** A row of KPIs is one `.stat-strip` (cells divided by vertical rules); no icon tile per figure.
+3. **Columns, not card grids.** Related items side by side (phases, steps, options) share one panel with columns divided by rules. Repeating entities (projects, tasks, files) are table or list rows; board columns are the only place where items are small cards, and they sit directly on the column background.
+4. **No gradients, no hero panels, no glow.** Page tops use `.page-head` (title, meta line, actions, bottom rule). Shadows only on floating layers (menus, modals, toasts).
+5. **Icons are plain glyphs.** No colored square/circle icon tiles behind icons in lists, headers or stats; color an icon only when it carries status (success / warning / danger).
+6. **Status = small square badges** (`.badge`, 2px radius). Pills only for removable filter chips.
+7. **AI actions are not special-colored.** `.btn-ai` is a secondary button with a brand-colored sparkle; add `.is-primary` only when it is the page's main action. Never several primary buttons in one view.
+8. **Notices** use a flat bar with a 3px tone stripe on the left (`.alert-*`, `.focus`), never a tinted gradient.
+9. **Sizes**: radius 2–8px (`--radius-*`), control height 32px (26px small), H1 22px, section titles 13.5px semibold.
+
 ## Files
 
 ```

@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'soft' | 'danger' | 'ai';
+/**
+ * `ai` is a secondary button with a brand sparkle; use `ai-primary` only when the AI action is the
+ * view's main action (one primary button per view).
+ */
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'soft' | 'danger' | 'ai' | 'ai-primary';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /** `<button pcButton variant="primary">` — also works on `<a>`. */
@@ -20,7 +24,7 @@ export class ButtonComponent {
   protected readonly classes = computed(() =>
     [
       'btn',
-      `btn-${this.variant()}`,
+      this.variant() === 'ai-primary' ? 'btn-ai is-primary' : `btn-${this.variant()}`,
       this.size() !== 'md' ? `btn-${this.size()}` : '',
       this.iconOnly() ? 'btn-icon' : '',
       this.block() ? 'btn-block' : '',

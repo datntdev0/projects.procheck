@@ -12,16 +12,17 @@ export interface PaletteItem { readonly group: string; readonly icon: string; re
 
 export const TOC: readonly TocItem[] = [
   { id: 'foundations', n: '01', label: 'Foundations' },
-  { id: 'logo', n: '02', label: 'Logo' },
-  { id: 'color', n: '03', label: 'Color' },
-  { id: 'typography', n: '04', label: 'Typography' },
-  { id: 'tokens', n: '05', label: 'Tokens' },
-  { id: 'icons', n: '06', label: 'Iconography' },
-  { id: 'components', n: '07', label: 'Components' },
-  { id: 'patterns', n: '08', label: 'Patterns' },
-  { id: 'dark', n: '09', label: 'Dark theme' },
-  { id: 'a11y', n: '10', label: 'Accessibility' },
-  { id: 'voice', n: '11', label: 'Voice' },
+  { id: 'layout', n: '02', label: 'Layout' },
+  { id: 'logo', n: '03', label: 'Logo' },
+  { id: 'color', n: '04', label: 'Color' },
+  { id: 'typography', n: '05', label: 'Typography' },
+  { id: 'tokens', n: '06', label: 'Tokens' },
+  { id: 'icons', n: '07', label: 'Iconography' },
+  { id: 'components', n: '08', label: 'Components' },
+  { id: 'patterns', n: '09', label: 'Patterns' },
+  { id: 'dark', n: '10', label: 'Dark theme' },
+  { id: 'a11y', n: '11', label: 'Accessibility' },
+  { id: 'voice', n: '12', label: 'Voice' },
 ];
 
 export const BLUE_STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
@@ -89,11 +90,11 @@ export const ICON_GROUPS: readonly (readonly string[])[] = [
 export const PHASE_LABEL: Readonly<Record<Phase, string>> = { initial: 'Initial', release: 'Scaffolding', sdlc: 'SDLC' };
 
 export const PROJECTS: readonly Project[] = [
-  { id: 'lotus-pay', name: 'Lotus Pay — Merchant Portal', short: 'LP', phase: 'sdlc', color: 'linear-gradient(135deg,#006AFE,#245DB3)', dir: 'D:\\Projects\\lotus-pay' },
-  { id: 'mekong', name: 'Mekong Retail — Omnichannel', short: 'MR', phase: 'release', color: 'linear-gradient(135deg,#6A26F1,#006AFE)', dir: 'D:\\Projects\\mekong-omni' },
-  { id: 'viethealth', name: 'VietHealth Telemedicine', short: 'VH', phase: 'initial', color: 'linear-gradient(135deg,#02CCB3,#006AFE)', dir: 'D:\\Projects\\viethealth' },
-  { id: 'saigon-tms', name: 'Saigon Logistics TMS', short: 'SL', phase: 'initial', color: 'linear-gradient(135deg,#FE006A,#6A26F1)', dir: 'C:\\Users\\me\\Documents\\saigon-tms' },
-  { id: 'atlas-hr', name: 'Atlas HR Suite', short: 'AH', phase: 'sdlc', color: 'linear-gradient(135deg,#245DB3,#62CCFE)', dir: 'D:\\Projects\\atlas-hr' },
+  { id: 'lotus-pay', name: 'Lotus Pay — Merchant Portal', short: 'LP', phase: 'sdlc', color: '#245DB3', dir: 'D:\\Projects\\lotus-pay' },
+  { id: 'mekong', name: 'Mekong Retail — Omnichannel', short: 'MR', phase: 'release', color: '#5B2BC4', dir: 'D:\\Projects\\mekong-omni' },
+  { id: 'viethealth', name: 'VietHealth Telemedicine', short: 'VH', phase: 'initial', color: '#00796B', dir: 'D:\\Projects\\viethealth' },
+  { id: 'saigon-tms', name: 'Saigon Logistics TMS', short: 'SL', phase: 'initial', color: '#B0154F', dir: 'C:\\Users\\me\\Documents\\saigon-tms' },
+  { id: 'atlas-hr', name: 'Atlas HR Suite', short: 'AH', phase: 'sdlc', color: '#1F5F8B', dir: 'D:\\Projects\\atlas-hr' },
 ];
 
 /** Project shown in the breadcrumb / sidebar demos. */

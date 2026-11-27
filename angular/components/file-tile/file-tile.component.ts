@@ -4,7 +4,7 @@ import { IconComponent } from '../icon/icon.component';
 
 export type FileKind = 'pdf' | 'doc' | 'sheet' | 'md' | 'audio' | 'video' | 'slide' | 'image' | 'design' | 'email' | 'mono' | 'archive';
 
-/** Coloured square icon for a file type. */
+/** File-type glyph. Plain and neutral (no colored tile), per the flat enterprise rules. */
 @Component({
   selector: 'pc-file-tile',
   imports: [IconComponent],

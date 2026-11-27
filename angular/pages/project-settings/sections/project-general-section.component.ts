@@ -20,73 +20,71 @@ const CODE_MAX_LENGTH = 6;
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-settings-section sectionId="general" [title]="'ps.n.general' | t" [description]="'ps.general.d' | t">
-      <div class="card">
-        <pc-setting-row [label]="'ps.g.name' | t">
-          <input
-            pcInput
-            data-testid="ps-name"
-            [invalid]="form.nameMissing()"
-            [value]="form.value().name"
-            (input)="form.patch({ name: text($event) })"
-          />
-        </pc-setting-row>
+      <pc-setting-row [label]="'ps.g.name' | t">
+        <input
+          pcInput
+          data-testid="ps-name"
+          [invalid]="form.nameMissing()"
+          [value]="form.value().name"
+          (input)="form.patch({ name: text($event) })"
+        />
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'ps.g.client' | t">
-          <input pcInput data-testid="ps-client" [value]="form.value().client" (input)="form.patch({ client: text($event) })" />
-        </pc-setting-row>
+      <pc-setting-row [label]="'ps.g.client' | t">
+        <input pcInput data-testid="ps-client" [value]="form.value().client" (input)="form.patch({ client: text($event) })" />
+      </pc-setting-row>
 
-        <pc-setting-row [label]="'ps.g.code' | t" [description]="'ps.g.code.d' | t">
-          <input
-            pcInput
-            class="mono code-input"
-            data-testid="ps-code"
-            [attr.maxlength]="codeMaxLength"
-            [value]="form.value().code"
-            (input)="form.patch({ code: text($event).toUpperCase() })"
-          />
-        </pc-setting-row>
+      <pc-setting-row [label]="'ps.g.code' | t" [description]="'ps.g.code.d' | t">
+        <input
+          pcInput
+          class="mono code-input"
+          data-testid="ps-code"
+          [attr.maxlength]="codeMaxLength"
+          [value]="form.value().code"
+          (input)="form.patch({ code: text($event).toUpperCase() })"
+        />
+      </pc-setting-row>
 
-        <div class="srow stack">
-          <div class="sinfo">
-            <div class="slabel">{{ 'ps.g.desc' | t }}</div>
-            <div class="sdesc">{{ 'ps.g.desc.d' | t }}</div>
-          </div>
-          <textarea
-            pcInput
-            data-testid="ps-description"
-            [placeholder]="'ps.g.desc.ph' | t"
-            [value]="form.value().description"
-            (input)="form.patch({ description: text($event) })"
-          ></textarea>
+      <div class="srow stack">
+        <div class="sinfo">
+          <div class="slabel">{{ 'ps.g.desc' | t }}</div>
+          <div class="sdesc">{{ 'ps.g.desc.d' | t }}</div>
         </div>
-
-        <pc-setting-row [label]="'ps.g.repo' | t" [description]="'ps.g.repo.d' | t">
-          @if (repoNote(); as note) {
-            <div pcSettingDescription class="sdesc repo-note" [class.is-warning]="!form.value().repository" data-testid="ps-repo-note">{{ note }}</div>
-          }
-          <div class="ro" [class.is-empty]="!form.value().repository" data-testid="ps-repo">
-            <pc-icon name="folder-git-2" [size]="14" />
-            <span [title]="form.value().repository">{{ form.value().repository || ('ps.nonerepo' | t) }}</span>
-          </div>
-          <button pcButton type="button" data-testid="ps-repo-browse" [disabled]="form.repoChecking()" (click)="browseRepository()">
-            <pc-icon [name]="form.repoChecking() ? 'refresh-cw' : 'folder-open'" />
-            {{ (form.value().repository ? 'ps.change' : 'ps.link') | t }}
-          </button>
-          @if (form.value().repository && !form.repoRequired()) {
-            <button
-              pcButton
-              variant="ghost"
-              type="button"
-              [iconOnly]="true"
-              data-testid="ps-repo-unlink"
-              [pcTooltip]="'ps.unlink' | t"
-              (click)="form.unlinkRepository()"
-            >
-              <pc-icon name="unlink" />
-            </button>
-          }
-        </pc-setting-row>
+        <textarea
+          pcInput
+          data-testid="ps-description"
+          [placeholder]="'ps.g.desc.ph' | t"
+          [value]="form.value().description"
+          (input)="form.patch({ description: text($event) })"
+        ></textarea>
       </div>
+
+      <pc-setting-row [label]="'ps.g.repo' | t" [description]="'ps.g.repo.d' | t">
+        @if (repoNote(); as note) {
+          <div pcSettingDescription class="sdesc repo-note" [class.is-warning]="!form.value().repository" data-testid="ps-repo-note">{{ note }}</div>
+        }
+        <div class="ro" [class.is-empty]="!form.value().repository" data-testid="ps-repo">
+          <pc-icon name="folder-git-2" [size]="14" />
+          <span [title]="form.value().repository">{{ form.value().repository || ('ps.nonerepo' | t) }}</span>
+        </div>
+        <button pcButton size="sm" type="button" data-testid="ps-repo-browse" [disabled]="form.repoChecking()" (click)="browseRepository()">
+          <pc-icon [name]="form.repoChecking() ? 'refresh-cw' : 'folder-open'" />
+          {{ (form.value().repository ? 'ps.change' : 'ps.link') | t }}
+        </button>
+        @if (form.value().repository && !form.repoRequired()) {
+          <button
+            pcButton
+            variant="ghost"
+            type="button"
+            [iconOnly]="true"
+            data-testid="ps-repo-unlink"
+            [pcTooltip]="'ps.unlink' | t"
+            (click)="form.unlinkRepository()"
+          >
+            <pc-icon name="unlink" />
+          </button>
+        }
+      </pc-setting-row>
     </pc-settings-section>
   `,
 })

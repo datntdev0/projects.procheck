@@ -18,46 +18,44 @@ import { SettingsSectionComponent } from '../settings-section.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-settings-section sectionId="about" [title]="'set.n.about' | t">
-      <div class="card about-card">
-        <div class="about-hero">
-          <div class="mark"><img src="assets/brand/kms-mark.svg" alt="" /></div>
-          <div class="grow">
-            <div class="h3">{{ appName }}</div>
-            <div class="text-sm text-muted">{{ 'set.about.tag' | t }}</div>
-          </div>
-          <button pcButton type="button" data-testid="check-update" [disabled]="checking()" (click)="checkForUpdates()">
-            @if (checking()) {
-              <span class="spinner" aria-hidden="true"></span>
-              {{ 'set.about.checking' | t }}
-            } @else {
-              <pc-icon name="refresh-cw" />
-              {{ 'set.about.check' | t }}
-            }
-          </button>
+      <button pcSettingsSectionActions pcButton size="sm" type="button" data-testid="check-update" [disabled]="checking()" (click)="checkForUpdates()">
+        @if (checking()) {
+          <span class="spinner" aria-hidden="true"></span>
+          {{ 'set.about.checking' | t }}
+        } @else {
+          <pc-icon name="refresh-cw" />
+          {{ 'set.about.check' | t }}
+        }
+      </button>
+      <div class="about-id">
+        <img class="mark" src="assets/brand/kms-mark.svg" alt="" />
+        <div class="grow">
+          <b>{{ appName }}</b>
+          <div class="text-xs text-subtle">{{ 'set.about.tag' | t }}</div>
         </div>
-        <dl class="kv">
-          <dt>{{ 'set.about.ver' | t }}</dt>
-          <dd>
-            <span data-testid="about-version">{{ version }}</span>
-            @if (lastCheck()) {
-              <span class="about-status" data-testid="update-status">
-                <pc-icon name="badge-check" [size]="14" />
-                {{ 'set.about.upto' | t }} · {{ checkedAt() }}
-              </span>
-            }
-          </dd>
-          <dt>{{ 'set.about.settings' | t }}</dt>
-          <dd><code data-testid="about-settings-file">{{ paths()?.settings ?? '—' }}</code></dd>
-          <dt>{{ 'set.about.registry' | t }}</dt>
-          <dd><code data-testid="about-registry-file">{{ paths()?.projects ?? '—' }}</code></dd>
-          <dt>{{ 'set.about.runtime' | t }}</dt>
-          <dd>{{ runtime() }}</dd>
-        </dl>
-        <div class="brand-foot">
-          <img class="logo-light" src="assets/brand/kms-logo.svg" alt="KMS Technology" />
-          <img class="logo-dark" src="assets/brand/kms-logo-white.svg" alt="KMS Technology" />
-          <span class="text-xs text-subtle">{{ 'set.about.foot' | t }}</span>
-        </div>
+      </div>
+      <dl class="kv about-kv">
+        <dt>{{ 'set.about.ver' | t }}</dt>
+        <dd>
+          <span data-testid="about-version">{{ version }}</span>
+          @if (lastCheck()) {
+            <span class="about-status" data-testid="update-status">
+              <pc-icon name="badge-check" [size]="14" />
+              {{ 'set.about.upto' | t }} · {{ checkedAt() }}
+            </span>
+          }
+        </dd>
+        <dt>{{ 'set.about.settings' | t }}</dt>
+        <dd><code data-testid="about-settings-file">{{ paths()?.settings ?? '—' }}</code></dd>
+        <dt>{{ 'set.about.registry' | t }}</dt>
+        <dd><code data-testid="about-registry-file">{{ paths()?.projects ?? '—' }}</code></dd>
+        <dt>{{ 'set.about.runtime' | t }}</dt>
+        <dd>{{ runtime() }}</dd>
+      </dl>
+      <div class="brand-foot">
+        <img class="logo-light" src="assets/brand/kms-logo.svg" alt="KMS Technology" />
+        <img class="logo-dark" src="assets/brand/kms-logo-white.svg" alt="KMS Technology" />
+        <span class="text-xs text-subtle">{{ 'set.about.foot' | t }}</span>
       </div>
     </pc-settings-section>
   `,

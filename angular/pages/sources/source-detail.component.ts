@@ -52,7 +52,7 @@ const INDEX_FOLDER = '.procheck\\index\\';
 
     <div class="sd-sec">
       <div class="sd-h">{{ 'src.det.title' | t }}</div>
-      <dl class="props">
+      <dl class="kv">
         <dt>{{ 'src.det.cat' | t }}</dt>
         <dd>
           <select class="select" data-testid="src-detail-category" [value]="s.category" (change)="setCategory($event)">

@@ -18,7 +18,7 @@ const ICONS: Record<AlertTone, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '[class]': 'classes()', role: 'status' },
   template: `
-    <pc-icon [name]="icon() || defaultIcon()" [style.color]="tone() === 'ai' ? 'var(--accent-purple)' : null" style="margin-top: 2px" />
+    <pc-icon [name]="icon() || defaultIcon()" [style.color]="tone() === 'ai' ? 'var(--brand-fg)' : null" style="margin-top: 2px" />
     <div class="grow">
       @if (title()) {
         <div class="h5" style="margin-bottom: 2px">{{ title() }}</div>

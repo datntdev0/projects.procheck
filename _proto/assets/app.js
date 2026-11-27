@@ -226,11 +226,11 @@
     },
     currentProjectId: 'lotus-pay',
     projects: [
-      { id: 'lotus-pay', name: 'Lotus Pay — Merchant Portal', short: 'LP', client: 'Lotus Financial Group', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 42 }, color: 'linear-gradient(135deg,#006AFE,#245DB3)', updated: '12 min ago', dir: 'D:\\Projects\\lotus-pay', repo: 'D:\\Projects\\lotus-pay\\repository', artifacts: 18, tasks: 34 },
-      { id: 'mekong', name: 'Mekong Retail — Omnichannel', short: 'MR', client: 'Mekong Retail JSC', phase: 'release', progress: { initial: 100, release: 64, sdlc: 0 }, color: 'linear-gradient(135deg,#6A26F1,#006AFE)', updated: '2 h ago', dir: 'D:\\Projects\\mekong-omni', repo: 'D:\\src\\mekong-omni', artifacts: 12, tasks: 0 },
-      { id: 'viethealth', name: 'VietHealth Telemedicine', short: 'VH', client: 'VietHealth Clinics', phase: 'initial', progress: { initial: 55, release: 0, sdlc: 0 }, color: 'linear-gradient(135deg,#02CCB3,#006AFE)', updated: 'Yesterday', dir: 'D:\\Projects\\viethealth', repo: null, artifacts: 6, tasks: 0 },
-      { id: 'saigon-tms', name: 'Saigon Logistics TMS', short: 'SL', client: 'Saigon Logistics Co.', phase: 'initial', progress: { initial: 10, release: 0, sdlc: 0 }, color: 'linear-gradient(135deg,#FE006A,#6A26F1)', updated: '3 days ago', dir: 'C:\\Users\\me\\Documents\\saigon-tms', repo: null, artifacts: 3, tasks: 0 },
-      { id: 'atlas-hr', name: 'Atlas HR Suite', short: 'AH', client: 'Atlas Group (internal)', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 78 }, color: 'linear-gradient(135deg,#245DB3,#62CCFE)', updated: 'Last week', dir: 'D:\\Projects\\atlas-hr', repo: 'D:\\Projects\\atlas-hr\\repository', artifacts: 24, tasks: 61 },
+      { id: 'lotus-pay', name: 'Lotus Pay — Merchant Portal', short: 'LP', client: 'Lotus Financial Group', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 42 }, color: '#245DB3', updated: '12 min ago', dir: 'D:\\Projects\\lotus-pay', repo: 'D:\\Projects\\lotus-pay\\repository', artifacts: 18, tasks: 34 },
+      { id: 'mekong', name: 'Mekong Retail — Omnichannel', short: 'MR', client: 'Mekong Retail JSC', phase: 'release', progress: { initial: 100, release: 64, sdlc: 0 }, color: '#5B2BC4', updated: '2 h ago', dir: 'D:\\Projects\\mekong-omni', repo: 'D:\\src\\mekong-omni', artifacts: 12, tasks: 0 },
+      { id: 'viethealth', name: 'VietHealth Telemedicine', short: 'VH', client: 'VietHealth Clinics', phase: 'initial', progress: { initial: 55, release: 0, sdlc: 0 }, color: '#00796B', updated: 'Yesterday', dir: 'D:\\Projects\\viethealth', repo: null, artifacts: 6, tasks: 0 },
+      { id: 'saigon-tms', name: 'Saigon Logistics TMS', short: 'SL', client: 'Saigon Logistics Co.', phase: 'initial', progress: { initial: 10, release: 0, sdlc: 0 }, color: '#B0154F', updated: '3 days ago', dir: 'C:\\Users\\me\\Documents\\saigon-tms', repo: null, artifacts: 3, tasks: 0 },
+      { id: 'atlas-hr', name: 'Atlas HR Suite', short: 'AH', client: 'Atlas Group (internal)', phase: 'sdlc', progress: { initial: 100, release: 100, sdlc: 78 }, color: '#1F5F8B', updated: 'Last week', dir: 'D:\\Projects\\atlas-hr', repo: 'D:\\Projects\\atlas-hr\\repository', artifacts: 24, tasks: 61 },
     ],
     phases: [
       { id: 'initial', icon: 'compass', color: 'var(--phase-initial)', href: 'initial.html' },

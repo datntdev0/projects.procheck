@@ -16,7 +16,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 export class ProgressComponent {
   /** 0–100. */
   readonly value = input(0);
-  /** AI gradient fill. */
+  /** AI fill (solid brand; gradients are retired). */
   readonly ai = input(false);
   /** Custom fill colour, e.g. `var(--phase-sdlc)`. */
   readonly color = input('');

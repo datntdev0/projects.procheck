@@ -54,17 +54,16 @@ const PROJECT_TREE = PROJECT_ITEMS.map((item) => ({ ...item, icon: itemIcon(item
         {{ 'set.st.refresh' | t }}
       </button>
 
-      <div class="bound-cap"><span>{{ 'set.st.bound.l' | t }}</span><span>{{ 'set.st.bound.r' | t }}</span></div>
       <div class="bound">
-        <div class="card zone" data-testid="storage-app-zone">
+        <div class="zone" data-testid="storage-app-zone">
           <div class="zone-head">
+            <span class="zone-cap">{{ 'set.st.bound.l' | t }}</span>
             <div class="zone-top">
-              <span class="zone-ico"><pc-icon name="monitor-cog" [size]="20" /></span>
+              <pc-icon name="monitor-cog" [size]="15" />
               <h3>{{ 'set.st.app' | t }}</h3>
-              <pc-badge tone="brand"><pc-icon name="layers" [size]="12" />{{ 'set.st.app.badge' | t }}</pc-badge>
+              <pc-badge tone="brand">{{ 'set.st.app.badge' | t }}</pc-badge>
             </div>
             <div class="zone-root">
-              <pc-icon name="folder-open" [size]="14" />
               <span class="truncate" data-testid="storage-root" [title]="overview()?.root ?? ''">{{ overview()?.root ?? '…' }}</span>
               <span class="sz" data-testid="storage-total">{{ overview() ? size(overview()!.totalBytes) : '' }}</span>
               <button
@@ -112,17 +111,15 @@ const PROJECT_TREE = PROJECT_ITEMS.map((item) => ({ ...item, icon: itemIcon(item
           </div>
         </div>
 
-        <div class="gutter"><span><pc-icon name="split" [size]="14" /></span></div>
-
-        <div class="card zone proj" data-testid="storage-project-zone">
+        <div class="zone proj" data-testid="storage-project-zone">
           <div class="zone-head">
+            <span class="zone-cap">{{ 'set.st.bound.r' | t }}</span>
             <div class="zone-top">
-              <span class="zone-ico"><pc-icon name="folder-kanban" [size]="20" /></span>
+              <pc-icon name="folder-kanban" [size]="15" />
               <h3>{{ 'set.st.proj' | t }}</h3>
-              <pc-badge tone="teal"><pc-icon name="folder" [size]="12" />{{ 'set.st.proj.badge' | t }}</pc-badge>
+              <pc-badge tone="teal">{{ 'set.st.proj.badge' | t }}</pc-badge>
             </div>
             <div class="zone-root">
-              <pc-icon name="folder-open" [size]="14" />
               <span class="truncate">{{ 'set.st.proj.root' | t }}</span>
             </div>
           </div>

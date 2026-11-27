@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 
-import { AlertComponent } from '@components/alert/alert.component';
 import { BadgeComponent } from '@components/badge/badge.component';
 import { ButtonComponent } from '@components/button/button.component';
 import { FileTileComponent } from '@components/file-tile/file-tile.component';
@@ -20,7 +19,6 @@ import { StepPanelComponent } from './step-panel.component';
 @Component({
   selector: 'pc-np-sources-step',
   imports: [
-    AlertComponent,
     BadgeComponent,
     ButtonComponent,
     FieldComponent,
@@ -33,67 +31,74 @@ import { StepPanelComponent } from './step-panel.component';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <pc-np-step-panel icon="folder-input" [title]="'np.s3.t' | t" [description]="'np.s3.d' | t">
-      <div>
+    <pc-np-step-panel [title]="'np.s3.t' | t" [description]="'np.s3.d' | t">
+      <div class="sec">
         <button type="button" class="dropzone" data-testid="np-dropzone" [class.is-over]="dragOver()" (click)="form.browseSources()">
-          <span class="dz-ico"><pc-icon name="upload" [size]="20" /></span>
+          <span class="dz-ico"><pc-icon name="upload" [size]="22" /></span>
           <b class="dz-title">{{ 'np.drop.t' | t }}</b>
           <span class="text-xs">{{ 'np.drop.d' | t }}</span>
         </button>
-        <div class="sub-title mt-4"><h5>{{ 'np.files.title' | t }}</h5></div>
-        <div class="flist" data-testid="np-files">
-          @for (file of form.sources(); track file.path) {
-            <div class="fitem">
-              <pc-file-tile [kind]="visual(file.kind).tile" [icon]="visual(file.kind).icon" />
-              <div class="grow" style="min-width: 0">
-                <div class="fname truncate">{{ file.name }}</div>
-                <div class="fmeta truncate" [title]="file.path">{{ size(file.bytes) }} · {{ file.path }}</div>
+        <div>
+          <div class="sub-title"><h5>{{ 'np.files.title' | t }}</h5></div>
+          <div class="flist" data-testid="np-files">
+            @for (file of form.sources(); track file.path) {
+              <div class="fitem">
+                <pc-file-tile [kind]="visual(file.kind).tile" [icon]="visual(file.kind).icon" />
+                <div class="grow" style="min-width: 0">
+                  <div class="fname truncate">{{ file.name }}</div>
+                  <div class="fmeta truncate" [title]="file.path">{{ size(file.bytes) }} · {{ file.path }}</div>
+                </div>
+                <button pcButton variant="ghost" size="sm" [iconOnly]="true" [attr.aria-label]="'np.file.remove' | t" (click)="form.removeSource(file.path)">
+                  <pc-icon name="x" />
+                </button>
               </div>
-              <button pcButton variant="ghost" size="sm" [iconOnly]="true" [attr.aria-label]="'np.file.remove' | t" (click)="form.removeSource(file.path)">
-                <pc-icon name="x" />
-              </button>
-            </div>
-          } @empty {
-            <div class="flist-empty">{{ 'np.files.empty' | t }}</div>
-          }
+            } @empty {
+              <div class="flist-empty">{{ 'np.files.empty' | t }}</div>
+            }
+          </div>
         </div>
       </div>
 
-      <pc-field [error]="repoError()" [hint]="(form.repoRequired() ? 'np.repo.hint.req' : 'np.repo.hint.opt') | t">
-        <div class="sub-title" style="margin-bottom: 0">
-          <label class="label" for="np-repo">{{ 'np.repo.title' | t }}</label>
-          <pc-badge [tone]="form.repoRequired() ? 'warning' : 'neutral'">{{ (form.repoRequired() ? 'np.repo.req' : 'np.repo.opt') | t }}</pc-badge>
-        </div>
-        <div class="dir-row">
-          <div class="input-group grow">
-            <pc-icon name="folder-git-2" />
-            <input
-              pcInput
-              id="np-repo"
-              class="mono"
-              autocomplete="off"
-              spellcheck="false"
-              data-testid="np-repo"
-              [invalid]="!!repoError()"
-              [placeholder]="'np.repo.ph' | t"
-              [value]="form.repository()"
-              (input)="form.setRepository(value($event))"
-              (blur)="form.inspectRepository()"
-            />
+      <div class="sec">
+        <pc-field [error]="repoError()" [hint]="(form.repoRequired() ? 'np.repo.hint.req' : 'np.repo.hint.opt') | t">
+          <div class="sub-title" style="margin-bottom: 0">
+            <label class="label" for="np-repo">{{ 'np.repo.title' | t }}</label>
+            <pc-badge [tone]="form.repoRequired() ? 'warning' : 'neutral'">{{ (form.repoRequired() ? 'np.repo.req' : 'np.repo.opt') | t }}</pc-badge>
           </div>
-          <button pcButton type="button" (click)="form.browseRepository()"><pc-icon name="folder-open" /> {{ 'np.browse' | t }}</button>
-        </div>
-      </pc-field>
-      @if (form.repoChecking()) {
-        <div class="row text-sm text-muted"><pc-spinner /> {{ 'np.repo.checking' | t }}</div>
-      } @else if (form.repoReady()) {
-        <pc-alert tone="success" data-testid="np-repo-ok">
-          {{ repoSummary() }}
-          @if (repoRoot()) {
-            <div class="mono text-xs">{{ repoRoot() }}</div>
-          }
-        </pc-alert>
-      }
+          <div class="dir-row">
+            <div class="input-group grow">
+              <pc-icon name="folder-git-2" />
+              <input
+                pcInput
+                id="np-repo"
+                class="mono"
+                autocomplete="off"
+                spellcheck="false"
+                data-testid="np-repo"
+                [invalid]="!!repoError()"
+                [placeholder]="'np.repo.ph' | t"
+                [value]="form.repository()"
+                (input)="form.setRepository(value($event))"
+                (blur)="form.inspectRepository()"
+              />
+            </div>
+            <button pcButton type="button" (click)="form.browseRepository()"><pc-icon name="folder-open" /> {{ 'np.browse' | t }}</button>
+          </div>
+        </pc-field>
+        @if (form.repoChecking()) {
+          <div class="row text-sm text-muted"><pc-spinner /> {{ 'np.repo.checking' | t }}</div>
+        } @else if (form.repoReady()) {
+          <div class="note-line ok" data-testid="np-repo-ok">
+            <pc-icon name="git-branch" [size]="14" />
+            <div class="grow" style="min-width: 0">
+              {{ repoSummary() }}
+              @if (repoRoot()) {
+                <div class="mono truncate">{{ repoRoot() }}</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
     </pc-np-step-panel>
   `,
 })

@@ -1,20 +1,12 @@
 /* ---------- Dropzone ---------- */
-.dropzone { border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg); padding: var(--space-8); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); text-align: center; color: var(--fg-subtle); background: var(--bg-surface-2); transition: border-color var(--dur-fast), background var(--dur-fast); cursor: pointer; }
+.dropzone { border: 1px dashed var(--border-strong); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; align-items: center; gap: var(--space-2); text-align: center; color: var(--fg-subtle); background: var(--bg-surface-2); transition: border-color var(--dur-fast), background var(--dur-fast); cursor: pointer; }
 .dropzone:hover, .dropzone.is-over { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-fg); }
-.dz-ico { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--bg-surface); border: 1px solid var(--border-default); color: var(--brand-fg); }
-.dropzone.is-over .dz-ico, .dropzone:hover .dz-ico { border-color: var(--brand); }
+.dz-ico { display: flex; align-items: center; justify-content: center; color: var(--fg-subtle); }
+.dropzone.is-over .dz-ico, .dropzone:hover .dz-ico { color: var(--brand-fg); }
 .dz-title { font-size: var(--text-md); color: var(--fg-default); }
 
-/* ---------- File icon tile ---------- */
-.file-tile { width: 32px; height: 32px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--brand-soft); color: var(--brand-fg); }
-.file-tile-pdf { background: var(--danger-soft); color: var(--danger-fg); }
-.file-tile-doc { background: var(--brand-soft); color: var(--brand-fg); }
-.file-tile-sheet { background: var(--success-soft); color: var(--success-fg); }
-.file-tile-md { background: var(--accent-purple-soft); color: var(--accent-purple); }
-.file-tile-audio { background: var(--accent-magenta-soft); color: var(--accent-magenta); }
-.file-tile-video { background: var(--accent-magenta-soft); color: var(--accent-magenta); }
-.file-tile-slide { background: var(--warning-soft); color: var(--warning-fg); }
-.file-tile-image { background: var(--accent-teal-soft); color: var(--accent-teal-fg); }
-.file-tile-design { background: var(--accent-purple-soft); color: var(--accent-purple); }
-.file-tile-email { background: var(--info-soft); color: var(--info-fg); }
-.file-tile-mono, .file-tile-archive { background: var(--bg-surface-3); color: var(--fg-muted); }
+/* ---------- File icon ----------
+   Plain neutral glyph: no colored tile behind icons (enterprise rule 5). The kind classes stay
+   so callers keep working; only status should color an icon. */
+.file-tile { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--fg-subtle); background: none; }
+.file-tile pc-icon, .file-tile svg { width: 16px; height: 16px; }

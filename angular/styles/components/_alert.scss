@@ -1,12 +1,12 @@
 /* ---------- Alerts / Callouts ---------- */
-.alert { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid; font-size: var(--text-sm); }
-.alert-info { background: var(--info-soft); border-color: color-mix(in srgb, var(--info) 25%, transparent); color: var(--fg-default); }
+.alert { display: flex; gap: var(--space-3); padding: 10px var(--space-4); border-radius: var(--radius-md); border: 1px solid; border-left-width: 3px; font-size: var(--text-sm); }
+.alert-info { background: var(--info-soft); border-color: color-mix(in srgb, var(--info) 25%, transparent); border-left-color: var(--info); color: var(--fg-default); }
 .alert-info > pc-icon, .alert-info > svg { color: var(--info-fg); }
-.alert-success { background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 25%, transparent); }
+.alert-success { background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 25%, transparent); border-left-color: var(--success); }
 .alert-success > pc-icon, .alert-success > svg { color: var(--success-fg); }
-.alert-warning { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 30%, transparent); }
+.alert-warning { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 30%, transparent); border-left-color: var(--warning); }
 .alert-warning > pc-icon, .alert-warning > svg { color: var(--warning-fg); }
-.alert-danger { background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 25%, transparent); }
+.alert-danger { background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 25%, transparent); border-left-color: var(--danger); }
 .alert-danger > pc-icon, .alert-danger > svg { color: var(--danger-fg); }
-.alert-ai { background: linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box, var(--gradient-ai) border-box; border: 1px solid transparent; }
+.alert-ai { background: var(--bg-surface); border-color: var(--border-default); border-left-color: var(--brand); }
 

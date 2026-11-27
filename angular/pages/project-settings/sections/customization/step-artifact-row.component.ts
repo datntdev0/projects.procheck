@@ -25,7 +25,7 @@ import { StepArtifactConfig } from './customization.model';
     '(drop)': 'onDrop($event)',
   },
   template: `
-    <span class="file-tile"><pc-icon [name]="artifact().template ? 'file-badge' : 'file-text'" /></span>
+    <pc-icon class="fa-glyph" [name]="artifact().template ? 'file-badge' : 'file-text'" [size]="16" />
     <input
       pcInput
       data-testid="ps-fl-art-name"
@@ -37,7 +37,7 @@ import { StepArtifactConfig } from './customization.model';
 
     @if (artifact().template; as file) {
       <div class="fa-file" data-testid="ps-fl-art-template">
-        <pc-icon name="file-badge" [size]="15" />
+        <pc-icon name="file-badge" [size]="14" />
         <span class="nm" [title]="file.name">{{ file.name }}</span>
         <span class="sz">{{ file.size }}</span>
         <button pcButton variant="ghost" size="sm" type="button" [iconOnly]="true" [pcTooltip]="'ps.fl.replace' | t" (click)="picker.click()">

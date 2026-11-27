@@ -19,7 +19,7 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
   imports: [ButtonComponent, IconComponent, InputDirective, StepArtifactRowComponent, SwitchComponent, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'card fstep',
+    class: 'fstep',
     '[class.is-open]': 'open()',
     '[class.is-off]': 'step().off',
     '[attr.data-testid]': "'ps-cz-step-' + step().id",
@@ -27,8 +27,7 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
   template: `
     <div class="fs-head">
       <button type="button" class="fs-toggle" [attr.aria-expanded]="open()" (click)="open.set(!open())">
-        <span class="fs-n">{{ index() + 1 }}</span>
-        <span class="fs-ico"><pc-icon [name]="definition().icon" [size]="15" /></span>
+        <span class="fs-n">{{ number() }}</span>
         <span class="fs-t">
           <b>{{ definition().name | t }}</b>
           <small>
@@ -93,17 +92,19 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
               <pc-icon name="plus" />{{ 'ps.fl.add' | t }}
             </button>
           </div>
-          @for (artifact of step().artifacts; track artifact.key; let n = $index) {
-            <pc-step-artifact-row
-              [artifact]="artifact"
-              (rename)="renameArtifact.emit({ index: n, name: $event })"
-              (attach)="attachTemplate.emit({ index: n, file: $event })"
-              (removeTemplate)="removeTemplate.emit(n)"
-              (remove)="removeArtifact.emit(n)"
-            />
-          } @empty {
-            <div class="fa-none">{{ 'ps.fl.none' | t }}</div>
-          }
+          <div class="fa-list">
+            @for (artifact of step().artifacts; track artifact.key; let n = $index) {
+              <pc-step-artifact-row
+                [artifact]="artifact"
+                (rename)="renameArtifact.emit({ index: n, name: $event })"
+                (attach)="attachTemplate.emit({ index: n, file: $event })"
+                (removeTemplate)="removeTemplate.emit(n)"
+                (remove)="removeArtifact.emit(n)"
+              />
+            } @empty {
+              <div class="fa-none">{{ 'ps.fl.none' | t }}</div>
+            }
+          </div>
         </div>
       </div>
     }
@@ -129,6 +130,9 @@ export class StepConfigCardComponent {
   readonly attachTemplate = output<{ index: number; file: File }>();
   readonly removeTemplate = output<number>();
   readonly removeArtifact = output<number>();
+
+  /** Step number as shown in the step header: two-digit, plain mono. */
+  protected readonly number = computed(() => String(this.index() + 1).padStart(2, '0'));
 
   protected readonly names = computed(() =>
     this.step()

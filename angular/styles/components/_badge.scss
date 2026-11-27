@@ -1,5 +1,5 @@
 /* ---------- Badges / Tags / Status ---------- */
-.badge { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: var(--radius-full); font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: .02em; white-space: nowrap; background: var(--bg-surface-3); color: var(--fg-muted); }
+.badge { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 6px; border-radius: var(--radius-xs); font-size: var(--text-2xs); font-weight: var(--weight-semibold); letter-spacing: .01em; white-space: nowrap; background: var(--bg-surface-3); color: var(--fg-muted); }
 .badge pc-icon, .badge svg { width: 12px; height: 12px; }
 .badge-brand { background: var(--brand-soft); color: var(--brand-fg); }
 .badge-purple { background: var(--accent-purple-soft); color: var(--accent-purple); }
@@ -16,7 +16,7 @@
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 50%, transparent); } 70% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
 
 /* Phase chips */
-.phase-chip { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: var(--radius-full); font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; }
+.phase-chip { display: inline-flex; align-items: center; gap: 6px; height: 20px; padding: 0 6px; border-radius: var(--radius-xs); font-size: var(--text-2xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: .06em; }
 .phase-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .phase-initial { color: var(--phase-initial); background: var(--brand-soft); }
 .phase-release { color: var(--phase-release); background: var(--accent-purple-soft); }

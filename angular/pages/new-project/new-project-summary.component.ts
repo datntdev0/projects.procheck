@@ -23,11 +23,11 @@ interface SummaryRow {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'aside' },
   template: `
-    <div class="card" style="overflow: hidden">
+    <div class="card np-panel">
       <div class="sum-head">
-        <pc-project-avatar [short]="form.monogram()" [size]="40" />
+        <pc-project-avatar [short]="form.monogram()" [size]="36" />
         <div class="grow" style="min-width: 0">
-          <div class="h5 truncate">{{ form.name().trim() || ('np.sum.untitled' | t) }}</div>
+          <div class="sum-name truncate" [class.text-faint]="!form.name().trim()">{{ form.name().trim() || ('np.sum.untitled' | t) }}</div>
           <div class="text-xs text-subtle truncate">{{ form.client().trim() || ('np.sum.client' | t) }}</div>
         </div>
       </div>
@@ -43,10 +43,10 @@ interface SummaryRow {
           </div>
         }
       </div>
-    </div>
-    <div class="card tip-card">
-      <pc-icon name="lightbulb" [size]="16" />
-      <span>{{ 'np.tip.' + form.step() | t }}</span>
+      <div class="tip-line note-line">
+        <pc-icon name="lightbulb" [size]="14" />
+        <span>{{ 'np.tip.' + form.step() | t }}</span>
+      </div>
     </div>
   `,
 })

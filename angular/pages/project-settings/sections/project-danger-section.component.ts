@@ -22,18 +22,16 @@ import { SETTINGS_SECTION } from '../../settings/settings-section.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-settings-section class="is-danger" sectionId="danger" [title]="'ps.n.danger' | t" [description]="'ps.danger.d' | t">
-      <div class="card danger-card">
-        <pc-setting-row [label]="'ps.d.remove' | t" [description]="'ps.d.remove.d' | t">
-          <button pcButton type="button" data-testid="ps-remove" (click)="removeOpen.set(true)">
-            <pc-icon name="list-x" />{{ 'ps.d.remove.btn' | t }}
-          </button>
-        </pc-setting-row>
-        <pc-setting-row class="is-danger" [label]="'ps.d.delete' | t" [description]="'ps.d.delete.d' | t">
-          <button pcButton variant="danger" type="button" data-testid="ps-delete" (click)="openDelete()">
-            <pc-icon name="trash-2" />{{ 'ps.d.delete.btn' | t }}
-          </button>
-        </pc-setting-row>
-      </div>
+      <pc-setting-row [label]="'ps.d.remove' | t" [description]="'ps.d.remove.d' | t">
+        <button pcButton type="button" data-testid="ps-remove" (click)="removeOpen.set(true)">
+          <pc-icon name="list-x" />{{ 'ps.d.remove.btn' | t }}
+        </button>
+      </pc-setting-row>
+      <pc-setting-row class="is-danger" [label]="'ps.d.delete' | t" [description]="'ps.d.delete.d' | t">
+        <button pcButton variant="danger" type="button" data-testid="ps-delete" (click)="openDelete()">
+          <pc-icon name="trash-2" />{{ 'ps.d.delete.btn' | t }}
+        </button>
+      </pc-setting-row>
     </pc-settings-section>
 
     <pc-dialog [(open)]="removeOpen" [title]="'ps.d.remove.t' | t: { n: name() }" width="min(480px, 100%)" [dismissible]="!busy()">

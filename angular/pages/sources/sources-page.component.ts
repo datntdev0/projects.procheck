@@ -8,6 +8,7 @@ import { FileTileComponent } from '@components/file-tile/file-tile.component';
 import { InputDirective } from '@components/form/input.directive';
 import { IconComponent } from '@components/icon/icon.component';
 import { MENU } from '@components/menu/menu.component';
+import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
 import { ProjectsService } from '@features/projects/projects.service';
 import {
@@ -65,6 +66,7 @@ const SAMPLE_KINDS: SourceKind[] = ['pdf', 'doc', 'slide', 'sheet', 'audio', 'vi
     IconComponent,
     InputDirective,
     MENU,
+    PageHeaderComponent,
     ProjectGateComponent,
     SourceAccessComponent,
     SourceDetailComponent,

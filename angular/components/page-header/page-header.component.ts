@@ -1,21 +1,27 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-/** Page title block inside the canvas. Project actions with `[pcPageActions]`. */
+/**
+ * Flat page title row: kicker, title, meta line and actions, closed by a bottom rule.
+ * No hero panel, gradient or icon tile. Project extra meta with `[pcPageMeta]` and actions with `[pcPageActions]`.
+ */
 @Component({
   selector: 'pc-page-header',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'page-header' },
+  host: { class: 'page-head' },
   template: `
-    <div>
+    <div class="grow">
       @if (kicker()) {
-        <div class="kicker" style="margin-bottom: 6px">{{ kicker() }}</div>
+        <div class="kicker" style="margin-bottom: 4px">{{ kicker() }}</div>
       }
       <h1>{{ title() }}</h1>
-      @if (subtitle()) {
-        <div class="subtitle">{{ subtitle() }}</div>
-      }
+      <div class="meta">
+        @if (subtitle()) {
+          <span>{{ subtitle() }}</span>
+        }
+        <ng-content select="[pcPageMeta]" />
+      </div>
     </div>
-    <div class="row"><ng-content select="[pcPageActions]" /></div>
+    <div class="actions"><ng-content select="[pcPageActions]" /></div>
   `,
 })
 export class PageHeaderComponent {

@@ -16,10 +16,10 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 })
 export class ProjectAvatarComponent {
   readonly short = input.required<string>();
-  /** Any CSS background; defaults to the brand gradient. */
+  /** Any solid CSS color; defaults to the brand dark blue. */
   readonly color = input<string>('');
   readonly size = input(32);
 
-  protected readonly radius = computed(() => Math.round(this.size() / 4));
+  protected readonly radius = computed(() => Math.max(2, Math.round(this.size() / 8)));
   protected readonly fontSize = computed(() => Math.max(9, Math.round(this.size() * 0.36)));
 }
