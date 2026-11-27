@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use super::catalog::{self, RunningStep};
 use super::history;
-use super::prompt::{self, PromptInput, is_unreadable};
+use super::prompt::{self, PromptInput};
 use super::{ArtifactsError, INITIAL_DIR, Loaded, load};
 use crate::features::agents::{self, AgentId};
 use crate::features::chats::runner::{self, CliRun, Signal};
@@ -64,8 +64,6 @@ pub enum GenerateWarning {
     OutsideChanges { paths: Vec<String>, more: usize },
     /// A large source (kept out of git) changed or was removed.
     LargeSourceChanged { paths: Vec<String>, more: usize },
-    /// Sources the agent cannot read.
-    UnreadableSources { count: usize },
     /// The run completed without changing any file, so the step is not marked generated.
     NoChanges,
 }
@@ -281,10 +279,6 @@ pub fn generate(
 
     // Whatever the outcome: what changed, and what changed where it must not.
     let mut warnings = Vec::new();
-    let unreadable = sources.iter().filter(|s| !s.missing && is_unreadable(s.kind)).count();
-    if unreadable > 0 {
-        warnings.push(GenerateWarning::UnreadableSources { count: unreadable });
-    }
     let outside = outside_changes(&dirs);
     if !outside.is_empty() {
         log::warn!("run {run_id}: changes outside artifacts/initial/: {}", outside.join(", "));

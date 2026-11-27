@@ -56,8 +56,6 @@ export interface ArtifactsOverview {
   /** Files in folders that are not in the customization any more. */
   orphans: ArtifactFile[];
   running: { runId: string; stepId: string } | null;
-  /** Sources the agent cannot read (audio, video, office, archive, stored-only). */
-  unreadableSources: number;
   /** The CLI of the project (`.procheck/settings.json`); `null` when the settings are missing. */
   cli: AgentId | null;
 }
@@ -74,7 +72,6 @@ export type GenerateWarning =
   | { code: 'outsideChanges'; paths: string[]; more: number }
   /** A large (gitignored) source changed or was removed. */
   | { code: 'largeSourceChanged'; paths: string[]; more: number }
-  | { code: 'unreadableSources'; count: number }
   /** Completed without changing any file (the step is not marked generated). */
   | { code: 'noChanges' };
 

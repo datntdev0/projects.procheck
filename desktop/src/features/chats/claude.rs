@@ -10,8 +10,10 @@ use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, ToolAccess, Usage
 use crate::features::agents::AgentId;
 
 const PROJECT_TOOLS: &str = "Read,Edit,Write,Glob,Grep,Bash";
-/// Tools of an artifact agent: no Bash and no web; writing is limited by path rules below.
-const AGENT_TOOLS: &str = "Read,Glob,Grep,Write,Edit";
+/// Tools of an artifact agent: no web. Bash lets it read formats `Read` cannot open (Excel, Word,
+/// PowerPoint, archives); `Write` and `Edit` are limited by the path rules below, and changes Bash
+/// makes outside the write folder are reported after the run.
+const AGENT_TOOLS: &str = "Read,Glob,Grep,Write,Edit,Bash";
 /// Tool inputs that name what the tool works on, in order of preference.
 const TOOL_TARGETS: [&str; 4] = ["file_path", "path", "pattern", "command"];
 const BLOCK_SEPARATOR: &str = "\n\n";
@@ -43,7 +45,7 @@ fn tool_args(access: ToolAccess) -> Vec<String> {
             "--tools".into(),
             AGENT_TOOLS.into(),
             "--allowedTools".into(),
-            format!("Read,Glob,Grep,Write({write_dir}/**),Edit({write_dir}/**)"),
+            format!("Read,Glob,Grep,Bash,Write({write_dir}/**),Edit({write_dir}/**)"),
         ],
     };
     list
@@ -284,6 +286,15 @@ mod tests {
         assert!(args.windows(2).any(|w| w == ["--allowedTools", PROJECT_TOOLS]));
         assert!(args.windows(2).any(|w| w == ["--permission-mode", "acceptEdits"]));
         assert!(PROJECT_TOOLS.split(',').any(|t| t == "Bash"));
+    }
+
+    #[test]
+    fn artifact_agents_may_run_commands_but_write_only_their_folder() {
+        let args = args(None, None, ToolAccess::Agent { write_dir: "artifacts/initial" });
+        assert!(args.windows(2).any(|w| w == ["--tools", AGENT_TOOLS]));
+        assert!(args.windows(2).any(|w| w[0] == "--allowedTools"
+            && w[1] == "Read,Glob,Grep,Bash,Write(artifacts/initial/**),Edit(artifacts/initial/**)"));
+        assert!(!args.contains(&"--permission-mode".to_owned()));
     }
 
     #[test]

@@ -6,7 +6,6 @@ use super::catalog::{ArtifactFile, ReviewStatus};
 use crate::features::projects::DocumentLanguage;
 use crate::features::projects::customization::PhaseCustomization;
 use crate::features::projects::sources::catalog::SourceRecord;
-use crate::features::projects::sources::kinds::{ReadMode, SourceKind};
 
 const TEMPLATE_VI: &str = include_str!("../../../../resources/prompts/generate-step.vi.md");
 const TEMPLATE_EN: &str = include_str!("../../../../resources/prompts/generate-step.en.md");
@@ -16,7 +15,6 @@ struct Words {
     none: &'static str,
     template: &'static str,
     no_template: &'static str,
-    unreadable: &'static str,
     uncommitted: &'static str,
     statuses: [&'static str; 3],
 }
@@ -25,7 +23,6 @@ const VI: Words = Words {
     none: "(chưa có)",
     template: "mẫu",
     no_template: "không có mẫu, hãy tự chọn cấu trúc phù hợp",
-    unreadable: "không đọc được",
     uncommitted: "chưa commit",
     statuses: ["Nháp", "Đang review", "Đã duyệt"],
 };
@@ -34,7 +31,6 @@ const EN: Words = Words {
     none: "(none)",
     template: "template",
     no_template: "no template: choose a fitting structure",
-    unreadable: "cannot be read",
     uncommitted: "uncommitted",
     statuses: ["Draft", "In review", "Approved"],
 };
@@ -49,13 +45,6 @@ pub fn step_name(language: DocumentLanguage, step_id: &str) -> &str {
         .iter()
         .position(|id| *id == step_id)
         .map_or(step_id, |i| names[i])
-}
-
-/// Formats the agent cannot read: audio and video need transcribing, Office files and archives
-/// need unpacking, and stored-only formats have no reader at all.
-pub fn is_unreadable(kind: SourceKind) -> bool {
-    matches!(kind, SourceKind::Audio | SourceKind::Video | SourceKind::Doc | SourceKind::Slide | SourceKind::Sheet | SourceKind::Archive)
-        || kind.mode() == ReadMode::Store
 }
 
 pub struct PromptInput<'a> {
@@ -102,7 +91,7 @@ pub fn build(input: &PromptInput<'_>) -> String {
         input.files.iter().filter(|f| earlier.contains(&f.artifact_id.as_str())).map(|f| format!("- {}", f.path)),
         words,
     );
-    let sources = list(input.sources.iter().filter(|s| !s.missing).map(|s| source_line(s, words)), words);
+    let sources = list(input.sources.iter().filter(|s| !s.missing).map(source_line), words);
 
     fill(
         template,
@@ -134,13 +123,10 @@ fn existing_line(file: &ArtifactFile, words: &Words) -> String {
     format!("- {} ({})", file.path, notes.join(", "))
 }
 
-fn source_line(source: &SourceRecord, words: &Words) -> String {
+/// Every source is listed the same way: the agent decides how to read each file.
+fn source_line(source: &SourceRecord) -> String {
     let kind = format!("{:?}", source.kind).to_lowercase();
-    if is_unreadable(source.kind) {
-        format!("- sources/{} ({kind}, {})", source.path, words.unreadable)
-    } else {
-        format!("- sources/{} ({kind})", source.path)
-    }
+    format!("- sources/{} ({kind})", source.path)
 }
 
 /// The lines, or the "none" word when there are none.

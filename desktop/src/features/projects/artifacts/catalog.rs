@@ -11,13 +11,12 @@ use std::sync::{Mutex, PoisonError};
 use serde::{Deserialize, Serialize};
 
 use super::history::{self, ArtifactLog};
-use super::prompt::is_unreadable;
 use super::{ArtifactsError, INITIAL_DIR};
 use crate::features::agents::AgentId;
 use crate::features::projects::DocumentLanguage;
 use crate::features::projects::customization::PhaseCustomization;
 use crate::features::projects::layout::ProjectDirectories;
-use crate::features::projects::sources::{self, catalog as source_catalog, modified_at, safe_relative, to_relative_string};
+use crate::features::projects::sources::{self, modified_at, safe_relative, to_relative_string};
 use crate::infra::storage::{StorageResult, json_file};
 
 pub const RECORDS_VERSION: u32 = 1;
@@ -110,8 +109,6 @@ pub struct ArtifactsOverview {
     /// Files in folders that are not in the customization (any more).
     pub orphans: Vec<ArtifactFile>,
     pub running: Option<RunningStep>,
-    /// Sources the agent cannot read (audio, video, office files, archives, stored-only formats).
-    pub unreadable_sources: usize,
 }
 
 /// `.procheck\artifacts.json`.
@@ -189,7 +186,6 @@ pub fn overview(
         steps,
         orphans: files,
         running,
-        unreadable_sources: unreadable_sources(dirs),
     })
 }
 
@@ -200,16 +196,6 @@ fn step_status(generated: bool, locked: bool, artifacts: &[StepArtifact]) -> Ste
         return if all_approved { StepStatus::Done } else { StepStatus::Review };
     }
     if locked { StepStatus::Todo } else { StepStatus::Current }
-}
-
-fn unreadable_sources(dirs: &ProjectDirectories) -> usize {
-    match source_catalog::read(dirs) {
-        Ok(catalog) => catalog.sources.iter().filter(|s| !s.missing && is_unreadable(s.kind)).count(),
-        Err(e) => {
-            log::warn!("could not read the source catalog: {e}");
-            0
-        }
-    }
 }
 
 /// Steps with at least one successful agent run.

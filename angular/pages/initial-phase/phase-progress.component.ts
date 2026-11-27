@@ -67,7 +67,7 @@ const TOOL_ICON: Record<string, string> = {
       </div>
     </div>
 
-    @if (notices().length || unreadable() > 0) {
+    @if (notices().length) {
       <div class="ph-notes">
         @for (note of notices(); track note.key) {
           <pc-alert [tone]="note.tone" [attr.data-testid]="'phase-note-' + note.id">
@@ -75,12 +75,6 @@ const TOOL_ICON: Record<string, string> = {
             @if (note.link) {
               <a [routerLink]="note.link" fragment="agents">{{ note.linkLabel | t }}</a>
             }
-          </pc-alert>
-        }
-        @if (unreadable() > 0) {
-          <pc-alert tone="warning" data-testid="phase-note-unreadable">
-            {{ 'gen.note.unreadable' | t: { n: unreadable() } }}
-            <a [routerLink]="['/projects', projectId(), 'sources']">{{ 'gen.note.sources' | t }}</a>
           </pc-alert>
         }
       </div>
@@ -223,9 +217,6 @@ const TOOL_ICON: Record<string, string> = {
                             {{ 'gen.warn.large' | t }}
                             <ng-container *ngTemplateOutlet="paths; context: { $implicit: warning }" />
                           }
-                          @case ('unreadableSources') {
-                            {{ 'gen.warn.unreadable' | t: { n: warning.count } }}
-                          }
                           @case ('noChanges') {
                             {{ 'gen.warn.nochange' | t }}
                           }
@@ -277,7 +268,6 @@ export class PhaseProgressComponent {
 
   private readonly overview = computed(() => this.store.overview(this.projectId()));
   protected readonly run = computed(() => this.store.running(this.projectId()));
-  protected readonly unreadable = computed(() => this.overview()?.unreadableSources ?? 0);
 
   /** Why the project's CLI cannot run: not installed or not signed in (`null` while checking, or when unknown). */
   private readonly cliProblem = computed<'missing' | 'signedOut' | null>(() => {
