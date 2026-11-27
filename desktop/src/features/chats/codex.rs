@@ -10,7 +10,7 @@ use serde_json::Value;
 
 use super::runner::{Signal, TurnOutcome};
 use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, ToolAccess, UsageLimits, from_epoch_seconds, now};
-use crate::features::agents::AgentId;
+use crate::features::agents::{AgentId, CODEX_NO_UPDATE_CHECK};
 
 const SESSIONS_DIR: &str = "sessions";
 const WINDOWS_SANDBOX: &str = "windows.sandbox=\"unelevated\"";
@@ -20,7 +20,7 @@ pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -
         ToolAccess::None => "read-only",
         ToolAccess::ProjectFiles | ToolAccess::Agent { .. } => "workspace-write",
     };
-    let mut args: Vec<String> = vec!["exec".into(), "--sandbox".into(), sandbox.into()];
+    let mut args: Vec<String> = vec!["exec".into(), "--sandbox".into(), sandbox.into(), "-c".into(), CODEX_NO_UPDATE_CHECK.into()];
     if cfg!(windows) {
         args.extend(["-c".into(), WINDOWS_SANDBOX.into()]);
     }
@@ -279,7 +279,7 @@ mod tests {
 
     fn read_only_args(rest: &[&str]) -> Vec<String> {
         let sandbox: &[&str] = if cfg!(windows) { &["-c", WINDOWS_SANDBOX] } else { &[] };
-        [&["exec", "--sandbox", "read-only"], sandbox, rest].concat().into_iter().map(str::to_owned).collect()
+        [&["exec", "--sandbox", "read-only", "-c", CODEX_NO_UPDATE_CHECK], sandbox, rest].concat().into_iter().map(str::to_owned).collect()
     }
 
     #[test]

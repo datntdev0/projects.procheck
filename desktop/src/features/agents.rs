@@ -7,9 +7,11 @@
 //! touches the CLI outside Procheck. `HOME` / `USERPROFILE` are left alone so git, ssh and
 //! package managers keep working. The sign-in is shared by every project.
 //!
-//! This module finds the executable, reads its version and sign-in state, runs a one-turn
-//! connection test and starts sign-in / sign-out.
+//! The executables are the ones Procheck downloaded (`infra::tools`); nothing on the user's `PATH`
+//! is used. This module reads the installed version and sign-in state, runs a one-turn connection
+//! test and starts sign-in / sign-out.
 use std::fs;
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
@@ -19,17 +21,20 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::infra::process::{self, Launch, Output, RunError};
+use crate::infra::tools::{self, install, manifest::{self, ToolId}};
 
 const CODEX_AUTH_FILE: &str = "auth.json";
 const CLAUDE_CREDENTIALS_FILE: &str = ".credentials.json";
 const CLAUDE_CONFIG_FILE: &str = ".claude.json";
 const OPENAI_AUTH_CLAIM: &str = "https://api.openai.com/auth";
 
-const VERSION_TIMEOUT: Duration = Duration::from_secs(15);
 const TEST_TIMEOUT: Duration = Duration::from_secs(120);
 const SIGN_OUT_TIMEOUT: Duration = Duration::from_secs(30);
 const SIGN_IN_TIMEOUT: Duration = Duration::from_secs(600);
 const MODELS_TIMEOUT: Duration = Duration::from_secs(30);
+
+/// `-c` value that stops Codex looking for a newer version on start (the version is pinned).
+pub(crate) const CODEX_NO_UPDATE_CHECK: &str = "check_for_update_on_startup=false";
 
 /// Prompt of the connection test: one short turn, no tools.
 const TEST_PROMPT: &str = "Reply with the single word OK.";
@@ -76,48 +81,13 @@ impl AgentId {
         }
     }
 
-    /// Executable name looked up on `PATH`.
-    fn program(self) -> &'static str {
+    /// The tool that provides this CLI.
+    pub fn tool_id(self) -> ToolId {
         match self {
-            Self::Claude => "claude",
-            Self::Codex => "codex",
+            Self::Claude => ToolId::Claude,
+            Self::Codex => ToolId::Codex,
         }
     }
-
-    /// Install locations checked when the CLI is not on `PATH` (e.g. a PATH change after Procheck started).
-    fn known_locations(self) -> Vec<PathBuf> {
-        let home = std::env::var_os("USERPROFILE").map(PathBuf::from);
-        let appdata = std::env::var_os("APPDATA").map(PathBuf::from);
-        let mut paths = Vec::new();
-        match self {
-            Self::Claude => {
-                if let Some(home) = &home {
-                    paths.push(home.join(".local").join("bin").join("claude.exe"));
-                }
-                if let Some(appdata) = &appdata {
-                    paths.push(appdata.join("npm").join("claude.cmd"));
-                }
-            }
-            Self::Codex => {
-                if let Some(appdata) = &appdata {
-                    paths.push(appdata.join("npm").join("codex.cmd"));
-                }
-            }
-        }
-        paths
-    }
-}
-
-/// Where the executable came from.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub enum BinarySource {
-    /// Path set in Settings.
-    Custom,
-    /// Found on `PATH` or in a known install location.
-    Detected,
-    /// Nothing found.
-    None,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -153,18 +123,20 @@ pub struct ModelOption {
 pub struct AgentStatus {
     pub agent: AgentId,
     pub name: &'static str,
-    /// Executable that was checked (custom or detected).
-    pub bin_path: Option<String>,
-    pub source: BinarySource,
     /// CLI home folder in the application data directory (sign-in, config, sessions).
     pub home: String,
-    /// True when the executable started and reported a version.
+    /// The CLI is downloaded (marker and executable are there).
     pub installed: bool,
+    /// The downloaded version.
     pub version: Option<String>,
+    /// The version Procheck wants (`tools.manifest.json`).
+    pub bundled_version: String,
+    /// Downloaded, but not the wanted version.
+    pub outdated: bool,
     pub auth: AuthStatus,
     /// Models offered in the "Default model" list.
     pub models: Vec<ModelOption>,
-    /// Why the CLI could not be checked (missing file, failed to start, …).
+    /// Why the CLI could not be checked (its home cannot be created, …).
     pub error: Option<String>,
 }
 
@@ -200,7 +172,7 @@ impl AgentError {
 impl std::fmt::Display for AgentError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::NotInstalled(why) => write!(f, "CLI not found: {why}"),
+            Self::NotInstalled(why) => write!(f, "{why}"),
             Self::SignedOut => write!(f, "not signed in"),
             Self::Timeout => write!(f, "the CLI did not answer in time"),
             Self::Failed(why) => write!(f, "{why}"),
@@ -220,86 +192,68 @@ impl From<RunError> for AgentError {
     }
 }
 
-/// Executable to run: the custom path when set (even if missing, so the UI can report it),
-/// otherwise the first match on `PATH` or in a known install location.
-pub fn resolve_binary(agent: AgentId, custom: Option<&str>) -> (Option<PathBuf>, BinarySource) {
-    if let Some(custom) = custom.map(str::trim).filter(|c| !c.is_empty()) {
-        return (Some(PathBuf::from(custom)), BinarySource::Custom);
-    }
-    let found = process::find_on_path(agent.program())
-        .or_else(|| agent.known_locations().into_iter().find(|p| p.is_file()));
-    match found {
-        Some(path) => (Some(path), BinarySource::Detected),
-        None => (None, BinarySource::None),
-    }
+/// The CLI Procheck downloaded, when it is installed.
+pub fn bundled_binary(agent: AgentId) -> Option<PathBuf> {
+    tools::installed_executable(agent.tool_id())
 }
 
-/// Environment of every CLI run: the CLI home, and no credentials inherited from the user's environment.
+pub(crate) fn require_binary(agent: AgentId) -> Result<PathBuf, AgentError> {
+    bundled_binary(agent).ok_or_else(|| {
+        AgentError::NotInstalled(format!("{} has not been downloaded. Download it in Settings → Agent integration.", agent.name()))
+    })
+}
+
+/// Environment of every CLI run: the CLI home, no credentials inherited from the user's environment,
+/// the downloaded git first on `PATH`, and no self-update (the version is the one Procheck pins).
+/// Claude Code also gets the Git Bash it needs on Windows.
 pub(crate) fn launch<'a>(agent: AgentId, home: &Path, cwd: Option<&'a Path>) -> Result<Launch<'a>, AgentError> {
     fs::create_dir_all(home).map_err(|e| AgentError::Failed(format!("could not create {}: {e}", home.display())))?;
+    let mut env = vec![(agent.home_var(), home.as_os_str().to_owned())];
+    if let Some(layout) = tools::layout() {
+        env.push(("PATH", path_with_git(layout.git_cmd_dir())));
+        if agent == AgentId::Claude {
+            env.push(("DISABLE_AUTOUPDATER", "1".into()));
+            env.push(("CLAUDE_CODE_GIT_BASH_PATH", layout.git_bash().into_os_string()));
+        }
+    }
     Ok(Launch {
         cwd,
-        env: vec![(agent.home_var(), home.as_os_str().to_owned())],
+        env,
         unset: agent.credential_vars(),
     })
 }
 
-pub(crate) fn require_binary(agent: AgentId, custom: Option<&str>) -> Result<PathBuf, AgentError> {
-    match resolve_binary(agent, custom) {
-        (Some(path), _) if path.is_file() => Ok(path),
-        (Some(path), _) => Err(AgentError::NotInstalled(path.display().to_string())),
-        (None, _) => Err(AgentError::NotInstalled(format!("{} is not on PATH", agent.program()))),
-    }
+/// `PATH` with `dir` in front.
+fn path_with_git(dir: PathBuf) -> OsString {
+    let current = std::env::var_os("PATH").unwrap_or_default();
+    std::env::join_paths(std::iter::once(dir).chain(std::env::split_paths(&current))).unwrap_or(current)
 }
 
-/// Finds the CLI and reads its version, sign-in state and models, using the CLI home `home`.
-pub fn status(agent: AgentId, custom: Option<&str>, home: &Path) -> AgentStatus {
-    let (bin, source) = resolve_binary(agent, custom);
+/// The downloaded version, whether it is the wanted one, the sign-in state and the models.
+/// Reads the install marker and the CLI home's files; the CLI is only started to list Codex models.
+pub fn status(agent: AgentId, home: &Path) -> AgentStatus {
+    let wanted = manifest::item(agent.tool_id());
+    let marker = tools::layout().and_then(|layout| install::installed(layout, agent.tool_id()));
     let mut status = AgentStatus {
         agent,
         name: agent.name(),
-        bin_path: bin.as_ref().map(|p| p.display().to_string()),
-        source,
         home: home.display().to_string(),
-        installed: false,
-        version: None,
+        installed: marker.is_some(),
+        version: marker.as_ref().map(|m| m.version.clone()),
+        bundled_version: wanted.version.clone(),
+        outdated: marker.as_ref().is_some_and(|m| m.version != wanted.version || m.sha256 != wanted.sha256),
         auth: AuthStatus::default(),
         models: Vec::new(),
         error: None,
     };
-    let Some(bin) = bin else {
+    let Some(bin) = bundled_binary(agent) else {
         return status;
     };
-    if !bin.is_file() {
-        status.error = Some(format!("file not found: {}", bin.display()));
-        return status;
-    }
-    let env = match launch(agent, home, None) {
-        Ok(env) => env,
-        Err(e) => {
-            status.error = Some(e.to_string());
-            return status;
-        }
-    };
-
-    match process::run(&bin, ["--version"], &env, VERSION_TIMEOUT) {
-        Ok(out) if out.success() => match parse_version(&out.stdout) {
-            Some(version) => {
-                status.installed = true;
-                status.version = Some(version);
-            }
-            None => status.error = Some(format!("unexpected --version output: {}", first_line(&out.stdout))),
-        },
-        Ok(out) => status.error = Some(failure_reason(&out)),
+    status.auth = read_auth(agent, home);
+    match launch(agent, home, None) {
+        Ok(env) => status.models = models(agent, &bin, &env),
         Err(e) => status.error = Some(e.to_string()),
     }
-    if !status.installed {
-        log::warn!("{} at {} could not be checked: {}", agent.name(), bin.display(), status.error.as_deref().unwrap_or("?"));
-        return status;
-    }
-
-    status.auth = read_auth(agent, home);
-    status.models = models(agent, &bin, &env);
     log::debug!("agent status: {status:?}");
     status
 }
@@ -383,8 +337,8 @@ fn json_text(value: &Value, path: &[&str]) -> Option<String> {
 
 /// Sends one short prompt from `cwd` (an empty scratch folder) and waits for the answer.
 /// No session is kept and no MCP servers are loaded.
-pub fn test(agent: AgentId, custom: Option<&str>, model: Option<&str>, home: &Path, cwd: &Path) -> Result<TestResult, AgentError> {
-    let bin = require_binary(agent, custom)?;
+pub fn test(agent: AgentId, model: Option<&str>, home: &Path, cwd: &Path) -> Result<TestResult, AgentError> {
+    let bin = require_binary(agent)?;
     let model = model.map(str::trim).filter(|m| !m.is_empty());
     let mut args: Vec<String> = match agent {
         AgentId::Claude => vec![
@@ -402,6 +356,8 @@ pub fn test(agent: AgentId, custom: Option<&str>, model: Option<&str>, home: &Pa
             "--skip-git-repo-check".into(),
             "--sandbox".into(),
             "read-only".into(),
+            "-c".into(),
+            CODEX_NO_UPDATE_CHECK.into(),
         ],
     };
     if let Some(model) = model {
@@ -430,8 +386,8 @@ pub fn test(agent: AgentId, custom: Option<&str>, model: Option<&str>, home: &Pa
 }
 
 /// Opens the CLI's sign-in (into the CLI home) in a console window and waits until the window closes.
-pub fn sign_in(agent: AgentId, custom: Option<&str>, home: &Path, cwd: &Path) -> Result<AgentStatus, AgentError> {
-    let bin = require_binary(agent, custom)?;
+pub fn sign_in(agent: AgentId, home: &Path, cwd: &Path) -> Result<AgentStatus, AgentError> {
+    let bin = require_binary(agent)?;
     let args: &[&str] = match agent {
         AgentId::Claude => &["auth", "login"],
         AgentId::Codex => &["login"],
@@ -439,12 +395,12 @@ pub fn sign_in(agent: AgentId, custom: Option<&str>, home: &Path, cwd: &Path) ->
     log::info!("starting sign-in for {}", agent.name());
     let exit = process::run_in_console(&bin, args, &launch(agent, home, Some(cwd))?, SIGN_IN_TIMEOUT)?;
     log::info!("{} sign-in window closed ({exit})", agent.name());
-    Ok(status(agent, custom, home))
+    Ok(status(agent, home))
 }
 
 /// Signs the CLI out of its Procheck home. The user's own CLI sign-in is not affected.
-pub fn sign_out(agent: AgentId, custom: Option<&str>, home: &Path) -> Result<AgentStatus, AgentError> {
-    let bin = require_binary(agent, custom)?;
+pub fn sign_out(agent: AgentId, home: &Path) -> Result<AgentStatus, AgentError> {
+    let bin = require_binary(agent)?;
     let args: &[&str] = match agent {
         AgentId::Claude => &["auth", "logout"],
         AgentId::Codex => &["logout"],
@@ -454,7 +410,7 @@ pub fn sign_out(agent: AgentId, custom: Option<&str>, home: &Path) -> Result<Age
         return Err(AgentError::Failed(failure_reason(&out)));
     }
     log::info!("signed out of {}", agent.name());
-    Ok(status(agent, custom, home))
+    Ok(status(agent, home))
 }
 
 /// Models offered for the CLI.
@@ -487,14 +443,6 @@ const CLAUDE_MODELS: &[(&str, &str)] = &[
 ];
 
 // ---------- Output parsing ----------
-
-/// First whitespace-separated token that starts with a digit: `2.1.330 (Claude Code)`, `codex-cli 0.168.0`.
-fn parse_version(stdout: &str) -> Option<String> {
-    stdout
-        .split_whitespace()
-        .find(|t| t.starts_with(|c: char| c.is_ascii_digit()))
-        .map(|t| t.trim_end_matches(|c: char| !c.is_ascii_alphanumeric()).to_owned())
-}
 
 fn parse_codex_models(text: &str) -> Vec<ModelOption> {
     let Ok(json) = serde_json::from_str::<Value>(text) else {
@@ -597,10 +545,6 @@ fn failure_reason(out: &Output) -> String {
         .unwrap_or_else(|| format!("exited with {}", out.status))
 }
 
-fn first_line(text: &str) -> &str {
-    text.lines().next().unwrap_or_default().trim()
-}
-
 fn elapsed_ms(out: &Output) -> u64 {
     u64::try_from(out.elapsed.as_millis()).unwrap_or(u64::MAX)
 }
@@ -626,13 +570,6 @@ mod tests {
             stderr: stderr.into(),
             elapsed: Duration::from_millis(812),
         }
-    }
-
-    #[test]
-    fn versions() {
-        assert_eq!(parse_version("2.1.330 (Claude Code)\n").as_deref(), Some("2.1.330"));
-        assert_eq!(parse_version("codex-cli 0.168.0\r\n").as_deref(), Some("0.168.0"));
-        assert_eq!(parse_version("usage: foo"), None);
     }
 
     #[test]
@@ -715,40 +652,26 @@ mod tests {
     }
 
     #[test]
-    fn custom_path_wins_and_missing_file_is_reported() {
-        let missing = "Z:\\nowhere\\claude.exe";
+    fn a_cli_that_is_not_downloaded_is_reported() {
         let home = std::env::temp_dir().join("procheck-agents-missing");
-        assert_eq!(resolve_binary(AgentId::Claude, Some(missing)), (Some(PathBuf::from(missing)), BinarySource::Custom));
-        let status = status(AgentId::Claude, Some(missing), &home);
-        assert!(!status.installed);
-        assert!(status.error.unwrap().contains("file not found"));
-        assert!(matches!(test(AgentId::Codex, Some(missing), None, &home, Path::new(".")), Err(AgentError::NotInstalled(_))));
+        let status = status(AgentId::Claude, &home);
+        assert!(!status.installed && !status.outdated);
+        assert_eq!((status.version, status.bundled_version), (None, manifest::item(ToolId::Claude).version.clone()));
+        assert!(matches!(test(AgentId::Codex, None, &home, Path::new(".")), Err(AgentError::NotInstalled(_))));
     }
 
     /// The CLI runs with its home variable pointing at the Procheck home, without inherited credentials.
-    #[cfg(windows)]
     #[test]
     fn cli_runs_with_its_procheck_home() {
         let dir = std::env::temp_dir().join(format!("procheck-agents-home-{}", std::process::id()));
         let _ = fs::remove_dir_all(&dir);
-        fs::create_dir_all(&dir).unwrap();
-        let bin = dir.join("claude.cmd");
-        fs::write(
-            &bin,
-            "@echo off\r\nif \"%~1\"==\"--version\" (echo %CLAUDE_CONFIG_DIR%>\"%~dp0seen-home.txt\"& echo [%ANTHROPIC_API_KEY%]>\"%~dp0seen-key.txt\"& echo 1.2.3 ^(Claude Code^)& exit /b 0)\r\necho {\"loggedIn\": false}\r\nexit /b 1\r\n",
-        )
-        .unwrap();
         let home = dir.join("cli").join("claude");
 
-        let status = status(AgentId::Claude, Some(bin.to_str().unwrap()), &home);
+        let launch = launch(AgentId::Claude, &home, None).unwrap();
 
-        assert_eq!(status.version.as_deref(), Some("1.2.3"));
         assert!(home.is_dir());
-        assert_eq!(status.home, home.display().to_string());
-        assert_eq!(fs::read_to_string(dir.join("seen-home.txt")).unwrap().trim(), home.display().to_string());
-        assert_eq!(fs::read_to_string(dir.join("seen-key.txt")).unwrap().trim(), "[]");
-        assert!(!status.auth.signed_in);
-        assert_eq!(status.models.first().map(|m| m.id.as_str()), Some("fable"));
+        assert!(launch.env.contains(&("CLAUDE_CONFIG_DIR", home.as_os_str().to_owned())));
+        assert!(launch.unset.contains(&"ANTHROPIC_API_KEY"));
         fs::remove_dir_all(dir).unwrap();
     }
 }

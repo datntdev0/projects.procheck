@@ -6,7 +6,8 @@ use std::time::Duration;
 use serde::Serialize;
 
 use super::ProjectPhase;
-use crate::infra::process::{self, Launch, Output, RunError};
+use crate::infra::git;
+use crate::infra::process::{Output, RunError};
 
 const GIT_TIMEOUT: Duration = Duration::from_secs(10);
 
@@ -92,7 +93,7 @@ pub fn inspect(path: &Path) -> RepositoryInfo {
 fn git(dir: &Path, args: &[&str]) -> Result<Output, RunError> {
     let mut full: Vec<&OsStr> = vec![OsStr::new("-C"), dir.as_os_str()];
     full.extend(args.iter().map(OsStr::new));
-    process::run(Path::new("git"), full, &Launch::default(), GIT_TIMEOUT)
+    git::run(full, GIT_TIMEOUT)
 }
 
 fn git_line(dir: &Path, args: &[&str]) -> Option<String> {

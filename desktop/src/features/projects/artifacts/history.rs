@@ -7,13 +7,13 @@ use std::collections::{HashMap, HashSet};
 use std::ffi::OsStr;
 use std::fs;
 use std::io;
-use std::path::Path;
 use std::time::Duration;
 
 use crate::features::projects::layout::ProjectDirectories;
 use crate::features::projects::sources::catalog;
 use crate::features::projects::sources::{hash_file, modified_at, safe_relative};
-use crate::infra::process::{self, Launch, Output, RunError};
+use crate::infra::git;
+use crate::infra::process::{Output, RunError};
 use crate::infra::storage::StorageError;
 
 const READ_TIMEOUT: Duration = Duration::from_secs(20);
@@ -84,23 +84,12 @@ impl From<StorageError> for HistoryError {
     }
 }
 
+/// Runs Procheck's git in the project directory (user, line endings and the rest come from
+/// Procheck's git configuration, see `infra::git`).
 fn git(dirs: &ProjectDirectories, args: &[&str], timeout: Duration) -> Result<Output, HistoryError> {
     let mut full: Vec<&OsStr> = vec![OsStr::new("-C"), dirs.root.as_os_str()];
-    full.extend(
-        [
-            "-c",
-            "user.name=Procheck",
-            "-c",
-            "user.email=procheck@local",
-            "-c",
-            "core.quotepath=false",
-            "-c",
-            "commit.gpgsign=false",
-        ]
-        .map(OsStr::new),
-    );
     full.extend(args.iter().map(OsStr::new));
-    process::run(Path::new("git"), full, &Launch::default(), timeout).map_err(|e| match e {
+    git::run(full, timeout).map_err(|e| match e {
         RunError::Spawn(_) => HistoryError::GitMissing,
         other => HistoryError::Failed(other.to_string()),
     })
@@ -124,7 +113,7 @@ fn failure_reason(output: &Output) -> String {
 }
 
 pub fn available() -> bool {
-    process::run(Path::new("git"), ["--version"], &Launch::default(), READ_TIMEOUT).is_ok_and(|o| o.success())
+    git::run(["--version"], READ_TIMEOUT).is_ok_and(|o| o.success())
 }
 
 /// The project directory has its own `.git` (a parent folder's repository does not count).

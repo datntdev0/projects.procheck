@@ -219,7 +219,7 @@ pub fn generate(
         AgentId::Claude => &ctx.claude,
         AgentId::Codex => &ctx.codex,
     };
-    agents::require_binary(agent, agent_settings.bin_path.as_deref())?;
+    agents::require_binary(agent)?;
     let home = ctx.cli_dir.join(agent.key());
     if !agents::is_signed_in(agent, &home) {
         return Err(agents::AgentError::SignedOut.into());
@@ -261,7 +261,7 @@ pub fn generate(
     let model = settings.model.as_deref().or(agent_settings.model.as_deref());
     let run = CliRun {
         agent,
-        bin_path: agent_settings.bin_path.as_deref(),
+        bin: None,
         home: &home,
         cwd: &dirs.root,
         model,

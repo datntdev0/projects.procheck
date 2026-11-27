@@ -163,6 +163,8 @@ pub struct TurnContext<'a> {
     pub cli_dir: PathBuf,
     pub cwd: PathBuf,
     pub access: ToolAccess,
+    /// Executable to run instead of the downloaded CLI (tests run a fake one).
+    pub bin: Option<PathBuf>,
 }
 
 impl TurnContext<'_> {
@@ -225,8 +227,8 @@ fn record_user_message(store: &ChatStore, chat_id: &str, prompt: &str) -> Result
 /// One CLI invocation: which CLI, from where, with which tools and prompt.
 pub struct CliRun<'a> {
     pub agent: AgentId,
-    /// Executable set in Settings; `None` = find it on PATH.
-    pub bin_path: Option<&'a str>,
+    /// Executable to run instead of the downloaded CLI (tests run a fake one).
+    pub bin: Option<&'a Path>,
     /// The Procheck home of the CLI (`cli\claude`).
     pub home: &'a Path,
     pub cwd: &'a Path,
@@ -294,7 +296,7 @@ fn execute(ctx: &TurnContext<'_>, chat: &ChatSummary, home: &Path, prompt: &str,
     log::info!("chat {}: {} turn ({})", chat.id, chat.agent.name(), if session.is_some() { "resume" } else { "new session" });
     let run = CliRun {
         agent: chat.agent,
-        bin_path: settings.bin_path.as_deref(),
+        bin: ctx.bin.as_deref(),
         home,
         cwd: &ctx.cwd,
         model: chat.selected_model.as_deref().or(settings.model.as_deref()),
@@ -313,7 +315,7 @@ fn execute(ctx: &TurnContext<'_>, chat: &ChatSummary, home: &Path, prompt: &str,
 /// Runs the CLI once, streaming what it does to `emit`. `attach` receives the kill switch as soon
 /// as the process runs, so the caller can stop it. Chats and artifact generation share this.
 pub fn run_cli(run: &CliRun<'_>, attach: &mut dyn FnMut(Arc<KillSwitch>), emit: &mut dyn FnMut(Signal)) -> Execution {
-    let bin = match agents::require_binary(run.agent, run.bin_path) {
+    let bin = match run.bin.map(Path::to_owned).map_or_else(|| agents::require_binary(run.agent), Ok) {
         Ok(bin) => bin,
         Err(e) => return Execution::failed(e),
     };
@@ -447,11 +449,12 @@ mod tests {
             TurnContext {
                 store: &self.store,
                 runs: &self.runs,
-                claude: AgentSettings { bin_path: bin, model: None },
+                claude: AgentSettings::default(),
                 codex: AgentSettings::default(),
                 cli_dir: self.dir.join("cli"),
                 cwd: self.dir.join("scratch"),
                 access: ToolAccess::None,
+                bin: bin.map(PathBuf::from),
             }
         }
     }

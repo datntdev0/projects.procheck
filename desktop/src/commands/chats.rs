@@ -147,6 +147,7 @@ fn run_turn<R: Runtime>(app: &AppHandle<R>, id: &str, text: &str, channel: &Chan
         cli_dir: directories.cli_dir(),
         cwd,
         access,
+        bin: None,
     };
     let mut emit = |event: ChatEvent| {
         if let Err(e) = channel.send(event) {
