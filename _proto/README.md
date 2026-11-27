@@ -44,6 +44,7 @@ The UI reads as a dense, calm enterprise tool, not a marketing page. `overview.h
 ```
 _proto/
   DESIGN.html            Design system
+  splash.html            Startup splash (no chrome): checks bundled Git / Claude Code / Codex in the data folder, downloads Git only (required); CLIs are downloaded in Settings → Agent integration. ?state=checking|missing|running|failed|ready. Git version is frozen (no update flow)
   index.html             All projects (cross-project overview)
   new-project.html       New project wizard (?mode=open → open an existing project folder)
   overview.html          Project overview: phases, metrics (incl. sprint/agent metrics)

@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Starting · Procheck</title>
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="assets/components.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <script src="assets/app.js"></script>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ===== Splash — startup check of bundled tools (Git, Claude Code, Codex). No app chrome. ===== */
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg-canvas); color: var(--fg-default); }
+    .splash { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--space-8) var(--space-4) 96px; box-sizing: border-box; }
+    .sp-corner { position: fixed; top: var(--space-3); right: var(--space-3); display: flex; gap: 2px; }
+
+    .sp-brand { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); margin-bottom: var(--space-6); text-align: center; }
+    .sp-mark { width: 52px; height: 52px; border-radius: var(--radius-lg); background: var(--brand); display: flex; align-items: center; justify-content: center; }
+    .sp-mark img { width: 30px; height: 30px; }
+    .sp-name { font-size: 20px; font-weight: var(--weight-semibold); color: var(--fg-strong); letter-spacing: -.01em; }
+    .sp-ver { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 2px; }
+
+    .sp-card { width: min(560px, 100%); }
+    .sp-head { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-4); border-bottom: 1px solid var(--border-subtle); }
+    .sp-head .st-ic { width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--bg-surface-3); color: var(--fg-muted); }
+    .sp-head .st-ic.brand { background: var(--brand-soft); color: var(--brand-fg); }
+    .sp-head .st-ic.ok { background: var(--success-soft); color: var(--success-fg); }
+    .sp-head .st-ic.err { background: var(--danger-soft); color: var(--danger-fg); }
+    .sp-head h1 { font-size: var(--text-md); font-weight: var(--weight-semibold); margin: 0; color: var(--fg-strong); }
+    .sp-head p { margin: 3px 0 0; font-size: var(--text-xs); color: var(--fg-subtle); line-height: 1.55; }
+
+    .tools { list-style: none; margin: 0; padding: 0; }
+    .tool { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 4px var(--space-3); align-items: center; padding: 12px var(--space-4); }
+    .tool + .tool { border-top: 1px solid var(--border-subtle); }
+    .tool .t-ic { width: 32px; height: 32px; border-radius: var(--radius-md); border: 1px solid var(--border-default); display: flex; align-items: center; justify-content: center; color: var(--fg-muted); background: var(--bg-surface); }
+    .tool .t-main { min-width: 0; }
+    .tool .t-name { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--fg-strong); }
+    .tool .t-role { font-size: var(--text-xs); color: var(--fg-subtle); margin-top: 1px; }
+    .tool .t-meta { font-size: 11px; color: var(--fg-faint); font-variant-numeric: tabular-nums; }
+    .tool .t-st { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--fg-muted); white-space: nowrap; }
+    .tool .t-st svg { width: 15px; height: 15px; }
+    .tool .t-st.ok { color: var(--success-fg); }
+    .tool .t-st.err { color: var(--danger-fg); }
+    .tool .t-st.wait { color: var(--fg-subtle); }
+    .tool .t-st.later { color: var(--fg-subtle); }
+    .tool .t-st a { font-weight: var(--weight-medium); }
+    .tool .t-prog { grid-column: 2 / 4; display: flex; flex-direction: column; gap: 4px; }
+    .tool .t-prog .row-x { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
+    .tool.is-dim .t-ic, .tool.is-dim .t-name { opacity: .75; }
+    .progress > i { display: block; height: 100%; background: var(--brand); transition: width .2s linear; }
+    .progress.indet > i { width: 30% !important; animation: indet 1.1s ease-in-out infinite; }
+    @keyframes indet { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+    .spin { animation: spin 1s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }
+
+    .sp-err { margin: 0 var(--space-4) var(--space-3); padding: 9px 12px; border-radius: var(--radius-sm); background: var(--danger-soft); color: var(--danger-fg); font-size: var(--text-xs); line-height: 1.5; display: flex; gap: 8px; }
+    .sp-err svg { flex-shrink: 0; margin-top: 1px; }
+    .sp-err code { background: transparent; border: 0; padding: 0; color: inherit; }
+
+    .sp-foot { display: flex; align-items: center; gap: var(--space-2); padding: 10px var(--space-4); border-top: 1px solid var(--border-subtle); background: var(--bg-surface-2); }
+    .sp-foot .where { font-size: 11px; color: var(--fg-subtle); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sp-foot .where code { font-size: 11px; background: transparent; border: 0; padding: 0; color: var(--fg-muted); }
+    .sp-foot .grow { flex: 1; }
+    .sp-note { width: min(560px, 100%); margin-top: var(--space-3); font-size: var(--text-xs); color: var(--fg-subtle); display: flex; gap: 6px; line-height: 1.5; }
+    .sp-note svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* prototype-only state switcher */
+    .demo { position: fixed; left: 50%; bottom: var(--space-3); transform: translateX(-50%); display: flex; gap: 2px; padding: 4px; border: 1px dashed var(--border-strong); border-radius: var(--radius-md); background: var(--bg-surface); box-shadow: var(--shadow-sm); flex-wrap: wrap; justify-content: center; max-width: calc(100% - 32px); }
+    .demo .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--fg-faint); padding: 0 6px; align-self: center; }
+    .demo button.is-on { background: var(--bg-active); color: var(--fg-strong); }
+  </style>
+</head>
+<body data-shell="none">
+  <div class="splash">
+    <div class="sp-corner">
+      <button class="btn btn-ghost btn-sm" data-action="lang"><i data-lucide="languages"></i><span id="lang-l"></span></button>
+      <button class="btn btn-ghost btn-sm btn-icon" data-action="theme" data-i18n-title="shell.theme"><i data-lucide="sun-moon"></i></button>
+    </div>
+
+    <div class="sp-brand">
+      <div class="sp-mark"><img src="assets/kms-mark-current.svg" alt="" style="filter: brightness(0) invert(1)"></div>
+      <div>
+        <div class="sp-name">Procheck</div>
+        <div class="sp-ver"><span data-i18n="sp.ver"></span> 0.4.0 · <span data-i18n="app.by"></span></div>
+      </div>
+    </div>
+
+    <section class="card sp-card" id="card"></section>
+    <div class="sp-note" id="note"></div>
+  </div>
+
+  <div class="demo" id="demo"><span class="lbl">Prototype state</span></div>
+
+  <script>
+    PC.i18n.extend({
+      en: {
+        'sp.ver': 'Version',
+        'sp.t.checking': 'Checking tools…', 'sp.d.checking': 'Procheck uses its own copy of Git and the agent CLIs, kept in its data folder.',
+        'sp.t.missing': 'Git needs to be downloaded', 'sp.d.missing': 'Procheck keeps the history of every project in Git. A portable copy is downloaded once into the Procheck data folder; your own Git and settings are not touched.',
+        'sp.t.running': 'Setting up Git…', 'sp.d.running': 'Keep Procheck open. If the connection drops, the download resumes where it stopped.',
+        'sp.t.failed': 'Git could not be installed', 'sp.d.failed': 'Nothing was changed. Fix the problem below and try again.',
+        'sp.t.ready': 'Ready', 'sp.d.ready': 'Opening Procheck…',
+        'sp.git': 'Git', 'sp.git.r': 'Project history and artifact versions',
+        'sp.claude': 'Claude Code', 'sp.claude.r': 'Agent CLI by Anthropic',
+        'sp.codex': 'Codex', 'sp.codex.r': 'Agent CLI by OpenAI',
+        'sp.req': 'Required', 'sp.opt': 'Optional',
+        'sp.s.checking': 'Checking…', 'sp.s.ready': 'Installed', 'sp.s.missing': 'Not downloaded', 'sp.s.pending': 'Waiting',
+        'sp.s.downloading': 'Downloading', 'sp.s.verifying': 'Verifying checksum…', 'sp.s.extracting': 'Extracting…', 'sp.s.configuring': 'Configuring Git…',
+        'sp.s.error': 'Failed', 'sp.s.later': 'Download in', 'sp.s.later.link': 'Settings',
+        'sp.prog': '{r} of {t} · {s}/s · {eta} left',
+        'sp.download': 'Download Git ({s})', 'sp.retry': 'Try again', 'sp.cancel': 'Cancel', 'sp.quit': 'Quit', 'sp.open': 'Open Procheck', 'sp.logs': 'Open logs',
+        'sp.where': 'Installs to', 'sp.cancelled': 'Download paused. Click Download to resume.',
+        'sp.err.network': 'Could not reach github.com (connection timed out). Check your network or proxy.',
+        'sp.note.cli': 'Claude Code and Codex are downloaded later in Settings → Agent integration, only the ones you use (~400 MB and ~220 MB).',
+        'sp.note.git': 'Git runs with Procheck\'s own configuration in {path}; your ~/.gitconfig is never read or changed.',
+      },
+      vi: {
+        'sp.ver': 'Phiên bản',
+        'sp.t.checking': 'Đang kiểm tra công cụ…', 'sp.d.checking': 'Procheck dùng bản Git và CLI agent riêng, lưu trong thư mục dữ liệu của ứng dụng.',
+        'sp.t.missing': 'Cần tải Git', 'sp.d.missing': 'Procheck lưu lịch sử mỗi dự án bằng Git. Một bản Git portable được tải một lần vào thư mục dữ liệu của Procheck; Git và cấu hình của bạn không bị đụng tới.',
+        'sp.t.running': 'Đang cài Git…', 'sp.d.running': 'Hãy để Procheck mở. Nếu mất kết nối, việc tải sẽ tiếp tục từ chỗ đã dừng.',
+        'sp.t.failed': 'Không cài được Git', 'sp.d.failed': 'Chưa có gì bị thay đổi. Khắc phục lỗi bên dưới rồi thử lại.',
+        'sp.t.ready': 'Sẵn sàng', 'sp.d.ready': 'Đang mở Procheck…',
+        'sp.git': 'Git', 'sp.git.r': 'Lịch sử dự án và phiên bản tài liệu',
+        'sp.claude': 'Claude Code', 'sp.claude.r': 'CLI agent của Anthropic',
+        'sp.codex': 'Codex', 'sp.codex.r': 'CLI agent của OpenAI',
+        'sp.req': 'Bắt buộc', 'sp.opt': 'Tuỳ chọn',
+        'sp.s.checking': 'Đang kiểm tra…', 'sp.s.ready': 'Đã cài', 'sp.s.missing': 'Chưa tải', 'sp.s.pending': 'Đang chờ',
+        'sp.s.downloading': 'Đang tải', 'sp.s.verifying': 'Đang kiểm tra checksum…', 'sp.s.extracting': 'Đang giải nén…', 'sp.s.configuring': 'Đang cấu hình Git…',
+        'sp.s.error': 'Lỗi', 'sp.s.later': 'Tải trong', 'sp.s.later.link': 'Cài đặt',
+        'sp.prog': '{r} / {t} · {s}/s · còn {eta}',
+        'sp.download': 'Tải Git ({s})', 'sp.retry': 'Thử lại', 'sp.cancel': 'Huỷ', 'sp.quit': 'Thoát', 'sp.open': 'Mở Procheck', 'sp.logs': 'Mở log',
+        'sp.where': 'Cài vào', 'sp.cancelled': 'Đã tạm dừng. Bấm Tải để tiếp tục.',
+        'sp.err.network': 'Không kết nối được github.com (hết thời gian chờ). Kiểm tra mạng hoặc proxy.',
+        'sp.note.cli': 'Claude Code và Codex được tải sau trong Cài đặt → Tích hợp agent, chỉ tải cái bạn dùng (~400 MB và ~220 MB).',
+        'sp.note.git': 'Git chạy với cấu hình riêng của Procheck ở {path}; ~/.gitconfig của bạn không bị đọc hay sửa.',
+      },
+    });
+
+    const GIT = { v: '2.53.0', size: 62.4 * 1048576 };
+    const DATA = '%LOCALAPPDATA%\\Procheck';
+    const TOOLS = [
+      { id: 'git', icon: 'git-branch', req: true },
+      { id: 'claude', icon: 'sparkles', v: '2.1.332' },
+      { id: 'codex', icon: 'terminal', v: '0.172.0' },
+    ];
+    const STATES = ['checking', 'missing', 'running', 'failed', 'ready'];
+    const S = { state: new URLSearchParams(location.search).get('state') || 'missing', git: 'missing', received: 0, speed: 0, cli: { claude: 'ready', codex: 'missing' }, cancelled: false, timer: null };
+
+    const mb = b => (b / 1048576).toFixed(b < 10485760 ? 1 : 0) + ' MB';
+    const eta = s => s >= 60 ? Math.ceil(s / 60) + ' min' : Math.max(1, Math.round(s)) + ' s';
+
+    function gitStatus() {
+      const g = S.git;
+      if (g === 'checking') return `<span class="t-st wait"><i data-lucide="loader-circle" class="spin"></i>${PC.t('sp.s.checking')}</span>`;
+      if (g === 'ready') return `<span class="t-st ok"><i data-lucide="circle-check"></i>${PC.t('sp.s.ready')}</span>`;
+      if (g === 'error') return `<span class="t-st err"><i data-lucide="circle-x"></i>${PC.t('sp.s.error')}</span>`;
+      if (['downloading', 'verifying', 'extracting', 'configuring'].includes(g)) return `<span class="t-st"><i data-lucide="${g === 'downloading' ? 'download' : g === 'verifying' ? 'shield-check' : g === 'extracting' ? 'package-open' : 'settings-2'}"></i>${PC.t('sp.s.' + g)}</span>`;
+      return `<span class="t-st wait"><i data-lucide="circle-dashed"></i>${PC.t('sp.s.missing')}</span>`;
+    }
+    function cliStatus(id) {
+      if (S.state === 'checking') return `<span class="t-st wait"><i data-lucide="loader-circle" class="spin"></i>${PC.t('sp.s.checking')}</span>`;
+      if (S.cli[id] === 'ready') return `<span class="t-st ok"><i data-lucide="circle-check"></i>${PC.t('sp.s.ready')}</span>`;
+      return `<span class="t-st later"><i data-lucide="clock"></i>${PC.t('sp.s.later')} <a href="settings.html#agents">${PC.t('sp.s.later.link')}</a></span>`;
+    }
+
+    function toolRow(t) {
+      const name = PC.t('sp.' + t.id), role = PC.t('sp.' + t.id + '.r');
+      const v = t.id === 'git' ? GIT.v : t.v;
+      const meta = t.id === 'git' ? `${v} · ${mb(GIT.size)}` : v;
+      const badge = t.req ? `<span class="badge badge-brand">${PC.t('sp.req')}</span>` : `<span class="badge">${PC.t('sp.opt')}</span>`;
+      let prog = '';
+      if (t.id === 'git' && ['downloading', 'verifying', 'extracting', 'configuring'].includes(S.git)) {
+        const pct = S.git === 'downloading' ? (S.received / GIT.size) * 100 : 100;
+        const indet = S.git !== 'downloading';
+        const line = S.git === 'downloading'
+          ? PC.t('sp.prog', { r: mb(S.received), t: mb(GIT.size), s: mb(S.speed), eta: eta((GIT.size - S.received) / Math.max(S.speed, 1)) })
+          : PC.t('sp.s.' + S.git);
+        prog = `<div class="t-prog"><div class="progress ${indet ? 'indet' : ''}"><i style="width:${pct.toFixed(1)}%"></i></div><div class="row-x"><span>${line}</span><span>${indet ? '' : Math.floor(pct) + '%'}</span></div></div>`;
+      }
+      const dim = t.id !== 'git' && S.cli[t.id] !== 'ready' && S.state !== 'checking';
+      return `<li class="tool ${dim ? 'is-dim' : ''}" data-tool="${t.id}">
+        <span class="t-ic"><i data-lucide="${t.icon}"></i></span>
+        <div class="t-main"><div class="t-name">${name} ${badge}</div><div class="t-role">${role} · <span class="t-meta">${meta}</span></div></div>
+        ${t.id === 'git' ? gitStatus() : cliStatus(t.id)}
+        ${prog}
+      </li>`;
+    }
+
+    function headIcon() {
+      return { checking: ['', 'loader-circle', 'spin'], missing: ['brand', 'download', ''], running: ['brand', 'download', ''], failed: ['err', 'triangle-alert', ''], ready: ['ok', 'circle-check', ''] }[S.state];
+    }
+
+    function render() {
+      const [tone, icon, cls] = headIcon();
+      const sz = mb(GIT.size);
+      let actions = '';
+      if (S.state === 'missing') actions = `<button class="btn btn-ghost btn-sm" data-do="quit">${PC.t('sp.quit')}</button><button class="btn btn-primary btn-sm" data-do="start"><i data-lucide="download"></i>${PC.t('sp.download', { s: sz })}</button>`;
+      if (S.state === 'running') actions = `<button class="btn btn-secondary btn-sm" data-do="cancel" ${S.git !== 'downloading' ? 'disabled' : ''}>${PC.t('sp.cancel')}</button>`;
+      if (S.state === 'failed') actions = `<button class="btn btn-ghost btn-sm" data-do="logs"><i data-lucide="file-text"></i>${PC.t('sp.logs')}</button><button class="btn btn-ghost btn-sm" data-do="quit">${PC.t('sp.quit')}</button><button class="btn btn-primary btn-sm" data-do="start"><i data-lucide="rotate-cw"></i>${PC.t('sp.retry')}</button>`;
+      if (S.state === 'ready') actions = `<button class="btn btn-primary btn-sm" data-do="open">${PC.t('sp.open')}<i data-lucide="arrow-right"></i></button>`;
+
+      document.getElementById('card').innerHTML = `
+        <div class="sp-head">
+          <span class="st-ic ${tone}"><i data-lucide="${icon}" class="${cls}"></i></span>
+          <div><h1>${PC.t('sp.t.' + S.state)}</h1><p>${PC.t('sp.d.' + S.state, { v: GIT.v })}</p></div>
+        </div>
+        <ul class="tools">${TOOLS.map(toolRow).join('')}</ul>
+        ${S.state === 'failed' ? `<div class="sp-err"><i data-lucide="wifi-off"></i><span>${PC.t('sp.err.network')} <code>network</code></span></div>` : ''}
+        ${S.cancelled && S.state === 'missing' ? `<div class="sp-err" style="background:var(--bg-surface-3);color:var(--fg-muted)"><i data-lucide="pause"></i><span>${PC.t('sp.cancelled')}</span></div>` : ''}
+        <div class="sp-foot">
+          <span class="where">${PC.t('sp.where')} <code>${DATA}\\tools\\</code></span>
+          <span class="grow"></span>${actions}
+        </div>`;
+      document.getElementById('note').innerHTML = S.state === 'checking' ? '' :
+        `<i data-lucide="info" class="icon-sm"></i><span>${PC.t('sp.note.cli')} ${PC.t('sp.note.git', { path: '<code>' + DATA + '\\git\\config</code>' })}</span>`;
+      document.getElementById('lang-l').textContent = PC.lang === 'en' ? 'Tiếng Việt' : 'English';
+      document.querySelectorAll('#demo button').forEach(b => b.classList.toggle('is-on', b.dataset.state === S.state));
+      PC.refresh();
+    }
+
+    function setState(st) {
+      clearInterval(S.timer); S.state = st; S.cancelled = false;
+      if (st === 'checking') { S.git = 'checking'; S.timer = setTimeout(() => setState('missing'), 1400); }
+      if (st === 'missing') { S.git = 'missing'; S.received = 0; }
+      if (st === 'running') return start();
+      if (st === 'failed') { S.git = 'error'; }
+      if (st === 'ready') { S.git = 'ready'; }
+      render();
+    }
+
+    function start() {
+      clearInterval(S.timer); S.state = 'running'; S.git = 'downloading'; S.cancelled = false;
+      S.timer = setInterval(() => {
+        if (S.git === 'downloading') {
+          S.speed = (6 + Math.random() * 3) * 1048576;
+          S.received = Math.min(GIT.size, S.received + S.speed / 5);
+          if (S.received >= GIT.size) { S.git = 'verifying'; setTimeout(() => { S.git = 'extracting'; render(); setTimeout(() => { S.git = 'configuring'; render(); setTimeout(() => setState('ready'), 900); }, 1300); }, 700); }
+        }
+        render();
+      }, 200);
+      render();
+    }
+
+    document.addEventListener('click', e => {
+      const b = e.target.closest('[data-do]'); if (!b) return;
+      const act = b.dataset.do;
+      if (act === 'start') start();
+      if (act === 'cancel') { clearInterval(S.timer); S.state = 'missing'; S.git = 'missing'; S.cancelled = true; render(); }
+      if (act === 'open') location.href = 'index.html';
+      if (act === 'quit') PC.toast('Procheck would quit here', { icon: 'log-out' });
+      if (act === 'logs') PC.toast('Opens %LOCALAPPDATA%\\Procheck\\logs', { icon: 'file-text' });
+    });
+
+    const demo = document.getElementById('demo');
+    STATES.forEach(st => demo.insertAdjacentHTML('beforeend', `<button class="btn btn-ghost btn-sm" data-state="${st}">${st}</button>`));
+    demo.insertAdjacentHTML('beforeend', `<span class="lbl">CLIs</span><button class="btn btn-ghost btn-sm" data-cli="toggle">claude/codex</button>`);
+    demo.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.state) setState(b.dataset.state);
+      if (b.dataset.cli) {
+        const order = [['ready', 'missing'], ['ready', 'ready'], ['missing', 'missing'], ['missing', 'ready']];
+        const i = order.findIndex(o => o[0] === S.cli.claude && o[1] === S.cli.codex);
+        const [c, x] = order[(i + 1) % order.length]; S.cli = { claude: c, codex: x }; render();
+      }
+    });
+    document.addEventListener('pc:lang', render);
+    PC.onReady(() => setState(S.state));
+  </script>
+</body>
+</html>
