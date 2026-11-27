@@ -45,8 +45,6 @@ export interface AgentsSettings {
 }
 
 export interface AgentSettings {
-  /** Executable to run; `null` = find it on PATH. */
-  binPath: string | null;
   /** Model passed to the CLI; `null` = the CLI's own default. */
   model: string | null;
 }
@@ -57,7 +55,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   diagnostics: { logLevel: 'info', logRetentionDays: 14 },
   agents: {
     defaultAgent: 'claude',
-    claude: { binPath: null, model: null },
-    codex: { binPath: null, model: null },
+    claude: { model: null },
+    codex: { model: null },
   },
 };

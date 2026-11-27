@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { DesktopIpcService } from '@shared/desktop/desktop-ipc.service';
 
 /** Known entries of the application data directory (mirrors `StorageEntry` in desktop/src/features/storage.rs). */
-export type StorageEntry = 'settings' | 'projects' | 'logs' | 'cli' | 'chats' | 'cache';
+export type StorageEntry = 'settings' | 'projects' | 'logs' | 'cli' | 'tools' | 'git' | 'chats' | 'cache';
 
 export interface StorageItem {
   entry: StorageEntry;

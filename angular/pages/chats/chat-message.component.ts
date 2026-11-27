@@ -44,7 +44,7 @@ import { MarkdownComponent } from './markdown.component';
             <div class="grow">
               <div>{{ error }}</div>
               @if (needsSettings()) {
-                <a pcButton variant="secondary" size="sm" routerLink="/settings">
+                <a pcButton variant="secondary" size="sm" routerLink="/settings" fragment="agents">
                   <pc-icon name="settings" />{{ 'ch.open.settings' | t }}
                 </a>
               }

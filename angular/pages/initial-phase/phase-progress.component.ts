@@ -73,7 +73,7 @@ const TOOL_ICON: Record<string, string> = {
           <pc-alert [tone]="note.tone" [attr.data-testid]="'phase-note-' + note.id">
             {{ note.key | t: note.params }}
             @if (note.link) {
-              <a [routerLink]="note.link">{{ note.linkLabel | t }}</a>
+              <a [routerLink]="note.link" fragment="agents">{{ note.linkLabel | t }}</a>
             }
           </pc-alert>
         }

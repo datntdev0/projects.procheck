@@ -20,19 +20,16 @@ export interface SettingsForm {
   } & Record<AgentId, AgentForm>;
 }
 
-/** One CLI in the form; empty strings = not set (auto-detect / CLI default). */
+/** One CLI in the form; an empty string = not set (the CLI's own default model). */
 export interface AgentForm {
-  binPath: string;
   model: string;
 }
 
-export type SettingsField = 'defaultProjectDir' | `${AgentId}BinPath`;
+export type SettingsField = 'defaultProjectDir';
 
 /** Error code from `settings_save` → the field it rejects. */
 const FIELD_ERRORS: Record<string, SettingsField> = {
   folderNotFound: 'defaultProjectDir',
-  claudeBinaryNotFound: 'claudeBinPath',
-  codexBinaryNotFound: 'codexBinPath',
 };
 
 function toForm(settings: AppSettings): SettingsForm {
@@ -44,8 +41,8 @@ function toForm(settings: AppSettings): SettingsForm {
     diagnostics: { ...settings.diagnostics },
     agents: {
       defaultAgent: settings.agents.defaultAgent,
-      claude: { binPath: settings.agents.claude.binPath ?? '', model: settings.agents.claude.model ?? '' },
-      codex: { binPath: settings.agents.codex.binPath ?? '', model: settings.agents.codex.model ?? '' },
+      claude: { model: settings.agents.claude.model ?? '' },
+      codex: { model: settings.agents.codex.model ?? '' },
     },
   };
 }
@@ -62,7 +59,7 @@ function applyForm(settings: AppSettings, form: SettingsForm): AppSettings {
     agents: {
       defaultAgent: form.agents.defaultAgent,
       ...(Object.fromEntries(
-        AGENT_IDS.map((id) => [id, { binPath: form.agents[id].binPath.trim() || null, model: form.agents[id].model.trim() || null }]),
+        AGENT_IDS.map((id) => [id, { model: form.agents[id].model.trim() || null }]),
       ) as Record<AgentId, AppSettings['agents'][AgentId]>),
     },
   };
@@ -93,7 +90,6 @@ export class SettingsFormService {
 
   patchAgent(agent: AgentId, patch: Partial<AgentForm>): void {
     this.value.update((v) => ({ ...v, agents: { ...v.agents, [agent]: { ...v.agents[agent], ...patch } } }));
-    if ('binPath' in patch && this.invalidField() === `${agent}BinPath`) this.invalidField.set(null);
   }
 
   setDefaultAgent(agent: AgentId): void {

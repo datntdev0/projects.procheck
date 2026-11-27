@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core';
 import type { AgentId } from '@features/settings/app-settings.model';
 import { DesktopIpcService } from '@shared/desktop/desktop-ipc.service';
 
-export type BinarySource = 'custom' | 'detected' | 'none';
 export type AuthMethod = 'subscription' | 'apiKey';
 
 export interface AgentAuth {
@@ -25,14 +24,16 @@ export interface AgentModel {
 export interface AgentStatus {
   agent: AgentId;
   name: string;
-  /** Executable that was checked (custom or detected). */
-  binPath: string | null;
-  source: BinarySource;
   /** CLI home in the application data directory (`<data dir>\cli\<cli>`): Procheck's sign-in, config and sessions. */
   home: string;
-  /** The executable started and reported a version. */
+  /** The CLI Procheck downloaded is installed (`<data dir>\tools\<cli>`). */
   installed: boolean;
+  /** Installed version; `null` when not installed. */
   version: string | null;
+  /** Version Procheck bundles (what Download / Update installs). */
+  bundledVersion: string;
+  /** Installed, but not the bundled version: Update is available. */
+  outdated: boolean;
   auth: AgentAuth;
   models: AgentModel[];
   /** Why the CLI could not be checked. */
@@ -56,54 +57,58 @@ export function connectionState(status: AgentStatus | null, checking: boolean): 
   return status.auth.signedIn ? 'connected' : 'signedOut';
 }
 
+/** Status of a CLI whose check failed: shown as not downloaded, with the reason. */
+export function unavailableStatus(agent: AgentId, error: string): AgentStatus {
+  return {
+    agent,
+    name: AGENT_NAMES[agent],
+    home: '',
+    installed: false,
+    version: null,
+    bundledVersion: '',
+    outdated: false,
+    auth: { signedIn: false, method: null, plan: null, account: null },
+    models: [],
+    error,
+  };
+}
+
 /** Display names, also used before the first status arrives. */
 export const AGENT_NAMES: Record<AgentId, string> = { claude: 'Claude Code', codex: 'Codex CLI' };
 
-/** How to install a CLI that is missing. */
-export const AGENT_INSTALL: Record<AgentId, string> = {
-  claude: 'npm install -g @anthropic-ai/claude-code',
-  codex: 'npm install -g @openai/codex',
-};
-
-/** Official installation guide of each CLI. */
+/** Official documentation of each CLI. */
 export const AGENT_DOCS: Record<AgentId, string> = {
   claude: 'https://code.claude.com/docs/en/setup',
   codex: 'https://developers.openai.com/codex/cli',
 };
 
 /**
- * The AI CLI tools (Settings → Agent Integration). `binPath` is the draft value from the
- * settings form; empty or `null` = find the executable on PATH. The desktop app always runs
- * the CLI with its home in the application data directory, apart from the user's own profile.
+ * The AI CLI tools (Settings → Agent Integration). Procheck only runs the copy it downloaded into its data
+ * directory (see `ToolsStore`), always with its own CLI home, apart from the user's own profile.
  */
 @Injectable({ providedIn: 'root' })
 export class AgentsService {
   private readonly ipc = inject(DesktopIpcService);
 
-  status(agent: AgentId, binPath: string | null): Promise<AgentStatus> {
-    return this.ipc.invoke<AgentStatus>('agents_status', { agent, binPath: binPath || null });
+  status(agent: AgentId): Promise<AgentStatus> {
+    return this.ipc.invoke<AgentStatus>('agents_status', { agent });
   }
 
   /** One short prompt; rejects with `DesktopIpcError` (`AgentErrorCode`) when the CLI does not answer. */
-  test(agent: AgentId, binPath: string | null, model: string | null): Promise<AgentTestResult> {
-    return this.ipc.invoke<AgentTestResult>('agents_test', { agent, binPath: binPath || null, model: model || null });
+  test(agent: AgentId, model: string | null): Promise<AgentTestResult> {
+    return this.ipc.invoke<AgentTestResult>('agents_test', { agent, model: model || null });
   }
 
   /** Opens the CLI's sign-in in a terminal window; resolves with the new status once it closes. */
-  signIn(agent: AgentId, binPath: string | null): Promise<AgentStatus> {
-    return this.ipc.invoke<AgentStatus>('agents_sign_in', { agent, binPath: binPath || null });
+  signIn(agent: AgentId): Promise<AgentStatus> {
+    return this.ipc.invoke<AgentStatus>('agents_sign_in', { agent });
   }
 
-  signOut(agent: AgentId, binPath: string | null): Promise<AgentStatus> {
-    return this.ipc.invoke<AgentStatus>('agents_sign_out', { agent, binPath: binPath || null });
+  signOut(agent: AgentId): Promise<AgentStatus> {
+    return this.ipc.invoke<AgentStatus>('agents_sign_out', { agent });
   }
 
-  /** Native file picker for the executable; resolves `null` when cancelled. */
-  pickBinary(title: string, start: string | null): Promise<string | null> {
-    return this.ipc.invoke<string | null>('agents_pick_binary', { title, start });
-  }
-
-  /** Opens the official installation guide of the CLI in the default browser. */
+  /** Opens the official page of the CLI in the default browser. */
   openInstallGuide(agent: AgentId): Promise<void> {
     return this.ipc.invoke<void>('plugin:opener|open_url', { url: AGENT_DOCS[agent] });
   }

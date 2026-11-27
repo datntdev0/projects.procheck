@@ -75,7 +75,7 @@ const CONNECTION_LABELS: Record<ConnectionState, TranslationKey> = {
         @if (!form.connectedClis().length) {
           <pc-alert tone="warning">
             {{ 'np.ai.none' | t }}
-            <a pcAlertActions routerLink="/settings" class="text-sm">{{ 'nav.settings' | t }}</a>
+            <a pcAlertActions routerLink="/settings" fragment="agents" class="text-sm">{{ 'nav.settings' | t }}</a>
           </pc-alert>
         }
       </div>

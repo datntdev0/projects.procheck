@@ -85,8 +85,8 @@ test('general settings are saved to settings.json and survive a restart', async 
       diagnostics: { logLevel: 'info', logRetentionDays: 14 },
       agents: {
         defaultAgent: 'claude',
-        claude: { binPath: null, model: null },
-        codex: { binPath: null, model: null },
+        claude: { model: null },
+        codex: { model: null },
       },
     });
     await settings.open();

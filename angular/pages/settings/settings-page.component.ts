@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, afterNextRender, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { ButtonComponent } from '@components/button/button.component';
 import { IconComponent } from '@components/icon/icon.component';
@@ -41,11 +42,20 @@ export class SettingsPageComponent {
   private readonly toast = inject(ToastService);
   private readonly i18n = inject(I18nService);
   protected readonly form = inject(SettingsFormService);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly settingsFile = inject(AppSettingsService).filePath;
   protected readonly nav = SETTINGS_NAV;
   private readonly sections = new SectionSpy<SettingsSectionId>(SETTINGS_SECTION_IDS);
   protected readonly active = this.sections.active;
+
+  constructor() {
+    // Links such as `/settings#agents` open on that section.
+    afterNextRender(() => {
+      const section = SETTINGS_SECTION_IDS.find((id) => id === this.route.snapshot.fragment);
+      if (section) this.go(section);
+    });
+  }
 
   protected async openDataFolder(): Promise<void> {
     try {
@@ -62,9 +72,6 @@ export class SettingsPageComponent {
     } else if (result.field === 'defaultProjectDir') {
       this.toast.show(this.i18n.t('set.gen.parent.missing'), { icon: 'circle-alert', tone: 'danger' });
       this.go('general');
-    } else if (result.field === 'claudeBinPath' || result.field === 'codexBinPath') {
-      this.toast.show(this.i18n.t('set.ag.bin.missing'), { icon: 'circle-alert', tone: 'danger' });
-      this.go('agents');
     } else {
       this.toast.show(this.i18n.t('set.save.failed', { reason: result.message }), { icon: 'circle-alert', tone: 'danger', duration: 6000 });
     }

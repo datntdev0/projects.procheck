@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, input, signal, untracked } from '@angular/core';
 
 import { BadgeComponent } from '@components/badge/badge.component';
 import { StatusDotComponent } from '@components/badge/status-dot.component';
@@ -9,8 +9,12 @@ import { IconComponent } from '@components/icon/icon.component';
 import { ToastService } from '@components/toast/toast.service';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
 import { AgentConnectionsService } from '@features/agents/agent-connections.service';
-import { AGENT_DOCS, AGENT_INSTALL, AGENT_NAMES, AgentModel, AgentStatus, AgentsService, ConnectionState, connectionState } from '@features/agents/agents.service';
+import { AGENT_DOCS, AGENT_NAMES, AgentModel, AgentStatus, AgentsService, ConnectionState } from '@features/agents/agents.service';
+import { isWorking } from '@features/tools/tools.model';
+import { progressLine } from '@features/tools/tools.format';
+import { ToolsStore } from '@features/tools/tools.store';
 import { AGENT_IDS, AgentId } from '@features/settings/app-settings.model';
+import { formatBytes } from '@shared/format/bytes';
 import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
 import { I18nService } from '@shared/i18n/i18n.service';
 import type { TranslationKey } from '@shared/i18n/locales/en';
@@ -19,12 +23,9 @@ import { TranslatePipe } from '@shared/i18n/translate.pipe';
 import { SettingsFormService } from '../settings-form.service';
 import { SETTINGS_SECTION } from '../settings-section.component';
 
-/** Wait after the last keystroke in the binary path before checking it again. */
-const RECHECK_DELAY_MS = 500;
-
 const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', codex: 'square-terminal' };
 
-/** One CLI: status, default flag, sign-in, connection test, executable and default model. */
+/** One CLI: status, default flag, download / update, sign-in, connection test and default model. */
 @Component({
   selector: 'pc-agent-card',
   imports: [
@@ -75,6 +76,22 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
         </div>
       </div>
       <div class="cli-acts">
+        @if (!working()) {
+          @if (!installed()) {
+            <button pcButton variant="primary" size="sm" type="button" data-testid="agent-download" [disabled]="tools.installing()" (click)="install()">
+              <pc-icon name="download" />{{ 'set.ag.download' | t: { s: size() } }}
+            </button>
+          } @else {
+            @if (outdated()) {
+              <button pcButton variant="primary" size="sm" type="button" data-testid="agent-update" [disabled]="tools.installing()" (click)="install()">
+                <pc-icon name="download" />{{ 'set.ag.update' | t: { v: bundled() } }}
+              </button>
+            }
+            <button pcButton variant="ghost" size="sm" type="button" data-testid="agent-reinstall" [disabled]="tools.installing()" (click)="install()">
+              <pc-icon name="rotate-ccw" />{{ 'set.ag.reinstall' | t }}
+            </button>
+          }
+        }
         @if (!isDefault()) {
           <button pcButton variant="ghost" size="sm" type="button" data-testid="agent-set-default" (click)="form.setDefaultAgent(agent())">
             <pc-icon name="star" />{{ 'set.ag.setdefault' | t }}
@@ -124,38 +141,52 @@ const AGENT_ICONS: Record<AgentId, string> = { claude: 'bot-message-square', cod
       </div>
     </div>
 
-    <dl class="cli-kv">
-      <dt><label [for]="'agent-bin-' + agent()">{{ 'set.ag.bin' | t }}</label></dt>
-      <dd>
-        <div class="cli-bin">
-          <input
-            pcInput
-            class="mono"
-            [id]="'agent-bin-' + agent()"
-            data-testid="agent-bin"
-            [invalid]="invalid()"
-            [placeholder]="'set.ag.bin.ph' | t"
-            [value]="draft().binPath"
-            (input)="form.patchAgent(agent(), { binPath: $any($event.target).value })"
-          />
-          <button pcButton variant="ghost" size="sm" type="button" data-testid="agent-browse" (click)="browse()">
-            <pc-icon name="folder-open" />{{ 'set.browse' | t }}
+    @if (view(); as v) {
+      <div class="cli-install" data-testid="agent-progress">
+        <div class="progress" [class.indet]="!v.determinate"><span [style.width.%]="v.percent"></span></div>
+        <div class="cli-install-row">
+          <span>{{ line() }}</span>
+          <span class="grow"></span>
+          @if (v.determinate) {
+            <span>{{ v.percent }}%</span>
+          }
+          <button pcButton variant="ghost" size="sm" type="button" data-testid="agent-cancel" [disabled]="v.state !== 'downloading'" (click)="tools.cancel()">
+            {{ 'sp.cancel' | t }}
           </button>
         </div>
-        <div class="cli-hint" data-testid="agent-bin-hint">
-          @if (invalid()) {
-            <span class="is-error">{{ 'set.ag.bin.missing' | t }}</span>
-          } @else if (status(); as s) {
-            @if (s.error) {
-              <span class="is-error">{{ s.error }}</span>
-            } @else if (s.source === 'detected') {
-              {{ 'set.ag.bin.detected' | t }} <code>{{ s.binPath }}</code>
-            } @else if (s.source === 'none') {
-              {{ 'set.ag.bin.none' | t }} <code>{{ install() }}</code>
-              {{ 'set.ag.bin.guide' | t }} <a class="cli-doc" [href]="docs()" (click)="openGuide($event)">{{ 'set.ag.docs' | t }}<pc-icon name="arrow-up-right" [size]="12" /></a>
-            }
+      </div>
+    } @else if (installError(); as failure) {
+      <div class="cli-install is-error" data-testid="agent-install-error">
+        <span>{{ failureText() }} <code>{{ failure.code }}</code></span>
+      </div>
+    }
+
+    <dl class="cli-kv">
+      <dt>{{ 'set.ag.bundled' | t }}</dt>
+      <dd data-testid="agent-bundled">
+        @if (bundled()) {
+          <span>v{{ bundled() }}</span>
+          @if (size()) {
+            <span class="cli-auth-d">· {{ size() }}</span>
           }
-        </div>
+        } @else {
+          <span class="cli-auth-d">—</span>
+        }
+      </dd>
+
+      <dt>{{ 'set.ag.installed' | t }}</dt>
+      <dd data-testid="agent-installed">
+        @if (installed()) {
+          <span>v{{ status()?.version }}</span>
+          @if (outdated()) {
+            <pc-badge tone="warning">{{ 'set.ag.outdated' | t }}</pc-badge>
+          }
+        } @else {
+          <span class="cli-auth-d">{{ 'set.ag.notdl' | t }}</span>
+        }
+        @if (status()?.error; as error) {
+          <span class="cli-hint is-error">{{ error }}</span>
+        }
       </dd>
 
       <dt>{{ 'set.ag.auth' | t }}</dt>
@@ -216,29 +247,50 @@ export class AgentCardComponent {
   readonly agent = input.required<AgentId>();
 
   protected readonly form = inject(SettingsFormService);
+  protected readonly tools = inject(ToolsStore);
   private readonly agents = inject(AgentsService);
   private readonly connections = inject(AgentConnectionsService);
   private readonly toast = inject(ToastService);
   private readonly i18n = inject(I18nService);
 
-  protected readonly status = signal<AgentStatus | null>(null);
-  protected readonly checking = signal(true);
   protected readonly testing = signal(false);
   protected readonly signingIn = signal(false);
   protected readonly signingOut = signal(false);
   protected readonly confirmSignOut = signal(false);
-  protected readonly busy = computed(() => this.checking() || this.testing() || this.signingIn() || this.signingOut());
+
+  protected readonly status = computed<AgentStatus | null>(() => this.connections.status(this.agent()));
+  protected readonly state = computed<ConnectionState>(() => this.connections.state(this.agent()));
+  protected readonly checking = computed(() => this.state() === 'checking');
+  protected readonly busy = computed(() => this.checking() || this.testing() || this.signingIn() || this.signingOut() || this.working());
 
   protected readonly name = computed(() => AGENT_NAMES[this.agent()]);
   protected readonly icon = computed(() => AGENT_ICONS[this.agent()]);
-  protected readonly install = computed(() => AGENT_INSTALL[this.agent()]);
   protected readonly docs = computed(() => AGENT_DOCS[this.agent()]);
   protected readonly homeVar = computed(() => (this.agent() === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR'));
   protected readonly draft = computed(() => this.form.value().agents[this.agent()]);
   protected readonly isDefault = computed(() => this.form.value().agents.defaultAgent === this.agent());
-  protected readonly invalid = computed(() => this.form.invalidField() === `${this.agent()}BinPath`);
 
-  protected readonly state = computed<ConnectionState>(() => connectionState(this.status(), this.checking()));
+  // The bundled copy: what is installed, what Procheck ships, and the install in progress.
+  private readonly item = computed(() => this.tools.item(this.agent()));
+  protected readonly installed = computed(() => !!this.status()?.installed);
+  protected readonly outdated = computed(() => !!this.status()?.outdated);
+  protected readonly bundled = computed(() => this.status()?.bundledVersion || this.item()?.version || '');
+  protected readonly size = computed(() => (this.item() ? formatBytes(this.item()!.size) : ''));
+  protected readonly working = computed(() => !!this.item() && isWorking(this.item()!.state));
+  protected readonly view = computed(() => this.tools.view(this.agent()));
+  protected readonly line = computed(() => {
+    const view = this.view();
+    return view ? progressLine(this.i18n, view) : '';
+  });
+  /** The last install of this CLI failed (a cancelled download is not an error). */
+  protected readonly installError = computed(() => {
+    const item = this.item();
+    return item?.state === 'error' && item.error && item.error.code !== 'cancelled' ? item.error : null;
+  });
+  protected readonly failureText = computed(() => {
+    const code = this.installError()?.code;
+    return this.i18n.t(code && INSTALL_ERRORS[code] ? INSTALL_ERRORS[code] : 'sp.err.other');
+  });
 
   /** CLI models plus the stored value when the list does not offer it. */
   protected readonly models = computed<AgentModel[]>(() => {
@@ -254,26 +306,11 @@ export class AgentCardComponent {
     return auth.plan ? `${method} · ${auth.plan}` : method;
   });
 
-  /** Ignores answers to checks that were superseded by a newer one. */
-  private requestId = 0;
-  private timer: ReturnType<typeof setTimeout> | undefined;
-
   constructor() {
-    let first = true;
+    // The CLI status was read at startup; read it again when a download of this CLI has finished.
     effect(() => {
-      const binPath = this.draft().binPath;
-      untracked(() => {
-        clearTimeout(this.timer);
-        if (first) {
-          first = false;
-          void this.check(binPath);
-        } else {
-          this.checking.set(true);
-          this.timer = setTimeout(() => void this.check(binPath), RECHECK_DELAY_MS);
-        }
-      });
+      if (this.item()?.state === 'ready') untracked(() => void this.connections.check(this.agent()));
     });
-    inject(DestroyRef).onDestroy(() => clearTimeout(this.timer));
   }
 
   protected async openGuide(event: Event): Promise<void> {
@@ -286,25 +323,19 @@ export class AgentCardComponent {
   }
 
   protected refresh(): void {
-    clearTimeout(this.timer);
-    void this.check(this.draft().binPath);
+    void this.connections.check(this.agent());
   }
 
-  protected async browse(): Promise<void> {
-    try {
-      const picked = await this.agents.pickBinary(this.i18n.t('set.ag.bin.pick', { name: this.name() }), this.draft().binPath || this.status()?.binPath || null);
-      if (picked) this.form.patchAgent(this.agent(), { binPath: picked });
-    } catch {
-      this.toast.show(this.i18n.t('set.browse.failed'), { icon: 'circle-alert', tone: 'danger' });
-    }
+  /** Download, update or reinstall: all install the bundled version. */
+  protected install(): void {
+    void this.tools.install([this.agent()]);
   }
 
   protected async test(): Promise<void> {
     if (this.busy()) return;
     this.testing.set(true);
     try {
-      const { binPath, model } = this.draft();
-      const result = await this.agents.test(this.agent(), binPath, model);
+      const result = await this.agents.test(this.agent(), this.draft().model);
       const seconds = (result.durationMs / 1000).toLocaleString(this.i18n.lang(), { maximumFractionDigits: 1 });
       const message = this.i18n.t('set.ag.testok', { name: this.name(), s: seconds });
       this.toast.show(result.model ? `${message} · ${result.model}` : message, { icon: 'plug-zap', tone: 'success', duration: 5000 });
@@ -321,8 +352,8 @@ export class AgentCardComponent {
     this.signingIn.set(true);
     this.toast.show(this.i18n.t('set.ag.signin.hint', { name: this.name() }), { icon: 'log-in', duration: 6000 });
     try {
-      const status = await this.agents.signIn(this.agent(), this.draft().binPath);
-      this.accept(status);
+      const status = await this.agents.signIn(this.agent());
+      this.connections.publish(this.agent(), status);
       if (status.auth.signedIn) this.toast.show(this.i18n.t('set.ag.signedin', { name: this.name() }), { tone: 'success' });
     } catch (error) {
       this.toast.show(this.failure('set.ag.signin.fail', error), { icon: 'circle-alert', tone: 'danger', duration: 7000 });
@@ -336,7 +367,7 @@ export class AgentCardComponent {
     if (this.busy()) return;
     this.signingOut.set(true);
     try {
-      this.accept(await this.agents.signOut(this.agent(), this.draft().binPath));
+      this.connections.publish(this.agent(), await this.agents.signOut(this.agent()));
       this.toast.show(this.i18n.t('set.ag.signedout.toast', { name: this.name() }), { icon: 'log-out', tone: 'warning' });
     } catch (error) {
       this.toast.show(this.failure('set.ag.signout.fail', error), { icon: 'circle-alert', tone: 'danger', duration: 7000 });
@@ -345,50 +376,24 @@ export class AgentCardComponent {
     }
   }
 
-  private async check(binPath: string): Promise<void> {
-    const id = ++this.requestId;
-    this.checking.set(true);
-    try {
-      const status = await this.agents.status(this.agent(), binPath);
-      if (id === this.requestId) this.status.set(status);
-      this.connections.publish(this.agent(), binPath, status);
-    } catch (error) {
-      if (id !== this.requestId) return;
-      // Outside the desktop app (Storybook, browser): show the CLI as not found.
-      this.status.set({
-        agent: this.agent(),
-        name: this.name(),
-        binPath: binPath || null,
-        source: binPath ? 'custom' : 'none',
-        home: '',
-        installed: false,
-        version: null,
-        auth: { signedIn: false, method: null, plan: null, account: null },
-        models: [],
-        error: error instanceof DesktopIpcError ? error.reason : String(error),
-      });
-    } finally {
-      if (id === this.requestId) this.checking.set(false);
-    }
-  }
-
-  /** Status returned by sign-in / sign-out, unless the path changed meanwhile. */
-  private accept(status: AgentStatus): void {
-    this.connections.publish(this.agent(), this.draft().binPath, status);
-    this.requestId++;
-    this.status.set(status);
-    this.checking.set(false);
-  }
-
   private failure(key: TranslationKey, error: unknown): string {
     if (error instanceof DesktopIpcError) {
       if (error.code === 'signedOut') return this.i18n.t('set.ag.err.signedout', { name: this.name() });
       if (error.code === 'timeout') return this.i18n.t('set.ag.err.timeout', { name: this.name() });
+      if (error.code === 'notInstalled') return this.i18n.t('set.ag.err.notinstalled', { name: this.name() });
       return this.i18n.t(key, { name: this.name(), reason: error.reason });
     }
     return this.i18n.t(key, { name: this.name(), reason: String(error) });
   }
 }
+
+const INSTALL_ERRORS: Record<string, TranslationKey> = {
+  network: 'sp.err.network',
+  checksum: 'sp.err.checksum',
+  diskFull: 'sp.err.diskFull',
+  extract: 'sp.err.extract',
+  io: 'sp.err.io',
+};
 
 /** Agent Integration → AI & CLI tools: Claude Code and Codex CLI. */
 @Component({
@@ -404,6 +409,12 @@ export class AgentCardComponent {
     </pc-settings-section>
   `,
 })
-export class AgentsSectionComponent {
+export class AgentsSectionComponent implements OnInit {
+  private readonly tools = inject(ToolsStore);
   protected readonly agents = AGENT_IDS;
+
+  ngOnInit(): void {
+    // Which CLIs are downloaded can change outside the app; read it when the page opens.
+    if (!this.tools.installing()) void this.tools.check();
+  }
 }

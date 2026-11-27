@@ -1,9 +1,10 @@
-import { EnvironmentProviders, Injectable, effect, inject, provideAppInitializer, signal, untracked } from '@angular/core';
+import { EnvironmentProviders, Injectable, inject, provideAppInitializer, signal } from '@angular/core';
 
 import { AGENT_IDS, AgentId } from '@features/settings/app-settings.model';
-import { AppSettingsService } from '@features/settings/app-settings.service';
 
-import { AgentStatus, AgentsService, ConnectionState, connectionState } from './agents.service';
+import { DesktopIpcError } from '@shared/desktop/desktop-ipc-error';
+
+import { AgentStatus, AgentsService, ConnectionState, connectionState, unavailableStatus } from './agents.service';
 
 interface Connection {
   status: AgentStatus | null;
@@ -17,29 +18,15 @@ const INITIAL: Connections = {
   codex: { status: null, checking: true },
 };
 
-function samePath(a: string | null | undefined, b: string | null | undefined): boolean {
-  return (a?.trim() || null) === (b?.trim() || null);
-}
-
 /**
- * Connection state of each CLI with the saved settings: checked once at startup, again when the
- * saved executable changes, and whenever Settings → Agent Integration checks the saved path.
+ * Connection state of each CLI (the copy Procheck downloaded): checked once at startup, again after a CLI is
+ * downloaded, and whenever Settings → Agent integration checks, signs in or signs out.
  */
 @Injectable({ providedIn: 'root' })
 export class AgentConnectionsService {
   private readonly agents = inject(AgentsService);
-  private readonly settings = inject(AppSettingsService);
 
   private readonly connections = signal<Connections>(INITIAL);
-  private readonly checkedPaths: Partial<Record<AgentId, string | null>> = {};
-  private started = false;
-
-  constructor() {
-    effect(() => {
-      const paths = AGENT_IDS.map((agent) => [agent, this.settings.settings().agents[agent].binPath] as const);
-      untracked(() => this.recheckChanged(paths));
-    });
-  }
 
   status(agent: AgentId): AgentStatus | null {
     return this.connections()[agent].status;
@@ -55,33 +42,22 @@ export class AgentConnectionsService {
   }
 
   async start(): Promise<void> {
-    this.started = true;
     await Promise.all(AGENT_IDS.map((agent) => this.check(agent)));
   }
 
   async check(agent: AgentId): Promise<void> {
-    const binPath = this.settings.settings().agents[agent].binPath;
-    this.checkedPaths[agent] = binPath;
     this.set(agent, { status: this.status(agent), checking: true });
     try {
-      this.set(agent, { status: await this.agents.status(agent, binPath), checking: false });
+      this.set(agent, { status: await this.agents.status(agent), checking: false });
     } catch (error) {
       console.error(`Could not check ${agent}`, error);
-      this.set(agent, { status: null, checking: false });
+      // Outside the desktop app (Storybook, browser) there is no tools folder: show the CLI as not downloaded.
+      this.set(agent, { status: unavailableStatus(agent, error instanceof DesktopIpcError ? error.reason : String(error)), checking: false });
     }
   }
 
-  publish(agent: AgentId, binPath: string | null, status: AgentStatus): void {
-    if (!samePath(binPath, this.settings.settings().agents[agent].binPath)) return;
-    this.checkedPaths[agent] = binPath;
+  publish(agent: AgentId, status: AgentStatus): void {
     this.set(agent, { status, checking: false });
-  }
-
-  private recheckChanged(paths: (readonly [AgentId, string | null])[]): void {
-    if (!this.started) return;
-    for (const [agent, binPath] of paths) {
-      if (!samePath(binPath, this.checkedPaths[agent])) void this.check(agent);
-    }
   }
 
   private set(agent: AgentId, connection: Connection): void {
@@ -89,11 +65,9 @@ export class AgentConnectionsService {
   }
 }
 
-/** Checks every CLI in the background once settings.json is loaded; startup does not wait for it. */
+/** Checks every CLI in the background at startup; startup does not wait for it. */
 export function provideAgentConnections(): EnvironmentProviders {
   return provideAppInitializer(() => {
-    const settings = inject(AppSettingsService);
-    const connections = inject(AgentConnectionsService);
-    void settings.load().then(() => connections.start());
+    void inject(AgentConnectionsService).start();
   });
 }

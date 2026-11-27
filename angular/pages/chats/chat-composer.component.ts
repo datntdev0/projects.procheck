@@ -43,7 +43,7 @@ interface CliOption {
       <div class="cmp-warn" role="status" data-testid="chat-cli-offline">
         <pc-icon name="triangle-alert" [size]="14" />
         <span class="grow">{{ (state === 'missing' ? 'ch.cli.missing' : 'ch.cli.signedout') | t: { cli: agentName() } }}</span>
-        <a routerLink="/settings">{{ 'ch.open.settings' | t }}</a>
+        <a routerLink="/settings" fragment="agents">{{ 'ch.open.settings' | t }}</a>
       </div>
     }
     <div class="cmp">
