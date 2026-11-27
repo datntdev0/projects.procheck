@@ -84,6 +84,29 @@ Sau **mọi** phiên agent (thành công, lỗi hay bị dừng), Procheck chạ
 - Các thay đổi này **không** được commit chung với commit của agent (commit agent chỉ `add -- artifacts/`). Chúng nằm lại trong working directory để người dùng tự xử lý; trước phiên sau, bước "sync" (mục 5.4) mới commit chúng.
 - Vùng bị bỏ qua (`.procheck/chats`, `runs`…) không kiểm tra được; chấp nhận.
 
+### 4.2 `artifacts.json` (trạng thái review)
+
+```jsonc
+{
+  "schemaVersion": 1,
+  "files": {
+    "artifacts/initial/brd/business-requirements.md": {
+      "status": "approved",           // review | approved (draft = không có bản ghi)
+      "commit": "<full hash>"         // commit cuối của file lúc đặt trạng thái
+    }
+  }
+}
+```
+
+- Trạng thái của file = trạng thái đã ghi, **nếu** commit cuối của file vẫn là `commit` đã ghi và file không có thay đổi chưa commit. Ngược lại (agent hoặc người dùng đã sửa) → **Draft**.
+- Đặt trạng thái cho file đang có thay đổi chưa commit → Procheck commit `artifacts/` trước (`initial: changes before status change`, `Procheck-By: user`), vì trạng thái gắn với một commit.
+- Danh sách artifact = quét `artifacts/initial/<artifactId>/**/*.md`, ghép với customization để biết thuộc step nào. Thư mục không còn trong customization → nhóm "Không còn trong quy trình".
+
+### 4.3 Trạng thái step
+- **generated**: có commit với trailer `Procheck-By: agent` và `Procheck-Step: <stepId>`. Phiên thành công nhưng không đổi file nào thì không có commit nên chưa tính (có cảnh báo `noChanges`).
+- **locked**: có step trước chưa generated. Generate chỉ bật khi không locked.
+- **Status hiển thị**: generated → `done` nếu có file và mọi file Approved, ngược lại `review`. Chưa generated → `todo` nếu locked, ngược lại `current`.
+
 ## 5. Backend (Rust)
 
 ### 5.1 Tách phần chạy CLI (refactor `chats/runner.rs`)
