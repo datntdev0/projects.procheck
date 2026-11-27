@@ -1,6 +1,7 @@
 //! Projects: a project is a directory holding `procheck.json` plus its data folders.
 //! The application data directory only keeps `projects.json`, a registry pointing at them.
 pub mod create;
+pub mod customization;
 pub mod edit;
 pub mod layout;
 pub mod registry;
@@ -14,6 +15,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::features::agents::AgentId;
 use crate::infra::storage::{StorageResult, json_file};
+use customization::Customization;
 use layout::ProjectDirectories;
 use registry::RegistryEntry;
 
@@ -36,6 +38,14 @@ pub enum Methodology {
     Hybrid,
 }
 
+/// Language of the documents Procheck generates for a project; picked once when it is created.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DocumentLanguage {
+    Vi,
+    En,
+}
+
 /// Contents of `<project dir>\procheck.json`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -50,6 +60,9 @@ pub struct ProjectManifest {
     pub phase: ProjectPhase,
     pub methodology: Option<Methodology>,
     pub repository: Option<String>,
+    /// Absent in projects created before document languages existed.
+    #[serde(default)]
+    pub document_language: Option<DocumentLanguage>,
     pub created_at: String,
 }
 
@@ -59,6 +72,8 @@ pub struct ProjectManifest {
 pub struct ProjectSettings {
     pub cli: AgentId,
     pub model: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub customization: Option<Customization>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]

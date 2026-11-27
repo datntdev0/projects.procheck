@@ -14,6 +14,8 @@ const WORKTREES_DIR: &str = "worktrees";
 const SETTINGS_FILE: &str = "settings.json";
 const SOURCES_CATALOG_FILE: &str = "sources.json";
 const INDEX_DIR: &str = "index";
+const TEMPLATES_DIR: &str = "templates";
+const INITIAL_PHASE_DIR: &str = "initial";
 
 /// Well-known locations inside a project directory.
 #[derive(Debug, Clone)]
@@ -75,6 +77,20 @@ impl ProjectDirectories {
     /// Text and summaries extracted from sources, one folder per source id.
     pub fn index_dir(&self) -> PathBuf {
         self.procheck_dir().join(INDEX_DIR)
+    }
+
+    /// Document templates, one folder per phase.
+    pub fn templates_dir(&self) -> PathBuf {
+        self.procheck_dir().join(TEMPLATES_DIR)
+    }
+
+    /// Templates of the Initial phase, one `<artifact id>.md` per artifact.
+    pub fn initial_templates_dir(&self) -> PathBuf {
+        self.templates_dir().join(INITIAL_PHASE_DIR)
+    }
+
+    pub fn template_file(&self, artifact_id: &str) -> PathBuf {
+        self.initial_templates_dir().join(format!("{artifact_id}.md"))
     }
 
     /// Folders every new project starts with.

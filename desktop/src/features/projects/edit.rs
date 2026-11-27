@@ -149,7 +149,7 @@ mod tests {
     use super::*;
     use crate::features::agents::AgentId;
     use crate::features::projects::create::{self, NewProject};
-    use crate::features::projects::{ProjectPhase, read_manifest};
+    use crate::features::projects::{DocumentLanguage, ProjectPhase, read_manifest};
 
     fn temp_dir(name: &str) -> PathBuf {
         let dir = std::env::temp_dir().join(format!("procheck-edit-{name}-{}", std::process::id()));
@@ -167,6 +167,7 @@ mod tests {
             description: None,
             dir: base.join("lotus-pay").display().to_string(),
             phase: ProjectPhase::Initial,
+            document_language: DocumentLanguage::Vi,
             repository: None,
             sources: vec![],
             cli: AgentId::Claude,

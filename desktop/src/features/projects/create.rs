@@ -11,7 +11,7 @@ use super::registry::{ProjectRegistry, RegistryEntry};
 use super::repository::{self, LinkError, RepositoryStatus};
 use super::sources::import::{self, ImportError, ImportItem};
 use super::sources::{self, SourceProblem};
-use super::{MANIFEST_VERSION, ProjectItem, ProjectManifest, ProjectPhase, ProjectSettings, clean, describe};
+use super::{DocumentLanguage, MANIFEST_VERSION, ProjectItem, ProjectManifest, ProjectPhase, ProjectSettings, clean, customization::{self, CustomizationError}, describe};
 use crate::features::agents::AgentId;
 use crate::features::chats::now;
 use crate::infra::storage::{StorageError, json_file};
@@ -30,6 +30,7 @@ pub struct NewProject {
     pub description: Option<String>,
     pub dir: String,
     pub phase: ProjectPhase,
+    pub document_language: DocumentLanguage,
     #[serde(default)]
     pub repository: Option<String>,
     #[serde(default)]
@@ -67,6 +68,7 @@ pub enum CreateError {
     RepositoryRequired,
     Repository(RepositoryStatus),
     Source { path: String, problem: SourceProblem },
+    Customization(CustomizationError),
     Io(io::Error),
     Storage(StorageError),
 }
@@ -79,6 +81,7 @@ impl CreateError {
             Self::RepositoryRequired => "repositoryRequired",
             Self::Repository(_) => "invalidRepository",
             Self::Source { .. } => "invalidSource",
+            Self::Customization(_) => "customization",
             Self::Io(_) => "io",
             Self::Storage(_) => "storage",
         }
@@ -93,6 +96,7 @@ impl std::fmt::Display for CreateError {
             Self::RepositoryRequired => write!(f, "a linked repository is required to start from SDLC"),
             Self::Repository(status) => write!(f, "the linked repository cannot be used: {status:?}"),
             Self::Source { path, problem } => write!(f, "source {path} cannot be added: {problem:?}"),
+            Self::Customization(e) => write!(f, "the default templates cannot be written: {e}"),
             Self::Io(e) => write!(f, "I/O error: {e}"),
             Self::Storage(e) => write!(f, "{e}"),
         }
@@ -100,6 +104,12 @@ impl std::fmt::Display for CreateError {
 }
 
 impl std::error::Error for CreateError {}
+
+impl From<CustomizationError> for CreateError {
+    fn from(e: CustomizationError) -> Self {
+        Self::Customization(e)
+    }
+}
 
 impl From<LinkError> for CreateError {
     fn from(e: LinkError) -> Self {
@@ -179,6 +189,7 @@ struct Plan {
     root: PathBuf,
     manifest: ProjectManifest,
     settings: ProjectSettings,
+    language: DocumentLanguage,
     sources: Vec<ImportItem>,
 }
 
@@ -209,12 +220,15 @@ impl Plan {
                 phase: input.phase,
                 methodology: None,
                 repository,
+                document_language: Some(input.document_language),
                 created_at: now(),
             },
             settings: ProjectSettings {
                 cli: input.cli,
                 model: clean(input.model),
+                customization: None,
             },
+            language: input.document_language,
             sources,
         })
     }
@@ -248,7 +262,11 @@ fn write_project(plan: &Plan, progress: &mut dyn FnMut(CreateProgress)) -> Resul
 
     progress(CreateProgress::Settings);
     fs::create_dir_all(dirs.cli_profile(plan.settings.cli))?;
-    json_file::write(&dirs.settings_file(), &plan.settings)?;
+    let settings = ProjectSettings {
+        customization: Some(customization::seed(&dirs, plan.language)?),
+        ..plan.settings.clone()
+    };
+    json_file::write(&dirs.settings_file(), &settings)?;
 
     progress(CreateProgress::Manifest);
     json_file::write(&dirs.manifest_file(), &plan.manifest)?;
@@ -314,6 +332,7 @@ mod tests {
             description: None,
             dir: dir.display().to_string(),
             phase: ProjectPhase::Initial,
+            document_language: DocumentLanguage::En,
             repository: None,
             sources: vec![],
             cli: AgentId::Claude,
