@@ -1,0 +1,198 @@
+<div class="canvas-inner flush artifacts-page" data-testid="artifacts-page">
+  <pc-project-gate>
+    @if (project(); as current) {
+      @if (!loaded()) {
+        <div class="ar-state text-sm text-subtle" data-testid="ar-loading">{{ 'ar.loading' | t }}</div>
+      } @else if (!overview()) {
+        <pc-empty-state icon="circle-alert" [title]="'ar.err.load.t' | t" [description]="'ar.err.load.d' | t" data-testid="ar-load-error">
+          <button pcButton type="button" (click)="onWindowFocus()"><pc-icon name="refresh-cw" />{{ 'src.retry' | t }}</button>
+        </pc-empty-state>
+      } @else if (!hasCustomization() && !hasFiles()) {
+        <pc-empty-state icon="files" [title]="'ar.none.t' | t" [description]="'ar.none.d' | t" data-testid="ar-none" />
+      } @else {
+        <div class="ar">
+          <aside class="lp">
+            <div class="lp-top">
+              <div class="input-group">
+                <pc-icon name="search" />
+                <input pcInput data-testid="ar-search" [placeholder]="'ar.search' | t" [value]="query()" (input)="query.set(value($event))" />
+              </div>
+            </div>
+
+            <div class="lp-list" data-testid="ar-tree">
+              @for (step of tree(); track step.stepId) {
+                <div class="grp" [attr.data-testid]="'ar-step-' + step.stepId">
+                  <div class="grp-h">
+                    <span>{{ 'in.step.' + step.stepId | t }}</span>
+                  </div>
+                  @for (art of step.artifacts; track art.id) {
+                    <div class="art" [attr.data-testid]="'ar-artifact-' + art.id">
+                      @if (art.files.length) {
+                        <div class="art-h">
+                          <span class="truncate">{{ art.name }}</span>
+                          <span class="count">{{ art.files.length }}</span>
+                        </div>
+                        @for (file of art.files; track file.path) {
+                          <button
+                            type="button"
+                            class="it"
+                            [class.is-active]="selected()?.path === file.path"
+                            [attr.data-testid]="'ar-file'"
+                            [attr.data-path]="file.path"
+                            (click)="select(file.path)"
+                          >
+                            <span class="st-dot" [class]="file.status" [title]="'ar.st.' + file.status | t"></span>
+                            <span class="grow" style="min-width: 0">
+                              <span class="t truncate">{{ fileName(file) }}</span>
+                              <span class="s">
+                                @if (file.version) {
+                                  <span>v{{ file.version }}</span>
+                                }
+                                <span>{{ date(file.updatedAt) }}</span>
+                                @if (file.uncommitted) {
+                                  <span class="tag">{{ 'ar.uncommitted' | t }}</span>
+                                }
+                              </span>
+                            </span>
+                          </button>
+                        }
+                      } @else {
+                        <button
+                          type="button"
+                          class="it is-empty"
+                          [class.is-active]="emptyArtifact()?.artifact?.artifactId === art.id"
+                          (click)="selectArtifact(art.id)"
+                        >
+                          <span class="st-dot"></span>
+                          <span class="grow" style="min-width: 0">
+                            <span class="t truncate">{{ art.name }}</span>
+                            <span class="s">{{ 'ar.notyet' | t }}</span>
+                          </span>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (orphanFiles().length) {
+                <div class="grp" data-testid="ar-orphans">
+                  <div class="grp-h">
+                    <span>{{ 'ar.orphans' | t }}</span>
+                  </div>
+                  @for (file of orphanFiles(); track file.path) {
+                    <button
+                      type="button"
+                      class="it"
+                      [class.is-active]="selected()?.path === file.path"
+                      data-testid="ar-file"
+                      [attr.data-path]="file.path"
+                      (click)="select(file.path)"
+                    >
+                      <span class="st-dot" [class]="file.status"></span>
+                      <span class="grow" style="min-width: 0">
+                        <span class="t truncate">{{ fileName(file) }}</span>
+                        <span class="s">
+                          <span class="truncate">{{ file.artifactId }}</span>
+                          <span>{{ date(file.updatedAt) }}</span>
+                          @if (file.uncommitted) {
+                            <span class="tag">{{ 'ar.uncommitted' | t }}</span>
+                          }
+                        </span>
+                      </span>
+                    </button>
+                  }
+                </div>
+              }
+
+              @if (noMatches()) {
+                <div class="lp-empty" data-testid="ar-no-match">{{ 'ar.none.f' | t }}</div>
+              }
+            </div>
+          </aside>
+
+          <section class="cp">
+            @if (selected(); as file) {
+              <header class="cp-head">
+                <div class="cp-title">
+                  <pc-icon name="file-text" [size]="18" />
+                  <h3 class="truncate" data-testid="ar-title">{{ fileName(file) }}</h3>
+                  <pc-badge [tone]="tones[file.status]" data-testid="ar-status-badge">{{ 'ar.st.' + file.status | t }}</pc-badge>
+                  @if (file.version) {
+                    <pc-badge tone="outline" data-testid="ar-version">v{{ file.version }}</pc-badge>
+                  }
+                  @if (file.uncommitted) {
+                    <span class="tag" data-testid="ar-uncommitted">{{ 'ar.uncommitted' | t }}</span>
+                  }
+                </div>
+                <div class="cp-sub" data-testid="ar-by">
+                  @if (file.by === 'agent') {
+                    <span>{{ 'ar.by.agent' | t: { cli: cliName(file), model: file.model ?? '—', date: date(file.updatedAt) } }}</span>
+                  } @else if (file.by === 'user') {
+                    <span>{{ 'ar.by.user' | t: { date: date(file.updatedAt) } }}</span>
+                  } @else {
+                    <span>{{ date(file.updatedAt) }}</span>
+                  }
+                  <code class="truncate">{{ file.path }}</code>
+                </div>
+                <div class="cp-tools">
+                  <pc-segmented data-testid="ar-status" [options]="statusOptions()" [value]="file.status" (valueChange)="setStatus(file, $event)" />
+                  <span class="sp"></span>
+                  @if (file.stepId) {
+                    <a pcButton size="sm" variant="ai" [routerLink]="['/projects', current.id, 'initial']" data-testid="ar-update-step">
+                      <pc-icon name="sparkles" [size]="14" />{{ 'ar.update.step' | t }}
+                    </a>
+                  }
+                  <button pcButton size="sm" type="button" data-testid="ar-vscode" (click)="openInVsCode(file)">
+                    <pc-icon name="external-link" [size]="14" />{{ 'ar.vscode' | t }}
+                  </button>
+                  <button pcButton size="sm" type="button" data-testid="ar-reveal" (click)="reveal(file)">
+                    <pc-icon name="folder-search" [size]="14" />{{ 'ar.reveal' | t }}
+                  </button>
+                  <button pcButton size="sm" type="button" data-testid="ar-copy" [disabled]="!content()" (click)="copy()">
+                    <pc-icon name="copy" [size]="14" />{{ 'ar.copy' | t }}
+                  </button>
+                </div>
+              </header>
+
+              @if (file.uncommitted) {
+                <div class="banner" data-testid="ar-banner">
+                  <pc-icon name="triangle-alert" [size]="14" />
+                  <span>{{ 'ar.banner.uncommitted' | t }}</span>
+                </div>
+              }
+
+              <div class="cp-body">
+                @if (content(); as doc) {
+                  @if (doc.path === file.path) {
+                    <pc-markdown class="adoc" data-testid="ar-content" [source]="doc.text" />
+                  }
+                } @else if (readFailed()) {
+                  <div class="ar-state">
+                    <pc-alert tone="danger">{{ 'ar.err.read' | t }}</pc-alert>
+                  </div>
+                } @else if (reading()) {
+                  <div class="ar-state text-sm text-subtle">{{ 'ar.loading' | t }}</div>
+                }
+              </div>
+            } @else if (emptyArtifact(); as empty) {
+              <pc-empty-state icon="file-text" [title]="empty.artifact.name" [description]="'ar.notyet.d' | t" data-testid="ar-artifact-empty">
+                <a pcButton variant="ai" [routerLink]="['/projects', current.id, 'initial']">
+                  <pc-icon name="sparkles" [size]="14" />{{ 'ar.goto.step' | t }}
+                </a>
+              </pc-empty-state>
+            } @else if (!hasFiles()) {
+              <pc-empty-state icon="files" [title]="'ar.empty.t' | t" [description]="'ar.empty.d' | t" data-testid="ar-empty">
+                <a pcButton variant="ai" [routerLink]="['/projects', current.id, 'initial']">
+                  <pc-icon name="sparkles" [size]="14" />{{ 'ar.goto.step' | t }}
+                </a>
+              </pc-empty-state>
+            } @else {
+              <pc-empty-state icon="file-text" [title]="'ar.missing.t' | t" [description]="'ar.missing.d' | t" data-testid="ar-missing" />
+            }
+          </section>
+        </div>
+      }
+    }
+  </pc-project-gate>
+</div>

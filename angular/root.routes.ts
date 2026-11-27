@@ -6,6 +6,7 @@ import { PROJECT_ID_PARAM } from '@layout/current-project';
 import { PROJECT_PAGES, ProjectNavItem } from '@layout/navigation';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 import { MainLayoutComponent } from '@layout/main-layout/main-layout.component';
+import { ArtifactsPageComponent } from '@pages/artifacts/artifacts-page.component';
 import { ChatsPageComponent } from '@pages/chats/chats-page.component';
 import { ComingSoonPageComponent } from '@pages/coming-soon/coming-soon-page.component';
 import { InitialPhasePageComponent } from '@pages/initial-phase/initial-phase-page.component';
@@ -23,6 +24,7 @@ const chatsData: LayoutRouteData = { crumb: 'nav.chats.all', hideAssistant: true
 /** Project pages that are built; the others show a coming-soon note. */
 const PROJECT_PAGE_COMPONENTS: Partial<Record<string, Type<unknown>>> = {
   overview: ProjectOverviewPageComponent,
+  artifacts: ArtifactsPageComponent,
   initial: InitialPhasePageComponent,
   settings: ProjectSettingsPageComponent,
   sources: SourcesPageComponent,
