@@ -304,6 +304,11 @@ pub fn status(agent: AgentId, custom: Option<&str>, home: &Path) -> AgentStatus 
     status
 }
 
+/// Whether the CLI home holds a usable sign-in. Reads the CLI's files only; no process is started.
+pub fn is_signed_in(agent: AgentId, home: &Path) -> bool {
+    read_auth(agent, home).signed_in
+}
+
 fn read_auth(agent: AgentId, home: &Path) -> AuthStatus {
     let auth = match agent {
         AgentId::Claude => read_claude_files(home),

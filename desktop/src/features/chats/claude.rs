@@ -1,6 +1,8 @@
 //! `claude -p --output-format stream-json --verbose --include-partial-messages`, one JSON event per line:
 //! `system/init` (session, model) · `stream_event` text deltas · `assistant` (whole message) ·
 //! `rate_limit_event` (5-hour / weekly utilization, a 0–1 fraction) · `result` (usage, context window, cost).
+use std::collections::HashSet;
+
 use serde_json::Value;
 
 use super::runner::{Signal, TurnOutcome};
@@ -8,6 +10,10 @@ use super::{ContextUsage, LimitKind, LimitWindow, TokenTotals, ToolAccess, Usage
 use crate::features::agents::AgentId;
 
 const PROJECT_TOOLS: &str = "Read,Edit,Write,Glob,Grep,Bash";
+/// Tools of an artifact agent: no Bash and no web; writing is limited by path rules below.
+const AGENT_TOOLS: &str = "Read,Glob,Grep,Write,Edit";
+/// Tool inputs that name what the tool works on, in order of preference.
+const TOOL_TARGETS: [&str; 4] = ["file_path", "path", "pattern", "command"];
 const BLOCK_SEPARATOR: &str = "\n\n";
 
 pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -> Vec<String> {
@@ -26,11 +32,21 @@ pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -
 }
 
 fn tool_args(access: ToolAccess) -> Vec<String> {
-    let list: &[&str] = match access {
-        ToolAccess::None => &["--tools", ""],
-        ToolAccess::ProjectFiles => &["--tools", PROJECT_TOOLS, "--allowedTools", PROJECT_TOOLS, "--permission-mode", "acceptEdits"],
+    let list: Vec<String> = match access {
+        ToolAccess::None => vec!["--tools".into(), String::new()],
+        ToolAccess::ProjectFiles => ["--tools", PROJECT_TOOLS, "--allowedTools", PROJECT_TOOLS, "--permission-mode", "acceptEdits"]
+            .map(String::from)
+            .into(),
+        // No `acceptEdits`: in a non-interactive run every tool use the rules do not allow is denied,
+        // so writes outside `write_dir` fail.
+        ToolAccess::Agent { write_dir } => vec![
+            "--tools".into(),
+            AGENT_TOOLS.into(),
+            "--allowedTools".into(),
+            format!("Read,Glob,Grep,Write({write_dir}/**),Edit({write_dir}/**)"),
+        ],
     };
-    list.iter().map(|a| (*a).to_owned()).collect()
+    list
 }
 
 #[derive(Debug, Default)]
@@ -39,6 +55,9 @@ pub struct ClaudeTurn {
     streamed: String,
     whole: Vec<String>,
     result: Option<String>,
+    /// Ids of the tool calls already reported (each shows up in several events).
+    reported_tools: HashSet<String>,
+    tools: Vec<Signal>,
 }
 
 impl ClaudeTurn {
@@ -61,6 +80,11 @@ impl ClaudeTurn {
             }
             _ => None,
         }
+    }
+
+    /// Tool calls seen since the last call.
+    pub fn take_tools(&mut self) -> Vec<Signal> {
+        std::mem::take(&mut self.tools)
     }
 
     pub fn finish(mut self) -> TurnOutcome {
@@ -115,6 +139,9 @@ impl ClaudeTurn {
 
     fn on_assistant(&mut self, event: &Value) {
         let blocks = event.pointer("/message/content").and_then(Value::as_array).into_iter().flatten();
+        for block in blocks.clone().filter(|b| text(b, "type") == Some("tool_use")) {
+            self.on_tool_use(block);
+        }
         let joined: String = blocks
             .filter(|b| text(b, "type") == Some("text"))
             .filter_map(|b| text(b, "text"))
@@ -122,6 +149,26 @@ impl ClaudeTurn {
         if !joined.trim().is_empty() {
             self.whole.push(joined);
         }
+    }
+
+    /// The first event of a call carries an empty `input`; it is reported once the input is there.
+    fn on_tool_use(&mut self, block: &Value) {
+        let (Some(name), Some(input)) = (text(block, "name"), block.get("input").and_then(Value::as_object)) else {
+            return;
+        };
+        if input.is_empty() {
+            return;
+        }
+        if let Some(id) = text(block, "id")
+            && !self.reported_tools.insert(id.to_owned())
+        {
+            return;
+        }
+        let path = TOOL_TARGETS.iter().find_map(|key| input.get(*key).and_then(Value::as_str));
+        self.tools.push(Signal::Tool {
+            name: name.to_owned(),
+            path: path.map(str::to_owned),
+        });
     }
 
     fn on_result(&mut self, event: &Value) {

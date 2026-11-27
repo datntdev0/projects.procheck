@@ -18,7 +18,7 @@ const WINDOWS_SANDBOX: &str = "windows.sandbox=\"unelevated\"";
 pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -> Vec<String> {
     let sandbox = match access {
         ToolAccess::None => "read-only",
-        ToolAccess::ProjectFiles => "workspace-write",
+        ToolAccess::ProjectFiles | ToolAccess::Agent { .. } => "workspace-write",
     };
     let mut args: Vec<String> = vec!["exec".into(), "--sandbox".into(), sandbox.into()];
     if cfg!(windows) {
@@ -41,6 +41,7 @@ pub fn args(model: Option<&str>, session_id: Option<&str>, access: ToolAccess) -
 #[derive(Debug, Default)]
 pub struct CodexTurn {
     outcome: TurnOutcome,
+    tools: Vec<Signal>,
 }
 
 impl CodexTurn {
@@ -51,6 +52,10 @@ impl CodexTurn {
                 let id = text(&event, "thread_id")?.to_owned();
                 self.outcome.session_id = Some(id.clone());
                 Some(Signal::Session { id, model: None })
+            }
+            "item.started" => {
+                self.on_item_started(&event);
+                None
             }
             "item.completed" => self.on_item(&event),
             "turn.completed" => {
@@ -65,19 +70,55 @@ impl CodexTurn {
         }
     }
 
+    /// Tool calls seen since the last call.
+    pub fn take_tools(&mut self) -> Vec<Signal> {
+        std::mem::take(&mut self.tools)
+    }
+
     pub fn finish(self) -> TurnOutcome {
         self.outcome
     }
 
+    /// Shell commands are reported as they start (the best signal Codex gives for reading files).
+    fn on_item_started(&mut self, event: &Value) {
+        let Some(item) = event.get("item") else { return };
+        if text(item, "type") == Some("command_execution") {
+            self.tools.push(Signal::Tool {
+                name: "Bash".into(),
+                path: text(item, "command").map(str::to_owned),
+            });
+        }
+    }
+
     fn on_item(&mut self, event: &Value) -> Option<Signal> {
         let item = event.get("item")?;
-        if text(item, "type")? != "agent_message" {
-            return None;
+        match text(item, "type")? {
+            "agent_message" => {}
+            "file_change" => {
+                self.on_file_change(item);
+                return None;
+            }
+            _ => return None,
         }
         let message = text(item, "text")?;
         let chunk = if self.outcome.text.is_empty() { message.to_owned() } else { format!("\n\n{message}") };
         self.outcome.text.push_str(&chunk);
         Some(Signal::Delta(chunk))
+    }
+
+    fn on_file_change(&mut self, item: &Value) {
+        let changes = item.get("changes").and_then(Value::as_array).into_iter().flatten();
+        for change in changes {
+            let name = match text(change, "kind") {
+                Some("add") => "Write",
+                Some("delete") => "Delete",
+                _ => "Edit",
+            };
+            self.tools.push(Signal::Tool {
+                name: name.into(),
+                path: text(change, "path").map(str::to_owned),
+            });
+        }
     }
 
     fn on_usage(&mut self, usage: &Value) {

@@ -151,6 +151,9 @@ impl LimitKind {
 pub enum ToolAccess {
     None,
     ProjectFiles,
+    /// An artifact agent: reads the whole project and writes only below `write_dir` (relative to
+    /// the project directory, forward slashes). No shell and no web.
+    Agent { write_dir: &'static str },
 }
 
 /// Title of a new chat: the first line of the first message, shortened.

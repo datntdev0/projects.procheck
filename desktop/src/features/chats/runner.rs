@@ -17,6 +17,8 @@ use crate::infra::process::{self, KillSwitch, StreamingChild};
 pub enum Signal {
     Session { id: String, model: Option<String> },
     Delta(String),
+    /// The CLI uses a tool: `Read` / `Write` / `Edit` / `Bash` …, with the file, pattern or command it works on.
+    Tool { name: String, path: Option<String> },
 }
 
 #[derive(Debug, Default)]
@@ -220,10 +222,27 @@ fn record_user_message(store: &ChatStore, chat_id: &str, prompt: &str) -> Result
     Ok((chat, message))
 }
 
-struct Execution {
-    outcome: TurnOutcome,
-    killed: bool,
-    failure: Option<TurnError>,
+/// One CLI invocation: which CLI, from where, with which tools and prompt.
+pub struct CliRun<'a> {
+    pub agent: AgentId,
+    /// Executable set in Settings; `None` = find it on PATH.
+    pub bin_path: Option<&'a str>,
+    /// The Procheck home of the CLI (`cli\claude`).
+    pub home: &'a Path,
+    pub cwd: &'a Path,
+    pub model: Option<&'a str>,
+    pub session: Option<&'a str>,
+    pub access: ToolAccess,
+    pub prompt: &'a str,
+    /// A chat turn that ends without any text is a failure; an agent run is judged by its exit status.
+    pub require_text: bool,
+}
+
+/// How a CLI invocation ended.
+pub struct Execution {
+    pub outcome: TurnOutcome,
+    pub killed: bool,
+    pub failure: Option<TurnError>,
 }
 
 impl Execution {
@@ -249,11 +268,12 @@ impl Parser {
         }
     }
 
-    fn feed(&mut self, line: &str) -> Option<Signal> {
-        match self {
-            Self::Claude(turn) => turn.feed(line),
-            Self::Codex(turn) => turn.feed(line),
-        }
+    fn feed(&mut self, line: &str) -> Vec<Signal> {
+        let (signal, tools) = match self {
+            Self::Claude(turn) => (turn.feed(line), turn.take_tools()),
+            Self::Codex(turn) => (turn.feed(line), turn.take_tools()),
+        };
+        signal.into_iter().chain(tools).collect()
     }
 
     fn finish(self, home: &Path) -> TurnOutcome {
@@ -270,52 +290,69 @@ impl Parser {
 
 fn execute(ctx: &TurnContext<'_>, chat: &ChatSummary, home: &Path, prompt: &str, emit: &mut dyn FnMut(ChatEvent)) -> Execution {
     let settings = ctx.settings(chat.agent);
-    let bin = match agents::require_binary(chat.agent, settings.bin_path.as_deref()) {
+    let session = chat.session_id.as_deref();
+    log::info!("chat {}: {} turn ({})", chat.id, chat.agent.name(), if session.is_some() { "resume" } else { "new session" });
+    let run = CliRun {
+        agent: chat.agent,
+        bin_path: settings.bin_path.as_deref(),
+        home,
+        cwd: &ctx.cwd,
+        model: chat.selected_model.as_deref().or(settings.model.as_deref()),
+        session,
+        access: ctx.access,
+        prompt,
+        require_text: true,
+    };
+    run_cli(&run, &mut |switch| ctx.runs.attach(&chat.id, switch), &mut |signal| match signal {
+        Signal::Session { id, model } => emit(ChatEvent::Started { session_id: id, model }),
+        Signal::Delta(text) => emit(ChatEvent::Delta { text }),
+        Signal::Tool { .. } => {}
+    })
+}
+
+/// Runs the CLI once, streaming what it does to `emit`. `attach` receives the kill switch as soon
+/// as the process runs, so the caller can stop it. Chats and artifact generation share this.
+pub fn run_cli(run: &CliRun<'_>, attach: &mut dyn FnMut(Arc<KillSwitch>), emit: &mut dyn FnMut(Signal)) -> Execution {
+    let bin = match agents::require_binary(run.agent, run.bin_path) {
         Ok(bin) => bin,
         Err(e) => return Execution::failed(e),
     };
-    let launch = match agents::launch(chat.agent, home, Some(&ctx.cwd)) {
+    let launch = match agents::launch(run.agent, run.home, Some(run.cwd)) {
         Ok(launch) => launch,
         Err(e) => return Execution::failed(e),
     };
-    let model = chat.selected_model.as_deref().or(settings.model.as_deref());
-    let session = chat.session_id.as_deref();
-    let args = match chat.agent {
-        AgentId::Claude => claude::args(model, session, ctx.access),
-        AgentId::Codex => codex::args(model, session, ctx.access),
+    let args = match run.agent {
+        AgentId::Claude => claude::args(run.model, run.session, run.access),
+        AgentId::Codex => codex::args(run.model, run.session, run.access),
     };
-    log::info!("chat {}: {} turn ({})", chat.id, chat.agent.name(), if session.is_some() { "resume" } else { "new session" });
-    let child = match process::spawn_streaming(&bin, &args, &launch, prompt) {
+    let child = match process::spawn_streaming(&bin, &args, &launch, run.prompt) {
         Ok(child) => child,
         Err(e) => return Execution::failed(e.into()),
     };
-    ctx.runs.attach(&chat.id, child.kill_switch());
-    stream(child, Parser::for_agent(chat.agent), home, emit)
+    attach(child.kill_switch());
+    stream(child, run, emit)
 }
 
-fn stream(mut child: StreamingChild, mut parser: Parser, home: &Path, emit: &mut dyn FnMut(ChatEvent)) -> Execution {
+fn stream(mut child: StreamingChild, run: &CliRun<'_>, emit: &mut dyn FnMut(Signal)) -> Execution {
+    let mut parser = Parser::for_agent(run.agent);
     while let Some(line) = child.next_line() {
-        match parser.feed(&line) {
-            Some(Signal::Session { id, model }) => emit(ChatEvent::Started { session_id: id, model }),
-            Some(Signal::Delta(text)) => emit(ChatEvent::Delta { text }),
-            None => {}
-        }
+        parser.feed(&line).into_iter().for_each(&mut *emit);
     }
     let end = child.finish();
-    let outcome = parser.finish(home);
+    let outcome = parser.finish(run.home);
     let (killed, failure) = match end {
         Err(e) => (false, Some(turn_error(&e.into()))),
         Ok(end) if end.killed => (true, None),
-        Ok(end) => (false, failure_of(&outcome, end.status.success(), &end.stderr)),
+        Ok(end) => (false, failure_of(&outcome, end.status.success(), &end.stderr, run.require_text)),
     };
     Execution { outcome, killed, failure }
 }
 
-fn failure_of(outcome: &TurnOutcome, success: bool, stderr: &str) -> Option<TurnError> {
+fn failure_of(outcome: &TurnOutcome, success: bool, stderr: &str, require_text: bool) -> Option<TurnError> {
     if let Some(error) = &outcome.error {
         return Some(classify(error));
     }
-    if success && !outcome.text.trim().is_empty() {
+    if success && (!require_text || !outcome.text.trim().is_empty()) {
         return None;
     }
     let reason = stderr
