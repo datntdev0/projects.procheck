@@ -6,6 +6,7 @@ import { AgentConnectionsService } from '@features/agents/agent-connections.serv
 import { projectMonogram } from '@features/projects/project-phases';
 import {
   DirectoryCheck,
+  DocumentLanguage,
   NewProject,
   RepositoryInfo,
   SourceCandidate,
@@ -70,6 +71,8 @@ export class NewProjectForm {
   readonly industry = signal('');
   readonly description = signal('');
   readonly dir = signal('');
+  /** Language of the generated documents; starts as the current UI language. */
+  readonly documentLanguage = signal<DocumentLanguage>(this.i18n.lang());
   private readonly parentDir = signal('');
   private readonly codeEdited = signal(false);
   private readonly dirEdited = signal(false);
@@ -230,6 +233,7 @@ export class NewProjectForm {
       description: optional(this.description()),
       dir: this.dir().trim(),
       phase: this.phase(),
+      documentLanguage: this.documentLanguage(),
       repository: optional(this.repository()),
       sources: this.sources().map((s) => s.path),
       cli: this.cli(),

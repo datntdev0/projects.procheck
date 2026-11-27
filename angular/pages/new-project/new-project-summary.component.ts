@@ -58,6 +58,7 @@ export class NewProjectSummaryComponent {
     const repository = this.form.repository().trim();
     return [
       { icon: 'file-text', label: 'np.sum.docs', value: this.i18n.t('np.sum.docs.v', { n: this.form.sources().length }) },
+      { icon: 'languages', label: 'np.sum.doclang', value: this.i18n.t(`lang.${this.form.documentLanguage()}`) },
       { icon: 'folder-git-2', label: 'np.sum.repo', value: repository || this.i18n.t('np.sum.none'), mono: !!repository },
       { icon: 'sparkles', label: 'np.sum.ai', value: AGENT_NAMES[this.form.cli()] },
       { icon: 'folder', label: 'np.sum.dir', value: this.form.dir().trim() || '—', mono: true },

@@ -3,14 +3,17 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { ButtonComponent } from '@components/button/button.component';
 import { FieldComponent } from '@components/form/field.component';
 import { InputDirective } from '@components/form/input.directive';
+import { SegmentedComponent, SegmentedOption } from '@components/form/segmented.component';
 import { IconComponent } from '@components/icon/icon.component';
-import { INDUSTRIES } from '@features/projects/projects.model';
+import { DocumentLanguage, INDUSTRIES } from '@features/projects/projects.model';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 import { I18nService } from '@shared/i18n/i18n.service';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { NewProjectForm } from '../new-project-form';
 import { StepPanelComponent } from './step-panel.component';
+
+const DOCUMENT_LANGUAGES: DocumentLanguage[] = ['vi', 'en'];
 
 interface TreeNode {
   path: string;
@@ -32,7 +35,7 @@ const PROJECT_TREE: TreeNode[] = [
 
 @Component({
   selector: 'pc-np-basics-step',
-  imports: [ButtonComponent, FieldComponent, InputDirective, IconComponent, StepPanelComponent, TranslatePipe],
+  imports: [ButtonComponent, FieldComponent, InputDirective, IconComponent, SegmentedComponent, StepPanelComponent, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-np-step-panel [title]="'np.s1.t' | t" [description]="'np.s1.d' | t">
@@ -63,6 +66,9 @@ const PROJECT_TREE: TreeNode[] = [
                 <option [value]="industry" [selected]="industry === form.industry()">{{ 'np.ind.' + industry | t }}</option>
               }
             </select>
+          </pc-field>
+          <pc-field class="s6" [label]="'np.doclang' | t" [hint]="'np.doclang.h' | t">
+            <pc-segmented data-testid="np-doclang" [options]="languageOptions()" [value]="form.documentLanguage()" (valueChange)="setLanguage($event)" />
           </pc-field>
           <pc-field class="s6" [label]="'np.desc' | t" for="np-desc" [hint]="'np.desc.h' | t">
             <textarea pcInput id="np-desc" [placeholder]="'np.desc.ph' | t" [value]="form.description()" (input)="form.description.set(value($event))"></textarea>
@@ -120,6 +126,9 @@ export class BasicsStepComponent {
   private readonly i18n = inject(I18nService);
 
   protected readonly industries = INDUSTRIES;
+  protected readonly languageOptions = computed<SegmentedOption[]>(() =>
+    DOCUMENT_LANGUAGES.map((lang) => ({ value: lang, label: this.i18n.t(`lang.${lang}`) })),
+  );
   protected readonly tree = PROJECT_TREE;
   protected readonly rootLabel = computed(() => this.form.dir().trim() || this.i18n.t('np.dir.ph'));
 
@@ -128,6 +137,10 @@ export class BasicsStepComponent {
     const show = this.form.attempted() || this.form.dirCheck() !== null;
     return key && show ? this.i18n.t(key) : '';
   });
+
+  protected setLanguage(value: string): void {
+    this.form.documentLanguage.set(value as DocumentLanguage);
+  }
 
   protected error(key: TranslationKey | null): string {
     return key && this.form.attempted() ? this.i18n.t(key) : '';

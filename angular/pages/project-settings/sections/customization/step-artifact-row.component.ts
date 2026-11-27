@@ -6,11 +6,11 @@ import { IconComponent } from '@components/icon/icon.component';
 import { TooltipDirective } from '@components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
-import { StepArtifactConfig } from './customization.model';
+import { ArtifactView, fileSizeLabel } from './customization.model';
 
 /**
- * One artifact of a step: name, template file (attach, replace, remove, or drop a file on the row) and remove.
- * Presentational only: every change is emitted to the parent.
+ * One artifact of a step: name, Markdown template (attach, replace, remove, preview, restore the default, or drop
+ * a file on the row) and remove. Presentational only: every change is emitted to the parent, which checks the file.
  */
 @Component({
   selector: 'pc-step-artifact-row',
@@ -19,7 +19,7 @@ import { StepArtifactConfig } from './customization.model';
   host: {
     class: 'fa',
     '[class.is-over]': 'dragOver()',
-    '[attr.data-testid]': "'ps-fl-art-' + artifact().key",
+    '[attr.data-testid]': "'ps-fl-art-' + artifact().id",
     '(dragover)': 'onDragOver($event)',
     '(dragleave)': 'onDragLeave($event)',
     '(drop)': 'onDrop($event)',
@@ -39,7 +39,22 @@ import { StepArtifactConfig } from './customization.model';
       <div class="fa-file" data-testid="ps-fl-art-template">
         <pc-icon name="file-badge" [size]="14" />
         <span class="nm" [title]="file.name">{{ file.name }}</span>
-        <span class="sz">{{ file.size }}</span>
+        <span class="sz">{{ sizeLabel(file.size) }}</span>
+        @if (file.pending) {
+          <span class="tag is-pending" data-testid="ps-fl-art-pending">{{ 'ps.fl.pending' | t }}</span>
+        } @else if (file.origin === 'default') {
+          <span class="tag" data-testid="ps-fl-art-default">{{ 'ps.fl.default' | t }}</span>
+        }
+        @if (file.previewable) {
+          <button pcButton variant="ghost" size="sm" type="button" [iconOnly]="true" [pcTooltip]="'ps.fl.preview' | t" data-testid="ps-fl-art-preview" (click)="preview.emit()">
+            <pc-icon name="eye" />
+          </button>
+        }
+        @if (artifact().canRestore) {
+          <button pcButton variant="ghost" size="sm" type="button" [iconOnly]="true" [pcTooltip]="'ps.fl.restore' | t" data-testid="ps-fl-art-restore" (click)="restore.emit()">
+            <pc-icon name="rotate-ccw" />
+          </button>
+        }
         <button pcButton variant="ghost" size="sm" type="button" [iconOnly]="true" [pcTooltip]="'ps.fl.replace' | t" (click)="picker.click()">
           <pc-icon name="replace" />
         </button>
@@ -48,26 +63,36 @@ import { StepArtifactConfig } from './customization.model';
         </button>
       </div>
     } @else {
-      <button pcButton size="sm" type="button" class="fa-attach" data-testid="ps-fl-art-attach" (click)="picker.click()">
-        <pc-icon name="paperclip" />{{ 'ps.fl.attach' | t }}
-      </button>
+      <div class="fa-file">
+        <button pcButton size="sm" type="button" class="fa-attach" data-testid="ps-fl-art-attach" (click)="picker.click()">
+          <pc-icon name="paperclip" />{{ 'ps.fl.attach' | t }}
+        </button>
+        @if (artifact().canRestore) {
+          <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-fl-art-restore" (click)="restore.emit()">
+            <pc-icon name="rotate-ccw" />{{ 'ps.fl.restore' | t }}
+          </button>
+        }
+      </div>
     }
 
     <button pcButton variant="ghost" size="sm" type="button" [iconOnly]="true" [pcTooltip]="'ps.fl.rm' | t" data-testid="ps-fl-art-remove" (click)="remove.emit()">
       <pc-icon name="trash-2" />
     </button>
-    <input #picker type="file" hidden (change)="onPick($event)" />
+    <input #picker type="file" hidden accept=".md,text/markdown" (change)="onPick($event)" />
   `,
 })
 export class StepArtifactRowComponent {
-  readonly artifact = input.required<StepArtifactConfig>();
+  readonly artifact = input.required<ArtifactView>();
 
   readonly rename = output<string>();
   readonly attach = output<File>();
+  readonly preview = output<void>();
+  readonly restore = output<void>();
   readonly removeTemplate = output<void>();
   readonly remove = output<void>();
 
   protected readonly dragOver = signal(false);
+  protected readonly sizeLabel = fileSizeLabel;
 
   protected text(event: Event): string {
     return (event.target as HTMLInputElement).value;

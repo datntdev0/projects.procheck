@@ -2,26 +2,24 @@ import { ChangeDetectionStrategy, Component, computed, input, model, output } fr
 
 import { ButtonComponent } from '@components/button/button.component';
 import { InputDirective } from '@components/form/input.directive';
-import { SwitchComponent } from '@components/form/switch.component';
 import { IconComponent } from '@components/icon/icon.component';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
-import { StepConfig, StepDefinition } from './customization.model';
+import { StepDefinition, StepView } from './customization.model';
 import { StepArtifactRowComponent } from './step-artifact-row.component';
 
 /**
  * One step of a phase in Project settings → Customization, collapsible: free-text instructions for the
- * Assistant and the artifacts the step produces; optional steps have an on/off switch.
+ * Assistant and the artifacts the step produces.
  * Presentational only: every change is emitted to the parent.
  */
 @Component({
   selector: 'pc-step-config-card',
-  imports: [ButtonComponent, IconComponent, InputDirective, StepArtifactRowComponent, SwitchComponent, TranslatePipe],
+  imports: [ButtonComponent, IconComponent, InputDirective, StepArtifactRowComponent, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'fstep',
     '[class.is-open]': 'open()',
-    '[class.is-off]': 'step().off',
     '[attr.data-testid]': "'ps-cz-step-' + step().id",
   },
   template: `
@@ -31,34 +29,21 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
         <span class="fs-t">
           <b>{{ definition().name | t }}</b>
           <small>
-            @if (step().off) {
-              {{ 'ps.cz.skipped_d' | t }}
-            } @else {
-              {{ 'ps.fl.count' | t: { n: step().artifacts.length } }}@if (names()) {
-                · {{ names() }}
-              }
+            {{ 'ps.fl.count' | t: { n: step().artifacts.length } }}@if (names()) {
+              · {{ names() }}
             }
           </small>
         </span>
-        @if (step().instructions !== null) {
+        @if (step().custom) {
           <span class="tag">{{ 'ps.fl.custom' | t }}</span>
         }
       </button>
-      @if (optional()) {
-        <div class="fs-off">
-          <span>{{ (step().off ? 'ps.cz.off' : 'ps.cz.on') | t }}</span>
-          <pc-switch data-testid="ps-cz-step-switch" [checked]="!step().off" (checkedChange)="offChange.emit(!$event)" />
-        </div>
-      }
       <button type="button" class="fs-chev" [attr.aria-expanded]="open()" [attr.aria-label]="definition().name | t" (click)="open.set(!open())">
         <pc-icon name="chevron-down" [size]="16" class="chev" />
       </button>
     </div>
 
     @if (open()) {
-      @if (step().off) {
-        <div class="fs-skip">{{ 'ps.cz.skip_note' | t }}</div>
-      }
       <div class="fs-body">
         <div class="fs-block">
           <div class="fs-block-head">
@@ -66,7 +51,7 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
               <div class="slabel">{{ 'ps.fl.instr' | t }}</div>
               <div class="sdesc">{{ 'ps.fl.instr.d' | t }}</div>
             </div>
-            @if (step().instructions !== null) {
+            @if (step().custom) {
               <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-fl-instr-reset" (click)="resetInstructions.emit()">
                 <pc-icon name="rotate-ccw" />{{ 'ps.fl.instr.reset' | t }}
               </button>
@@ -77,7 +62,7 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
             class="instr"
             spellcheck="false"
             data-testid="ps-fl-instr"
-            [value]="instructionText()"
+            [value]="step().instructions"
             (input)="instructionsChange.emit(text($event))"
           ></textarea>
         </div>
@@ -93,13 +78,15 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
             </button>
           </div>
           <div class="fa-list">
-            @for (artifact of step().artifacts; track artifact.key; let n = $index) {
+            @for (artifact of step().artifacts; track artifact.id) {
               <pc-step-artifact-row
                 [artifact]="artifact"
-                (rename)="renameArtifact.emit({ index: n, name: $event })"
-                (attach)="attachTemplate.emit({ index: n, file: $event })"
-                (removeTemplate)="removeTemplate.emit(n)"
-                (remove)="removeArtifact.emit(n)"
+                (rename)="renameArtifact.emit({ id: artifact.id, name: $event })"
+                (attach)="attachTemplate.emit({ id: artifact.id, file: $event })"
+                (preview)="previewTemplate.emit(artifact.id)"
+                (restore)="restoreTemplate.emit(artifact.id)"
+                (removeTemplate)="removeTemplate.emit(artifact.id)"
+                (remove)="removeArtifact.emit(artifact.id)"
               />
             } @empty {
               <div class="fa-none">{{ 'ps.fl.none' | t }}</div>
@@ -112,24 +99,21 @@ import { StepArtifactRowComponent } from './step-artifact-row.component';
 })
 export class StepConfigCardComponent {
   readonly definition = input.required<StepDefinition>();
-  readonly step = input.required<StepConfig>();
+  readonly step = input.required<StepView>();
   readonly index = input.required<number>();
-  /** Text shown in the textarea: the user's own, or the default in the current language. */
-  readonly instructionText = input.required<string>();
   /** Hint under "Artifacts" (differs per phase). */
   readonly artifactsHint = input.required<string>();
-  /** The step can be turned off. */
-  readonly optional = input(false);
   readonly open = model(false);
 
   readonly instructionsChange = output<string>();
   readonly resetInstructions = output<void>();
-  readonly offChange = output<boolean>();
   readonly addArtifact = output<void>();
-  readonly renameArtifact = output<{ index: number; name: string }>();
-  readonly attachTemplate = output<{ index: number; file: File }>();
-  readonly removeTemplate = output<number>();
-  readonly removeArtifact = output<number>();
+  readonly renameArtifact = output<{ id: string; name: string }>();
+  readonly attachTemplate = output<{ id: string; file: File }>();
+  readonly previewTemplate = output<string>();
+  readonly restoreTemplate = output<string>();
+  readonly removeTemplate = output<string>();
+  readonly removeArtifact = output<string>();
 
   /** Step number as shown in the step header: two-digit, plain mono. */
   protected readonly number = computed(() => String(this.index() + 1).padStart(2, '0'));

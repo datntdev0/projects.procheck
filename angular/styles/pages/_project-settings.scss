@@ -30,7 +30,7 @@
   .delete-confirm { margin-top: var(--space-3); width: 100%; }
 
   /* ---------- Customization: one panel; tabs per phase; each step a ruled section ---------- */
-  .cz-tabs { display: block; padding: 0 var(--space-3); }
+  .cz-state { padding: var(--space-5) var(--space-4); }
   .fl-bar { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding: 8px var(--space-4); border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface-2); }
   .cz-prompt { display: flex; flex-direction: column; gap: var(--space-2); padding: 12px var(--space-4) 14px; }
   .cz-prompt .fs-block-head { margin-bottom: 0; }
@@ -73,6 +73,9 @@
   .fa-file .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-default); font-family: var(--font-mono); }
   .fa-file .sz { color: var(--fg-subtle); white-space: nowrap; margin-right: auto; }
   .fa-attach { justify-self: start; }
+  .fa-file .tag { flex-shrink: 0; }
+  .fa-file .tag.is-pending { background: var(--brand-soft); color: var(--brand-fg); border-color: transparent; }
+  .tpl-preview { max-height: 60vh; overflow: auto; }
   .fa-none { padding: 10px 0; font-size: var(--text-xs); color: var(--fg-faint); border-bottom: 1px solid var(--border-subtle); }
 
   @container canvas (max-width: 860px) {

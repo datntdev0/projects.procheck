@@ -45,6 +45,13 @@ const CODE_MAX_LENGTH = 6;
         />
       </pc-setting-row>
 
+      <pc-setting-row [label]="'ps.g.doclang' | t" [description]="'ps.g.doclang.d' | t">
+        <div class="ro" [class.is-empty]="!documentLanguage()" data-testid="ps-doclang">
+          <pc-icon name="languages" [size]="14" />
+          <span>{{ documentLanguage() ? ('lang.' + documentLanguage() | t) : '—' }}</span>
+        </div>
+      </pc-setting-row>
+
       <div class="srow stack">
         <div class="sinfo">
           <div class="slabel">{{ 'ps.g.desc' | t }}</div>
@@ -94,6 +101,9 @@ export class ProjectGeneralSectionComponent {
   private readonly i18n = inject(I18nService);
 
   protected readonly codeMaxLength = CODE_MAX_LENGTH;
+
+  /** Chosen when the project was created and never changed; `null` for projects created before it existed. */
+  protected readonly documentLanguage = computed(() => this.form.project()?.manifest.documentLanguage ?? null);
 
   protected readonly repoNote = computed(() => {
     const info = this.form.repoInfo();

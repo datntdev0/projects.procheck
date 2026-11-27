@@ -1,36 +1,39 @@
 import type { Phase } from '@components/badge/phase-chip.component';
+import type { TemplateOrigin } from '@features/projects/customization.model';
 import type { TranslationKey } from '@shared/i18n/locales/en';
 
-/** A template file attached to an artifact: any document type, copied to `.procheck\templates\`. */
-export interface StepTemplateFile {
+/** Change waiting for the save bar: what happens to an artifact's template file. */
+export type StagedTemplate =
+  | { action: 'upload'; name: string; content: string; size: number }
+  | { action: 'remove' }
+  | { action: 'restoreDefault' };
+
+/** The template of an artifact as the user currently sees it (saved, or with a staged change applied). */
+export interface TemplateView {
   name: string;
-  /** Human-readable size, e.g. `84 KB`. */
-  size: string;
+  /** Bytes. */
+  size: number;
+  origin: TemplateOrigin;
+  /** A change not saved yet. */
+  pending: boolean;
+  /** The content can be shown (a pending restore has none until it is saved). */
+  previewable: boolean;
 }
 
-/** One artifact a step produces: a free name and an optional template. */
-export interface StepArtifactConfig {
-  /** Stable key for rendering; not shown. */
-  key: string;
-  name: string;
-  template: StepTemplateFile | null;
-}
-
-/** What one step does (free-text instructions) and what it produces. */
-export interface StepConfig {
+export interface ArtifactView {
   id: string;
-  /** `null` = the Procheck default text in the current language. */
-  instructions: string | null;
-  /** Turned off for this project (only in phases whose steps are optional); its settings are kept. */
-  off: boolean;
-  artifacts: StepArtifactConfig[];
+  name: string;
+  template: TemplateView | null;
+  /** The artifact has a bundled template and the current one is not the untouched default. */
+  canRestore: boolean;
 }
 
-/** Customization of one phase: the phase prompt and its steps. */
-export interface PhaseConfig {
-  /** `null` = the Procheck default prompt. */
-  prompt: string | null;
-  steps: StepConfig[];
+export interface StepView {
+  id: string;
+  instructions: string;
+  /** The instructions differ from the bundled default. */
+  custom: boolean;
+  artifacts: ArtifactView[];
 }
 
 /** Built-in definition of one step. */
@@ -38,7 +41,8 @@ export interface StepDefinition {
   id: string;
   name: TranslationKey;
   icon: string;
-  instructions: TranslationKey;
+  /** Default instructions of a phase that is not customized from bundled files yet. */
+  instructions?: TranslationKey;
   artifacts: TranslationKey[];
 }
 
@@ -51,7 +55,8 @@ export interface PhaseDefinition {
   segment: string;
   /** Steps can be turned off. */
   optional: boolean;
-  prompt: TranslationKey;
+  /** Default prompt of a phase that is not customized from bundled files yet. */
+  prompt?: TranslationKey;
   steps: StepDefinition[];
 }
 
@@ -63,7 +68,10 @@ const step = (phase: string, id: string, icon: string, artifacts: TranslationKey
   instructions: `cz.${phase}.${id}.instr` as TranslationKey,
 });
 
-/** Procheck default customization (see _proto/assets/workflow.js). */
+/**
+ * Steps of each phase. Only Initial is customizable for now: its prompt, instructions and artifacts come from the
+ * project (bundled defaults seeded when it is created). Scaffolding and SDLC are kept for when they are enabled.
+ */
 export const PHASES: PhaseDefinition[] = [
   {
     id: 'initial',
@@ -71,13 +79,12 @@ export const PHASES: PhaseDefinition[] = [
     icon: 'compass',
     segment: 'initial',
     optional: false,
-    prompt: 'cz.initial.prompt',
     steps: [
-      step('initial', 'discovery', 'compass', ['in.art.meeting', 'in.art.disc'], 'in.step.discovery'),
-      step('initial', 'requirements', 'list-checks', ['in.art.brd'], 'in.step.requirements'),
-      step('initial', 'scope', 'target', ['in.art.scope'], 'in.step.scope'),
-      step('initial', 'estimation', 'calculator', ['in.art.est'], 'in.step.estimation'),
-      step('initial', 'signoff', 'file-pen-line', ['in.art.sow'], 'in.step.signoff'),
+      { id: 'discovery', icon: 'compass', name: 'in.step.discovery', artifacts: [] },
+      { id: 'requirements', icon: 'list-checks', name: 'in.step.requirements', artifacts: [] },
+      { id: 'scope', icon: 'target', name: 'in.step.scope', artifacts: [] },
+      { id: 'estimation', icon: 'calculator', name: 'in.step.estimation', artifacts: [] },
+      { id: 'signoff', icon: 'file-pen-line', name: 'in.step.signoff', artifacts: [] },
     ],
   },
   {
@@ -112,7 +119,10 @@ export const PHASES: PhaseDefinition[] = [
   },
 ];
 
-/** Size label of a picked file. */
+/** The phase customized in Project settings. */
+export const INITIAL_PHASE = PHASES[0];
+
+/** Size label of a template. */
 export function fileSizeLabel(bytes: number): string {
   return bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }

@@ -3,6 +3,9 @@ import type { AgentId } from '@features/settings/app-settings.model';
 
 export type Methodology = 'scrum' | 'kanban' | 'hybrid';
 
+/** Language of the documents the Assistant writes, chosen when the project is created. */
+export type DocumentLanguage = 'vi' | 'en';
+
 export const PHASES: Phase[] = ['initial', 'release', 'sdlc'];
 
 export const INDUSTRIES = ['fintech', 'retail', 'health', 'logistics', 'mfg', 'edu', 'other'] as const;
@@ -21,6 +24,8 @@ export interface ProjectManifest {
   methodology: Methodology | null;
   repository: string | null;
   createdAt: string;
+  /** Language of the generated documents; `null` for projects created before it existed. */
+  documentLanguage: DocumentLanguage | null;
 }
 
 export type ProjectStatus = 'ready' | 'missing' | 'invalid';
@@ -78,6 +83,7 @@ export interface NewProject {
   description: string | null;
   dir: string;
   phase: Phase;
+  documentLanguage: DocumentLanguage;
   repository: string | null;
   sources: string[];
   cli: AgentId;

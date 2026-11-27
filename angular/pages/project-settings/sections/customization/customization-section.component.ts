@@ -4,28 +4,31 @@ import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '@components/button/button.component';
 import { DialogComponent, DialogFooterDirective } from '@components/dialog/dialog.component';
 import { InputDirective } from '@components/form/input.directive';
+import { EmptyStateComponent } from '@components/empty-state/empty-state.component';
 import { IconComponent } from '@components/icon/icon.component';
-import { TabItem, TabsComponent } from '@components/tabs/tabs.component';
-import type { Phase } from '@components/badge/phase-chip.component';
 import { ToastService } from '@components/toast/toast.service';
-import type { TranslationKey } from '@shared/i18n/locales/en';
+import { MarkdownComponent } from '@pages/chats/markdown.component';
 import { I18nService } from '@shared/i18n/i18n.service';
+import type { TranslationKey } from '@shared/i18n/locales/en';
 import { TranslatePipe } from '@shared/i18n/translate.pipe';
 
 import { SETTINGS_SECTION } from '../../../settings/settings-section.component';
-import { PHASES, PhaseConfig, PhaseDefinition, StepArtifactConfig, StepConfig, fileSizeLabel } from './customization.model';
+import { ProjectCustomizationForm, TemplateUploadResult } from '../../project-customization-form';
+import { INITIAL_PHASE, StepView } from './customization.model';
 import { StepConfigCardComponent } from './step-config-card.component';
 
-let keySeq = 0;
-const nextKey = (): string => `a${++keySeq}`;
+/** Why a picked file was not attached as a template. */
+const UPLOAD_ERRORS: Record<Exclude<TemplateUploadResult, 'ok'>, TranslationKey> = {
+  templateType: 'ps.fl.err.type',
+  templateTooLarge: 'ps.fl.err.size',
+  unreadable: 'ps.fl.err.read',
+};
 
 /**
- * Customization: how the Assistant works in each phase of the project, one tab per phase (Initial phase,
- * Scaffolding, SDLC). Each phase has a prompt, then steps with free-text instructions and the artifacts
- * they produce (name + optional template file of any type). Scaffolding and SDLC steps can be turned off.
- *
- * UI only for now: the configuration lives in this component and is neither loaded from nor saved to
- * `.procheck\settings.json` → `customization` (templates in `.procheck\templates\`).
+ * Customization: how the Assistant works in the Initial phase of the project. A phase prompt, then steps with
+ * free-text instructions and the artifacts they produce (name + optional Markdown template). Everything is
+ * edited in {@link ProjectCustomizationForm} and saved through the save bar to `.procheck\settings.json` →
+ * `customization` (templates in `.procheck\templates\`). Scaffolding and SDLC are not customizable yet.
  */
 @Component({
   selector: 'pc-customization-section',
@@ -33,88 +36,96 @@ const nextKey = (): string => `a${++keySeq}`;
     ButtonComponent,
     DialogComponent,
     DialogFooterDirective,
+    EmptyStateComponent,
     IconComponent,
     InputDirective,
+    MarkdownComponent,
     RouterLink,
     StepConfigCardComponent,
-    TabsComponent,
     TranslatePipe,
     ...SETTINGS_SECTION,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <pc-settings-section class="cz-sec" sectionId="customize" [title]="'ps.n.cz' | t" [description]="'ps.cz.d' | t">
-      <pc-tabs class="cz-tabs" [items]="tabs()" [(active)]="activeTab" data-testid="ps-cz-tabs" />
-
-      @let def = phase();
-      @let config = current();
-      <div class="cz-body" [attr.data-testid]="'ps-cz-panel-' + def.id">
-        <div class="fl-bar">
-          <span class="text-xs text-subtle" data-testid="ps-fl-summary">{{ 'ps.fl.sum' | t: { a: artifactCount(), t: templateCount() } }}</span>
-          <span class="grow"></span>
-          <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-fl-reset" (click)="resetOpen.set(true)">
-            <pc-icon name="rotate-ccw" />{{ 'ps.fl.reset' | t }}
-          </button>
-          <a pcButton size="sm" [routerLink]="['/projects', projectId(), def.segment]">
-            <pc-icon name="external-link" />{{ 'ps.cz.open.' + def.id | t }}
-          </a>
-        </div>
-
-        <div class="cz-prompt">
-          <div class="fs-block-head">
-            <div class="sinfo">
-              <div class="slabel">{{ 'ps.cz.prompt' | t }}</div>
-              <div class="sdesc">{{ 'ps.cz.prompt.d' | t }}</div>
-            </div>
-            @if (config.prompt !== null) {
-              <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-cz-prompt-reset" (click)="setPrompt(null)">
-                <pc-icon name="rotate-ccw" />{{ 'ps.fl.instr.reset' | t }}
+      @if (form.status() === 'loading') {
+        <div class="cz-state text-sm text-subtle" data-testid="ps-cz-loading">{{ 'ps.cz.loading' | t }}</div>
+      } @else if (form.status() === 'error') {
+        <pc-empty-state icon="circle-alert" [title]="'ps.cz.err.t' | t" [description]="'ps.cz.err.d' | t" data-testid="ps-cz-error">
+          <button pcButton type="button" data-testid="ps-cz-retry" (click)="form.load()"><pc-icon name="refresh-cw" />{{ 'ps.cz.retry' | t }}</button>
+        </pc-empty-state>
+      } @else if (!form.phase()) {
+        <pc-empty-state icon="history" [title]="'ps.cz.none.t' | t" [description]="'ps.cz.none.d' | t" data-testid="ps-cz-empty" />
+      } @else {
+        <div class="cz-body" [attr.data-testid]="'ps-cz-panel-' + def.id">
+          <div class="fl-bar">
+            <span class="text-xs text-subtle" data-testid="ps-fl-summary">{{ 'ps.fl.sum' | t: { a: artifactCount(), t: templateCount() } }}</span>
+            <span class="grow"></span>
+            @if (form.defaults()) {
+              <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-fl-reset" (click)="resetOpen.set(true)">
+                <pc-icon name="rotate-ccw" />{{ 'ps.fl.reset' | t }}
               </button>
             }
+            <a pcButton size="sm" [routerLink]="['/projects', projectId(), def.segment]">
+              <pc-icon name="external-link" />{{ 'ps.cz.open.' + def.id | t }}
+            </a>
           </div>
-          <textarea
-            pcInput
-            class="prompt"
-            spellcheck="false"
-            data-testid="ps-cz-prompt"
-            [value]="config.prompt ?? (def.prompt | t)"
-            (input)="setPrompt(text($event))"
-          ></textarea>
-        </div>
 
-        <div class="cz-steps-h">
-          <span class="slabel">{{ 'ps.cz.steps.' + def.id | t }}</span>
-          <span class="sdesc">{{ 'ps.cz.steps.' + def.id + '.d' | t }}</span>
-        </div>
+          <div class="cz-prompt">
+            <div class="fs-block-head">
+              <div class="sinfo">
+                <div class="slabel">{{ 'ps.cz.prompt' | t }}</div>
+                <div class="sdesc">{{ 'ps.cz.prompt.d' | t }}</div>
+              </div>
+              @if (promptCustom()) {
+                <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-cz-prompt-reset" (click)="resetPrompt()">
+                  <pc-icon name="rotate-ccw" />{{ 'ps.fl.instr.reset' | t }}
+                </button>
+              }
+            </div>
+            <textarea
+              pcInput
+              class="prompt"
+              spellcheck="false"
+              data-testid="ps-cz-prompt"
+              [value]="form.phase()?.prompt ?? ''"
+              (input)="form.setPrompt(text($event))"
+            ></textarea>
+          </div>
 
-        @for (step of config.steps; track step.id; let i = $index) {
-          <pc-step-config-card
-            [definition]="def.steps[i]"
-            [step]="step"
-            [index]="i"
-            [optional]="def.optional"
-            [artifactsHint]="'ps.cz.arts.d.' + def.id"
-            [instructionText]="step.instructions ?? (def.steps[i].instructions | t)"
-            [open]="openStep()[def.id] === step.id"
-            (openChange)="setOpen(step.id, $event)"
-            (instructionsChange)="patchStep(step.id, { instructions: $event })"
-            (resetInstructions)="patchStep(step.id, { instructions: null })"
-            (offChange)="patchStep(step.id, { off: $event })"
-            (addArtifact)="addArtifact(step.id)"
-            (renameArtifact)="patchArtifact(step.id, $event.index, { name: $event.name })"
-            (attachTemplate)="attach(step.id, $event.index, $event.file)"
-            (removeTemplate)="patchArtifact(step.id, $event, { template: null })"
-            (removeArtifact)="removeArtifact(step.id, $event)"
-          />
-        }
-      </div>
+          <div class="cz-steps-h">
+            <span class="slabel">{{ 'ps.cz.steps.' + def.id | t }}</span>
+            <span class="sdesc">{{ 'ps.cz.steps.' + def.id + '.d' | t }}</span>
+          </div>
+
+          @for (step of steps(); track step.id; let i = $index) {
+            <pc-step-config-card
+              [definition]="definition(step.id)"
+              [step]="step"
+              [index]="i"
+              [artifactsHint]="'ps.cz.arts.d.' + def.id"
+              [open]="openStep() === step.id"
+              (openChange)="openStep.set($event ? step.id : null)"
+              (instructionsChange)="form.setInstructions(step.id, $event)"
+              (resetInstructions)="resetInstructions(step.id)"
+              (addArtifact)="form.addArtifact(step.id)"
+              (renameArtifact)="form.renameArtifact($event.id, $event.name)"
+              (attachTemplate)="attach($event.id, $event.file)"
+              (previewTemplate)="showPreview($event)"
+              (restoreTemplate)="form.restoreTemplate($event)"
+              (removeTemplate)="form.removeTemplate($event)"
+              (removeArtifact)="form.removeArtifact($event)"
+            />
+          }
+        </div>
+      }
       <div class="note-row">
         <pc-icon name="info" [size]="14" />
         <span>{{ 'ps.fl.note' | t }}</span>
       </div>
     </pc-settings-section>
 
-    <pc-dialog [(open)]="resetOpen" [title]="'ps.fl.reset.t' | t: { ph: (phase().label | t) }" width="min(480px, 100%)">
+    <pc-dialog [(open)]="resetOpen" [title]="'ps.fl.reset.t' | t: { ph: (def.label | t) }" width="min(480px, 100%)">
       <p class="text-sm text-muted" style="margin: 0">{{ 'ps.fl.reset.d' | t }}</p>
       <div pcDialogFooter class="modal-footer">
         <button pcButton variant="ghost" type="button" (click)="resetOpen.set(false)">{{ 'common.cancel' | t }}</button>
@@ -123,100 +134,97 @@ const nextKey = (): string => `a${++keySeq}`;
         </button>
       </div>
     </pc-dialog>
+
+    <pc-dialog [(open)]="previewOpen" [title]="preview()?.name ?? ''" width="min(760px, 100%)">
+      <div class="tpl-preview" data-testid="ps-fl-preview">
+        @if (preview(); as file) {
+          <pc-markdown [source]="file.content" />
+        }
+      </div>
+      <div pcDialogFooter class="modal-footer">
+        <button pcButton variant="ghost" type="button" (click)="previewOpen.set(false)">{{ 'common.close' | t }}</button>
+      </div>
+    </pc-dialog>
   `,
 })
 export class CustomizationSectionComponent {
   /** Project id, for the links to the phase pages. */
   readonly projectId = input.required<string>();
 
+  protected readonly form = inject(ProjectCustomizationForm);
   private readonly i18n = inject(I18nService);
   private readonly toast = inject(ToastService);
 
-  protected readonly activeTab = signal<string>('initial');
-  protected readonly configs = signal<Record<Phase, PhaseConfig>>({
-    initial: this.defaults(PHASES[0]),
-    release: this.defaults(PHASES[1]),
-    sdlc: this.defaults(PHASES[2]),
-  });
-  protected readonly openStep = signal<Record<Phase, string | null>>({ initial: 'discovery', release: 'structure', sdlc: 'plan' });
+  protected readonly def = INITIAL_PHASE;
+  protected readonly openStep = signal<string | null>('discovery');
   protected readonly resetOpen = signal(false);
+  protected readonly previewOpen = signal(false);
+  protected readonly preview = signal<{ name: string; content: string } | null>(null);
 
-  protected readonly phase = computed(() => PHASES.find((p) => p.id === this.activeTab()) ?? PHASES[0]);
-  protected readonly current = computed(() => this.configs()[this.phase().id]);
+  /** The steps with their artifacts as the user currently sees them (staged template changes applied). */
+  protected readonly steps = computed<StepView[]>(() => {
+    const defaults = this.form.defaults();
+    return (this.form.phase()?.steps ?? []).map((step) => ({
+      id: step.id,
+      instructions: step.instructions,
+      custom: !!defaults && step.instructions !== defaults.steps.find((s) => s.id === step.id)?.instructions,
+      artifacts: step.artifacts.map((artifact) => ({
+        id: artifact.id,
+        name: artifact.name,
+        template: this.form.template(artifact.id),
+        canRestore: this.form.canRestore(artifact.id),
+      })),
+    }));
+  });
 
-  /** One tab per phase; the count is the number of steps that are on. */
-  protected readonly tabs = computed<TabItem[]>(() =>
-    PHASES.map((p) => ({
-      id: p.id,
-      label: this.i18n.t(p.label),
-      icon: p.icon,
-      count: this.configs()[p.id].steps.filter((s) => !s.off).length,
-    })),
-  );
+  protected readonly promptCustom = computed(() => {
+    const defaults = this.form.defaults();
+    return !!defaults && this.form.phase()?.prompt !== defaults.prompt;
+  });
+  protected readonly artifactCount = computed(() => this.steps().reduce((n, s) => n + s.artifacts.length, 0));
+  protected readonly templateCount = computed(() => this.steps().reduce((n, s) => n + s.artifacts.filter((a) => a.template).length, 0));
 
-  protected readonly artifactCount = computed(() => this.current().steps.reduce((n, s) => n + s.artifacts.length, 0));
-  protected readonly templateCount = computed(() => this.current().steps.reduce((n, s) => n + s.artifacts.filter((a) => a.template).length, 0));
+  protected definition(stepId: string) {
+    return this.def.steps.find((s) => s.id === stepId) ?? this.def.steps[0];
+  }
 
   protected text(event: Event): string {
     return (event.target as HTMLTextAreaElement).value;
   }
 
-  protected setOpen(stepId: string, open: boolean): void {
-    const phase = this.phase().id;
-    this.openStep.update((o) => ({ ...o, [phase]: open ? stepId : null }));
+  protected resetPrompt(): void {
+    const prompt = this.form.defaults()?.prompt;
+    if (prompt !== undefined) this.form.setPrompt(prompt);
   }
 
-  protected setPrompt(prompt: string | null): void {
-    this.updatePhase((c) => ({ ...c, prompt }));
+  protected resetInstructions(stepId: string): void {
+    const instructions = this.form.defaults()?.steps.find((s) => s.id === stepId)?.instructions;
+    if (instructions !== undefined) this.form.setInstructions(stepId, instructions);
   }
 
-  protected patchStep(stepId: string, changes: Partial<StepConfig>): void {
-    this.updateStep(stepId, (s) => ({ ...s, ...changes }));
+  protected async attach(artifactId: string, file: File): Promise<void> {
+    const result = await this.form.stageUpload(artifactId, file);
+    if (result === 'ok') {
+      this.toast.show(this.i18n.t('ps.fl.attached', { f: file.name }), { icon: 'paperclip' });
+    } else {
+      this.toast.show(this.i18n.t(UPLOAD_ERRORS[result], { f: file.name }), { icon: 'circle-alert', tone: 'danger', duration: 6000 });
+    }
   }
 
-  protected addArtifact(stepId: string): void {
-    this.updateStep(stepId, (s) => ({ ...s, artifacts: [...s.artifacts, { key: nextKey(), name: '', template: null }] }));
+  protected async showPreview(artifactId: string): Promise<void> {
+    try {
+      this.preview.set(await this.form.readTemplate(artifactId));
+      this.previewOpen.set(true);
+    } catch (error) {
+      console.error('Could not read the template', error);
+      this.toast.show(this.i18n.t('ps.fl.err.preview'), { icon: 'circle-alert', tone: 'danger' });
+    }
   }
 
-  protected removeArtifact(stepId: string, index: number): void {
-    this.updateStep(stepId, (s) => ({ ...s, artifacts: s.artifacts.filter((_, n) => n !== index) }));
-  }
-
-  protected patchArtifact(stepId: string, index: number, changes: Partial<StepArtifactConfig>): void {
-    this.updateStep(stepId, (s) => ({ ...s, artifacts: s.artifacts.map((a, n) => (n === index ? { ...a, ...changes } : a)) }));
-  }
-
-  protected attach(stepId: string, index: number, file: File): void {
-    this.patchArtifact(stepId, index, { template: { name: file.name, size: fileSizeLabel(file.size) } });
-    this.toast.show(this.i18n.t('ps.fl.attached', { f: file.name }), { icon: 'paperclip' });
-  }
-
-  /** Resets the phase on the active tab only. */
+  /** Puts the phase back to the bundled defaults; it is saved with the save bar. */
   protected reset(): void {
-    const def = this.phase();
-    this.updatePhase(() => this.defaults(def));
+    this.form.resetPhase();
     this.resetOpen.set(false);
-    this.toast.show(this.i18n.t('ps.fl.reset.done', { ph: this.i18n.t(def.label) }), { icon: 'rotate-ccw' });
-  }
-
-  private updatePhase(change: (config: PhaseConfig) => PhaseConfig): void {
-    const phase = this.phase().id;
-    this.configs.update((c) => ({ ...c, [phase]: change(c[phase]) }));
-  }
-
-  private updateStep(stepId: string, change: (step: StepConfig) => StepConfig): void {
-    this.updatePhase((c) => ({ ...c, steps: c.steps.map((s) => (s.id === stepId ? change(s) : s)) }));
-  }
-
-  private defaults(def: PhaseDefinition): PhaseConfig {
-    return {
-      prompt: null,
-      steps: def.steps.map((s) => ({
-        id: s.id,
-        instructions: null,
-        off: false,
-        artifacts: s.artifacts.map((name): StepArtifactConfig => ({ key: nextKey(), name: this.i18n.t(name as TranslationKey), template: null })),
-      })),
-    };
+    this.toast.show(this.i18n.t('ps.fl.reset.done', { ph: this.i18n.t(this.def.label) }), { icon: 'rotate-ccw' });
   }
 }

@@ -58,12 +58,12 @@
         </div>
       </div>
 
-      <div class="savebar" [class.is-off]="!form.dirty()" role="region" [attr.aria-label]="'set.unsaved' | t" [attr.aria-hidden]="!form.dirty()" data-testid="ps-savebar">
+      <div class="savebar" [class.is-off]="!dirty()" role="region" [attr.aria-label]="'set.unsaved' | t" [attr.aria-hidden]="!dirty()" data-testid="ps-savebar">
         <span class="grow"><pc-icon name="circle-dot" [size]="14" class="savebar-dot" />{{ 'set.unsaved' | t }}</span>
-        <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-discard" [disabled]="form.saving()" (click)="discard()">
+        <button pcButton variant="ghost" size="sm" type="button" data-testid="ps-discard" [disabled]="saving()" (click)="discard()">
           {{ 'set.discard' | t }}
         </button>
-        <button pcButton variant="primary" size="sm" type="button" data-testid="ps-save" [disabled]="form.saving() || form.nameMissing()" (click)="save()">
+        <button pcButton variant="primary" size="sm" type="button" data-testid="ps-save" [disabled]="saving() || cannotSave()" (click)="save()">
           {{ 'common.save' | t }}
         </button>
       </div>
